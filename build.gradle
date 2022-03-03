@@ -745,7 +745,7 @@ project(':fmlonly') {
         packedDependencies = PACKED_DEPS
         from(extraTxts)
         //TODO: make FML installer logo?
-        from(rootProject.file('/forge_installer_logo.png')) {
+        from(rootProject.file('/magma-logo.png')) {
             rename { 'big_logo.png' }
         }
     }
@@ -1339,7 +1339,7 @@ project(':forge') {
     task installerJar(type: InstallerJar, dependsOn: [genClientBinPatches, genServerBinPatches, 'signUniversalJar', launcherJson]) {
         packedDependencies = PACKED_DEPS
         from(extraTxts)
-        from(rootProject.file('/forge_installer_logo.png')) {
+        from(rootProject.file('/magma-logo.png')) {
             rename { 'big_logo.png' }
         }
         from(genClientBinPatches.output) {
