@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.SystemUtils;
+import net.minecraft.Util;
 import net.minecraft.server.dedicated.DedicatedServer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -121,7 +121,7 @@ public final class CraftPlayerProfile implements PlayerProfile {
 
     @Override
     public CompletableFuture<PlayerProfile> update() {
-        return CompletableFuture.supplyAsync(this::getUpdatedProfile, SystemUtils.backgroundExecutor());
+        return CompletableFuture.supplyAsync(this::getUpdatedProfile, Util.backgroundExecutor());
     }
 
     private CraftPlayerProfile getUpdatedProfile() {
