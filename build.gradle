@@ -75,14 +75,10 @@ println('Version: ' + VERSION +
         ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ')' +
         ' Arch: ' + System.getProperty('os.arch'))
 
-changelog {
-    fromTag MIN_TAG_FOR_CHANGELOG
-}
 
 def extraTxts = [
     rootProject.file('CREDITS.txt'),
     rootProject.file('LICENSE.txt'),
-    rootProject.tasks.createChangelog.outputFile
 ]
 
 task downloadVersionManifest(type: Download) {
@@ -175,21 +171,6 @@ project(':clean') {
         mappings channel: MAPPING_CHANNEL, version: MAPPING_VERSION
 
         runs {
-            clean_client {
-                client true
-                taskName 'clean_client'
-                ideaModule "${rootProject.name}.${project.name}.main"
-
-                main 'net.minecraft.client.main.Main'
-                workingDirectory project.file('run')
-
-                args '--gameDir', '.'
-                args '--version', MC_VERSION
-                args '--assetsDir', downloadAssets.output
-                args '--assetIndex', '{asset_index}'
-                args '--accessToken', '0'
-            }
-
             clean_server {
                 client false
                 taskName 'clean_server'
@@ -321,21 +302,6 @@ def sharedFmlonlyForge = { Project prj ->
         //libraries.add("${project.group}:${project.name}:${project.version}:launcher")
         inject = '' // We don't have a userdev sourceset anymore. Empty as a gradle workaround...
         runs {
-            client {
-                environment 'MOD_CLASSES', '{source_roots}'
-                environment 'MCP_MAPPINGS', '{mcp_mappings}'
-
-                property 'nativesDirectory', '{natives}'
-                if (prj.name == 'forge') {
-                    property 'forge.enableGameTest', 'true'
-                }
-
-                args '--launchTarget', "${launchPrefix}clientuserdev"
-                args '--version', 'MOD_DEV'
-                args '--assetIndex', '{asset_index}'
-                args '--assetsDir', '{assets_root}'
-            }
-
             server {
                 environment 'MOD_CLASSES', '{source_roots}'
                 environment 'MCP_MAPPINGS', '{mcp_mappings}'
@@ -540,14 +506,6 @@ project(':fmlonly') {
 
         mappings channel: MAPPING_CHANNEL, version: MAPPING_VERSION
         runs {
-            fmlonly_client {
-                args '--launchTarget', 'fmlclientdev'
-                ideaModule "${rootProject.name}.${project.name}.main"
-
-                mods {
-                    minecraft { source sourceSets.main }
-                }
-            }
             fmlonly_server {
                 args '--launchTarget', 'fmlserverdev'
                 ideaModule "${rootProject.name}.${project.name}.main"
@@ -889,28 +847,6 @@ project(':forge') {
         sideAnnotationStrippers.from file("$rootDir/src/main/resources/forge.sas")
 
         runs {
-            forge_client {
-                property 'eventbus.checkTypesOnDispatch', 'true'
-                args '--launchTarget', 'forgeclientdev'
-                ideaModule "${rootProject.name}.${project.name}.main"
-                mods {
-                    minecraft { source sourceSets.main }
-                }
-            }
-
-            forge_test_client {
-                parent runs.forge_client
-                taskName 'forge_test_client'
-
-                property 'forge.enableGameTest', 'true'
-                environment 'MOD_CLASSES', 'dummy' // Needed to work around FG limitation, FG will replace this!
-
-                ideaModule "${rootProject.name}.${project.name}.test"
-
-                mods {
-                    tests { sources sourceSets.test }
-                }
-            }
 
             forge_server {
                 args '--launchTarget', 'forgeserverdev'
