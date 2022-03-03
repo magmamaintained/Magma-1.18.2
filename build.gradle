@@ -221,6 +221,23 @@ def sharedDeps = {
     installer 'org.lwjgl:lwjgl-opengl:3.2.2'
     installer 'org.lwjgl:lwjgl-stb:3.2.2'
     */
+
+
+    installer 'org.yaml:snakeyaml:1.30'
+    installer 'org.apache.maven:maven-resolver-provider:3.8.4'
+    installer 'org.apache.maven.resolver:maven-resolver-connector-basic:1.7.2'
+    installer 'org.apache.maven.resolver:maven-resolver-transport-http:1.7.2'
+    compileOnly 'org.jetbrains:annotations:21.0.1'
+    installer 'org.fusesource.jansi:jansi:1.18'
+    installer 'jline:jline:2.12.1'
+    installer 'com.googlecode.json-simple:json-simple:1.1.1'
+    installer 'org.xerial:sqlite-jdbc:3.36.0.3'
+    installer 'mysql:mysql-connector-java:8.0.27'
+    installer 'org.apache.logging.log4j:log4j-iostreams:2.17.1'
+    installer 'net.md-5:SpecialSource:1.10.0'
+    installer 'com.google.guava:guava:31.0.1-jre'
+    installer 'com.google.code.gson:gson:2.8.8'
+    installer 'commons-lang:commons-lang:2.6'
 }
 
 def sharedFmlonlyForge = { Project prj ->
