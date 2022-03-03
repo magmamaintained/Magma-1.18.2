@@ -2,54 +2,48 @@ package org.bukkit.craftbukkit.util;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.nbt.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import net.minecraft.nbt.MojangsonParser;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTList;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 
 public class CraftNBTTagConfigSerializer {
 
     private static final Pattern ARRAY = Pattern.compile("^\\[.*]");
     private static final Pattern INTEGER = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)?i", Pattern.CASE_INSENSITIVE);
     private static final Pattern DOUBLE = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?d", Pattern.CASE_INSENSITIVE);
-    private static final MojangsonParser MOJANGSON_PARSER = new MojangsonParser(new StringReader(""));
+    private static final TagParser MOJANGSON_PARSER = new TagParser(new StringReader(""));
 
-    public static Object serialize(NBTBase base) {
-        if (base instanceof NBTTagCompound) {
+    public static Object serialize(Tag base) {
+        if (base instanceof CompoundTag) {
             Map<String, Object> innerMap = new HashMap<>();
-            for (String key : ((NBTTagCompound) base).getAllKeys()) {
-                innerMap.put(key, serialize(((NBTTagCompound) base).get(key)));
+            for (String key : ((CompoundTag) base).getAllKeys()) {
+                innerMap.put(key, serialize(((CompoundTag) base).get(key)));
             }
 
             return innerMap;
-        } else if (base instanceof NBTTagList) {
+        } else if (base instanceof ListTag) {
             List<Object> baseList = new ArrayList<>();
-            for (int i = 0; i < ((NBTList) base).size(); i++) {
-                baseList.add(serialize((NBTBase) ((NBTList) base).get(i)));
+            for (int i = 0; i < ((CollectionTag) base).size(); i++) {
+                baseList.add(serialize((Tag) ((CollectionTag) base).get(i)));
             }
 
             return baseList;
-        } else if (base instanceof NBTTagString) {
+        } else if (base instanceof StringTag) {
             return base.getAsString();
-        } else if (base instanceof NBTTagInt) { // No need to check for doubles, those are covered by the double itself
+        } else if (base instanceof IntTag) { // No need to check for doubles, those are covered by the double itself
             return base.toString() + "i";
         }
 
         return base.toString();
     }
 
-    public static NBTBase deserialize(Object object) {
+    public static Tag deserialize(Object object) {
         if (object instanceof Map) {
-            NBTTagCompound compound = new NBTTagCompound();
+            CompoundTag compound = new CompoundTag();
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) object).entrySet()) {
                 compound.put(entry.getKey(), deserialize(entry.getValue()));
             }
@@ -58,10 +52,10 @@ public class CraftNBTTagConfigSerializer {
         } else if (object instanceof List) {
             List<Object> list = (List<Object>) object;
             if (list.isEmpty()) {
-                return new NBTTagList(); // Default
+                return new ListTag(); // Default
             }
 
-            NBTTagList tagList = new NBTTagList();
+            ListTag tagList = new ListTag();
             for (Object tag : list) {
                 tagList.add(deserialize(tag));
             }
@@ -72,27 +66,27 @@ public class CraftNBTTagConfigSerializer {
 
             if (ARRAY.matcher(string).matches()) {
                 try {
-                    return new MojangsonParser(new StringReader(string)).readArrayTag();
+                    return new TagParser(new StringReader(string)).readArrayTag();
                 } catch (CommandSyntaxException e) {
                     throw new RuntimeException("Could not deserialize found list ", e);
                 }
             } else if (INTEGER.matcher(string).matches()) { //Read integers on our own
-                return NBTTagInt.valueOf(Integer.parseInt(string.substring(0, string.length() - 1)));
+                return IntTag.valueOf(Integer.parseInt(string.substring(0, string.length() - 1)));
             } else if (DOUBLE.matcher(string).matches()) {
-                return NBTTagDouble.valueOf(Double.parseDouble(string.substring(0, string.length() - 1)));
+                return DoubleTag.valueOf(Double.parseDouble(string.substring(0, string.length() - 1)));
             } else {
-                NBTBase nbtBase = MOJANGSON_PARSER.type(string);
+                Tag nbtBase = MOJANGSON_PARSER.type(string);
 
-                if (nbtBase instanceof NBTTagInt) { // If this returns an integer, it did not use our method from above
-                    return NBTTagString.valueOf(nbtBase.getAsString()); // It then is a string that was falsely read as an int
-                } else if (nbtBase instanceof NBTTagDouble) {
-                    return NBTTagString.valueOf(String.valueOf(((NBTTagDouble) nbtBase).getAsDouble())); // Doubles add "d" at the end
+                if (nbtBase instanceof IntTag) { // If this returns an integer, it did not use our method from above
+                    return StringTag.valueOf(nbtBase.getAsString()); // It then is a string that was falsely read as an int
+                } else if (nbtBase instanceof DoubleTag) {
+                    return StringTag.valueOf(String.valueOf(((DoubleTag) nbtBase).getAsDouble())); // Doubles add "d" at the end
                 } else {
                     return nbtBase;
                 }
             }
         }
 
-        throw new RuntimeException("Could not deserialize NBTBase");
+        throw new RuntimeException("Could not deserialize Tag");
     }
 }
