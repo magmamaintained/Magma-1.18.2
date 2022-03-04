@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.IInventory;
-import net.minecraft.world.entity.player.EntityHuman;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -31,7 +31,7 @@ public class CraftInventoryCustom extends CraftInventory {
         super(new MinecraftInventory(owner, size, title));
     }
 
-    static class MinecraftInventory implements IInventory {
+    static class MinecraftInventory implements Container {
         private final NonNullList<ItemStack> items;
         private int maxStack = MAX_STACK;
         private final List<HumanEntity> viewers;
@@ -125,7 +125,7 @@ public class CraftInventoryCustom extends CraftInventory {
         public void setChanged() {}
 
         @Override
-        public boolean stillValid(EntityHuman entityhuman) {
+        public boolean stillValid(net.minecraft.world.entity.player.Player entityhuman) {
             return true;
         }
 
@@ -164,12 +164,12 @@ public class CraftInventoryCustom extends CraftInventory {
         }
 
         @Override
-        public void startOpen(EntityHuman entityHuman) {
+        public void startOpen(net.minecraft.world.entity.player.Player entityHuman) {
 
         }
 
         @Override
-        public void stopOpen(EntityHuman entityHuman) {
+        public void stopOpen(net.minecraft.world.entity.player.Player entityHuman) {
 
         }
 

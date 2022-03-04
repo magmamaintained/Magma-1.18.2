@@ -9,7 +9,7 @@ public final class CraftBeetroot extends org.bukkit.craftbukkit.block.data.Craft
         super();
     }
 
-    public CraftBeetroot(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBeetroot(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

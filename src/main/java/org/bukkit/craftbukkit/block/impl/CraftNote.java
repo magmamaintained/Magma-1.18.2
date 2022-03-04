@@ -9,7 +9,7 @@ public final class CraftNote extends org.bukkit.craftbukkit.block.data.CraftBloc
         super();
     }
 
-    public CraftNote(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftNote(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

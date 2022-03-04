@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockPosition;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EnumBlockMirror;
 import net.minecraft.world.level.block.EnumBlockRotation;
@@ -93,7 +93,7 @@ public class CraftStructure implements Structure {
             throw new IllegalArgumentException("Size must be at least 1x1x1 but was " + size.getBlockX() + "x" + size.getBlockY() + "x" + size.getBlockZ());
         }
 
-        structure.fillFromWorld(((CraftWorld) world).getHandle(), new BlockPos(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()), new BlockPosition(size.getBlockX(), size.getBlockY(), size.getBlockZ()), includeEntities, Blocks.STRUCTURE_VOID);
+        structure.fillFromWorld(((CraftWorld) world).getHandle(), new BlockPos(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ()), new BlockPos(size.getBlockX(), size.getBlockY(), size.getBlockZ()), includeEntities, Blocks.STRUCTURE_VOID);
     }
 
     @Override

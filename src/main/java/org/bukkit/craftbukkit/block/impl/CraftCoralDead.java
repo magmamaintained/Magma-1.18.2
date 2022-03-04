@@ -9,7 +9,7 @@ public final class CraftCoralDead extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftCoralDead(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCoralDead(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

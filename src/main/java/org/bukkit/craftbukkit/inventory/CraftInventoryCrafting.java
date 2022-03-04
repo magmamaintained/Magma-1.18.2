@@ -2,25 +2,25 @@ package org.bukkit.craftbukkit.inventory;
 
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.world.IInventory;
-import net.minecraft.world.item.crafting.IRecipe;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.crafting.net.minecraft.world.item.crafting.Recipe;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 public class CraftInventoryCrafting extends CraftInventory implements CraftingInventory {
-    private final IInventory resultInventory;
+    private final Container resultInventory;
 
-    public CraftInventoryCrafting(IInventory inventory, IInventory resultInventory) {
+    public CraftInventoryCrafting(Container inventory, Container resultInventory) {
         super(inventory);
         this.resultInventory = resultInventory;
     }
 
-    public IInventory getResultInventory() {
+    public Container getResultInventory() {
         return resultInventory;
     }
 
-    public IInventory getMatrixInventory() {
+    public Container getMatrixInventory() {
         return inventory;
     }
 
@@ -118,7 +118,7 @@ public class CraftInventoryCrafting extends CraftInventory implements CraftingIn
 
     @Override
     public Recipe getRecipe() {
-        IRecipe recipe = getInventory().getCurrentRecipe();
+        net.minecraft.world.item.crafting.Recipe recipe = getInventory().getCurrentRecipe();
         return recipe == null ? null : recipe.toBukkitRecipe();
     }
 }

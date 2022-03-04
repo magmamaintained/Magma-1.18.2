@@ -9,7 +9,7 @@ public final class CraftChorusFlower extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftChorusFlower(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftChorusFlower(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftRotatable extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftRotatable(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRotatable(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftTNT extends org.bukkit.craftbukkit.block.data.CraftBlock
         super();
     }
 
-    public CraftTNT(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftTNT(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

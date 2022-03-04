@@ -9,7 +9,7 @@ public final class CraftRedstoneComparator extends org.bukkit.craftbukkit.block.
         super();
     }
 
-    public CraftRedstoneComparator(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRedstoneComparator(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

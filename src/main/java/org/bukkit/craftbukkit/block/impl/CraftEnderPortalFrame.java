@@ -9,7 +9,7 @@ public final class CraftEnderPortalFrame extends org.bukkit.craftbukkit.block.da
         super();
     }
 
-    public CraftEnderPortalFrame(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftEnderPortalFrame(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

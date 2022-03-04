@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.core.BlockPosition;
+import net.minecraft.core.BlockPos;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -115,6 +115,6 @@ public class CraftWorldBorder implements WorldBorder {
     public boolean isInside(Location location) {
         Preconditions.checkArgument(location != null, "location");
 
-        return location.getWorld().equals(this.world) && this.handle.isWithinBounds(new BlockPosition(location.getX(), location.getY(), location.getZ()));
+        return location.getWorld().equals(this.world) && this.handle.isWithinBounds(new BlockPos(location.getX(), location.getY(), location.getZ()));
     }
 }

@@ -11,10 +11,10 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public class CraftAttributeInstance implements AttributeInstance {
 
-    private final net.minecraft.world.entity.ai.attributes.AttributeModifiable handle;
+    private final net.minecraft.world.entity.ai.attributes.AttributeInstance handle;
     private final Attribute attribute;
 
-    public CraftAttributeInstance(net.minecraft.world.entity.ai.attributes.AttributeModifiable handle, Attribute attribute) {
+    public CraftAttributeInstance(net.minecraft.world.entity.ai.attributes.AttributeInstance handle, Attribute attribute) {
         this.handle = handle;
         this.attribute = attribute;
     }

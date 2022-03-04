@@ -9,7 +9,7 @@ public final class CraftLever extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftLever(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLever(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

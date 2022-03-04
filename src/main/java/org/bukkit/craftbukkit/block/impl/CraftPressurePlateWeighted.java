@@ -9,7 +9,7 @@ public final class CraftPressurePlateWeighted extends org.bukkit.craftbukkit.blo
         super();
     }
 
-    public CraftPressurePlateWeighted(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPressurePlateWeighted(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

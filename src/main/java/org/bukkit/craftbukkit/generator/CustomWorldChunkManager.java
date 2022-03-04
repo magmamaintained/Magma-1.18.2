@@ -5,23 +5,21 @@ import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.Holder;
-import net.minecraft.core.IRegistry;
-import net.minecraft.world.level.biome.BiomeBase;
 import net.minecraft.world.level.biome.Climate;
-import net.minecraft.world.level.biome.WorldChunkManager;
+import net.minecraft.world.level.biome.BiomeSource;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.WorldInfo;
 
-public class CustomWorldChunkManager extends WorldChunkManager {
+public class CustomWorldChunkManager extends BiomeSource {
 
     private final WorldInfo worldInfo;
     private final BiomeProvider biomeProvider;
-    private final IRegistry<BiomeBase> registry;
+    private final net.minecraft.core.Registry<net.minecraft.world.level.biome.Biome> registry;
 
-    private static List<Holder<BiomeBase>> biomeListToBiomeBaseList(List<Biome> biomes, IRegistry<BiomeBase> registry) {
-        List<Holder<BiomeBase>> biomeBases = new ArrayList<>();
+    private static List<Holder<net.minecraft.world.level.biome.Biome>> biomeListToBiomeBaseList(List<Biome> biomes, net.minecraft.core.Registry<net.minecraft.world.level.biome.Biome> registry) {
+        List<Holder<net.minecraft.world.level.biome.Biome>> biomeBases = new ArrayList<>();
 
         for (Biome biome : biomes) {
             Preconditions.checkArgument(biome != Biome.CUSTOM, "Cannot use the biome %s", biome);
@@ -31,7 +29,7 @@ public class CustomWorldChunkManager extends WorldChunkManager {
         return biomeBases;
     }
 
-    public CustomWorldChunkManager(WorldInfo worldInfo, BiomeProvider biomeProvider, IRegistry<BiomeBase> registry) {
+    public CustomWorldChunkManager(WorldInfo worldInfo, BiomeProvider biomeProvider, net.minecraft.core.Registry<net.minecraft.world.level.biome.Biome> registry) {
         super(biomeListToBiomeBaseList(biomeProvider.getBiomes(worldInfo), registry));
 
         this.worldInfo = worldInfo;
@@ -40,18 +38,18 @@ public class CustomWorldChunkManager extends WorldChunkManager {
     }
 
     @Override
-    protected Codec<? extends WorldChunkManager> codec() {
+    protected Codec<? extends BiomeSource> codec() {
         throw new UnsupportedOperationException("Cannot serialize CustomWorldChunkManager");
     }
 
     @Override
-    public WorldChunkManager withSeed(long l) {
+    public BiomeSource withSeed(long l) {
         // TODO check method further
         throw new UnsupportedOperationException("Cannot copy CustomWorldChunkManager");
     }
 
     @Override
-    public Holder<BiomeBase> getNoiseBiome(int x, int y, int z, Climate.Sampler sampler) {
+    public Holder<net.minecraft.world.level.biome.Biome> getNoiseBiome(int x, int y, int z, Climate.Sampler sampler) {
         Biome biome = biomeProvider.getBiome(worldInfo, x << 2, y << 2, z << 2);
         Preconditions.checkArgument(biome != Biome.CUSTOM, "Cannot set the biome to %s", biome);
 

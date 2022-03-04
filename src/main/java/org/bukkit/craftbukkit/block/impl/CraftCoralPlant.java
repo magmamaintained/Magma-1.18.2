@@ -9,7 +9,7 @@ public final class CraftCoralPlant extends org.bukkit.craftbukkit.block.data.Cra
         super();
     }
 
-    public CraftCoralPlant(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCoralPlant(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftPoweredRail extends org.bukkit.craftbukkit.block.data.Cr
         super();
     }
 
-    public CraftPoweredRail(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPoweredRail(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -3,8 +3,8 @@ package org.bukkit.craftbukkit.block;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.EnumColor;
 import net.minecraft.world.level.block.BlockBannerAbstract;
 import net.minecraft.world.level.block.entity.TileEntityBanner;
@@ -32,7 +32,7 @@ public class CraftBanner extends CraftBlockEntityState<TileEntityBanner> impleme
 
         if (banner.itemPatterns != null) {
             for (int i = 0; i < banner.itemPatterns.size(); i++) {
-                NBTTagCompound p = (NBTTagCompound) banner.itemPatterns.get(i);
+                CompoundTag p = (CompoundTag) banner.itemPatterns.get(i);
                 patterns.add(new Pattern(DyeColor.getByWoolData((byte) p.getInt("Color")), PatternType.getByIdentifier(p.getString("Pattern"))));
             }
         }
@@ -90,10 +90,10 @@ public class CraftBanner extends CraftBlockEntityState<TileEntityBanner> impleme
 
         banner.baseColor = EnumColor.byId(base.getWoolData());
 
-        NBTTagList newPatterns = new NBTTagList();
+        ListTag newPatterns = new ListTag();
 
         for (Pattern p : patterns) {
-            NBTTagCompound compound = new NBTTagCompound();
+            CompoundTag compound = new CompoundTag();
             compound.putInt("Color", p.getColor().getWoolData());
             compound.putString("Pattern", p.getPattern().getIdentifier());
             newPatterns.add(compound);

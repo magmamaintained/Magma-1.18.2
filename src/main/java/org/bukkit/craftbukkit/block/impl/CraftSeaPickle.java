@@ -9,7 +9,7 @@ public final class CraftSeaPickle extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftSeaPickle(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSeaPickle(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

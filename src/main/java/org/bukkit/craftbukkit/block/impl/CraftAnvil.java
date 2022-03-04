@@ -9,7 +9,7 @@ public final class CraftAnvil extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftAnvil(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftAnvil(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

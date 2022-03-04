@@ -9,7 +9,7 @@ public final class CraftPiston extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftPiston(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPiston(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

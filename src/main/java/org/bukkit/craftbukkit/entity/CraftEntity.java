@@ -7,13 +7,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.core.BlockPosition;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.chat.IChatBaseComponent;
-import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.PlayerChunkMap;
-import net.minecraft.server.level.WorldServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityAreaEffectCloud;
@@ -121,7 +121,7 @@ import net.minecraft.world.entity.monster.piglin.EntityPiglinBrute;
 import net.minecraft.world.entity.npc.EntityVillager;
 import net.minecraft.world.entity.npc.EntityVillagerAbstract;
 import net.minecraft.world.entity.npc.EntityVillagerTrader;
-import net.minecraft.world.entity.player.EntityHuman;
+import net.minecraft.world.entity.player.net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.EntityArrow;
 import net.minecraft.world.entity.projectile.EntityDragonFireball;
 import net.minecraft.world.entity.projectile.EntityEgg;
@@ -146,7 +146,7 @@ import net.minecraft.world.entity.projectile.EntityWitherSkull;
 import net.minecraft.world.entity.vehicle.EntityBoat;
 import net.minecraft.world.entity.vehicle.EntityMinecartAbstract;
 import net.minecraft.world.entity.vehicle.EntityMinecartChest;
-import net.minecraft.world.entity.vehicle.EntityMinecartCommandBlock;
+import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
 import net.minecraft.world.entity.vehicle.EntityMinecartFurnace;
 import net.minecraft.world.entity.vehicle.EntityMinecartHopper;
 import net.minecraft.world.entity.vehicle.EntityMinecartMobSpawner;
@@ -203,9 +203,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         // CHECKSTYLE:OFF
         if (entity instanceof EntityLiving) {
             // Players
-            if (entity instanceof EntityHuman) {
-                if (entity instanceof EntityPlayer) { return new CraftPlayer(server, (EntityPlayer) entity); }
-                else { return new CraftHumanEntity(server, (EntityHuman) entity); }
+            if (entity instanceof net.minecraft.world.entity.player.Player) {
+                if (entity instanceof ServerPlayer) { return new CraftPlayer(server, (ServerPlayer) entity); }
+                else { return new CraftHumanEntity(server, (net.minecraft.world.entity.player.Player) entity); }
             }
             // Water Animals
             else if (entity instanceof EntityWaterAnimal) {
@@ -386,7 +386,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             else if (entity instanceof EntityMinecartHopper) { return new CraftMinecartHopper(server, (EntityMinecartHopper) entity); }
             else if (entity instanceof EntityMinecartMobSpawner) { return new CraftMinecartMobSpawner(server, (EntityMinecartMobSpawner) entity); }
             else if (entity instanceof EntityMinecartRideable) { return new CraftMinecartRideable(server, (EntityMinecartRideable) entity); }
-            else if (entity instanceof EntityMinecartCommandBlock) { return new CraftMinecartCommand(server, (EntityMinecartCommandBlock) entity); }
+            else if (entity instanceof MinecartCommandBlock) { return new CraftMinecartCommand(server, (MinecartCommandBlock) entity); }
         } else if (entity instanceof EntityHanging) {
             if (entity instanceof EntityPainting) { return new CraftPainting(server, (EntityPainting) entity); }
             else if (entity instanceof EntityItemFrame) {
@@ -510,7 +510,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         if (!location.getWorld().equals(getWorld())) {
             // Prevent teleportation to an other world during world generation
             Preconditions.checkState(!entity.generation, "Cannot teleport entity to an other world during world generation");
-            entity.teleportTo(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getX(), location.getY(), location.getZ()));
+            entity.teleportTo(((CraftWorld) location.getWorld()).getHandle(), new BlockPos(location.getX(), location.getY(), location.getZ()));
             return true;
         }
 
@@ -828,7 +828,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public String getCustomName() {
-        IChatBaseComponent name = getHandle().getCustomName();
+        Component name = getHandle().getCustomName();
 
         if (name == null) {
             return null;
@@ -1028,21 +1028,21 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return CraftSpawnCategory.toBukkit(getHandle().getType().getCategory());
     }
 
-    public void storeBukkitValues(NBTTagCompound c) {
+    public void storeBukkitValues(CompoundTag c) {
         if (!this.persistentDataContainer.isEmpty()) {
             c.put("BukkitValues", this.persistentDataContainer.toTagCompound());
         }
     }
 
-    public void readBukkitValues(NBTTagCompound c) {
-        NBTBase base = c.get("BukkitValues");
-        if (base instanceof NBTTagCompound) {
-            this.persistentDataContainer.putAll((NBTTagCompound) base);
+    public void readBukkitValues(CompoundTag c) {
+        Tag base = c.get("BukkitValues");
+        if (base instanceof CompoundTag) {
+            this.persistentDataContainer.putAll((CompoundTag) base);
         }
     }
 
-    protected NBTTagCompound save() {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
+    protected CompoundTag save() {
+        CompoundTag nbttagcompound = new CompoundTag();
 
         nbttagcompound.putString("id", getHandle().getEncodeId());
         getHandle().saveWithoutId(nbttagcompound);
@@ -1056,7 +1056,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             return;
         }
 
-        WorldServer world = ((CraftWorld) getWorld()).getHandle();
+        ServerLevel world = ((CraftWorld) getWorld()).getHandle();
         PlayerChunkMap.EntityTracker entityTracker = world.getChunkSource().chunkMap.entityMap.get(getEntityId());
 
         if (entityTracker == null) {

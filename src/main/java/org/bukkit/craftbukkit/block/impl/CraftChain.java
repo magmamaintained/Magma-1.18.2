@@ -9,7 +9,7 @@ public final class CraftChain extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftChain(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftChain(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftDaylightDetector extends org.bukkit.craftbukkit.block.da
         super();
     }
 
-    public CraftDaylightDetector(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftDaylightDetector(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

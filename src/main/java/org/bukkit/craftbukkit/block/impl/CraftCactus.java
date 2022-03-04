@@ -9,7 +9,7 @@ public final class CraftCactus extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftCactus(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCactus(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

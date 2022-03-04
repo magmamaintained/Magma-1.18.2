@@ -9,7 +9,7 @@ public final class CraftStructure extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftStructure(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftStructure(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

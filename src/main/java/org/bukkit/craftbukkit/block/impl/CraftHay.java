@@ -9,7 +9,7 @@ public final class CraftHay extends org.bukkit.craftbukkit.block.data.CraftBlock
         super();
     }
 
-    public CraftHay(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftHay(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

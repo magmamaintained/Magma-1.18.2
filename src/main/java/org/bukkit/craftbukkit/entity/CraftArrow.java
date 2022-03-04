@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.core.BlockPosition;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.projectile.EntityArrow;
 import org.apache.commons.lang.Validate;
 import org.bukkit.block.Block;
@@ -88,7 +88,7 @@ public class CraftArrow extends AbstractProjectile implements AbstractArrow {
             return null;
         }
 
-        BlockPosition pos = getHandle().blockPosition();
+        BlockPos pos = getHandle().blockPosition();
         return getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
     }
 

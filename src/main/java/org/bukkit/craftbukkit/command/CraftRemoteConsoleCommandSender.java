@@ -1,21 +1,21 @@
 package org.bukkit.craftbukkit.command;
 
-import net.minecraft.SystemUtils;
-import net.minecraft.network.chat.ChatComponentText;
-import net.minecraft.server.rcon.RemoteControlCommandListener;
+import net.minecraft.Util;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.rcon.RconConsoleSource;
 import org.bukkit.command.RemoteConsoleCommandSender;
 
 public class CraftRemoteConsoleCommandSender extends ServerCommandSender implements RemoteConsoleCommandSender {
 
-    private final RemoteControlCommandListener listener;
+    private final RconConsoleSource listener;
 
-    public CraftRemoteConsoleCommandSender(RemoteControlCommandListener listener) {
+    public CraftRemoteConsoleCommandSender(RconConsoleSource listener) {
         this.listener = listener;
     }
 
     @Override
     public void sendMessage(String message) {
-        listener.sendMessage(new ChatComponentText(message + "\n"), SystemUtils.NIL_UUID); // Send a newline after each message, to preserve formatting.
+        listener.sendMessage(new TextComponent(message + "\n"), Util.NIL_UUID); // Send a newline after each message, to preserve formatting.
     }
 
     @Override

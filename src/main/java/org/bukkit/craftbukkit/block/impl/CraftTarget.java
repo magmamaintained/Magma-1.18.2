@@ -9,7 +9,7 @@ public final class CraftTarget extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftTarget(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftTarget(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

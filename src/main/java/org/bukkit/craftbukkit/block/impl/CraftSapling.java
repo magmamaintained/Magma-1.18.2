@@ -9,7 +9,7 @@ public final class CraftSapling extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftSapling(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSapling(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

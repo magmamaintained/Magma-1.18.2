@@ -9,7 +9,7 @@ public final class CraftBubbleColumn extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftBubbleColumn(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBubbleColumn(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

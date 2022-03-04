@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.core.BlockPosition;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.entity.projectile.EntityFishingHook;
 import org.apache.commons.lang.Validate;
@@ -71,7 +71,7 @@ public class CraftFishHook extends CraftProjectile implements FishHook {
         EntityFishingHook hook = getHandle();
 
         if (this.biteChance == -1) {
-            if (hook.level.isRainingAt(new BlockPosition(MathHelper.floor(hook.getX()), MathHelper.floor(hook.getY()) + 1, MathHelper.floor(hook.getZ())))) {
+            if (hook.level.isRainingAt(new BlockPos(MathHelper.floor(hook.getX()), MathHelper.floor(hook.getY()) + 1, MathHelper.floor(hook.getZ())))) {
                 return 1 / 300.0;
             }
             return 1 / 500.0;

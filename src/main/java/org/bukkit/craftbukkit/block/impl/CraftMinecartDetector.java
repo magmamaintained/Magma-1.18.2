@@ -9,7 +9,7 @@ public final class CraftMinecartDetector extends org.bukkit.craftbukkit.block.da
         super();
     }
 
-    public CraftMinecartDetector(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftMinecartDetector(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

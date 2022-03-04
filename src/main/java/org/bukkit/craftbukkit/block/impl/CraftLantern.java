@@ -9,7 +9,7 @@ public final class CraftLantern extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftLantern(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLantern(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

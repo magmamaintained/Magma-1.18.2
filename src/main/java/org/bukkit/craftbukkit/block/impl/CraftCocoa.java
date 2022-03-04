@@ -9,7 +9,7 @@ public final class CraftCocoa extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftCocoa(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCocoa(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

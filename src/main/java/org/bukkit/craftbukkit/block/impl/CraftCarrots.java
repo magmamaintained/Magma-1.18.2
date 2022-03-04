@@ -9,7 +9,7 @@ public final class CraftCarrots extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftCarrots(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCarrots(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftLeaves extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftLeaves(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLeaves(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

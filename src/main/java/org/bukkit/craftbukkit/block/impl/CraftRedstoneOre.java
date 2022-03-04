@@ -9,7 +9,7 @@ public final class CraftRedstoneOre extends org.bukkit.craftbukkit.block.data.Cr
         super();
     }
 
-    public CraftRedstoneOre(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRedstoneOre(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

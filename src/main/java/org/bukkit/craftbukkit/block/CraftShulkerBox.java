@@ -1,10 +1,10 @@
 package org.bukkit.craftbukkit.block;
 
 import net.minecraft.sounds.SoundCategory;
-import net.minecraft.sounds.SoundEffects;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.EnumColor;
 import net.minecraft.world.level.block.BlockShulkerBox;
-import net.minecraft.world.level.block.entity.TileEntityShulkerBox;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.bukkit.DyeColor;
 import org.bukkit.World;
 import org.bukkit.block.ShulkerBox;
@@ -12,9 +12,9 @@ import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.inventory.Inventory;
 
-public class CraftShulkerBox extends CraftLootable<TileEntityShulkerBox> implements ShulkerBox {
+public class CraftShulkerBox extends CraftLootable<ShulkerBoxBlockEntity> implements ShulkerBox {
 
-    public CraftShulkerBox(World world, TileEntityShulkerBox tileEntity) {
+    public CraftShulkerBox(World world, ShulkerBoxBlockEntity tileEntity) {
         super(world, tileEntity);
     }
 
@@ -42,10 +42,10 @@ public class CraftShulkerBox extends CraftLootable<TileEntityShulkerBox> impleme
     @Override
     public void open() {
         requirePlaced();
-        if (!getTileEntity().opened && getWorldHandle() instanceof net.minecraft.world.level.World) {
-            net.minecraft.world.level.World world = getTileEntity().getLevel();
+        if (!getTileEntity().opened && getWorldHandle() instanceof net.minecraft.world.level.Level) {
+            net.minecraft.world.level.Level world = getTileEntity().getLevel();
             world.blockEvent(getPosition(), getTileEntity().getBlockState().getBlock(), 1, 1);
-            world.playSound(null, getPosition(), SoundEffects.SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPosition(), SoundEvents.SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
         }
         getTileEntity().opened = true;
     }
@@ -53,10 +53,10 @@ public class CraftShulkerBox extends CraftLootable<TileEntityShulkerBox> impleme
     @Override
     public void close() {
         requirePlaced();
-        if (getTileEntity().opened && getWorldHandle() instanceof net.minecraft.world.level.World) {
-            net.minecraft.world.level.World world = getTileEntity().getLevel();
+        if (getTileEntity().opened && getWorldHandle() instanceof net.minecraft.world.level.Level) {
+            net.minecraft.world.level.Level world = getTileEntity().getLevel();
             world.blockEvent(getPosition(), getTileEntity().getBlockState().getBlock(), 1, 0);
-            world.playSound(null, getPosition(), SoundEffects.SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPosition(), SoundEvents.SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
         }
         getTileEntity().opened = false;
     }

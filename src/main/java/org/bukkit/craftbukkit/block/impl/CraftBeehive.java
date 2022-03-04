@@ -9,7 +9,7 @@ public final class CraftBeehive extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftBeehive(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBeehive(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

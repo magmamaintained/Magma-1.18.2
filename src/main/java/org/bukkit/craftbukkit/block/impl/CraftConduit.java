@@ -9,7 +9,7 @@ public final class CraftConduit extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftConduit(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftConduit(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

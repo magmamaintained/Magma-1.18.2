@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BlockJukeBox;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TileEntityJukeBox;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -83,7 +83,7 @@ public class CraftJukebox extends CraftBlockEntityState<TileEntityJukeBox> imple
     public boolean eject() {
         ensureNoWorldGeneration();
 
-        TileEntity tileEntity = this.getTileEntityFromWorld();
+        BlockEntity tileEntity = this.getTileEntityFromWorld();
         if (!(tileEntity instanceof TileEntityJukeBox)) return false;
 
         TileEntityJukeBox jukebox = (TileEntityJukeBox) tileEntity;

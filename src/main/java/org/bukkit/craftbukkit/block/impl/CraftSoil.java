@@ -9,7 +9,7 @@ public final class CraftSoil extends org.bukkit.craftbukkit.block.data.CraftBloc
         super();
     }
 
-    public CraftSoil(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSoil(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

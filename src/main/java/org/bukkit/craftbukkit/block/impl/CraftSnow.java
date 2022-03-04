@@ -9,7 +9,7 @@ public final class CraftSnow extends org.bukkit.craftbukkit.block.data.CraftBloc
         super();
     }
 
-    public CraftSnow(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSnow(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

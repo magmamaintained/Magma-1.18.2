@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import net.minecraft.world.ChestLock;
 import net.minecraft.world.effect.MobEffectList;
-import net.minecraft.world.entity.player.EntityHuman;
-import net.minecraft.world.level.block.entity.TileEntity;
+import net.minecraft.world.entity.player.net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TileEntityBeacon;
 import org.bukkit.World;
 import org.bukkit.block.Beacon;
@@ -25,14 +25,14 @@ public class CraftBeacon extends CraftBlockEntityState<TileEntityBeacon> impleme
     public Collection<LivingEntity> getEntitiesInRange() {
         ensureNoWorldGeneration();
 
-        TileEntity tileEntity = this.getTileEntityFromWorld();
+        BlockEntity tileEntity = this.getTileEntityFromWorld();
         if (tileEntity instanceof TileEntityBeacon) {
             TileEntityBeacon beacon = (TileEntityBeacon) tileEntity;
 
-            Collection<EntityHuman> nms = TileEntityBeacon.getHumansInRange(beacon.getLevel(), beacon.getBlockPos(), beacon.levels);
+            Collection<net.minecraft.world.entity.player.Player> nms = TileEntityBeacon.getHumansInRange(beacon.getLevel(), beacon.getBlockPos(), beacon.levels);
             Collection<LivingEntity> bukkit = new ArrayList<LivingEntity>(nms.size());
 
-            for (EntityHuman human : nms) {
+            for (net.minecraft.world.entity.player.Player human : nms) {
                 bukkit.add(human.getBukkitEntity());
             }
 

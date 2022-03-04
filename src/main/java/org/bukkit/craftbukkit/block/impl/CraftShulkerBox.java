@@ -9,7 +9,7 @@ public final class CraftShulkerBox extends org.bukkit.craftbukkit.block.data.Cra
         super();
     }
 
-    public CraftShulkerBox(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftShulkerBox(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

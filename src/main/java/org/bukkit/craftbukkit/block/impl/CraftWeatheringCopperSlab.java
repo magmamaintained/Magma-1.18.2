@@ -9,7 +9,7 @@ public final class CraftWeatheringCopperSlab extends org.bukkit.craftbukkit.bloc
         super();
     }
 
-    public CraftWeatheringCopperSlab(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftWeatheringCopperSlab(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

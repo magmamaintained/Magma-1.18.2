@@ -9,7 +9,7 @@ public final class CraftLoom extends org.bukkit.craftbukkit.block.data.CraftBloc
         super();
     }
 
-    public CraftLoom(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLoom(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

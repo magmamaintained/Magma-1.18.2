@@ -1,9 +1,9 @@
 package org.bukkit.craftbukkit.block;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.network.chat.ChatComponentText;
-import net.minecraft.network.chat.IChatBaseComponent;
-import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.EnumColor;
 import net.minecraft.world.level.block.entity.TileEntitySign;
 import org.bukkit.DyeColor;
@@ -102,21 +102,21 @@ public class CraftSign extends CraftBlockEntityState<TileEntitySign> implements 
         ((CraftPlayer) player).getHandle().openTextEdit(handle);
     }
 
-    public static IChatBaseComponent[] sanitizeLines(String[] lines) {
-        IChatBaseComponent[] components = new IChatBaseComponent[4];
+    public static Component[] sanitizeLines(String[] lines) {
+        Component[] components = new Component[4];
 
         for (int i = 0; i < 4; i++) {
             if (i < lines.length && lines[i] != null) {
                 components[i] = CraftChatMessage.fromString(lines[i])[0];
             } else {
-                components[i] = new ChatComponentText("");
+                components[i] = new TextComponent("");
             }
         }
 
         return components;
     }
 
-    public static String[] revertComponents(IChatBaseComponent[] components) {
+    public static String[] revertComponents(Component[] components) {
         String[] lines = new String[components.length];
         for (int i = 0; i < lines.length; i++) {
             lines[i] = revertComponent(components[i]);
@@ -124,7 +124,7 @@ public class CraftSign extends CraftBlockEntityState<TileEntitySign> implements 
         return lines;
     }
 
-    private static String revertComponent(IChatBaseComponent component) {
+    private static String revertComponent(Component component) {
         return CraftChatMessage.fromComponent(component);
     }
 }

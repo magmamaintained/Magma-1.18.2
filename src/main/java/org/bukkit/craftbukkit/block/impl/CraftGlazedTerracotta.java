@@ -9,7 +9,7 @@ public final class CraftGlazedTerracotta extends org.bukkit.craftbukkit.block.da
         super();
     }
 
-    public CraftGlazedTerracotta(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftGlazedTerracotta(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

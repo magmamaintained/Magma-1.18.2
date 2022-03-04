@@ -9,7 +9,7 @@ public final class CraftBannerWall extends org.bukkit.craftbukkit.block.data.Cra
         super();
     }
 
-    public CraftBannerWall(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBannerWall(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

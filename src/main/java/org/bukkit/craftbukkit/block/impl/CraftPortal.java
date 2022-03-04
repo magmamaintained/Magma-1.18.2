@@ -9,7 +9,7 @@ public final class CraftPortal extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftPortal(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPortal(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

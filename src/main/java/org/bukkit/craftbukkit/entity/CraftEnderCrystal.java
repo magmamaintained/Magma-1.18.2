@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.core.BlockPosition;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.boss.enderdragon.EntityEnderCrystal;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.CraftServer;
@@ -24,18 +24,18 @@ public class CraftEnderCrystal extends CraftEntity implements EnderCrystal {
 
     @Override
     public Location getBeamTarget() {
-        BlockPosition pos = getHandle().getBeamTarget();
+        BlockPos pos = getHandle().getBeamTarget();
         return pos == null ? null : new Location(getWorld(), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
     public void setBeamTarget(Location location) {
         if (location == null) {
-            getHandle().setBeamTarget((BlockPosition) null);
+            getHandle().setBeamTarget((BlockPos) null);
         } else if (location.getWorld() != getWorld()) {
             throw new IllegalArgumentException("Cannot set beam target location to different world");
         } else {
-            getHandle().setBeamTarget(new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+            getHandle().setBeamTarget(new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
         }
     }
 

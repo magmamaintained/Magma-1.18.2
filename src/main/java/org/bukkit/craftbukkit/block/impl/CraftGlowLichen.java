@@ -9,7 +9,7 @@ public final class CraftGlowLichen extends org.bukkit.craftbukkit.block.data.Cra
         super();
     }
 
-    public CraftGlowLichen(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftGlowLichen(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

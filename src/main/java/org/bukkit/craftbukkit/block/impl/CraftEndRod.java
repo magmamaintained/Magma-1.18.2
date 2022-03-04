@@ -9,7 +9,7 @@ public final class CraftEndRod extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftEndRod(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftEndRod(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

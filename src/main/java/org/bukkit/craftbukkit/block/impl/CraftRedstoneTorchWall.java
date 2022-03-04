@@ -9,7 +9,7 @@ public final class CraftRedstoneTorchWall extends org.bukkit.craftbukkit.block.d
         super();
     }
 
-    public CraftRedstoneTorchWall(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRedstoneTorchWall(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

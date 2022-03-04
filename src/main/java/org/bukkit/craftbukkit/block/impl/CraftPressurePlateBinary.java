@@ -9,7 +9,7 @@ public final class CraftPressurePlateBinary extends org.bukkit.craftbukkit.block
         super();
     }
 
-    public CraftPressurePlateBinary(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPressurePlateBinary(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

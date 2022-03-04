@@ -1,12 +1,12 @@
 package org.bukkit.craftbukkit.inventory;
 
-import net.minecraft.world.IInventory;
+import net.minecraft.world.Container;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.LlamaInventory;
 
 public class CraftInventoryLlama extends CraftInventoryAbstractHorse implements LlamaInventory {
 
-    public CraftInventoryLlama(IInventory inventory) {
+    public CraftInventoryLlama(Container inventory) {
         super(inventory);
     }
 

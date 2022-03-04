@@ -352,7 +352,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
     /**
      * This helper class represents the different NBT Tags.
      * <p>
-     * These should match NBTBase#getTypeId
+     * These should match Tag#getTypeId
      */
     public static class NBT {
 

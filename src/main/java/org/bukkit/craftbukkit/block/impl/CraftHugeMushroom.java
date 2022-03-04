@@ -9,7 +9,7 @@ public final class CraftHugeMushroom extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftHugeMushroom(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftHugeMushroom(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 
