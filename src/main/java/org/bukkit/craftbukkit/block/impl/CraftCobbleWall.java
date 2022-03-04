@@ -15,9 +15,9 @@ public final class CraftCobbleWall extends org.bukkit.craftbukkit.block.data.Cra
 
     // org.bukkit.craftbukkit.block.data.type.CraftWall
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateBoolean UP = getBoolean(net.minecraft.world.level.block.BlockCobbleWall.class, "up");
-    private static final net.minecraft.world.level.block.state.properties.BlockStateEnum<?>[] HEIGHTS = new net.minecraft.world.level.block.state.properties.BlockStateEnum[]{
-        getEnum(net.minecraft.world.level.block.BlockCobbleWall.class, "north"), getEnum(net.minecraft.world.level.block.BlockCobbleWall.class, "east"), getEnum(net.minecraft.world.level.block.BlockCobbleWall.class, "south"), getEnum(net.minecraft.world.level.block.BlockCobbleWall.class, "west")
+    private static final net.minecraft.world.level.block.state.properties.BooleanProperty UP = getBoolean(net.minecraft.world.level.block.WallBlock.class, "up");
+    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?>[] HEIGHTS = new net.minecraft.world.level.block.state.properties.EnumProperty[]{
+        getEnum(net.minecraft.world.level.block.WallBlock.class, "north"), getEnum(net.minecraft.world.level.block.WallBlock.class, "east"), getEnum(net.minecraft.world.level.block.WallBlock.class, "south"), getEnum(net.minecraft.world.level.block.WallBlock.class, "west")
     };
 
     @Override
@@ -42,7 +42,7 @@ public final class CraftCobbleWall extends org.bukkit.craftbukkit.block.data.Cra
 
     // org.bukkit.craftbukkit.block.data.CraftWaterlogged
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateBoolean WATERLOGGED = getBoolean(net.minecraft.world.level.block.BlockCobbleWall.class, "waterlogged");
+    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.WallBlock.class, "waterlogged");
 
     @Override
     public boolean isWaterlogged() {

@@ -51,7 +51,7 @@ public class CraftBlockProjectileSource implements BlockProjectileSource {
     @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> projectile, Vector velocity) {
         Validate.isTrue(getBlock().getType() == Material.DISPENSER, "Block is no longer dispenser");
-        // Copied from BlockDispenser.dispense()
+        // Copied from DispenserBlock.dispense()
         BlockSourceImpl isourceblock = new BlockSourceImpl((ServerLevel) dispenserBlock.getLevel(), dispenserBlock.getBlockPos());
         // Copied from DispenseBehaviorProjectile
         Position iposition = DispenserBlock.getDispensePosition(isourceblock);

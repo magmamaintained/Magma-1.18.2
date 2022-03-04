@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.EnumDirection;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.features.TreeFeatures;
@@ -44,13 +44,13 @@ import net.minecraft.world.entity.vehicle.EntityMinecartRideable;
 import net.minecraft.world.entity.vehicle.EntityMinecartTNT;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.BlockChorusFlower;
+import net.minecraft.world.level.block.ChorusFlowerBlock;
 import net.minecraft.world.level.block.BlockDiodeAbstract;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.WorldGenFeatureConfigured;
-import net.minecraft.world.phys.AxisAlignedBB;
+import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.RegionAccessor;
@@ -853,7 +853,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                     BlockState nmsBlock = getHandle().getBlockState(pos.relative(CraftBlock.blockFaceToNotch(dir)));
                     if (nmsBlock.getMaterial().isSolid() || BlockDiodeAbstract.isDiode(nmsBlock)) {
                         boolean taken = false;
-                        AxisAlignedBB bb = (ItemFrame.class.isAssignableFrom(clazz))
+                        AABB bb = (ItemFrame.class.isAssignableFrom(clazz))
                                 ? EntityItemFrame.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height)
                                 : EntityHanging.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height);
                         List<net.minecraft.world.entity.Entity> list = (List<net.minecraft.world.entity.Entity>) getHandle().getEntities(null, bb);
@@ -878,7 +878,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                     randomizeData = false; // Don't randomize if no valid face is found, prevents null painting
                 }
 
-                EnumDirection dir = CraftBlock.blockFaceToNotch(face).getOpposite();
+                Direction dir = CraftBlock.blockFaceToNotch(face).getOpposite();
                 if (Painting.class.isAssignableFrom(clazz)) {
                     if (isNormalWorld() && randomizeData) {
                         entity = new EntityPainting(getHandle().getMinecraftWorld(), new BlockPos(x, y, z), dir);

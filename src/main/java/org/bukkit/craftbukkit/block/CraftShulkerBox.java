@@ -2,8 +2,9 @@ package org.bukkit.craftbukkit.block;
 
 import net.minecraft.sounds.SoundCategory;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.EnumColor;
-import net.minecraft.world.level.block.BlockShulkerBox;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import org.bukkit.DyeColor;
 import org.bukkit.World;
@@ -34,7 +35,7 @@ public class CraftShulkerBox extends CraftLootable<ShulkerBoxBlockEntity> implem
 
     @Override
     public DyeColor getColor() {
-        EnumColor color = ((BlockShulkerBox) CraftMagicNumbers.getBlock(this.getType())).color;
+        net.minecraft.world.item.DyeColor color = ((ShulkerBoxBlock) CraftMagicNumbers.getBlock(this.getType())).color;
 
         return (color == null) ? null : DyeColor.getByWoolData((byte) color.getId());
     }
@@ -45,7 +46,7 @@ public class CraftShulkerBox extends CraftLootable<ShulkerBoxBlockEntity> implem
         if (!getTileEntity().opened && getWorldHandle() instanceof net.minecraft.world.level.Level) {
             net.minecraft.world.level.Level world = getTileEntity().getLevel();
             world.blockEvent(getPosition(), getTileEntity().getBlockState().getBlock(), 1, 1);
-            world.playSound(null, getPosition(), SoundEvents.SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPosition(), SoundEvents.SHULKER_BOX_OPEN, SoundSource.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
         }
         getTileEntity().opened = true;
     }
@@ -56,7 +57,7 @@ public class CraftShulkerBox extends CraftLootable<ShulkerBoxBlockEntity> implem
         if (getTileEntity().opened && getWorldHandle() instanceof net.minecraft.world.level.Level) {
             net.minecraft.world.level.Level world = getTileEntity().getLevel();
             world.blockEvent(getPosition(), getTileEntity().getBlockState().getBlock(), 1, 0);
-            world.playSound(null, getPosition(), SoundEvents.SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPosition(), SoundEvents.SHULKER_BOX_OPEN, SoundSource.BLOCKS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
         }
         getTileEntity().opened = false;
     }

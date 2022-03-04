@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import net.minecraft.world.entity.animal.EntityWolf;
-import net.minecraft.world.item.EnumColor;
+import net.minecraft.world.item.net.minecraft.world.item.DyeColor;
 import org.bukkit.DyeColor;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
@@ -43,6 +43,6 @@ public class CraftWolf extends CraftTameableAnimal implements Wolf {
 
     @Override
     public void setCollarColor(DyeColor color) {
-        getHandle().setCollarColor(EnumColor.byId(color.getWoolData()));
+        getHandle().setCollarColor(net.minecraft.world.item.DyeColor.byId(color.getWoolData()));
     }
 }

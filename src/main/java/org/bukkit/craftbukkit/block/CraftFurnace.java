@@ -3,7 +3,7 @@ package org.bukkit.craftbukkit.block;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.BlockFurnace;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -43,7 +43,7 @@ public abstract class CraftFurnace<T extends AbstractFurnaceBlockEntity> extends
     public void setBurnTime(short burnTime) {
         this.getSnapshot().litTime = burnTime;
         // SPIGOT-844: Allow lighting and relighting using this API
-        this.data = this.data.setValue(BlockFurnace.LIT, burnTime > 0);
+        this.data = this.data.setValue(AbstractFurnaceBlock.LIT, burnTime > 0);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.block;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.world.level.block.BlockDropper;
+import net.minecraft.world.level.block.DropperBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.DropperBlockEntity;
 import org.bukkit.Material;
@@ -38,7 +38,7 @@ public class CraftDropper extends CraftLootable<DropperBlockEntity> implements D
         Block block = getBlock();
         if (block.getType() == Material.DROPPER) {
             CraftWorld world = (CraftWorld) this.getWorld();
-            BlockDropper drop = (BlockDropper) Blocks.DROPPER;
+            DropperBlock drop = (DropperBlock) Blocks.DROPPER;
 
             drop.dispenseFrom(world.getHandle(), this.getPosition());
         }

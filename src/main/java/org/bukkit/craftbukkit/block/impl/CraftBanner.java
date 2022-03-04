@@ -15,7 +15,7 @@ public final class CraftBanner extends org.bukkit.craftbukkit.block.data.CraftBl
 
     // org.bukkit.craftbukkit.block.data.CraftRotatable
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateInteger ROTATION = getInteger(net.minecraft.world.level.block.BlockBanner.class, "rotation");
+    private static final net.minecraft.world.level.block.state.properties.IntegerProperty ROTATION = getInteger(net.minecraft.world.level.block.BannerBlock.class, "rotation");
 
     @Override
     public org.bukkit.block.BlockFace getRotation() {

@@ -2,15 +2,14 @@ package org.bukkit.craftbukkit.block;
 
 import com.google.common.base.Preconditions;
 import java.util.Optional;
-import net.minecraft.world.entity.net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.block.entity.TileEntityMobSpawner;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 
-public class CraftCreatureSpawner extends CraftBlockEntityState<TileEntityMobSpawner> implements CreatureSpawner {
+public class CraftCreatureSpawner extends CraftBlockEntityState<SpawnerBlockEntity> implements CreatureSpawner {
 
-    public CraftCreatureSpawner(World world, TileEntityMobSpawner tileEntity) {
+    public CraftCreatureSpawner(World world, SpawnerBlockEntity tileEntity) {
         super(world, tileEntity);
     }
 

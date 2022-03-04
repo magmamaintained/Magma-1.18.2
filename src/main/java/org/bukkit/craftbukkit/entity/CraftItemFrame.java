@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.core.EnumDirection;
+import net.minecraft.core.Direction;
 import net.minecraft.network.syncher.DataWatcher;
 import net.minecraft.world.entity.decoration.EntityHanging;
 import net.minecraft.world.entity.decoration.EntityItemFrame;
@@ -23,8 +23,8 @@ public class CraftItemFrame extends CraftHanging implements ItemFrame {
     @Override
     public boolean setFacingDirection(BlockFace face, boolean force) {
         EntityHanging hanging = getHandle();
-        EnumDirection oldDir = hanging.getDirection();
-        EnumDirection newDir = CraftBlock.blockFaceToNotch(face);
+        Direction oldDir = hanging.getDirection();
+        Direction newDir = CraftBlock.blockFaceToNotch(face);
 
         Preconditions.checkArgument(newDir != null, "%s is not a valid facing direction", face);
 
