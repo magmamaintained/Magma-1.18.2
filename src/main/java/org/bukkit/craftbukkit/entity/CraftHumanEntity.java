@@ -14,14 +14,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.Container;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.BedBlock;
@@ -50,18 +48,14 @@ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Villager;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MainHand;
-import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.net.minecraft.world.entity.player.Inventory;
+import org.bukkit.inventory.*;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private CraftInventoryPlayer inventory;
@@ -70,7 +64,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private boolean op;
     private GameMode mode;
 
-    public CraftHumanEntity(final CraftServer server, final Player entity) {
+    public CraftHumanEntity(final CraftServer server, final net.minecraft.world.entity.player.Player entity) {
         super(server, entity);
         mode = server.getDefaultGameMode();
         this.inventory = new CraftInventoryPlayer(entity.getInventory());
@@ -78,7 +72,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     @Override
-    public net.minecraft.world.entity.player.Inventory getInventory() {
+    public PlayerInventory getInventory() {
         return inventory;
     }
 
@@ -134,7 +128,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
         BlockPos blockposition = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         BlockState iblockdata = getHandle().level.getBlockState(blockposition);
-        if (!(iblockdata.getBlock() instanceof BlockBed)) {
+        if (!(iblockdata.getBlock() instanceof BedBlock)) {
             return false;
         }
 
@@ -142,7 +136,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
             return false;
         }
 
-        // From BlockBed
+        // From BedBlock
         iblockdata = (BlockState) iblockdata.setValue(BedBlock.OCCUPIED, true);
         getHandle().level.setBlock(blockposition, iblockdata, 4);
 
@@ -278,7 +272,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
             ((ServerPlayer) getHandle()).connection.handleContainerClose(new ServerboundContainerClosePacket(getHandle().containerMenu.containerId));
         }
         ServerPlayer player = (ServerPlayer) getHandle();
-        Container container;
+        AbstractContainerMenu container;
         if (inventory instanceof CraftInventoryView) {
             container = ((CraftInventoryView) inventory).getHandle();
         } else {
@@ -302,7 +296,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private static void openCustomInventory(Inventory inventory, ServerPlayer player, MenuType<?> windowType) {
         if (player.connection == null) return;
         Preconditions.checkArgument(windowType != null, "Unknown windowType");
-        Container container = new CraftContainer(inventory, player, player.nextContainerCounter());
+        AbstractContainerMenu container = new CraftContainer(inventory, player, player.nextContainerCounterInt());
 
         container = CraftEventFactory.callInventoryOpenEvent(player, container);
         if (container == null) return;
@@ -363,7 +357,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
             ((ServerPlayer) getHandle()).connection.handleContainerClose(new ServerboundContainerClosePacket(getHandle().containerMenu.containerId));
         }
         ServerPlayer player = (ServerPlayer) getHandle();
-        Container container;
+        AbstractContainerMenu container;
         if (inventory instanceof CraftInventoryView) {
             container = ((CraftInventoryView) inventory).getHandle();
         } else {
@@ -473,7 +467,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         Preconditions.checkArgument(material != null, "Material cannot be null");
         Preconditions.checkArgument(material.isItem(), "Material %s is not an item", material);
 
-        ItemCooldown.Info cooldown = getHandle().getCooldowns().cooldowns.get(CraftMagicNumbers.getItem(material));
+        ItemCooldowns.CooldownInstance cooldown = getHandle().getCooldowns().cooldowns.get(CraftMagicNumbers.getItem(material));
         return (cooldown == null) ? 0 : Math.max(0, cooldown.endTime - getHandle().getCooldowns().tickCount);
     }
 
@@ -516,7 +510,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         return ImmutableSet.of();
     }
 
-    private Collection<Recipe<?>> bukkitKeysToMinecraftRecipes(Collection<NamespacedKey> recipeKeys) {
+    private Collection<net.minecraft.world.item.crafting.Recipe<?>> bukkitKeysToMinecraftRecipes(Collection<NamespacedKey> recipeKeys) {
         Collection<net.minecraft.world.item.crafting.Recipe<?>> recipes = new ArrayList<>();
         RecipeManager manager = getHandle().level.getServer().getRecipeManager();
 
@@ -554,7 +548,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     @Override
     public org.bukkit.entity.Entity getShoulderEntityRight() {
         if (!getHandle().getShoulderEntityRight().isEmpty()) {
-            Optional<Entity> shoulder = EntityType.create(getHandle().getShoulderEntityRight(), getHandle().level);
+            Optional<Entity> shoulder = net.minecraft.world.entity.EntityType.create(getHandle().getShoulderEntityRight(), getHandle().level);
 
             return (!shoulder.isPresent()) ? null : shoulder.get().getBukkitEntity();
         }

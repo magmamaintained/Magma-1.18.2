@@ -1,14 +1,12 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.animal.EntityWolf;
-import net.minecraft.world.item.net.minecraft.world.item.DyeColor;
 import org.bukkit.DyeColor;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Wolf;
 
 public class CraftWolf extends CraftTameableAnimal implements Wolf {
-    public CraftWolf(CraftServer server, EntityWolf wolf) {
+    public CraftWolf(CraftServer server, net.minecraft.world.entity.animal.Wolf wolf) {
         super(server, wolf);
     }
 
@@ -27,8 +25,8 @@ public class CraftWolf extends CraftTameableAnimal implements Wolf {
     }
 
     @Override
-    public EntityWolf getHandle() {
-        return (EntityWolf) entity;
+    public net.minecraft.world.entity.animal.Wolf getHandle() {
+        return (net.minecraft.world.entity.animal.Wolf) entity;
     }
 
     @Override

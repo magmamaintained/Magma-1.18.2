@@ -3,8 +3,6 @@ package org.bukkit.craftbukkit.entity;
 import com.google.common.base.Preconditions;
 import java.util.Locale;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.net.minecraft.core.Registry;
-import net.minecraft.world.entity.npc.EntityVillager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,18 +12,16 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
-import org.bukkit.entity.Villager.Profession;
-import org.bukkit.entity.Villager.Type;
 
 public class CraftVillager extends CraftAbstractVillager implements Villager {
 
-    public CraftVillager(CraftServer server, EntityVillager entity) {
+    public CraftVillager(CraftServer server, net.minecraft.world.entity.npc.Villager entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityVillager getHandle() {
-        return (EntityVillager) entity;
+    public net.minecraft.world.entity.npc.Villager getHandle() {
+        return (net.minecraft.world.entity.npc.Villager) entity;
     }
 
     @Override
@@ -100,7 +96,7 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
 
         BlockPos position = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         BlockState iblockdata = getHandle().level.getBlockState(position);
-        if (!(iblockdata.getBlock() instanceof BlockBed)) {
+        if (!(iblockdata.getBlock() instanceof BedBlock)) {
             return false;
         }
 

@@ -1,6 +1,5 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.projectile.EntityThrownTrident;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
@@ -9,13 +8,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class CraftTrident extends CraftArrow implements Trident {
 
-    public CraftTrident(CraftServer server, EntityThrownTrident entity) {
+    public CraftTrident(CraftServer server, net.minecraft.world.entity.projectile.ThrownTrident entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityThrownTrident getHandle() {
-        return (EntityThrownTrident) super.getHandle();
+    public net.minecraft.world.entity.projectile.ThrownTrident getHandle() {
+        return (net.minecraft.world.entity.projectile.ThrownTrident) super.getHandle();
     }
 
     @Override

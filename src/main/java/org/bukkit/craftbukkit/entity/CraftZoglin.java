@@ -1,13 +1,12 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.monster.EntityZoglin;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Zoglin;
 
 public class CraftZoglin extends CraftMonster implements Zoglin {
 
-    public CraftZoglin(CraftServer server, EntityZoglin entity) {
+    public CraftZoglin(CraftServer server, net.minecraft.world.entity.monster.Zoglin entity) {
         super(server, entity);
     }
 
@@ -22,8 +21,8 @@ public class CraftZoglin extends CraftMonster implements Zoglin {
     }
 
     @Override
-    public EntityZoglin getHandle() {
-        return (EntityZoglin) entity;
+    public net.minecraft.world.entity.monster.Zoglin getHandle() {
+        return (net.minecraft.world.entity.monster.Zoglin) entity;
     }
 
     @Override

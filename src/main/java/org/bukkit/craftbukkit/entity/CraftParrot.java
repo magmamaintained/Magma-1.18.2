@@ -1,21 +1,19 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.world.entity.animal.EntityParrot;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Parrot;
-import org.bukkit.entity.Parrot.Variant;
 
 public class CraftParrot extends CraftTameableAnimal implements Parrot {
 
-    public CraftParrot(CraftServer server, EntityParrot parrot) {
+    public CraftParrot(CraftServer server, net.minecraft.world.entity.animal.Parrot parrot) {
         super(server, parrot);
     }
 
     @Override
-    public EntityParrot getHandle() {
-        return (EntityParrot) entity;
+    public net.minecraft.world.entity.animal.Parrot getHandle() {
+        return (net.minecraft.world.entity.animal.Parrot) entity;
     }
 
     @Override

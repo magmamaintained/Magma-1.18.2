@@ -1,18 +1,17 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.EntityFlying;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Flying;
 
 public class CraftFlying extends CraftMob implements Flying {
 
-    public CraftFlying(CraftServer server, EntityFlying entity) {
+    public CraftFlying(CraftServer server, net.minecraft.world.entity.FlyingMob entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityFlying getHandle() {
-        return (EntityFlying) entity;
+    public net.minecraft.world.entity.FlyingMob getHandle() {
+        return (net.minecraft.world.entity.FlyingMob) entity;
     }
 
     @Override

@@ -3,21 +3,18 @@ package org.bukkit.craftbukkit.entity;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import java.util.Set;
-import net.minecraft.world.entity.boss.EntityComplexPart;
-import net.minecraft.world.entity.boss.enderdragon.EntityEnderDragon;
-import net.minecraft.world.entity.boss.enderdragon.phases.DragonControllerPhase;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import org.bukkit.boss.BossBar;
 import org.bukkit.boss.DragonBattle;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.boss.CraftDragonBattle;
 import org.bukkit.entity.ComplexEntityPart;
 import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.EnderDragon.Phase;
 import org.bukkit.entity.EntityType;
 
 public class CraftEnderDragon extends CraftMob implements EnderDragon {
 
-    public CraftEnderDragon(CraftServer server, EntityEnderDragon entity) {
+    public CraftEnderDragon(CraftServer server, net.minecraft.world.entity.boss.enderdragon.EnderDragon entity) {
         super(server, entity);
     }
 
@@ -25,7 +22,7 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon {
     public Set<ComplexEntityPart> getParts() {
         Builder<ComplexEntityPart> builder = ImmutableSet.builder();
 
-        for (EntityComplexPart part : getHandle().subEntities) {
+        for (net.minecraft.world.entity.boss.EnderDragonPart part : getHandle().subEntities) {
             builder.add((ComplexEntityPart) part.getBukkitEntity());
         }
 
@@ -33,8 +30,8 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon {
     }
 
     @Override
-    public EntityEnderDragon getHandle() {
-        return (EntityEnderDragon) entity;
+    public net.minecraft.world.entity.boss.enderdragon.EnderDragon getHandle() {
+        return (net.minecraft.world.entity.boss.enderdragon.EnderDragon) entity;
     }
 
     @Override
@@ -49,7 +46,7 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon {
 
     @Override
     public Phase getPhase() {
-        return Phase.values()[getHandle().getEntityData().get(EntityEnderDragon.DATA_PHASE)];
+        return Phase.values()[getHandle().getEntityData().get(net.minecraft.world.entity.boss.enderdragon.EnderDragon.DATA_PHASE)];
     }
 
     @Override
@@ -57,12 +54,12 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon {
         getHandle().getPhaseManager().setPhase(getMinecraftPhase(phase));
     }
 
-    public static Phase getBukkitPhase(DragonControllerPhase phase) {
+    public static Phase getBukkitPhase(EnderDragonPhase phase) {
         return Phase.values()[phase.getId()];
     }
 
-    public static DragonControllerPhase getMinecraftPhase(Phase phase) {
-        return DragonControllerPhase.getById(phase.ordinal());
+    public static EnderDragonPhase getMinecraftPhase(Phase phase) {
+        return EnderDragonPhase.getById(phase.ordinal());
     }
 
     @Override

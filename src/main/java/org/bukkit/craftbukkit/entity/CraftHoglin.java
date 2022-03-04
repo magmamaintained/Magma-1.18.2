@@ -1,14 +1,13 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.world.entity.monster.hoglin.EntityHoglin;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hoglin;
 
 public class CraftHoglin extends CraftAnimals implements Hoglin {
 
-    public CraftHoglin(CraftServer server, EntityHoglin entity) {
+    public CraftHoglin(CraftServer server, net.minecraft.world.entity.monster.hoglin.Hoglin entity) {
         super(server, entity);
     }
 
@@ -54,8 +53,8 @@ public class CraftHoglin extends CraftAnimals implements Hoglin {
     }
 
     @Override
-    public EntityHoglin getHandle() {
-        return (EntityHoglin) entity;
+    public net.minecraft.world.entity.monster.hoglin.Hoglin getHandle() {
+        return (net.minecraft.world.entity.monster.hoglin.Hoglin) entity;
     }
 
     @Override

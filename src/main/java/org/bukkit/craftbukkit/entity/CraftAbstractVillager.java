@@ -1,8 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
 import java.util.List;
-import net.minecraft.world.entity.npc.EntityVillager;
-import net.minecraft.world.entity.npc.EntityVillagerAbstract;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftMerchant;
@@ -10,17 +8,17 @@ import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.MerchantOffer;
+import org.bukkit.inventory.MerchantRecipe;
 
 public class CraftAbstractVillager extends CraftAgeable implements AbstractVillager, InventoryHolder {
 
-    public CraftAbstractVillager(CraftServer server, EntityVillagerAbstract entity) {
+    public CraftAbstractVillager(CraftServer server, net.minecraft.world.entity.npc.AbstractVillager entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityVillagerAbstract getHandle() {
-        return (EntityVillager) entity;
+    public net.minecraft.world.entity.npc.AbstractVillager getHandle() {
+        return (net.minecraft.world.entity.npc.AbstractVillager) entity;
     }
 
     @Override
@@ -38,22 +36,22 @@ public class CraftAbstractVillager extends CraftAgeable implements AbstractVilla
     }
 
     @Override
-    public List<MerchantOffer> getRecipes() {
+    public List<MerchantRecipe> getRecipes() {
         return getMerchant().getRecipes();
     }
 
     @Override
-    public void setRecipes(List<MerchantOffer> recipes) {
+    public void setRecipes(List<MerchantRecipe> recipes) {
         this.getMerchant().setRecipes(recipes);
     }
 
     @Override
-    public MerchantOffer getRecipe(int i) {
+    public MerchantRecipe getRecipe(int i) {
         return getMerchant().getRecipe(i);
     }
 
     @Override
-    public void setRecipe(int i, MerchantOffer merchantRecipe) {
+    public void setRecipe(int i, MerchantRecipe merchantRecipe) {
         getMerchant().setRecipe(i, merchantRecipe);
     }
 

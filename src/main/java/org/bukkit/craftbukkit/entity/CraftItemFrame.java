@@ -2,9 +2,7 @@ package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.core.Direction;
-import net.minecraft.network.syncher.DataWatcher;
-import net.minecraft.world.entity.decoration.EntityHanging;
-import net.minecraft.world.entity.decoration.EntityItemFrame;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Rotation;
@@ -16,13 +14,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 
 public class CraftItemFrame extends CraftHanging implements ItemFrame {
-    public CraftItemFrame(CraftServer server, EntityItemFrame entity) {
+    public CraftItemFrame(CraftServer server, net.minecraft.world.entity.decoration.ItemFrame entity) {
         super(server, entity);
     }
 
     @Override
     public boolean setFacingDirection(BlockFace face, boolean force) {
-        EntityHanging hanging = getHandle();
+        net.minecraft.world.entity.decoration.HangingEntity hanging = getHandle();
         Direction oldDir = hanging.getDirection();
         Direction newDir = CraftBlock.blockFaceToNotch(face);
 
@@ -44,7 +42,7 @@ public class CraftItemFrame extends CraftHanging implements ItemFrame {
         super.update();
 
         // mark dirty, so that the client gets updated with item and rotation
-        for (DataWatcher.Item<?> dataItem : getHandle().getEntityData().getAll()) {
+        for (SynchedEntityData.DataItem<?> dataItem : getHandle().getEntityData().getAll()) {
             getHandle().getEntityData().markDirty(dataItem.getAccessor());
         }
 
@@ -161,8 +159,8 @@ public class CraftItemFrame extends CraftHanging implements ItemFrame {
     }
 
     @Override
-    public EntityItemFrame getHandle() {
-        return (EntityItemFrame) entity;
+    public net.minecraft.world.entity.decoration.ItemFrame getHandle() {
+        return (net.minecraft.world.entity.decoration.ItemFrame) entity;
     }
 
     @Override

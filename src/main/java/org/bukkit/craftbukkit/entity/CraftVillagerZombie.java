@@ -3,10 +3,8 @@ package org.bukkit.craftbukkit.entity;
 import com.google.common.base.Preconditions;
 import java.util.Locale;
 import java.util.UUID;
-import net.minecraft.core.net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.monster.EntityZombieVillager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,13 +16,13 @@ import org.bukkit.entity.ZombieVillager;
 
 public class CraftVillagerZombie extends CraftZombie implements ZombieVillager {
 
-    public CraftVillagerZombie(CraftServer server, EntityZombieVillager entity) {
+    public CraftVillagerZombie(CraftServer server, net.minecraft.world.entity.monster.ZombieVillager entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityZombieVillager getHandle() {
-        return (EntityZombieVillager) super.getHandle();
+    public net.minecraft.world.entity.monster.ZombieVillager getHandle() {
+        return (net.minecraft.world.entity.monster.ZombieVillager) super.getHandle();
     }
 
     @Override
@@ -75,7 +73,7 @@ public class CraftVillagerZombie extends CraftZombie implements ZombieVillager {
     public void setConversionTime(int time) {
         if (time < 0) {
             getHandle().villagerConversionTime = -1;
-            getHandle().getEntityData().set(EntityZombieVillager.DATA_CONVERTING_ID, false);
+            getHandle().getEntityData().set(net.minecraft.world.entity.monster.ZombieVillager.DATA_CONVERTING_ID, false);
             getHandle().setPersistenceRequired(false); // CraftBukkit - SPIGOT-4684 update persistence
             getHandle().conversionStarter = null;
             getHandle().removeEffect(MobEffects.DAMAGE_BOOST, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.CONVERSION);

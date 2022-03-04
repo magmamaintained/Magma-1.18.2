@@ -1,13 +1,12 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.monster.EntityPigZombie;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.PigZombie;
 
 public class CraftPigZombie extends CraftZombie implements PigZombie {
 
-    public CraftPigZombie(CraftServer server, EntityPigZombie entity) {
+    public CraftPigZombie(CraftServer server, net.minecraft.world.entity.monster.ZombifiedPiglin entity) {
         super(server, entity);
     }
 
@@ -32,8 +31,8 @@ public class CraftPigZombie extends CraftZombie implements PigZombie {
     }
 
     @Override
-    public EntityPigZombie getHandle() {
-        return (EntityPigZombie) entity;
+    public net.minecraft.world.entity.monster.ZombifiedPiglin getHandle() {
+        return (net.minecraft.world.entity.monster.ZombifiedPiglin) entity;
     }
 
     @Override
