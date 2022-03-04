@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import net.minecraft.world.entity.decoration.EntityPainting;
-import net.minecraft.world.entity.decoration.Paintings;
+import net.minecraft.world.entity.decoration.Motive;
 import org.bukkit.Art;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftArt;
@@ -17,7 +17,7 @@ public class CraftPainting extends CraftHanging implements Painting {
 
     @Override
     public Art getArt() {
-        Paintings art = getHandle().motive;
+        Motive art = getHandle().motive;
         return CraftArt.NotchToBukkit(art);
     }
 
@@ -29,7 +29,7 @@ public class CraftPainting extends CraftHanging implements Painting {
     @Override
     public boolean setArt(Art art, boolean force) {
         EntityPainting painting = this.getHandle();
-        Paintings oldArt = painting.motive;
+        Motive oldArt = painting.motive;
         painting.motive = CraftArt.BukkitToNotch(art);
         painting.setDirection(painting.getDirection());
         if (!force && !getHandle().generation && !painting.survives()) {

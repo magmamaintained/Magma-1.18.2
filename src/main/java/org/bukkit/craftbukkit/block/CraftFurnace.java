@@ -2,9 +2,9 @@ package org.bukkit.craftbukkit.block;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import net.minecraft.resources.MinecraftKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.BlockFurnace;
-import net.minecraft.world.level.block.entity.TileEntityFurnace;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Furnace;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.CookingRecipe;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.Recipe;
 
-public abstract class CraftFurnace<T extends TileEntityFurnace> extends CraftContainer<T> implements Furnace {
+public abstract class CraftFurnace<T extends AbstractFurnaceBlockEntity> extends CraftContainer<T> implements Furnace {
 
     public CraftFurnace(World world, T tileEntity) {
         super(world, tileEntity);
@@ -69,7 +69,7 @@ public abstract class CraftFurnace<T extends TileEntityFurnace> extends CraftCon
     @Override
     public Map<CookingRecipe<?>, Integer> getRecipesUsed() {
         ImmutableMap.Builder<CookingRecipe<?>, Integer> recipesUsed = ImmutableMap.builder();
-        for (Map.Entry<MinecraftKey, Integer> entrySet : this.getSnapshot().getRecipesUsed().object2IntEntrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entrySet : this.getSnapshot().getRecipesUsed().object2IntEntrySet()) {
             Recipe recipe = Bukkit.getRecipe(CraftNamespacedKey.fromMinecraft(entrySet.getKey()));
             if (recipe instanceof CookingRecipe<?> cookingRecipe) {
                 recipesUsed.put(cookingRecipe, entrySet.getValue());

@@ -9,7 +9,7 @@ public final class CraftObserver extends org.bukkit.craftbukkit.block.data.Craft
         super();
     }
 
-    public CraftObserver(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftObserver(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

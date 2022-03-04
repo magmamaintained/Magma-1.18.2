@@ -9,7 +9,7 @@ public final class CraftAmethystCluster extends org.bukkit.craftbukkit.block.dat
         super();
     }
 
-    public CraftAmethystCluster(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftAmethystCluster(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

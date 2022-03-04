@@ -9,7 +9,7 @@ public final class CraftStoneButton extends org.bukkit.craftbukkit.block.data.Cr
         super();
     }
 
-    public CraftStoneButton(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftStoneButton(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

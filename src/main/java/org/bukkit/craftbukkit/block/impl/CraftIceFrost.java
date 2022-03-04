@@ -9,7 +9,7 @@ public final class CraftIceFrost extends org.bukkit.craftbukkit.block.data.Craft
         super();
     }
 
-    public CraftIceFrost(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftIceFrost(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

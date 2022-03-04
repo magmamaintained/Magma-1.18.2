@@ -2,7 +2,7 @@ package org.bukkit.craftbukkit.entity;
 
 import net.minecraft.world.entity.vehicle.EntityMinecartAbstract;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.IBlockData;
+import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -76,7 +76,7 @@ public abstract class CraftMinecart extends CraftVehicle implements Minecart {
     @Override
     public void setDisplayBlock(MaterialData material) {
         if (material != null) {
-            IBlockData block = CraftMagicNumbers.getBlock(material);
+            BlockState block = CraftMagicNumbers.getBlock(material);
             this.getHandle().setDisplayBlockState(block);
         } else {
             // Set block to air (default) and set the flag to not have a display block.
@@ -88,7 +88,7 @@ public abstract class CraftMinecart extends CraftVehicle implements Minecart {
     @Override
     public void setDisplayBlockData(BlockData blockData) {
         if (blockData != null) {
-            IBlockData block = ((CraftBlockData) blockData).getState();
+            BlockState block = ((CraftBlockData) blockData).getState();
             this.getHandle().setDisplayBlockState(block);
         } else {
             // Set block to air (default) and set the flag to not have a display block.
@@ -99,13 +99,13 @@ public abstract class CraftMinecart extends CraftVehicle implements Minecart {
 
     @Override
     public MaterialData getDisplayBlock() {
-        IBlockData blockData = getHandle().getDisplayBlockState();
+        BlockState blockData = getHandle().getDisplayBlockState();
         return CraftMagicNumbers.getMaterial(blockData);
     }
 
     @Override
     public BlockData getDisplayBlockData() {
-        IBlockData blockData = getHandle().getDisplayBlockState();
+        BlockState blockData = getHandle().getDisplayBlockState();
         return CraftBlockData.fromData(blockData);
     }
 

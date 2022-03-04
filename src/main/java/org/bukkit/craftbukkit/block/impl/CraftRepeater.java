@@ -9,7 +9,7 @@ public final class CraftRepeater extends org.bukkit.craftbukkit.block.data.Craft
         super();
     }
 
-    public CraftRepeater(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRepeater(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

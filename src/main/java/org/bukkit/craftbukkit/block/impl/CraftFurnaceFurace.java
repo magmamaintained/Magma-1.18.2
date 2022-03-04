@@ -9,7 +9,7 @@ public final class CraftFurnaceFurace extends org.bukkit.craftbukkit.block.data.
         super();
     }
 
-    public CraftFurnaceFurace(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftFurnaceFurace(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

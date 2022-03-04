@@ -1,32 +1,31 @@
 package org.bukkit.craftbukkit;
 
-import net.minecraft.world.entity.EnumItemSlot;
 import org.bukkit.inventory.EquipmentSlot;
 
 public class CraftEquipmentSlot {
 
-    private static final EnumItemSlot[] slots = new EnumItemSlot[EquipmentSlot.values().length];
-    private static final EquipmentSlot[] enums = new EquipmentSlot[EnumItemSlot.values().length];
+    private static final net.minecraft.world.entity.EquipmentSlot[] slots = new net.minecraft.world.entity.EquipmentSlot[EquipmentSlot.values().length];
+    private static final EquipmentSlot[] enums = new EquipmentSlot[net.minecraft.world.entity.EquipmentSlot.values().length];
 
     static {
-        set(EquipmentSlot.HAND, EnumItemSlot.MAINHAND);
-        set(EquipmentSlot.OFF_HAND, EnumItemSlot.OFFHAND);
-        set(EquipmentSlot.FEET, EnumItemSlot.FEET);
-        set(EquipmentSlot.LEGS, EnumItemSlot.LEGS);
-        set(EquipmentSlot.CHEST, EnumItemSlot.CHEST);
-        set(EquipmentSlot.HEAD, EnumItemSlot.HEAD);
+        set(EquipmentSlot.HAND, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+        set(EquipmentSlot.OFF_HAND, net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+        set(EquipmentSlot.FEET, net.minecraft.world.entity.EquipmentSlot.FEET);
+        set(EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.LEGS);
+        set(EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.CHEST);
+        set(EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.HEAD);
     }
 
-    private static void set(EquipmentSlot type, EnumItemSlot value) {
+    private static void set(EquipmentSlot type, net.minecraft.world.entity.EquipmentSlot value) {
         slots[type.ordinal()] = value;
         enums[value.ordinal()] = type;
     }
 
-    public static EquipmentSlot getSlot(EnumItemSlot nms) {
+    public static EquipmentSlot getSlot(net.minecraft.world.entity.EquipmentSlot nms) {
         return enums[nms.ordinal()];
     }
 
-    public static EnumItemSlot getNMS(EquipmentSlot slot) {
+    public static net.minecraft.world.entity.EquipmentSlot getNMS(EquipmentSlot slot) {
         return slots[slot.ordinal()];
     }
 }

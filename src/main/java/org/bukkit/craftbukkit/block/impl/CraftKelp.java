@@ -9,7 +9,7 @@ public final class CraftKelp extends org.bukkit.craftbukkit.block.data.CraftBloc
         super();
     }
 
-    public CraftKelp(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftKelp(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

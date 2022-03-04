@@ -9,7 +9,7 @@ public final class CraftHangingRoots extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftHangingRoots(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftHangingRoots(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

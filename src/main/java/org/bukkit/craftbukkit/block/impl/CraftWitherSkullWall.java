@@ -9,7 +9,7 @@ public final class CraftWitherSkullWall extends org.bukkit.craftbukkit.block.dat
         super();
     }
 
-    public CraftWitherSkullWall(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftWitherSkullWall(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

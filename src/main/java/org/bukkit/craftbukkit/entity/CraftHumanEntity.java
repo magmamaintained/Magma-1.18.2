@@ -20,7 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Container;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -56,7 +56,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.net.minecraft.world.entity.player.Inventory;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -78,7 +78,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     @Override
-    public PlayerInventory getInventory() {
+    public net.minecraft.world.entity.player.Inventory getInventory() {
         return inventory;
     }
 
@@ -278,7 +278,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
             ((ServerPlayer) getHandle()).connection.handleContainerClose(new ServerboundContainerClosePacket(getHandle().containerMenu.containerId));
         }
         ServerPlayer player = (ServerPlayer) getHandle();
-        AbstractContainerMenu container;
+        Container container;
         if (inventory instanceof CraftInventoryView) {
             container = ((CraftInventoryView) inventory).getHandle();
         } else {
@@ -299,10 +299,10 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         player.initMenu(container);
     }
 
-    private static void openCustomInventory(Inventory inventory, ServerPlayer player, Containers<?> windowType) {
+    private static void openCustomInventory(Inventory inventory, ServerPlayer player, MenuType<?> windowType) {
         if (player.connection == null) return;
         Preconditions.checkArgument(windowType != null, "Unknown windowType");
-        AbstractContainerMenu container = new CraftContainer(inventory, player, player.nextContainerCounter());
+        Container container = new CraftContainer(inventory, player, player.nextContainerCounter());
 
         container = CraftEventFactory.callInventoryOpenEvent(player, container);
         if (container == null) return;
@@ -363,7 +363,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
             ((ServerPlayer) getHandle()).connection.handleContainerClose(new ServerboundContainerClosePacket(getHandle().containerMenu.containerId));
         }
         ServerPlayer player = (ServerPlayer) getHandle();
-        AbstractContainerMenu container;
+        Container container;
         if (inventory instanceof CraftInventoryView) {
             container = ((CraftInventoryView) inventory).getHandle();
         } else {
@@ -564,7 +564,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public void setShoulderEntityRight(org.bukkit.entity.Entity entity) {
-        getHandle().setShoulderEntityRight(entity == null ? new NBTTagCompound() : ((CraftEntity) entity).save());
+        getHandle().setShoulderEntityRight(entity == null ? new CompoundTag() : ((CraftEntity) entity).save());
         if (entity != null) {
             entity.remove();
         }

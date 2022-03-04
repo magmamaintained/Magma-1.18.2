@@ -9,7 +9,7 @@ public final class CraftCampfire extends org.bukkit.craftbukkit.block.data.Craft
         super();
     }
 
-    public CraftCampfire(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCampfire(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

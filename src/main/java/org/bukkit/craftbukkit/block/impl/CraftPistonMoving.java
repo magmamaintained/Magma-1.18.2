@@ -9,7 +9,7 @@ public final class CraftPistonMoving extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftPistonMoving(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPistonMoving(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

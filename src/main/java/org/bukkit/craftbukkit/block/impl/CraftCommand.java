@@ -9,7 +9,7 @@ public final class CraftCommand extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftCommand(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCommand(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

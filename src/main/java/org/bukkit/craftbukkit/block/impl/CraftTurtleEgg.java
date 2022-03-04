@@ -9,7 +9,7 @@ public final class CraftTurtleEgg extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftTurtleEgg(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftTurtleEgg(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

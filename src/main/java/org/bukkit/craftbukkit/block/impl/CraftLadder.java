@@ -9,7 +9,7 @@ public final class CraftLadder extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftLadder(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLadder(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

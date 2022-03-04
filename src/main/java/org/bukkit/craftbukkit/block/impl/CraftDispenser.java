@@ -9,7 +9,7 @@ public final class CraftDispenser extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftDispenser(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftDispenser(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

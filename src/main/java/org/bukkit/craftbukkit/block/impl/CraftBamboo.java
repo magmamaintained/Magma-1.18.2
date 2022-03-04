@@ -9,7 +9,7 @@ public final class CraftBamboo extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftBamboo(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBamboo(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftMinecartTrack extends org.bukkit.craftbukkit.block.data.
         super();
     }
 
-    public CraftMinecartTrack(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftMinecartTrack(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

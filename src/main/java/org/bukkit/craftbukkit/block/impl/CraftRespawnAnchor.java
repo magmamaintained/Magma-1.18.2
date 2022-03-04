@@ -9,7 +9,7 @@ public final class CraftRespawnAnchor extends org.bukkit.craftbukkit.block.data.
         super();
     }
 
-    public CraftRespawnAnchor(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRespawnAnchor(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

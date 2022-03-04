@@ -9,7 +9,7 @@ public final class CraftJigsaw extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftJigsaw(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftJigsaw(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

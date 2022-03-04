@@ -9,7 +9,7 @@ public final class CraftSweetBerryBush extends org.bukkit.craftbukkit.block.data
         super();
     }
 
-    public CraftSweetBerryBush(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSweetBerryBush(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

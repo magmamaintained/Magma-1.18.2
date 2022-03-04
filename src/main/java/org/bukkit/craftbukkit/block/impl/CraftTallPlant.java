@@ -9,7 +9,7 @@ public final class CraftTallPlant extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftTallPlant(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftTallPlant(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

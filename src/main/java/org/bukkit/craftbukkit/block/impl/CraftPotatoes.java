@@ -9,7 +9,7 @@ public final class CraftPotatoes extends org.bukkit.craftbukkit.block.data.Craft
         super();
     }
 
-    public CraftPotatoes(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPotatoes(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

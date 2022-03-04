@@ -9,7 +9,7 @@ public final class CraftFloorSign extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftFloorSign(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftFloorSign(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

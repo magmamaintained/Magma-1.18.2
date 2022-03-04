@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
@@ -67,7 +67,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
                         // This happens for example during book signing.
                         for (String page : bookMeta.pages) {
                             // We don't insert any non-plain text features (such as clickable links) during this conversion.
-                            IChatBaseComponent component = CraftChatMessage.fromString(page, true, true)[0];
+                            Component component = CraftChatMessage.fromString(page, true, true)[0];
                             pages.add(CraftChatMessage.toJSON(component));
                         }
                     } else {
@@ -78,7 +78,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
         }
     }
 
-    CraftMetaBook(NBTTagCompound tag) {
+    CraftMetaBook(CompoundTag tag) {
         super(tag);
 
         if (tag.contains(BOOK_TITLE.NBT)) {
@@ -98,7 +98,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
         }
 
         if (tag.contains(BOOK_PAGES.NBT)) {
-            NBTTagList pages = tag.getList(BOOK_PAGES.NBT, CraftMagicNumbers.NBT.TAG_STRING);
+            ListTag pages = tag.getList(BOOK_PAGES.NBT, CraftMagicNumbers.NBT.TAG_STRING);
             this.pages = new ArrayList<String>(pages.size());
 
             boolean expectJson = (this instanceof CraftMetaBookSigned);
@@ -156,7 +156,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
     }
 
     @Override
-    void applyToItem(NBTTagCompound itemData) {
+    void applyToItem(CompoundTag itemData) {
         super.applyToItem(itemData);
 
         if (hasTitle()) {
@@ -168,9 +168,9 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
         }
 
         if (pages != null) {
-            NBTTagList list = new NBTTagList();
+            ListTag list = new ListTag();
             for (String page : pages) {
-                list.add(NBTTagString.valueOf(page));
+                list.add(StringTag.valueOf(page));
             }
             itemData.put(BOOK_PAGES.NBT, list);
         }

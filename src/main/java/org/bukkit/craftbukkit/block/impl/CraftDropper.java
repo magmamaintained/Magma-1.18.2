@@ -9,7 +9,7 @@ public final class CraftDropper extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftDropper(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftDropper(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

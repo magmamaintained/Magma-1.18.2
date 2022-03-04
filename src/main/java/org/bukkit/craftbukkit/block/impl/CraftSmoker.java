@@ -9,7 +9,7 @@ public final class CraftSmoker extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftSmoker(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSmoker(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

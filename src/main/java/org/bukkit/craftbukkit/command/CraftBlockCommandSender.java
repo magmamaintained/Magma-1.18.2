@@ -1,9 +1,10 @@
 package org.bukkit.craftbukkit.command;
 
-import net.minecraft.SystemUtils;
-import net.minecraft.commands.CommandListenerWrapper;
-import net.minecraft.network.chat.IChatBaseComponent;
-import net.minecraft.world.level.block.entity.TileEntity;
+import net.minecraft.Util;
+import net.minecraft.Util;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.craftbukkit.block.CraftBlock;
@@ -13,10 +14,10 @@ import org.bukkit.craftbukkit.util.CraftChatMessage;
  * Represents input from a command block
  */
 public class CraftBlockCommandSender extends ServerCommandSender implements BlockCommandSender {
-    private final CommandListenerWrapper block;
-    private final TileEntity tile;
+    private final CommandSourceStack block;
+    private final BlockEntity tile;
 
-    public CraftBlockCommandSender(CommandListenerWrapper commandBlockListenerAbstract, TileEntity tile) {
+    public CraftBlockCommandSender(CommandSourceStack commandBlockListenerAbstract, BlockEntity tile) {
         super();
         this.block = commandBlockListenerAbstract;
         this.tile = tile;
@@ -29,8 +30,8 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
 
     @Override
     public void sendMessage(String message) {
-        for (IChatBaseComponent component : CraftChatMessage.fromString(message)) {
-            block.source.sendMessage(component, SystemUtils.NIL_UUID);
+        for (Component component : CraftChatMessage.fromString(message)) {
+            block.source.sendMessage(component, Util.NIL_UUID);
         }
     }
 
@@ -56,7 +57,7 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
         throw new UnsupportedOperationException("Cannot change operator status of a block");
     }
 
-    public CommandListenerWrapper getWrapper() {
+    public CommandSourceStack getWrapper() {
         return block;
     }
 }

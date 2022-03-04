@@ -9,7 +9,7 @@ public final class CraftFenceGate extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftFenceGate(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftFenceGate(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

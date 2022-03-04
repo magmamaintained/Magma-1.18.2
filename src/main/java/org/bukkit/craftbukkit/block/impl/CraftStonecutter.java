@@ -9,7 +9,7 @@ public final class CraftStonecutter extends org.bukkit.craftbukkit.block.data.Cr
         super();
     }
 
-    public CraftStonecutter(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftStonecutter(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

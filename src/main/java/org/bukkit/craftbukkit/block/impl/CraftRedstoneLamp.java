@@ -9,7 +9,7 @@ public final class CraftRedstoneLamp extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftRedstoneLamp(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftRedstoneLamp(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

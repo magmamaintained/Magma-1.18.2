@@ -9,7 +9,7 @@ public final class CraftBarrel extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftBarrel(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBarrel(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

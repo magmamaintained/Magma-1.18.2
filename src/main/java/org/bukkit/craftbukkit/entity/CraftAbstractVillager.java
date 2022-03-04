@@ -10,7 +10,7 @@ import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.MerchantOffer;
 
 public class CraftAbstractVillager extends CraftAgeable implements AbstractVillager, InventoryHolder {
 
@@ -38,22 +38,22 @@ public class CraftAbstractVillager extends CraftAgeable implements AbstractVilla
     }
 
     @Override
-    public List<MerchantRecipe> getRecipes() {
+    public List<MerchantOffer> getRecipes() {
         return getMerchant().getRecipes();
     }
 
     @Override
-    public void setRecipes(List<MerchantRecipe> recipes) {
+    public void setRecipes(List<MerchantOffer> recipes) {
         this.getMerchant().setRecipes(recipes);
     }
 
     @Override
-    public MerchantRecipe getRecipe(int i) {
+    public MerchantOffer getRecipe(int i) {
         return getMerchant().getRecipe(i);
     }
 
     @Override
-    public void setRecipe(int i, MerchantRecipe merchantRecipe) {
+    public void setRecipe(int i, MerchantOffer merchantRecipe) {
         getMerchant().setRecipe(i, merchantRecipe);
     }
 

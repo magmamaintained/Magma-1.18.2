@@ -9,7 +9,7 @@ public final class CraftGrass extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftGrass(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftGrass(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

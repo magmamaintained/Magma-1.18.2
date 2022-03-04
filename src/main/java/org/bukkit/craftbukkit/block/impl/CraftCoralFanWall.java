@@ -9,7 +9,7 @@ public final class CraftCoralFanWall extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftCoralFanWall(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftCoralFanWall(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

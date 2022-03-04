@@ -9,7 +9,7 @@ public final class CraftDoor extends org.bukkit.craftbukkit.block.data.CraftBloc
         super();
     }
 
-    public CraftDoor(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftDoor(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

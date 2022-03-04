@@ -9,7 +9,7 @@ public final class CraftEnderChest extends org.bukkit.craftbukkit.block.data.Cra
         super();
     }
 
-    public CraftEnderChest(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftEnderChest(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

@@ -9,7 +9,7 @@ public final class CraftMycel extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftMycel(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftMycel(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

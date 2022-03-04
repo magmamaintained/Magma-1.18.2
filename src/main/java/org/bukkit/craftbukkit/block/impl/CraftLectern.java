@@ -9,7 +9,7 @@ public final class CraftLectern extends org.bukkit.craftbukkit.block.data.CraftB
         super();
     }
 
-    public CraftLectern(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLectern(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

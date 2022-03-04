@@ -9,7 +9,7 @@ public final class CraftLight extends org.bukkit.craftbukkit.block.data.CraftBlo
         super();
     }
 
-    public CraftLight(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLight(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

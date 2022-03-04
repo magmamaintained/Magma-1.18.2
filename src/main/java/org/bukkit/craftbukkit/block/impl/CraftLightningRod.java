@@ -9,7 +9,7 @@ public final class CraftLightningRod extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftLightningRod(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftLightningRod(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

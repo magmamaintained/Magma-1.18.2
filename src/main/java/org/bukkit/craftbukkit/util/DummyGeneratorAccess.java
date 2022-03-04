@@ -68,7 +68,7 @@ public class DummyGeneratorAccess implements WorldGenLevel {
 
     @Override
     public void scheduleTick(BlockPos blockposition, Block block, int i) {
-        // Used by BlockComposter
+        // Used by ComposterBlock
     }
 
     @Override

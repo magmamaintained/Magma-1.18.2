@@ -9,7 +9,7 @@ public final class CraftTripwireHook extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftTripwireHook(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftTripwireHook(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

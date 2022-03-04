@@ -9,7 +9,7 @@ public final class CraftStainedGlassPane extends org.bukkit.craftbukkit.block.da
         super();
     }
 
-    public CraftStainedGlassPane(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftStainedGlassPane(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

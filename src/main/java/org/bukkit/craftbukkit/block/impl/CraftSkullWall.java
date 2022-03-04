@@ -9,7 +9,7 @@ public final class CraftSkullWall extends org.bukkit.craftbukkit.block.data.Craf
         super();
     }
 
-    public CraftSkullWall(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftSkullWall(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

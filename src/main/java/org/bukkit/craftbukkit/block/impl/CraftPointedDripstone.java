@@ -9,7 +9,7 @@ public final class CraftPointedDripstone extends org.bukkit.craftbukkit.block.da
         super();
     }
 
-    public CraftPointedDripstone(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftPointedDripstone(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

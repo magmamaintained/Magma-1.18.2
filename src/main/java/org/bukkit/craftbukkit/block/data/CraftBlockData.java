@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.commands.arguments.blocks.ArgumentBlock;
 import net.minecraft.core.EnumDirection;
-import net.minecraft.core.IRegistry;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.core.net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.INamable;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.IBlockData;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.IBlockDataHolder;
 import net.minecraft.world.level.block.state.properties.BlockStateBoolean;
 import net.minecraft.world.level.block.state.properties.BlockStateEnum;
@@ -31,14 +31,14 @@ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 
 public class CraftBlockData implements BlockData {
 
-    private IBlockData state;
+    private BlockState state;
     private Map<IBlockState<?>, Comparable<?>> parsedStates;
 
     protected CraftBlockData() {
         throw new AssertionError("Template Constructor");
     }
 
-    protected CraftBlockData(IBlockData state) {
+    protected CraftBlockData(BlockState state) {
         this.state = state;
     }
 
@@ -47,7 +47,7 @@ public class CraftBlockData implements BlockData {
         return CraftMagicNumbers.getMaterial(state.getBlock());
     }
 
-    public IBlockData getState() {
+    public BlockState getState() {
         return state;
     }
 
@@ -221,7 +221,7 @@ public class CraftBlockData implements BlockData {
 
     // Mimicked from BlockDataAbstract#toString()
     public String toString(Map<IBlockState<?>, Comparable<?>> states) {
-        StringBuilder stateString = new StringBuilder(IRegistry.BLOCK.getKey(state.getBlock()).toString());
+        StringBuilder stateString = new StringBuilder(net.minecraft.core.Registry.BLOCK.getKey(state.getBlock()).toString());
 
         if (!states.isEmpty()) {
             stateString.append('[');
@@ -232,8 +232,8 @@ public class CraftBlockData implements BlockData {
         return stateString.toString();
     }
 
-    public NBTTagCompound toStates() {
-        NBTTagCompound compound = new NBTTagCompound();
+    public CompoundTag toStates() {
+        CompoundTag compound = new CompoundTag();
 
         for (Map.Entry<IBlockState<?>, Comparable<?>> entry : state.getValues().entrySet()) {
             IBlockState iblockstate = (IBlockState) entry.getKey();
@@ -300,7 +300,7 @@ public class CraftBlockData implements BlockData {
     private static IBlockState<?> getState(Class<? extends Block> block, String name, boolean optional) {
         IBlockState<?> state = null;
 
-        for (Block instance : IRegistry.BLOCK) {
+        for (Block instance : net.minecraft.core.Registry.BLOCK) {
             if (instance.getClass() == block) {
                 if (state == null) {
                     state = instance.getStateDefinition().getProperty(name);
@@ -338,7 +338,7 @@ public class CraftBlockData implements BlockData {
     }
 
     //
-    private static final Map<Class<? extends Block>, Function<IBlockData, CraftBlockData>> MAP = new HashMap<>();
+    private static final Map<Class<? extends Block>, Function<BlockState, CraftBlockData>> MAP = new HashMap<>();
 
     static {
         //<editor-fold desc="CraftBlockData Registration" defaultstate="collapsed">
@@ -490,14 +490,14 @@ public class CraftBlockData implements BlockData {
         //</editor-fold>
     }
 
-    private static void register(Class<? extends Block> nms, Function<IBlockData, CraftBlockData> bukkit) {
+    private static void register(Class<? extends Block> nms, Function<BlockState, CraftBlockData> bukkit) {
         Preconditions.checkState(MAP.put(nms, bukkit) == null, "Duplicate mapping %s->%s", nms, bukkit);
     }
 
     public static CraftBlockData newData(Material material, String data) {
         Preconditions.checkArgument(material == null || material.isBlock(), "Cannot get data for not block %s", material);
 
-        IBlockData blockData;
+        BlockState blockData;
         Block block = CraftMagicNumbers.getBlock(material);
         Map<IBlockState<?>, Comparable<?>> parsed = null;
 
@@ -506,7 +506,7 @@ public class CraftBlockData implements BlockData {
             try {
                 // Material provided, force that material in
                 if (block != null) {
-                    data = IRegistry.BLOCK.getKey(block) + data;
+                    data = net.minecraft.core.Registry.BLOCK.getKey(block) + data;
                 }
 
                 StringReader reader = new StringReader(data);
@@ -527,7 +527,7 @@ public class CraftBlockData implements BlockData {
         return craft;
     }
 
-    public static CraftBlockData fromData(IBlockData data) {
+    public static CraftBlockData fromData(BlockState data) {
         return MAP.getOrDefault(data.getBlock().getClass(), CraftBlockData::new).apply(data);
     }
 

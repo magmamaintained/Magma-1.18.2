@@ -9,7 +9,7 @@ public final class CraftStairs extends org.bukkit.craftbukkit.block.data.CraftBl
         super();
     }
 
-    public CraftStairs(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftStairs(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

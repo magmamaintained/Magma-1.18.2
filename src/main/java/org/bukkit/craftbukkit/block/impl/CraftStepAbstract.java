@@ -9,7 +9,7 @@ public final class CraftStepAbstract extends org.bukkit.craftbukkit.block.data.C
         super();
     }
 
-    public CraftStepAbstract(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftStepAbstract(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

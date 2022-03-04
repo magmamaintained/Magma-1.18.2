@@ -9,7 +9,7 @@ public final class CraftBed extends org.bukkit.craftbukkit.block.data.CraftBlock
         super();
     }
 
-    public CraftBed(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftBed(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 

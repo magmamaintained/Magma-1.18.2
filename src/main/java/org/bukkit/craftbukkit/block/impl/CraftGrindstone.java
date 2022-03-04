@@ -9,7 +9,7 @@ public final class CraftGrindstone extends org.bukkit.craftbukkit.block.data.Cra
         super();
     }
 
-    public CraftGrindstone(net.minecraft.world.level.block.state.IBlockData state) {
+    public CraftGrindstone(net.minecraft.world.level.block.state.BlockState state) {
         super(state);
     }
 
