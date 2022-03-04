@@ -15,7 +15,7 @@ public final class CraftWeepingVines extends org.bukkit.craftbukkit.block.data.C
 
     // org.bukkit.craftbukkit.block.data.CraftAgeable
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateInteger AGE = getInteger(net.minecraft.world.level.block.BlockWeepingVines.class, "age");
+    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.WeepingVinesBlock.class, "age");
 
     @Override
     public int getAge() {

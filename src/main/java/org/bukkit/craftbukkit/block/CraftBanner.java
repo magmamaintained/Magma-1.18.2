@@ -5,29 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.item.EnumColor;
-import net.minecraft.world.level.block.BlockBannerAbstract;
-import net.minecraft.world.level.block.entity.TileEntityBanner;
+import net.minecraft.world.item.net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.AbstractBannerBlock;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import org.bukkit.DyeColor;
 import org.bukkit.World;
 import org.bukkit.block.Banner;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 
-public class CraftBanner extends CraftBlockEntityState<TileEntityBanner> implements Banner {
+public class CraftBanner extends CraftBlockEntityState<BannerBlockEntity> implements Banner {
 
     private DyeColor base;
     private List<Pattern> patterns;
 
-    public CraftBanner(World world, TileEntityBanner tileEntity) {
+    public CraftBanner(World world, BannerBlockEntity tileEntity) {
         super(world, tileEntity);
     }
 
     @Override
-    public void load(TileEntityBanner banner) {
+    public void load(BannerBlockEntity banner) {
         super.load(banner);
 
-        base = DyeColor.getByWoolData((byte) ((BlockBannerAbstract) this.data.getBlock()).getColor().getId());
+        base = DyeColor.getByWoolData((byte) ((AbstractBannerBlock) this.data.getBlock()).getColor().getId());
         patterns = new ArrayList<Pattern>();
 
         if (banner.itemPatterns != null) {
@@ -85,10 +85,10 @@ public class CraftBanner extends CraftBlockEntityState<TileEntityBanner> impleme
     }
 
     @Override
-    public void applyTo(TileEntityBanner banner) {
+    public void applyTo(BannerBlockEntity banner) {
         super.applyTo(banner);
 
-        banner.baseColor = EnumColor.byId(base.getWoolData());
+        banner.baseColor = net.minecraft.world.item.DyeColor.byId(base.getWoolData());
 
         ListTag newPatterns = new ListTag();
 

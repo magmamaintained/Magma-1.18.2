@@ -15,7 +15,7 @@ public final class CraftTallPlant extends org.bukkit.craftbukkit.block.data.Craf
 
     // org.bukkit.craftbukkit.block.data.CraftBisected
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateEnum<?> HALF = getEnum(net.minecraft.world.level.block.BlockTallPlant.class, "half");
+    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> HALF = getEnum(net.minecraft.world.level.block.DoublePlantBlock.class, "half");
 
     @Override
     public org.bukkit.block.data.Bisected.Half getHalf() {

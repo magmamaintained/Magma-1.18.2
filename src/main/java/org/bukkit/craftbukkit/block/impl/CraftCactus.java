@@ -15,7 +15,7 @@ public final class CraftCactus extends org.bukkit.craftbukkit.block.data.CraftBl
 
     // org.bukkit.craftbukkit.block.data.CraftAgeable
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateInteger AGE = getInteger(net.minecraft.world.level.block.BlockCactus.class, "age");
+    private static final net.minecraft.world.level.block.state.properties.IntegerProperty AGE = getInteger(net.minecraft.world.level.block.CactusBlock.class, "age");
 
     @Override
     public int getAge() {

@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.thread.ThreadedMailbox;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.EnumSkyBlock;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
@@ -305,14 +305,14 @@ public class CraftChunk implements Chunk {
             sectionBlockIDs[i] = ChunkRegionLoader.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, data.getCompound("block_states")).get().left().get();
 
             LightEngine lightengine = chunk.level.getLightEngine();
-            NibbleArray skyLightArray = lightengine.getLayerListener(EnumSkyBlock.SKY).getDataLayerData(SectionPosition.of(x, i, z));
+            NibbleArray skyLightArray = lightengine.getLayerListener(LightLayer.SKY).getDataLayerData(SectionPosition.of(x, i, z));
             if (skyLightArray == null) {
                 sectionSkyLights[i] = emptyLight;
             } else {
                 sectionSkyLights[i] = new byte[2048];
                 System.arraycopy(skyLightArray.getData(), 0, sectionSkyLights[i], 0, 2048);
             }
-            NibbleArray emitLightArray = lightengine.getLayerListener(EnumSkyBlock.BLOCK).getDataLayerData(SectionPosition.of(x, i, z));
+            NibbleArray emitLightArray = lightengine.getLayerListener(LightLayer.BLOCK).getDataLayerData(SectionPosition.of(x, i, z));
             if (emitLightArray == null) {
                 sectionEmitLights[i] = emptyLight;
             } else {

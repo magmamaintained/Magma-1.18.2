@@ -28,7 +28,7 @@ import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.ambient.EntityAmbient;
 import net.minecraft.world.entity.ambient.EntityBat;
 import net.minecraft.world.entity.animal.EntityAnimal;
-import net.minecraft.world.entity.animal.EntityBee;
+import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.animal.EntityCat;
 import net.minecraft.world.entity.animal.EntityChicken;
 import net.minecraft.world.entity.animal.EntityCod;
@@ -152,7 +152,7 @@ import net.minecraft.world.entity.vehicle.EntityMinecartHopper;
 import net.minecraft.world.entity.vehicle.EntityMinecartMobSpawner;
 import net.minecraft.world.entity.vehicle.EntityMinecartRideable;
 import net.minecraft.world.entity.vehicle.EntityMinecartTNT;
-import net.minecraft.world.phys.AxisAlignedBB;
+import net.minecraft.world.phys.AABB;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -254,7 +254,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                     else if (entity instanceof EntityOcelot) { return new CraftOcelot(server, (EntityOcelot) entity); }
                     else if (entity instanceof EntityPanda) { return new CraftPanda(server, (EntityPanda) entity); }
                     else if (entity instanceof EntityFox) { return new CraftFox(server, (EntityFox) entity); }
-                    else if (entity instanceof EntityBee) { return new CraftBee(server, (EntityBee) entity); }
+                    else if (entity instanceof Bee) { return new CraftBee(server, (Bee) entity); }
                     else if (entity instanceof EntityHoglin) { return new CraftHoglin(server, (EntityHoglin) entity); }
                     else if (entity instanceof EntityStrider) { return new CraftStrider(server, (EntityStrider) entity); }
                     else if (entity instanceof Axolotl) { return new CraftAxolotl(server, (Axolotl) entity); }
@@ -452,7 +452,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
 
     @Override
     public BoundingBox getBoundingBox() {
-        AxisAlignedBB bb = getHandle().getBoundingBox();
+        AABB bb = getHandle().getBoundingBox();
         return new BoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
     }
 

@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.block.data.CraftBlockData;
@@ -22,7 +21,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
-public class CraftBlockState implements BlockState {
+public class CraftBlockState implements org.bukkit.block.BlockState {
 
     protected final CraftWorld world;
     private final BlockPos position;

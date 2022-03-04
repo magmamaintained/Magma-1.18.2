@@ -15,7 +15,7 @@ public final class CraftSnow extends org.bukkit.craftbukkit.block.data.CraftBloc
 
     // org.bukkit.craftbukkit.block.data.type.CraftSnow
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateInteger LAYERS = getInteger(net.minecraft.world.level.block.BlockSnow.class, "layers");
+    private static final net.minecraft.world.level.block.state.properties.IntegerProperty LAYERS = getInteger(net.minecraft.world.level.block.SnowLayerBlock.class, "layers");
 
     @Override
     public int getLayers() {

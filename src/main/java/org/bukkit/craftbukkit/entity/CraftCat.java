@@ -2,7 +2,7 @@ package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.world.entity.animal.EntityCat;
-import net.minecraft.world.item.EnumColor;
+import net.minecraft.world.item.net.minecraft.world.item.DyeColor;
 import org.bukkit.DyeColor;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Cat;
@@ -49,6 +49,6 @@ public class CraftCat extends CraftTameableAnimal implements Cat {
 
     @Override
     public void setCollarColor(DyeColor color) {
-        getHandle().setCollarColor(EnumColor.byId(color.getWoolData()));
+        getHandle().setCollarColor(net.minecraft.world.item.DyeColor.byId(color.getWoolData()));
     }
 }

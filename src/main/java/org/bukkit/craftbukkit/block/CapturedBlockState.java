@@ -3,11 +3,11 @@ package org.bukkit.craftbukkit.block;
 import java.util.Random;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.EntityBee;
+import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.TileEntityBeehive;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -34,12 +34,12 @@ public final class CapturedBlockState extends CraftBlockState {
             // Begin copied block from WorldGenFeatureTreeBeehive
             BlockEntity tileentity = generatoraccessseed.getBlockEntity(blockposition1);
 
-            if (tileentity instanceof TileEntityBeehive) {
-                TileEntityBeehive tileentitybeehive = (TileEntityBeehive) tileentity;
+            if (tileentity instanceof BeehiveBlockEntity) {
+                BeehiveBlockEntity tileentitybeehive = (BeehiveBlockEntity) tileentity;
                 int j = 2 + random.nextInt(2);
 
                 for (int k = 0; k < j; ++k) {
-                    EntityBee entitybee = new EntityBee(net.minecraft.world.entity.EntityType.BEE, generatoraccessseed.getMinecraftWorld());
+                    Bee entitybee = new Bee(net.minecraft.world.entity.EntityType.BEE, generatoraccessseed.getMinecraftWorld());
 
                     tileentitybeehive.addOccupantWithPresetTicks(entitybee, false, random.nextInt(599));
                 }
@@ -50,11 +50,11 @@ public final class CapturedBlockState extends CraftBlockState {
         return result;
     }
 
-    public static CapturedBlockState getBlockState(World world, BlockPos pos, int flag) {
+    public static CapturedBlockState getBlockState(Level world, BlockPos pos, int flag) {
         return new CapturedBlockState(world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()), flag, false);
     }
 
-    public static CapturedBlockState getTreeBlockState(World world, BlockPos pos, int flag) {
+    public static CapturedBlockState getTreeBlockState(Level world, BlockPos pos, int flag) {
         return new CapturedBlockState(world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()), flag, true);
     }
 }

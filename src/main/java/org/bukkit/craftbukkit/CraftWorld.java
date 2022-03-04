@@ -56,14 +56,14 @@ import net.minecraft.world.entity.raid.PersistentRaid;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.RayTrace;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ProtoChunkExtension;
 import net.minecraft.world.level.storage.SavedFile;
-import net.minecraft.world.phys.AxisAlignedBB;
-import net.minecraft.world.phys.MovingObjectPosition;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang.Validate;
 import org.bukkit.BlockChangeDelegate;
@@ -826,7 +826,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
     public Collection<Entity> getNearbyEntities(BoundingBox boundingBox, Predicate<Entity> filter) {
         Validate.notNull(boundingBox, "Bounding box is null!");
 
-        AxisAlignedBB bb = new AxisAlignedBB(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ(), boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
+        AABB bb = new AABB(boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ(), boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ());
         List<net.minecraft.world.entity.Entity> entityList = getHandle().getEntities((net.minecraft.world.entity.Entity) null, bb, Predicates.alwaysTrue());
         List<Entity> bukkitEntityList = new ArrayList<org.bukkit.entity.Entity>(entityList.size());
 
@@ -926,7 +926,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
         Vector dir = direction.clone().normalize().multiply(maxDistance);
         Vec3 startPos = new Vec3(start.getX(), start.getY(), start.getZ());
         Vec3 endPos = new Vec3(start.getX() + dir.getX(), start.getY() + dir.getY(), start.getZ() + dir.getZ());
-        MovingObjectPosition nmsHitResult = this.getHandle().clip(new RayTrace(startPos, endPos, ignorePassableBlocks ? RayTrace.BlockCollisionOption.COLLIDER : RayTrace.BlockCollisionOption.OUTLINE, CraftFluidCollisionMode.toNMS(fluidCollisionMode), null));
+        HitResult nmsHitResult = this.getHandle().clip(new ClipContext(startPos, endPos, ignorePassableBlocks ? ClipContext.Block.COLLIDER : ClipContext.Block.OUTLINE, CraftFluidCollisionMode.toNMS(fluidCollisionMode), null));
 
         return CraftRayTraceResult.fromNMS(this, nmsHitResult);
     }

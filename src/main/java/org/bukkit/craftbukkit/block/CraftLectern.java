@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.block;
 
-import net.minecraft.world.level.block.BlockLectern;
+import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -43,7 +43,7 @@ public class CraftLectern extends CraftBlockEntityState<LecternBlockEntity> impl
         boolean result = super.update(force, applyPhysics);
 
         if (result && this.getType() == Material.LECTERN && getWorldHandle() instanceof net.minecraft.world.level.Level) {
-            BlockLectern.signalPageChange(this.world.getHandle(), this.getPosition(), this.getHandle());
+            LecternBlock.signalPageChange(this.world.getHandle(), this.getPosition(), this.getHandle());
         }
 
         return result;

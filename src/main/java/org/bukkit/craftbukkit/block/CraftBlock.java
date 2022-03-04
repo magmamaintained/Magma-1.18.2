@@ -6,26 +6,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.EnumDirection;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.EnumHand;
-import net.minecraft.world.EnumInteractionResult;
-import net.minecraft.world.item.ItemBoneMeal;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.context.ItemActionContext;
-import net.minecraft.world.level.EnumSkyBlock;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.RayTrace;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.BlockRedstoneWire;
+import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AxisAlignedBB;
-import net.minecraft.world.phys.MovingObjectPosition;
-import net.minecraft.world.phys.MovingObjectPositionBlock;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.apache.commons.lang.Validate;
@@ -230,12 +230,12 @@ public class CraftBlock implements Block {
 
     @Override
     public byte getLightFromSky() {
-        return (byte) world.getBrightness(EnumSkyBlock.SKY, position);
+        return (byte) world.getBrightness(LightLayer.SKY, position);
     }
 
     @Override
     public byte getLightFromBlocks() {
-        return (byte) world.getBrightness(EnumSkyBlock.BLOCK, position);
+        return (byte) world.getBrightness(LightLayer.BLOCK, position);
     }
 
     public Block getFace(final BlockFace face) {
@@ -279,7 +279,7 @@ public class CraftBlock implements Block {
         return "CraftBlock{pos=" + position + ",type=" + getType() + ",data=" + getNMS() + ",fluid=" + world.getFluidState(position) + '}';
     }
 
-    public static BlockFace notchToBlockFace(EnumDirection notch) {
+    public static BlockFace notchToBlockFace(Direction notch) {
         if (notch == null) {
             return BlockFace.SELF;
         }
@@ -301,27 +301,27 @@ public class CraftBlock implements Block {
         }
     }
 
-    public static EnumDirection blockFaceToNotch(BlockFace face) {
+    public static Direction blockFaceToNotch(BlockFace face) {
         switch (face) {
             case DOWN:
-                return EnumDirection.DOWN;
+                return Direction.DOWN;
             case UP:
-                return EnumDirection.UP;
+                return Direction.UP;
             case NORTH:
-                return EnumDirection.NORTH;
+                return Direction.NORTH;
             case SOUTH:
-                return EnumDirection.SOUTH;
+                return Direction.SOUTH;
             case WEST:
-                return EnumDirection.WEST;
+                return Direction.WEST;
             case EAST:
-                return EnumDirection.EAST;
+                return Direction.EAST;
             default:
                 return null;
         }
     }
 
     @Override
-    public BlockState getState() {
+    public org.bukkit.block.BlockState getState() {
         return CraftBlockStates.getBlockState(this);
     }
 
@@ -418,12 +418,12 @@ public class CraftBlock implements Block {
         int x = getX();
         int y = getY();
         int z = getZ();
-        if ((face == BlockFace.DOWN || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y - 1, z), EnumDirection.DOWN)) power = getPower(power, world.getBlockState(new BlockPos(x, y - 1, z)));
-        if ((face == BlockFace.UP || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y + 1, z), EnumDirection.UP)) power = getPower(power, world.getBlockState(new BlockPos(x, y + 1, z)));
-        if ((face == BlockFace.EAST || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x + 1, y, z), EnumDirection.EAST)) power = getPower(power, world.getBlockState(new BlockPos(x + 1, y, z)));
-        if ((face == BlockFace.WEST || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x - 1, y, z), EnumDirection.WEST)) power = getPower(power, world.getBlockState(new BlockPos(x - 1, y, z)));
-        if ((face == BlockFace.NORTH || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y, z - 1), EnumDirection.NORTH)) power = getPower(power, world.getBlockState(new BlockPos(x, y, z - 1)));
-        if ((face == BlockFace.SOUTH || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y, z + 1), EnumDirection.SOUTH)) power = getPower(power, world.getBlockState(new BlockPos(x, y, z + 1)));
+        if ((face == BlockFace.DOWN || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y - 1, z), Direction.DOWN)) power = getPower(power, world.getBlockState(new BlockPos(x, y - 1, z)));
+        if ((face == BlockFace.UP || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y + 1, z), Direction.UP)) power = getPower(power, world.getBlockState(new BlockPos(x, y + 1, z)));
+        if ((face == BlockFace.EAST || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x + 1, y, z), Direction.EAST)) power = getPower(power, world.getBlockState(new BlockPos(x + 1, y, z)));
+        if ((face == BlockFace.WEST || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x - 1, y, z), Direction.WEST)) power = getPower(power, world.getBlockState(new BlockPos(x - 1, y, z)));
+        if ((face == BlockFace.NORTH || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y, z - 1), Direction.NORTH)) power = getPower(power, world.getBlockState(new BlockPos(x, y, z - 1)));
+        if ((face == BlockFace.SOUTH || face == BlockFace.SELF) && world.hasSignal(new BlockPos(x, y, z + 1), Direction.SOUTH)) power = getPower(power, world.getBlockState(new BlockPos(x, y, z + 1)));
         return power > 0 ? power : (face == BlockFace.SELF ? isBlockIndirectlyPowered() : isBlockFaceIndirectlyPowered(face)) ? 15 : 0;
     }
 
@@ -431,7 +431,7 @@ public class CraftBlock implements Block {
         if (!iblockdata.is(Blocks.REDSTONE_WIRE)) {
             return i;
         } else {
-            int j = iblockdata.getValue(BlockRedstoneWire.POWER);
+            int j = iblockdata.getValue(RedStoneWireBlock.POWER);
 
             return j > i ? j : i;
         }
@@ -482,10 +482,10 @@ public class CraftBlock implements Block {
 
     @Override
     public boolean applyBoneMeal(BlockFace face) {
-        EnumDirection direction = blockFaceToNotch(face);
-        ItemActionContext context = new ItemActionContext(getCraftWorld().getHandle(), null, EnumHand.MAIN_HAND, Items.BONE_MEAL.getDefaultInstance(), new MovingObjectPositionBlock(Vec3.ZERO, direction, getPosition(), false));
+        Direction direction = blockFaceToNotch(face);
+        UseOnContext context = new UseOnContext(getCraftWorld().getHandle(), null, InteractionHand.MAIN_HAND, Items.BONE_MEAL.getDefaultInstance(), new BlockHitResult(Vec3.ZERO, direction, getPosition(), false));
 
-        return ItemBoneMeal.applyBonemeal(context) == EnumInteractionResult.SUCCESS;
+        return BoneMealItem.applyBonemeal(context) == InteractionResult.SUCCESS;
     }
 
     @Override
@@ -573,7 +573,7 @@ public class CraftBlock implements Block {
         Vec3 startPos = new Vec3(start.getX(), start.getY(), start.getZ());
         Vec3 endPos = new Vec3(start.getX() + dir.getX(), start.getY() + dir.getY(), start.getZ() + dir.getZ());
 
-        MovingObjectPosition nmsHitResult = world.clip(new RayTrace(startPos, endPos, RayTrace.BlockCollisionOption.OUTLINE, CraftFluidCollisionMode.toNMS(fluidCollisionMode), null), position);
+        HitResult nmsHitResult = world.clip(new ClipContext(startPos, endPos, ClipContext.Block.OUTLINE, CraftFluidCollisionMode.toNMS(fluidCollisionMode), null), position);
         return CraftRayTraceResult.fromNMS(this.getWorld(), nmsHitResult);
     }
 
@@ -585,7 +585,7 @@ public class CraftBlock implements Block {
             return new BoundingBox(); // Return an empty bounding box if the block has no dimension
         }
 
-        AxisAlignedBB aabb = shape.bounds();
+        AABB aabb = shape.bounds();
         return new BoundingBox(getX() + aabb.minX, getY() + aabb.minY, getZ() + aabb.minZ, getX() + aabb.maxX, getY() + aabb.maxY, getZ() + aabb.maxZ);
     }
 

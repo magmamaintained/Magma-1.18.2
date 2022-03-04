@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.block;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.world.level.block.BlockDispenser;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import org.bukkit.Material;
@@ -51,7 +51,7 @@ public class CraftDispenser extends CraftLootable<DispenserBlockEntity> implemen
         Block block = getBlock();
         if (block.getType() == Material.DISPENSER) {
             CraftWorld world = (CraftWorld) this.getWorld();
-            BlockDispenser dispense = (BlockDispenser) Blocks.DISPENSER;
+            DispenserBlock dispense = (DispenserBlock) Blocks.DISPENSER;
 
             dispense.dispenseFrom(world.getHandle(), this.getPosition());
             return true;

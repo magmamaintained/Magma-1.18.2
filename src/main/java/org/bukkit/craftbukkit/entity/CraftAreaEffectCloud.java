@@ -3,7 +3,7 @@ package org.bukkit.craftbukkit.entity;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectList;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityAreaEffectCloud;
 import net.minecraft.world.entity.EntityLiving;
 import org.apache.commons.lang.Validate;
@@ -141,7 +141,7 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
         int effectId = effect.getType().getId();
         MobEffect existing = null;
         for (MobEffect mobEffect : getHandle().effects) {
-            if (MobEffectList.getId(mobEffect.getEffect()) == effectId) {
+            if (MobEffect.getId(mobEffect.getEffect()) == effectId) {
                 existing = mobEffect;
             }
         }
@@ -191,7 +191,7 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
         int effectId = effect.getId();
         MobEffect existing = null;
         for (MobEffect mobEffect : getHandle().effects) {
-            if (MobEffectList.getId(mobEffect.getEffect()) == effectId) {
+            if (MobEffect.getId(mobEffect.getEffect()) == effectId) {
                 existing = mobEffect;
             }
         }

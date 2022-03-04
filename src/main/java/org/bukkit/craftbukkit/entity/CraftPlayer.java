@@ -72,10 +72,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.GenericAttributes;
 import net.minecraft.world.entity.player.net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Container;
-import net.minecraft.world.item.EnumColor;
+import net.minecraft.world.item.net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.EnumGamemode;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.TileEntitySign;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.Vec3;
@@ -638,8 +638,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         }
 
         Component[] components = CraftSign.sanitizeLines(lines);
-        TileEntitySign sign = new TileEntitySign(new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), Blocks.OAK_SIGN.defaultBlockState());
-        sign.setColor(EnumColor.byId(dyeColor.getWoolData()));
+        SignBlockEntity sign = new SignBlockEntity(new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), Blocks.OAK_SIGN.defaultBlockState());
+        sign.setColor(net.minecraft.world.item.DyeColor.byId(dyeColor.getWoolData()));
         sign.setHasGlowingText(hasGlowingText);
         for (int i = 0; i < components.length; i++) {
             sign.setMessage(i, components[i]);
@@ -1791,7 +1791,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
         ItemStack hand = getInventory().getItemInMainHand();
         getInventory().setItemInMainHand(book);
-        getHandle().openItemGui(org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(book), net.minecraft.world.EnumHand.MAIN_HAND);
+        getHandle().openItemGui(org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(book), net.minecraft.world.InteractionHand.MAIN_HAND);
         getInventory().setItemInMainHand(hand);
     }
 

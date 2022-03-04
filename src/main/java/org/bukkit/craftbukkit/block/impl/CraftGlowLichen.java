@@ -15,13 +15,13 @@ public final class CraftGlowLichen extends org.bukkit.craftbukkit.block.data.Cra
 
     // org.bukkit.craftbukkit.block.data.CraftMultipleFacing
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateBoolean[] FACES = new net.minecraft.world.level.block.state.properties.BlockStateBoolean[]{
+    private static final net.minecraft.world.level.block.state.properties.BooleanProperty[] FACES = new net.minecraft.world.level.block.state.properties.BooleanProperty[]{
         getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "north", true), getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "east", true), getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "south", true), getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "west", true), getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "up", true), getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "down", true)
     };
 
     @Override
     public boolean hasFace(org.bukkit.block.BlockFace face) {
-        net.minecraft.world.level.block.state.properties.BlockStateBoolean state = FACES[face.ordinal()];
+        net.minecraft.world.level.block.state.properties.BooleanProperty state = FACES[face.ordinal()];
         if (state == null) {
             throw new IllegalArgumentException("Non-allowed face " + face + ". Check MultipleFacing.getAllowedFaces.");
         }
@@ -30,7 +30,7 @@ public final class CraftGlowLichen extends org.bukkit.craftbukkit.block.data.Cra
 
     @Override
     public void setFace(org.bukkit.block.BlockFace face, boolean has) {
-        net.minecraft.world.level.block.state.properties.BlockStateBoolean state = FACES[face.ordinal()];
+        net.minecraft.world.level.block.state.properties.BooleanProperty state = FACES[face.ordinal()];
         if (state == null) {
             throw new IllegalArgumentException("Non-allowed face " + face + ". Check MultipleFacing.getAllowedFaces.");
         }
@@ -65,7 +65,7 @@ public final class CraftGlowLichen extends org.bukkit.craftbukkit.block.data.Cra
 
     // org.bukkit.craftbukkit.block.data.CraftWaterlogged
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateBoolean WATERLOGGED = getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "waterlogged");
+    private static final net.minecraft.world.level.block.state.properties.BooleanProperty WATERLOGGED = getBoolean(net.minecraft.world.level.block.GlowLichenBlock.class, "waterlogged");
 
     @Override
     public boolean isWaterlogged() {

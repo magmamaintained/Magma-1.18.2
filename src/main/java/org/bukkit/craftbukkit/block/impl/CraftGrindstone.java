@@ -15,7 +15,7 @@ public final class CraftGrindstone extends org.bukkit.craftbukkit.block.data.Cra
 
     // org.bukkit.craftbukkit.block.data.CraftDirectional
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateEnum<?> FACING = getEnum(net.minecraft.world.level.block.BlockGrindstone.class, "facing");
+    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> FACING = getEnum(net.minecraft.world.level.block.GrindstoneBlock.class, "facing");
 
     @Override
     public org.bukkit.block.BlockFace getFacing() {
@@ -34,7 +34,7 @@ public final class CraftGrindstone extends org.bukkit.craftbukkit.block.data.Cra
 
     // org.bukkit.craftbukkit.block.data.CraftFaceAttachable
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateEnum<?> ATTACH_FACE = getEnum(net.minecraft.world.level.block.BlockGrindstone.class, "face");
+    private static final net.minecraft.world.level.block.state.properties.EnumProperty<?> ATTACH_FACE = getEnum(net.minecraft.world.level.block.GrindstoneBlock.class, "face");
 
     @Override
     public org.bukkit.block.data.FaceAttachable.AttachedFace getAttachedFace() {

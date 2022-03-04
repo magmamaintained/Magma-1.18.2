@@ -15,7 +15,7 @@ public final class CraftRedstoneLamp extends org.bukkit.craftbukkit.block.data.C
 
     // org.bukkit.craftbukkit.block.data.CraftLightable
 
-    private static final net.minecraft.world.level.block.state.properties.BlockStateBoolean LIT = getBoolean(net.minecraft.world.level.block.BlockRedstoneLamp.class, "lit");
+    private static final net.minecraft.world.level.block.state.properties.BooleanProperty LIT = getBoolean(net.minecraft.world.level.block.RedstoneLampBlock.class, "lit");
 
     @Override
     public boolean isLit() {
