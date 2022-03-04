@@ -1,18 +1,17 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.monster.EntityIllagerAbstract;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Illager;
 
 public class CraftIllager extends CraftRaider implements Illager {
 
-    public CraftIllager(CraftServer server, EntityIllagerAbstract entity) {
+    public CraftIllager(CraftServer server, net.minecraft.world.entity.monster.AbstractIllager entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityIllagerAbstract getHandle() {
-        return (EntityIllagerAbstract) super.getHandle();
+    public net.minecraft.world.entity.monster.AbstractIllager getHandle() {
+        return (net.minecraft.world.entity.monster.AbstractIllager) super.getHandle();
     }
 
     @Override

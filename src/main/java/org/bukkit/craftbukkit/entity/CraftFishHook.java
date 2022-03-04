@@ -1,25 +1,22 @@
 package org.bukkit.craftbukkit.entity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.entity.projectile.EntityFishingHook;
 import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FishHook;
-import org.bukkit.entity.FishHook.HookState;
 
 public class CraftFishHook extends CraftProjectile implements FishHook {
     private double biteChance = -1;
 
-    public CraftFishHook(CraftServer server, EntityFishingHook entity) {
+    public CraftFishHook(CraftServer server, net.minecraft.world.entity.projectile.FishingHook entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityFishingHook getHandle() {
-        return (EntityFishingHook) entity;
+    public net.minecraft.world.entity.projectile.FishingHook getHandle() {
+        return (net.minecraft.world.entity.projectile.FishingHook) entity;
     }
 
     @Override
@@ -39,7 +36,7 @@ public class CraftFishHook extends CraftProjectile implements FishHook {
 
     @Override
     public void setMinWaitTime(int minWaitTime) {
-        EntityFishingHook hook = getHandle();
+        net.minecraft.world.entity.projectile.FishingHook hook = getHandle();
         Validate.isTrue(minWaitTime >= 0 && minWaitTime <= this.getMaxWaitTime(), "The minimum wait time should be between 0 and the maximum wait time.");
         hook.minWaitTime = minWaitTime;
     }
@@ -51,7 +48,7 @@ public class CraftFishHook extends CraftProjectile implements FishHook {
 
     @Override
     public void setMaxWaitTime(int maxWaitTime) {
-        EntityFishingHook hook = getHandle();
+        net.minecraft.world.entity.projectile.FishingHook hook = getHandle();
         Validate.isTrue(maxWaitTime >= 0 && maxWaitTime >= this.getMinWaitTime(), "The maximum wait time should be higher than or equal to 0 and the minimum wait time.");
         hook.maxWaitTime = maxWaitTime;
     }
@@ -68,10 +65,10 @@ public class CraftFishHook extends CraftProjectile implements FishHook {
 
     @Override
     public double getBiteChance() {
-        EntityFishingHook hook = getHandle();
+        net.minecraft.world.entity.projectile.FishingHook hook = getHandle();
 
         if (this.biteChance == -1) {
-            if (hook.level.isRainingAt(new BlockPos(MathHelper.floor(hook.getX()), MathHelper.floor(hook.getY()) + 1, MathHelper.floor(hook.getZ())))) {
+            if (hook.level.isRainingAt(new BlockPos(Math.floor(hook.getX()), Math.floor(hook.getY()) + 1, Math.floor(hook.getZ())))) {
                 return 1 / 300.0;
             }
             return 1 / 500.0;
@@ -98,15 +95,15 @@ public class CraftFishHook extends CraftProjectile implements FishHook {
 
     @Override
     public void setHookedEntity(Entity entity) {
-        EntityFishingHook hook = getHandle();
+        net.minecraft.world.entity.projectile.FishingHook hook = getHandle();
 
         hook.hookedIn = (entity != null) ? ((CraftEntity) entity).getHandle() : null;
-        hook.getEntityData().set(EntityFishingHook.DATA_HOOKED_ENTITY, hook.hookedIn != null ? hook.hookedIn.getId() + 1 : 0);
+        hook.getEntityData().set(net.minecraft.world.entity.projectile.FishingHook.DATA_HOOKED_ENTITY, hook.hookedIn != null ? hook.hookedIn.getId() + 1 : 0);
     }
 
     @Override
     public boolean pullHookedEntity() {
-        EntityFishingHook hook = getHandle();
+        net.minecraft.world.entity.projectile.FishingHook hook = getHandle();
         if (hook.hookedIn == null) {
             return false;
         }

@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.world.entity.monster.EntityShulker;
 import org.bukkit.DyeColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftServer;
@@ -11,7 +10,7 @@ import org.bukkit.entity.Shulker;
 
 public class CraftShulker extends CraftGolem implements Shulker {
 
-    public CraftShulker(CraftServer server, EntityShulker entity) {
+    public CraftShulker(CraftServer server, net.minecraft.world.entity.monster.Shulker entity) {
         super(server, entity);
     }
 
@@ -26,18 +25,18 @@ public class CraftShulker extends CraftGolem implements Shulker {
     }
 
     @Override
-    public EntityShulker getHandle() {
-        return (EntityShulker) entity;
+    public net.minecraft.world.entity.monster.Shulker getHandle() {
+        return (net.minecraft.world.entity.monster.Shulker) entity;
     }
 
     @Override
     public DyeColor getColor() {
-        return DyeColor.getByWoolData(getHandle().getEntityData().get(EntityShulker.DATA_COLOR_ID));
+        return DyeColor.getByWoolData(getHandle().getEntityData().get(net.minecraft.world.entity.monster.Shulker.DATA_COLOR_ID));
     }
 
     @Override
     public void setColor(DyeColor color) {
-        getHandle().getEntityData().set(EntityShulker.DATA_COLOR_ID, (color == null) ? 16 : color.getWoolData());
+        getHandle().getEntityData().set(net.minecraft.world.entity.monster.Shulker.DATA_COLOR_ID, (color == null) ? 16 : color.getWoolData());
     }
 
     @Override

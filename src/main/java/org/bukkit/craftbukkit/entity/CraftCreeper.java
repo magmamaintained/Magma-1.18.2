@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.world.entity.monster.EntityCreeper;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
@@ -9,7 +8,7 @@ import org.bukkit.event.entity.CreeperPowerEvent;
 
 public class CraftCreeper extends CraftMonster implements Creeper {
 
-    public CraftCreeper(CraftServer server, EntityCreeper entity) {
+    public CraftCreeper(CraftServer server, net.minecraft.world.entity.monster.Creeper entity) {
         super(server, entity);
     }
 
@@ -82,8 +81,8 @@ public class CraftCreeper extends CraftMonster implements Creeper {
     }
 
     @Override
-    public EntityCreeper getHandle() {
-        return (EntityCreeper) entity;
+    public net.minecraft.world.entity.monster.Creeper getHandle() {
+        return (net.minecraft.world.entity.monster.Creeper) entity;
     }
 
     @Override

@@ -1,18 +1,17 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.ambient.EntityAmbient;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Ambient;
 import org.bukkit.entity.EntityType;
 
 public class CraftAmbient extends CraftMob implements Ambient {
-    public CraftAmbient(CraftServer server, EntityAmbient entity) {
+    public CraftAmbient(CraftServer server, net.minecraft.world.entity.ambient.AmbientCreature entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityAmbient getHandle() {
-        return (EntityAmbient) entity;
+    public net.minecraft.world.entity.ambient.AmbientCreature getHandle() {
+        return (net.minecraft.world.entity.ambient.AmbientCreature) entity;
     }
 
     @Override

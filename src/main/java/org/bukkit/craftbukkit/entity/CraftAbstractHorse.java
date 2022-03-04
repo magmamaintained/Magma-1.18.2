@@ -1,8 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
 import java.util.UUID;
-import net.minecraft.world.entity.ai.attributes.GenericAttributes;
-import net.minecraft.world.entity.animal.horse.EntityHorseAbstract;
 import org.apache.commons.lang.Validate;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.inventory.CraftInventoryAbstractHorse;
@@ -13,13 +11,13 @@ import org.bukkit.inventory.AbstractHorseInventory;
 
 public abstract class CraftAbstractHorse extends CraftAnimals implements AbstractHorse {
 
-    public CraftAbstractHorse(CraftServer server, EntityHorseAbstract entity) {
+    public CraftAbstractHorse(CraftServer server, net.minecraft.world.entity.animal.horse.AbstractHorse entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityHorseAbstract getHandle() {
-        return (EntityHorseAbstract) entity;
+    public net.minecraft.world.entity.animal.horse.AbstractHorse getHandle() {
+        return (net.minecraft.world.entity.animal.horse.AbstractHorse) entity;
     }
 
     @Override
@@ -58,7 +56,7 @@ public abstract class CraftAbstractHorse extends CraftAnimals implements Abstrac
     @Override
     public void setJumpStrength(double strength) {
         Validate.isTrue(strength >= 0, "Jump strength cannot be less than zero");
-        getHandle().getAttribute(GenericAttributes.JUMP_STRENGTH).setBaseValue(strength);
+        getHandle().getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.JUMP_STRENGTH).setBaseValue(strength);
     }
 
     @Override

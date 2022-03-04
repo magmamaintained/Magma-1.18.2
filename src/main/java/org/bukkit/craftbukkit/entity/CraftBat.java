@@ -1,18 +1,17 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.ambient.EntityBat;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.EntityType;
 
 public class CraftBat extends CraftAmbient implements Bat {
-    public CraftBat(CraftServer server, EntityBat entity) {
+    public CraftBat(CraftServer server, net.minecraft.world.entity.ambient.Bat entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityBat getHandle() {
-        return (EntityBat) entity;
+    public net.minecraft.world.entity.ambient.Bat getHandle() {
+        return (net.minecraft.world.entity.ambient.Bat) entity;
     }
 
     @Override

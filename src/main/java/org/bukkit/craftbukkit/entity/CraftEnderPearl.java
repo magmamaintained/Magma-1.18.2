@@ -1,18 +1,17 @@
 package org.bukkit.craftbukkit.entity;
 
-import net.minecraft.world.entity.projectile.EntityEnderPearl;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.EntityType;
 
 public class CraftEnderPearl extends CraftThrowableProjectile implements EnderPearl {
-    public CraftEnderPearl(CraftServer server, EntityEnderPearl entity) {
+    public CraftEnderPearl(CraftServer server, net.minecraft.world.entity.projectile.ThrownEnderpearl entity) {
         super(server, entity);
     }
 
     @Override
-    public EntityEnderPearl getHandle() {
-        return (EntityEnderPearl) entity;
+    public net.minecraft.world.entity.projectile.ThrownEnderpearl getHandle() {
+        return (net.minecraft.world.entity.projectile.ThrownEnderpearl) entity;
     }
 
     @Override

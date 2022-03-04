@@ -18,30 +18,30 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EnumMobSpawn;
 import net.minecraft.world.entity.GroupDataEntity;
-import net.minecraft.world.entity.decoration.EntityArmorStand;
-import net.minecraft.world.entity.decoration.EntityHanging;
-import net.minecraft.world.entity.decoration.EntityItemFrame;
-import net.minecraft.world.entity.decoration.EntityLeash;
-import net.minecraft.world.entity.decoration.EntityPainting;
-import net.minecraft.world.entity.item.EntityFallingBlock;
-import net.minecraft.world.entity.item.EntityTNTPrimed;
-import net.minecraft.world.entity.monster.EntityZombie;
-import net.minecraft.world.entity.projectile.EntityEgg;
-import net.minecraft.world.entity.projectile.EntityEnderSignal;
-import net.minecraft.world.entity.projectile.EntityEvokerFangs;
-import net.minecraft.world.entity.projectile.EntityFireball;
+import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
+import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.item.net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.item.net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.monster.net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.ThrownEgg;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.EyeOfEnder;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.EvokerFangs;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.EntityFireworks;
-import net.minecraft.world.entity.projectile.EntityPotion;
-import net.minecraft.world.entity.projectile.EntitySnowball;
-import net.minecraft.world.entity.projectile.EntityTippedArrow;
-import net.minecraft.world.entity.vehicle.EntityBoat;
-import net.minecraft.world.entity.vehicle.EntityMinecartChest;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
-import net.minecraft.world.entity.vehicle.EntityMinecartFurnace;
-import net.minecraft.world.entity.vehicle.EntityMinecartHopper;
-import net.minecraft.world.entity.vehicle.EntityMinecartMobSpawner;
-import net.minecraft.world.entity.vehicle.EntityMinecartRideable;
-import net.minecraft.world.entity.vehicle.EntityMinecartTNT;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartFurnace;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartHopper;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartSpawner;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartTNT;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ChorusFlowerBlock;
@@ -555,20 +555,20 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
 
         // order is important for some of these
         if (Boat.class.isAssignableFrom(clazz)) {
-            entity = new EntityBoat(world, x, y, z);
+            entity = new net.minecraft.world.entity.vehicle.Boat(world, x, y, z);
             entity.moveTo(x, y, z, yaw, pitch);
         } else if (FallingBlock.class.isAssignableFrom(clazz)) {
             BlockPos pos = new BlockPos(x, y, z);
-            entity = EntityFallingBlock.fall(world, pos, getHandle().getBlockState(pos));
+            entity = net.minecraft.world.entity.item.FallingBlockEntity.fall(world, pos, getHandle().getBlockState(pos));
         } else if (Projectile.class.isAssignableFrom(clazz)) {
             if (Snowball.class.isAssignableFrom(clazz)) {
-                entity = new EntitySnowball(world, x, y, z);
+                entity = new net.minecraft.world.entity.projectile.Snowball(world, x, y, z);
             } else if (Egg.class.isAssignableFrom(clazz)) {
-                entity = new EntityEgg(world, x, y, z);
+                entity = new net.minecraft.world.entity.projectile.ThrownEgg(world, x, y, z);
             } else if (AbstractArrow.class.isAssignableFrom(clazz)) {
                 if (TippedArrow.class.isAssignableFrom(clazz)) {
                     entity = net.minecraft.world.entity.EntityType.ARROW.create(world);
-                    ((EntityTippedArrow) entity).setPotionType(CraftPotionUtil.fromBukkit(new PotionData(PotionType.WATER, false, false)));
+                    ((net.minecraft.world.entity.projectile.Arrow) entity).setPotionType(CraftPotionUtil.fromBukkit(new PotionData(PotionType.WATER, false, false)));
                 } else if (SpectralArrow.class.isAssignableFrom(clazz)) {
                     entity = net.minecraft.world.entity.EntityType.SPECTRAL_ARROW.create(world);
                 } else if (Trident.class.isAssignableFrom(clazz)) {
@@ -585,11 +585,11 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 entity.moveTo(x, y, z, 0, 0);
             } else if (ThrownPotion.class.isAssignableFrom(clazz)) {
                 if (LingeringPotion.class.isAssignableFrom(clazz)) {
-                    entity = new EntityPotion(world, x, y, z);
-                    ((EntityPotion) entity).setItem(CraftItemStack.asNMSCopy(new ItemStack(org.bukkit.Material.LINGERING_POTION, 1)));
+                    entity = new net.minecraft.world.entity.projectile.ThrownPotion(world, x, y, z);
+                    ((net.minecraft.world.entity.projectile.ThrownPotion) entity).setItem(CraftItemStack.asNMSCopy(new ItemStack(org.bukkit.Material.LINGERING_POTION, 1)));
                 } else {
-                    entity = new EntityPotion(world, x, y, z);
-                    ((EntityPotion) entity).setItem(CraftItemStack.asNMSCopy(new ItemStack(org.bukkit.Material.SPLASH_POTION, 1)));
+                    entity = new net.minecraft.world.entity.projectile.ThrownPotion(world, x, y, z);
+                    ((net.minecraft.world.entity.projectile.ThrownPotion) entity).setItem(CraftItemStack.asNMSCopy(new ItemStack(org.bukkit.Material.SPLASH_POTION, 1)));
                 }
             } else if (Fireball.class.isAssignableFrom(clazz)) {
                 if (SmallFireball.class.isAssignableFrom(clazz)) {
@@ -603,7 +603,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 }
                 entity.moveTo(x, y, z, yaw, pitch);
                 Vector direction = location.getDirection().multiply(10);
-                ((EntityFireball) entity).setDirection(direction.getX(), direction.getY(), direction.getZ());
+                ((net.minecraft.world.entity.projectile.AbstractHurtingProjectile) entity).setDirection(direction.getX(), direction.getY(), direction.getZ());
             } else if (ShulkerBullet.class.isAssignableFrom(clazz)) {
                 entity = net.minecraft.world.entity.EntityType.SHULKER_BULLET.create(world);
                 entity.moveTo(x, y, z, yaw, pitch);
@@ -615,22 +615,22 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
             }
         } else if (Minecart.class.isAssignableFrom(clazz)) {
             if (PoweredMinecart.class.isAssignableFrom(clazz)) {
-                entity = new EntityMinecartFurnace(world, x, y, z);
+                entity = new net.minecraft.world.entity.vehicle.MinecartFurnace(world, x, y, z);
             } else if (StorageMinecart.class.isAssignableFrom(clazz)) {
-                entity = new EntityMinecartChest(world, x, y, z);
+                entity = new net.minecraft.world.entity.vehicle.MinecartChest(world, x, y, z);
             } else if (ExplosiveMinecart.class.isAssignableFrom(clazz)) {
-                entity = new EntityMinecartTNT(world, x, y, z);
+                entity = new net.minecraft.world.entity.vehicle.MinecartTNT(world, x, y, z);
             } else if (HopperMinecart.class.isAssignableFrom(clazz)) {
-                entity = new EntityMinecartHopper(world, x, y, z);
+                entity = new net.minecraft.world.entity.vehicle.MinecartHopper(world, x, y, z);
             } else if (SpawnerMinecart.class.isAssignableFrom(clazz)) {
-                entity = new EntityMinecartMobSpawner(world, x, y, z);
+                entity = new net.minecraft.world.entity.vehicle.MinecartSpawner(world, x, y, z);
             } else if (CommandMinecart.class.isAssignableFrom(clazz)) {
                 entity = new MinecartCommandBlock(world, x, y, z);
             } else { // Default to rideable minecart for pre-rideable compatibility
-                entity = new EntityMinecartRideable(world, x, y, z);
+                entity = new net.minecraft.world.entity.vehicle.Minecart(world, x, y, z);
             }
         } else if (EnderSignal.class.isAssignableFrom(clazz)) {
-            entity = new EntityEnderSignal(world, x, y, z);
+            entity = new net.minecraft.world.entity.projectile.EyeOfEnder(world, x, y, z);
         } else if (EnderCrystal.class.isAssignableFrom(clazz)) {
             entity = net.minecraft.world.entity.EntityType.END_CRYSTAL.create(world);
             entity.moveTo(x, y, z, 0, 0);
@@ -725,7 +725,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 } else if (Drowned.class.isAssignableFrom(clazz)) {
                     entity = net.minecraft.world.entity.EntityType.DROWNED.create(world);
                 } else {
-                    entity = new EntityZombie(world);
+                    entity = new net.minecraft.world.entity.monster.Zombie(world);
                 }
             } else if (Giant.class.isAssignableFrom(clazz)) {
                 entity = net.minecraft.world.entity.EntityType.GIANT.create(world);
@@ -768,7 +768,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                     entity = net.minecraft.world.entity.EntityType.GUARDIAN.create(world);
                 }
             } else if (ArmorStand.class.isAssignableFrom(clazz)) {
-                entity = new EntityArmorStand(world, x, y, z);
+                entity = new net.minecraft.world.entity.decoration.ArmorStand(world, x, y, z);
             } else if (PolarBear.class.isAssignableFrom(clazz)) {
                 entity = net.minecraft.world.entity.EntityType.POLAR_BEAR.create(world);
             } else if (Vex.class.isAssignableFrom(clazz)) {
@@ -834,7 +834,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
         } else if (Hanging.class.isAssignableFrom(clazz)) {
             if (LeashHitch.class.isAssignableFrom(clazz)) {
                 // SPIGOT-5732: LeashHitch has no direction and is always centered at a block
-                entity = new EntityLeash(world, new BlockPos(x, y, z));
+                entity = new net.minecraft.world.entity.decoration.LeashFenceKnotEntity(world, new BlockPos(x, y, z));
             } else {
                 BlockFace face = BlockFace.SELF;
                 BlockFace[] faces = new BlockFace[]{BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH};
@@ -854,12 +854,12 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                     if (nmsBlock.getMaterial().isSolid() || BlockDiodeAbstract.isDiode(nmsBlock)) {
                         boolean taken = false;
                         AABB bb = (ItemFrame.class.isAssignableFrom(clazz))
-                                ? EntityItemFrame.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height)
-                                : EntityHanging.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height);
+                                ? net.minecraft.world.entity.decoration.ItemFrame.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height)
+                                : net.minecraft.world.entity.decoration.HangingEntity.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height);
                         List<net.minecraft.world.entity.Entity> list = (List<net.minecraft.world.entity.Entity>) getHandle().getEntities(null, bb);
                         for (Iterator<net.minecraft.world.entity.Entity> it = list.iterator(); !taken && it.hasNext(); ) {
                             net.minecraft.world.entity.Entity e = it.next();
-                            if (e instanceof EntityHanging) {
+                            if (e instanceof net.minecraft.world.entity.decoration.HangingEntity) {
                                 taken = true; // Hanging entities do not like hanging entities which intersect them.
                             }
                         }
@@ -881,22 +881,22 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 Direction dir = CraftBlock.blockFaceToNotch(face).getOpposite();
                 if (Painting.class.isAssignableFrom(clazz)) {
                     if (isNormalWorld() && randomizeData) {
-                        entity = new EntityPainting(getHandle().getMinecraftWorld(), new BlockPos(x, y, z), dir);
+                        entity = new net.minecraft.world.entity.decoration.Painting(getHandle().getMinecraftWorld(), new BlockPos(x, y, z), dir);
                     } else {
-                        entity = new EntityPainting(net.minecraft.world.entity.EntityType.PAINTING, getHandle().getMinecraftWorld());
+                        entity = new net.minecraft.world.entity.decoration.Painting(net.minecraft.world.entity.EntityType.PAINTING, getHandle().getMinecraftWorld());
                         entity.absMoveTo(x, y, z, yaw, pitch);
-                        ((EntityPainting) entity).setDirection(dir);
+                        ((net.minecraft.world.entity.decoration.Painting) entity).setDirection(dir);
                     }
                 } else if (ItemFrame.class.isAssignableFrom(clazz)) {
                     if (GlowItemFrame.class.isAssignableFrom(clazz)) {
                         entity = new net.minecraft.world.entity.decoration.GlowItemFrame(world, new BlockPos(x, y, z), dir);
                     } else {
-                        entity = new EntityItemFrame(world, new BlockPos(x, y, z), dir);
+                        entity = new net.minecraft.world.entity.decoration.ItemFrame(world, new BlockPos(x, y, z), dir);
                     }
                 }
             }
         } else if (TNTPrimed.class.isAssignableFrom(clazz)) {
-            entity = new EntityTNTPrimed(world, x, y, z, null);
+            entity = new net.minecraft.world.entity.item.PrimedTnt(world, x, y, z, null);
         } else if (ExperienceOrb.class.isAssignableFrom(clazz)) {
             entity = new EntityExperienceOrb(world, x, y, z, 0);
         } else if (LightningStrike.class.isAssignableFrom(clazz)) {
@@ -905,7 +905,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
         } else if (AreaEffectCloud.class.isAssignableFrom(clazz)) {
             entity = new EntityAreaEffectCloud(world, x, y, z);
         } else if (EvokerFangs.class.isAssignableFrom(clazz)) {
-            entity = new EntityEvokerFangs(world, x, y, z, (float) Math.toRadians(yaw), 0, null);
+            entity = new net.minecraft.world.entity.projectile.EvokerFangs(world, x, y, z, (float) Math.toRadians(yaw), 0, null);
         } else if (Marker.class.isAssignableFrom(clazz)) {
             entity = net.minecraft.world.entity.EntityType.MARKER.create(world);
             entity.setPos(x, y, z);

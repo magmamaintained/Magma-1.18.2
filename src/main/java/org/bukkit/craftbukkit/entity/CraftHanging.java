@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.entity;
 
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.decoration.EntityHanging;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.block.CraftBlock;
@@ -9,7 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 
 public class CraftHanging extends CraftEntity implements Hanging {
-    public CraftHanging(CraftServer server, EntityHanging entity) {
+    public CraftHanging(CraftServer server, net.minecraft.world.entity.decoration.HangingEntity entity) {
         super(server, entity);
     }
 
@@ -25,7 +24,7 @@ public class CraftHanging extends CraftEntity implements Hanging {
 
     @Override
     public boolean setFacingDirection(BlockFace face, boolean force) {
-        EntityHanging hanging = getHandle();
+        net.minecraft.world.entity.decoration.HangingEntity hanging = getHandle();
         Direction dir = hanging.getDirection();
         switch (face) {
             case SOUTH:
@@ -59,8 +58,8 @@ public class CraftHanging extends CraftEntity implements Hanging {
     }
 
     @Override
-    public EntityHanging getHandle() {
-        return (EntityHanging) entity;
+    public net.minecraft.world.entity.decoration.HangingEntity getHandle() {
+        return (net.minecraft.world.entity.decoration.HangingEntity) entity;
     }
 
     @Override

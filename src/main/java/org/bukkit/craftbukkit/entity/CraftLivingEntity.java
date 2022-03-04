@@ -341,7 +341,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
 
     @Override
     public boolean addPotionEffect(PotionEffect effect, boolean force) {
-        getHandle().addEffect(new MobEffect(MobEffects.byId(effect.getType().getId()), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.hasParticles()), EntityPotionEffectEvent.Cause.PLUGIN);
+        getHandle().addEffect(new MobEffectInstance(MobEffect.byId(effect.getType().getId()), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.hasParticles()), EntityPotionEffectEvent.Cause.PLUGIN);
         return true;
     }
 
@@ -356,7 +356,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
 
     @Override
     public boolean hasPotionEffect(PotionEffectType type) {
-        return getHandle().hasEffect(MobEffects.byId(type.getId()));
+        return getHandle().hasEffect(MobEffect.byId(type.getId()));
     }
 
     @Override
@@ -555,7 +555,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
 
     @Override
     public boolean setLeashHolder(Entity holder) {
-        if (getHandle().generation || (getHandle() instanceof EntityWither) || !(getHandle() instanceof Mob)) {
+        if (getHandle().generation || (getHandle() instanceof net.minecraft.world.entity.boss.wither.WitherBoss) || !(getHandle() instanceof Mob)) {
             return false;
         }
 
