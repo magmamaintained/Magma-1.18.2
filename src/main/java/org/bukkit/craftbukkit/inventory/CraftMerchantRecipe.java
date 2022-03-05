@@ -6,8 +6,9 @@ import net.minecraft.util.MathHelper;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantOffer;
+import org.bukkit.inventory.MerchantRecipe;
 
-public class CraftMerchantRecipe extends MerchantOffer {
+public class CraftMerchantRecipe extends MerchantRecipe {
 
     private final net.minecraft.world.item.trading.MerchantOffer handle;
 
@@ -119,7 +120,7 @@ public class CraftMerchantRecipe extends MerchantOffer {
         return handle;
     }
 
-    public static CraftMerchantRecipe fromBukkit(MerchantOffer recipe) {
+    public static CraftMerchantRecipe fromBukkit(MerchantRecipe recipe) {
         if (recipe instanceof CraftMerchantRecipe) {
             return (CraftMerchantRecipe) recipe;
         } else {

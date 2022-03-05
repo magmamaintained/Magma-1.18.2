@@ -10,46 +10,16 @@ import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.features.TreeFeatures;
-import net.minecraft.world.entity.EntityAreaEffectCloud;
-import net.minecraft.world.entity.EntityExperienceOrb;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EnumMobSpawn;
-import net.minecraft.world.entity.GroupDataEntity;
-import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.HangingEntity;
-import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
-import net.minecraft.world.entity.decoration.net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.entity.item.net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.entity.item.net.minecraft.world.entity.item.PrimedTnt;
-import net.minecraft.world.entity.monster.net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.ThrownEgg;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.EyeOfEnder;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.EvokerFangs;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
-import net.minecraft.world.entity.projectile.EntityFireworks;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.Snowball;
-import net.minecraft.world.entity.projectile.net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartChest;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartFurnace;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartHopper;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartSpawner;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.Minecart;
-import net.minecraft.world.entity.vehicle.net.minecraft.world.entity.vehicle.MinecartTNT;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ChorusFlowerBlock;
-import net.minecraft.world.level.block.BlockDiodeAbstract;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.WorldGenFeatureConfigured;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -262,7 +232,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
         return CraftMagicNumbers.getMaterial(getData(x, y, z).getBlock());
     }
 
-    private BlockState getData(int x, int y, int z) {
+    private net.minecraft.world.level.block.state.BlockState getData(int x, int y, int z) {
         return getHandle().getBlockState(new BlockPos(x, y, z));
     }
 
@@ -275,7 +245,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
     public void setBlockData(int x, int y, int z, BlockData blockData) {
         WorldGenLevel world = getHandle();
         BlockPos pos = new BlockPos(x, y, z);
-        BlockState old = getHandle().getBlockState(pos);
+        net.minecraft.world.level.block.state.BlockState old = getHandle().getBlockState(pos);
 
         CraftBlock.setTypeAndData(world, pos, old, ((CraftBlockData) blockData).getState(), true);
     }
@@ -369,7 +339,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 gen = TreeFeatures.SUPER_BIRCH_BEES_0002;
                 break;
             case CHORUS_PLANT:
-                ((BlockChorusFlower) Blocks.CHORUS_FLOWER).generatePlant(access, pos, random, 8);
+                ((ChorusFlowerBlock) Blocks.CHORUS_FLOWER).generatePlant(access, pos, random, 8);
                 return true;
             case CRIMSON_FUNGUS:
                 gen = TreeFeatures.CRIMSON_FUNGUS_PLANTED;
@@ -386,7 +356,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 break;
         }
 
-        return ((WorldGenFeatureConfigured<?, ?>) gen.value()).place(access, chunkGenerator, random, pos);
+        return ((ConfiguredFeature<?, ?>) gen.value()).place(access, chunkGenerator, random, pos);
     }
 
     @Override
@@ -516,7 +486,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
         Preconditions.checkArgument(entity != null, "Cannot spawn null entity");
 
         if (randomizeData && entity instanceof Mob) {
-            ((Mob) entity).finalizeSpawn(getHandle(), getHandle().getCurrentDifficultyAt(entity.blockPosition()), EnumMobSpawn.COMMAND, (GroupDataEntity) null, null);
+            ((Mob) entity).finalizeSpawn(getHandle(), getHandle().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, (SpawnGroupData) null, null);
         }
 
         if (!isNormalWorld()) {
@@ -850,8 +820,8 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
 
                 final BlockPos pos = new BlockPos(x, y, z);
                 for (BlockFace dir : faces) {
-                    BlockState nmsBlock = getHandle().getBlockState(pos.relative(CraftBlock.blockFaceToNotch(dir)));
-                    if (nmsBlock.getMaterial().isSolid() || BlockDiodeAbstract.isDiode(nmsBlock)) {
+                    net.minecraft.world.level.block.state.BlockState nmsBlock = getHandle().getBlockState(pos.relative(CraftBlock.blockFaceToNotch(dir)));
+                    if (nmsBlock.getMaterial().isSolid() || net.minecraft.world.level.block.DiodeBlock.isDiode(nmsBlock)) {
                         boolean taken = false;
                         AABB bb = (ItemFrame.class.isAssignableFrom(clazz))
                                 ? net.minecraft.world.entity.decoration.ItemFrame.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height)
@@ -898,12 +868,12 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
         } else if (TNTPrimed.class.isAssignableFrom(clazz)) {
             entity = new net.minecraft.world.entity.item.PrimedTnt(world, x, y, z, null);
         } else if (ExperienceOrb.class.isAssignableFrom(clazz)) {
-            entity = new EntityExperienceOrb(world, x, y, z, 0);
+            entity = new net.minecraft.world.entity.ExperienceOrb(world, x, y, z, 0);
         } else if (LightningStrike.class.isAssignableFrom(clazz)) {
             entity = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create(world);
             entity.moveTo(location.getX(), location.getY(), location.getZ());
         } else if (AreaEffectCloud.class.isAssignableFrom(clazz)) {
-            entity = new EntityAreaEffectCloud(world, x, y, z);
+            entity = new net.minecraft.world.entity.AreaEffectCloud(world, x, y, z);
         } else if (EvokerFangs.class.isAssignableFrom(clazz)) {
             entity = new net.minecraft.world.entity.projectile.EvokerFangs(world, x, y, z, (float) Math.toRadians(yaw), 0, null);
         } else if (Marker.class.isAssignableFrom(clazz)) {

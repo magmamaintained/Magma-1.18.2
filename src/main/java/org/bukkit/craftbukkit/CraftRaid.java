@@ -8,11 +8,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.raid.net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.Raid;
-import org.bukkit.Raid.RaidStatus;
 import org.bukkit.entity.Raider;
 
 public final class CraftRaid implements Raid {
