@@ -3,7 +3,6 @@ package org.bukkit.craftbukkit.inventory;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.world.Container;
-import net.minecraft.world.item.crafting.net.minecraft.world.item.crafting.Recipe;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;

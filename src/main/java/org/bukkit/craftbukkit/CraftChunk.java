@@ -12,29 +12,26 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.net.minecraft.core.Registry;
-import net.minecraft.core.SectionPosition;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.thread.ThreadedMailbox;
+import net.minecraft.util.thread.ProcessorMailbox;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.biome.net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.NibbleArray;
-import net.minecraft.world.level.chunk.storage.ChunkRegionLoader;
+import net.minecraft.world.level.chunk.DataLayer;
+import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import net.minecraft.world.level.chunk.storage.EntityStorage;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.lighting.LightEngine;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
@@ -48,15 +45,15 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 
 public class CraftChunk implements Chunk {
-    private WeakReference<net.minecraft.world.level.chunk.Chunk> weakChunk;
+    private WeakReference<net.minecraft.world.level.chunk.LevelChunk> weakChunk;
     private final ServerLevel worldServer;
     private final int x;
     private final int z;
     private static final PalettedContainer<BlockState> emptyBlockIDs = new PalettedContainer<>(net.minecraft.world.level.block.Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.e.SECTION_STATES);
     private static final byte[] emptyLight = new byte[2048];
 
-    public CraftChunk(net.minecraft.world.level.chunk.Chunk chunk) {
-        this.weakChunk = new WeakReference<net.minecraft.world.level.chunk.Chunk>(chunk);
+    public CraftChunk(net.minecraft.world.level.chunk.LevelChunk chunk) {
+        this.weakChunk = new WeakReference<net.minecraft.world.level.chunk.LevelChunk>(chunk);
 
         worldServer = (ServerLevel) getHandle().level;
         x = getHandle().getPos().x;
@@ -79,13 +76,13 @@ public class CraftChunk implements Chunk {
         return (CraftWorld) getWorld();
     }
 
-    public net.minecraft.world.level.chunk.Chunk getHandle() {
-        net.minecraft.world.level.chunk.Chunk c = weakChunk.get();
+    public net.minecraft.world.level.chunk.LevelChunk getHandle() {
+        net.minecraft.world.level.chunk.LevelChunk c = weakChunk.get();
 
         if (c == null) {
             c = worldServer.getChunk(x, z);
 
-            weakChunk = new WeakReference<net.minecraft.world.level.chunk.Chunk>(c);
+            weakChunk = new WeakReference<net.minecraft.world.level.chunk.LevelChunk>(c);
         }
 
         return c;
@@ -140,7 +137,7 @@ public class CraftChunk implements Chunk {
         entityManager.ensureChunkQueuedForLoad(pair); // Start entity loading
 
         // SPIGOT-6772: Use entity mailbox and re-schedule entities if they get unloaded
-        ThreadedMailbox<Runnable> mailbox = ((EntityStorage) entityManager.permanentStorage).entityDeserializerQueue;
+        ProcessorMailbox<Runnable> mailbox = ((EntityStorage) entityManager.permanentStorage).entityDeserializerQueue;
         BooleanSupplier supplier = () -> {
             // only execute inbox if our entities are not present
             if (entityManager.areEntitiesLoaded(pair)) {
@@ -181,7 +178,7 @@ public class CraftChunk implements Chunk {
             getWorld().getChunkAt(x, z); // Transient load for this tick
         }
         int index = 0;
-        net.minecraft.world.level.chunk.Chunk chunk = getHandle();
+        net.minecraft.world.level.chunk.LevelChunk chunk = getHandle();
 
         BlockState[] entities = new BlockState[chunk.blockEntities.size()];
 
@@ -286,7 +283,7 @@ public class CraftChunk implements Chunk {
 
     @Override
     public ChunkSnapshot getChunkSnapshot(boolean includeMaxBlockY, boolean includeBiome, boolean includeBiomeTempRain) {
-        net.minecraft.world.level.chunk.Chunk chunk = getHandle();
+        net.minecraft.world.level.chunk.LevelChunk chunk = getHandle();
 
         LevelChunkSection[] cs = chunk.getSections();
         PalettedContainer[] sectionBlockIDs = new PalettedContainer[cs.length];
@@ -296,23 +293,23 @@ public class CraftChunk implements Chunk {
         PalettedContainer<Holder<net.minecraft.world.level.biome.Biome>>[] biome = (includeBiome || includeBiomeTempRain) ? new PalettedContainer[cs.length] : null;
 
         net.minecraft.core.Registry<net.minecraft.world.level.biome.Biome> iregistry = worldServer.registryAccess().registryOrThrow(net.minecraft.core.Registry.BIOME_REGISTRY);
-        Codec<PalettedContainer<Holder<net.minecraft.world.level.biome.Biome>>> biomeCodec = PalettedContainer.codec(iregistry.asHolderIdMap(), iregistry.holderByNameCodec(), PalettedContainer.e.SECTION_BIOMES, iregistry.getHolderOrThrow(Biomes.PLAINS));
+        Codec<PalettedContainer<Holder<net.minecraft.world.level.biome.Biome>>> biomeCodec = PalettedContainer.codec(iregistry.asHolderIdMap(), iregistry.holderByNameCodec(), PalettedContainer.Strategy.SECTION_BIOMES, iregistry.getHolderOrThrow(Biomes.PLAINS));
 
         for (int i = 0; i < cs.length; i++) {
             CompoundTag data = new CompoundTag();
 
-            data.put("block_states", ChunkRegionLoader.BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, cs[i].getStates()).get().left().get());
-            sectionBlockIDs[i] = ChunkRegionLoader.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, data.getCompound("block_states")).get().left().get();
+            data.put("block_states", ChunkSerializer.BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, cs[i].getStates()).get().left().get());
+            sectionBlockIDs[i] = ChunkSerializer.BLOCK_STATE_CODEC.parse(NbtOps.INSTANCE, data.getCompound("block_states")).get().left().get();
 
-            LightEngine lightengine = chunk.level.getLightEngine();
-            NibbleArray skyLightArray = lightengine.getLayerListener(LightLayer.SKY).getDataLayerData(SectionPosition.of(x, i, z));
+            LevelLightEngine lightengine = chunk.level.getLightEngine();
+            DataLayer skyLightArray = lightengine.getLayerListener(LightLayer.SKY).getDataLayerData(SectionPos.of(x, i, z));
             if (skyLightArray == null) {
                 sectionSkyLights[i] = emptyLight;
             } else {
                 sectionSkyLights[i] = new byte[2048];
                 System.arraycopy(skyLightArray.getData(), 0, sectionSkyLights[i], 0, 2048);
             }
-            NibbleArray emitLightArray = lightengine.getLayerListener(LightLayer.BLOCK).getDataLayerData(SectionPosition.of(x, i, z));
+            DataLayer emitLightArray = lightengine.getLayerListener(LightLayer.BLOCK).getDataLayerData(SectionPos.of(x, i, z));
             if (emitLightArray == null) {
                 sectionEmitLights[i] = emptyLight;
             } else {
@@ -361,7 +358,7 @@ public class CraftChunk implements Chunk {
             empty[i] = true;
 
             if (biome != null) {
-                biome[i] = new PalettedContainer<>(iregistry.asHolderIdMap(), iregistry.getHolderOrThrow(Biomes.PLAINS), PalettedContainer.e.SECTION_BIOMES);
+                biome[i] = new PalettedContainer<>(iregistry.asHolderIdMap(), iregistry.getHolderOrThrow(Biomes.PLAINS), PalettedContainer.Strategy.SECTION_BIOMES);
             }
         }
 
