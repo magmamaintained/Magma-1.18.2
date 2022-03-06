@@ -9,13 +9,8 @@ buildscript {
     }
 }
 
-import groovy.json.JsonBuilder
 
-import java.nio.file.Files
-import java.util.Date
-import java.util.LinkedHashMap
 import net.minecraftforge.forge.tasks.*
-import static net.minecraftforge.forge.tasks.Util.*
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.ExtractInheritance
@@ -23,6 +18,11 @@ import net.minecraftforge.gradle.common.tasks.SignJar
 import net.minecraftforge.gradle.userdev.tasks.RenameJar
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.plugins.ide.eclipse.model.SourceFolder
+
+import java.nio.file.Files
+
+import static net.minecraftforge.forge.tasks.Util.getArtifacts
+import static net.minecraftforge.forge.tasks.Util.getClasspath
 
 plugins {
     id 'org.cadixdev.licenser' version '0.6.1'
@@ -1009,6 +1009,13 @@ project(':forge') {
                 'Implementation-Title':     'FML Launcher',
                 'Implementation-Version':   SPEC_VERSION,
                 'Implementation-Vendor':    'Forge'
+            ] as LinkedHashMap,
+            'org/magmafoundation/magma/': [
+                    'Specification-Title'   : 'Magma Development Limited',
+                    'Specification-Vendor'  : 'Magma Development Limited',
+                    'Implementation-Title'  : "Magma",
+                    'Implementation-Version': gradleutils.gitInfo.abbreviatedId,
+                    'Implementation-Vendor' : 'Magma Development Limited'
             ] as LinkedHashMap
         ]
     }
