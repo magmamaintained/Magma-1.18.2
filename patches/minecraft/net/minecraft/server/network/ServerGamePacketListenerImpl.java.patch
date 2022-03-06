@@ -1,12 +1,14 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -150,6 +_,9 @@
+@@ -150,6 +_,11 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.apache.commons.lang3.StringUtils;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.CraftServer;
 +import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.craftbukkit.util.LazyPlayerSet;
++import org.bukkit.event.player.PlayerCommandPreprocessEvent;
  import org.slf4j.Logger;
  
  public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener {
@@ -93,6 +95,37 @@
              }, ChatType.CHAT, this.f_9743_.m_142081_());
           }
  
+@@ -1143,7 +_,29 @@
+    }
+ 
+    private void m_9957_(String p_9958_) {
+-      this.f_9745_.m_129892_().m_82117_(this.f_9743_.m_20203_(), p_9958_);
++      // CraftBukkit start - whole method
++      this.f_9744_.info(this.f_9743_.m_6302_() + " issued server command: " + p_9958_);
++
++      CraftPlayer player = this.getCraftPlayer();
++
++      PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, p_9958_, new LazyPlayerSet(f_9745_));
++      this.cserver.getPluginManager().callEvent(event);
++
++      if (event.isCancelled()) {
++         return;
++      }
++
++      try {
++         if (this.cserver.dispatchCommand(event.getPlayer(), event.getMessage().substring(1))) {
++            return;
++         }
++      } catch (org.bukkit.command.CommandException ex) {
++         player.sendMessage(org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command");
++         java.util.logging.Logger.getLogger(ServerGamePacketListenerImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
++         return;
++      }
++      // this.server.getCommands().performCommand(this.player.createCommandSourceStack(), p_9958_);
++      // CraftBukkit end
+    }
+ 
+    public void m_7953_(ServerboundSwingPacket p_9926_) {
 @@ -1222,6 +_,7 @@
                 private void m_143678_(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
                    ItemStack itemstack = ServerGamePacketListenerImpl.this.f_9743_.m_21120_(p_143679_).m_41777_();

@@ -17,7 +17,7 @@
  import net.minecraft.network.chat.Component;
  import net.minecraft.server.ConsoleInput;
  import net.minecraft.server.MinecraftServer;
-@@ -52,11 +_,17 @@
+@@ -52,11 +_,20 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.CreativeModeTab;
  import net.minecraft.world.item.Items;
@@ -30,8 +30,11 @@
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.command.CraftRemoteConsoleCommandSender;
 +import org.bukkit.craftbukkit.util.ForwardLogHandler;
 +import org.bukkit.craftbukkit.util.TerminalConsoleWriterThread;
++import org.bukkit.event.server.RemoteServerCommandEvent;
++import org.bukkit.event.server.ServerCommandEvent;
  import org.slf4j.Logger;
  
  public class DedicatedServer extends MinecraftServer implements ServerInterface {
@@ -83,8 +86,8 @@
 -         this.m_129823_(new DedicatedPlayerList(this, this.m_206579_(), this.f_129745_));
 +         // CraftBukkit start
 +         this.m_129823_(new DedicatedPlayerList(this, this.f_129746_, this.f_129745_));
-+//         server.loadPlugins();
-+//         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
++         server.loadPlugins();
++         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
 +         // CraftBukkit end
           long i = Util.m_137569_();
           SkullBlockEntity.m_196700_(this.m_129927_(), this.m_129925_(), this);
@@ -99,6 +102,14 @@
           if (dedicatedserverproperties.f_139744_ != null) {
              this.m_129900_().m_46170_(GameRules.f_46153_).m_46246_(dedicatedserverproperties.f_139744_, this);
           }
+@@ -184,6 +_,7 @@
+          if (dedicatedserverproperties.f_139747_) {
+             f_139598_.info("Starting remote control listener");
+             this.f_139603_ = RconThread.m_11615_(this);
++            this.remoteConsole = new CraftRemoteConsoleCommandSender(this.f_139602_); // CraftBukkit
+          }
+ 
+          if (this.m_139669_() > 0L) {
 @@ -195,12 +_,13 @@
           }
  
@@ -114,6 +125,24 @@
        }
     }
  
+@@ -334,7 +_,16 @@
+    public void m_139665_() {
+       while(!this.f_139600_.isEmpty()) {
+          ConsoleInput consoleinput = this.f_139600_.remove(0);
+-         this.m_129892_().m_82117_(consoleinput.f_135929_, consoleinput.f_135928_);
++
++         // CraftBukkit start - ServerCommand for preprocessing
++         ServerCommandEvent event = new ServerCommandEvent(console, consoleinput.f_135928_);
++         server.getPluginManager().callEvent(event);
++         if (event.isCancelled()) continue;
++         consoleinput = new ConsoleInput(event.getCommand(), consoleinput.f_135929_);
++
++         //this.getCommands().performCommand(consoleinput.source, consoleinput.msg); // Called in dispatchServerCommand
++         server.dispatchServerCommand(console, consoleinput);
++         // CraftBukkit end
+       }
+ 
+    }
 @@ -439,6 +_,13 @@
        return this.m_7913_().f_139718_;
     }
@@ -127,6 +156,53 @@
 +
     public int m_6329_() {
        return this.m_7913_().f_139719_;
+    }
+@@ -518,13 +_,44 @@
+    }
+ 
+    public String m_7138_() {
+-      return "";
++      // CraftBukkit start - Whole method
++      StringBuilder result = new StringBuilder();
++      org.bukkit.plugin.Plugin[] plugins = server.getPluginManager().getPlugins();
++
++      result.append(server.getName());
++      result.append(" on Bukkit ");
++      result.append(server.getBukkitVersion());
++
++      if (plugins.length > 0 && server.getQueryPlugins()) {
++         result.append(": ");
++
++         for (int i = 0; i < plugins.length; i++) {
++            if (i > 0) {
++               result.append("; ");
++            }
++
++            result.append(plugins[i].getDescription().getName());
++            result.append(" ");
++            result.append(plugins[i].getDescription().getVersion().replaceAll(";", ","));
++         }
++      }
++
++      return result.toString();
++      // CraftBukkit end
+    }
+ 
+    public String m_7261_(String p_139644_) {
+       this.f_139602_.m_11512_();
+       this.m_18709_(() -> {
+-         this.m_129892_().m_82117_(this.f_139602_.m_11514_(), p_139644_);
++         // CraftBukkit start - fire RemoteServerCommandEvent
++         RemoteServerCommandEvent event = new RemoteServerCommandEvent(remoteConsole, p_139644_);
++         server.getPluginManager().callEvent(event);
++         if (event.isCancelled()) {
++            return;
++         }
++         ConsoleInput serverCommand = new ConsoleInput(event.getCommand(), f_139602_.m_11514_());
++         server.dispatchServerCommand(remoteConsole, serverCommand);
++         // CraftBukkit end
+       });
+       return this.f_139602_.m_11513_();
     }
 @@ -543,6 +_,11 @@
  

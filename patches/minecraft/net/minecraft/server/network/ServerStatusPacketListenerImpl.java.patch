@@ -1,0 +1,62 @@
+--- a/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
+@@ -1,14 +_,15 @@
+ package net.minecraft.server.network;
+ 
++import com.mojang.authlib.GameProfile;
++import net.minecraft.SharedConstants;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.TranslatableComponent;
+-import net.minecraft.network.protocol.status.ClientboundPongResponsePacket;
+-import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
+-import net.minecraft.network.protocol.status.ServerStatusPacketListener;
+-import net.minecraft.network.protocol.status.ServerboundPingRequestPacket;
+-import net.minecraft.network.protocol.status.ServerboundStatusRequestPacket;
++import net.minecraft.network.protocol.status.*;
+ import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.craftbukkit.util.CraftChatMessage;
++import org.magmafoundation.magma.craftbukkit.ServerListPingEventImpl;
+ 
+ public class ServerStatusPacketListenerImpl implements ServerStatusPacketListener {
+    private static final Component f_10081_ = new TranslatableComponent("multiplayer.status.request_handled");
+@@ -33,7 +_,37 @@
+          this.f_10083_.m_129507_(f_10081_);
+       } else {
+          this.f_10084_ = true;
+-         this.f_10083_.m_129512_(new ClientboundStatusResponsePacket(this.f_10082_.m_129928_()));
++//         this.connection.send(new ClientboundStatusResponsePacket(this.server.getStatus()));
++         // CraftBukkit start
++         ServerListPingEventImpl event = new ServerListPingEventImpl(f_10083_, f_10082_);
++         this.f_10082_.server.getPluginManager().callEvent(event);
++
++         java.util.List<GameProfile> profiles = new java.util.ArrayList<GameProfile>(event.getPlayers().length);
++         for (Object player : event.getPlayers()) {
++            if (player != null) {
++               ServerPlayer entityPlayer = ((ServerPlayer) player);
++               if (entityPlayer.m_184128_()) {
++                  profiles.add(entityPlayer.m_36316_());
++               } else {
++                  profiles.add(MinecraftServer.f_195496_);
++               }
++            }
++         }
++
++         ServerStatus.Players playerSample = new ServerStatus.Players(event.getMaxPlayers(), profiles.size());
++         if (!this.f_10082_.m_183306_()) {
++            playerSample.m_134924_(profiles.toArray(new GameProfile[profiles.size()]));
++         }
++
++         ServerStatus ping = new ServerStatus();
++         ping.m_134906_(event.icon.value);
++         ping.m_134908_(CraftChatMessage.fromString(event.getMotd(), true)[0]);
++         ping.m_134910_(playerSample);
++         int version = SharedConstants.m_183709_().getProtocolVersion();
++         ping.m_134912_(new ServerStatus.Version(f_10082_.m_130001_() + " " + f_10082_.m_7630_(), version));
++         ping.setForgeData(this.f_10082_.m_129928_().getForgeData());
++         this.f_10083_.m_129512_(new ClientboundStatusResponsePacket(ping));
++         // CraftBukkit end
+       }
+    }
+ 
