@@ -1,6 +1,25 @@
 --- a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-@@ -22,6 +_,7 @@
+@@ -1,5 +_,7 @@
+ package net.minecraft.server.network;
+ 
++import java.net.InetAddress;
++import java.util.HashMap;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.ConnectionProtocol;
+@@ -16,12 +_,18 @@
+    private final MinecraftServer f_9965_;
+    private final Connection f_9966_;
+ 
++   // CraftBukkit start - add fields
++   private static final HashMap<InetAddress, Long> throttleTracker = new HashMap<InetAddress, Long>();
++   private static int throttleCounter = 0;
++   // CraftBukkit end
++
+    public ServerHandshakePacketListenerImpl(MinecraftServer p_9969_, Connection p_9970_) {
+       this.f_9965_ = p_9969_;
+       this.f_9966_ = p_9970_;
     }
  
     public void m_7322_(ClientIntentionPacket p_9975_) {

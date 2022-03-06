@@ -113,7 +113,7 @@
              }, (p_206543_, p_206544_) -> {
                 RegistryAccess.Writable registryaccess$writable = RegistryAccess.m_206197_();
                 DynamicOps<Tag> dynamicops = RegistryOps.m_206813_(NbtOps.f_128958_, registryaccess$writable, p_206543_);
-@@ -181,22 +_,34 @@
+@@ -181,26 +_,48 @@
           }
  
           levelstoragesource$levelstorageaccess.m_78287_(registryaccess$frozen, worlddata);
@@ -136,19 +136,35 @@
              boolean flag1 = !optionset.has(optionspec) && !optionset.valuesOf(optionspec14).contains("nogui");
 -            if (flag1 && !GraphicsEnvironment.isHeadless()) {
 -               dedicatedserver1.m_139667_();
++            dedicatedserver1.options = optionset;
 +            if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag1 && !GraphicsEnvironment.isHeadless()) {
 +               dedicatedServer.m_139667_();
++            }
++
++            if (optionset.has("port")) {
++               int port = (Integer) optionset.valueOf("port");
++               if (port > 0) {
++                  dedicatedserver1.m_129801_(port);
++               }
              }
  
              return dedicatedserver1;
           });
++         /* CraftBukkit start
           Thread thread = new Thread("Server Shutdown Thread") {
              public void run() {
+-               dedicatedserver.m_7570_(true);
 +               // FORGE: Halting as GameTestServer will cause issues as it always calls System#exit on both crash and normal exit, so skip it
 +               if (!(dedicatedserver instanceof net.minecraft.gametest.framework.GameTestServer))
-                dedicatedserver.m_7570_(true);
++               dedicatedserver.halt(true);
 +               //TODO-PATCHING: Figure out what needs to be done here after the logging update.
 +               //LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
              }
           };
-          thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_129670_));
+-         thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_129670_));
++         thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
+          Runtime.getRuntime().addShutdownHook(thread);
++         */ // CraftBukkit end
+       } catch (Exception exception1) {
+          f_129670_.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable)exception1);
+       }
