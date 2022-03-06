@@ -2,7 +2,7 @@ package org.bukkit.craftbukkit;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Axis;
 import org.bukkit.Color;
 import org.bukkit.Effect;

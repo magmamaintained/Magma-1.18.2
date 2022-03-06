@@ -11,8 +11,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.StoredUserEntry;
 import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 
 public class CraftProfileBanList implements org.bukkit.BanList {

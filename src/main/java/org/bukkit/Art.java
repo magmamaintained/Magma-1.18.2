@@ -2,7 +2,7 @@ package org.bukkit;
 
 import com.google.common.collect.Maps;
 import java.util.HashMap;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

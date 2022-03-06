@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.scoreboard;
 
 import net.minecraft.world.scores.Scoreboard;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.util.CraftChatMessage;
 import org.bukkit.scoreboard.DisplaySlot;

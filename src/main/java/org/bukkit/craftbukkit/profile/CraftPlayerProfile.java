@@ -12,7 +12,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.Util;
 import net.minecraft.server.dedicated.DedicatedServer;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.craftbukkit.CraftServer;

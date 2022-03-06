@@ -11,7 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
 import org.bukkit.command.*;
 import org.bukkit.command.defaults.BukkitCommand;

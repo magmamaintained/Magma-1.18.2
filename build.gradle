@@ -237,7 +237,6 @@ def sharedDeps = {
     installer 'net.md-5:SpecialSource:1.10.0'
     installer 'com.google.guava:guava:31.0.1-jre'
     installer 'com.google.code.gson:gson:2.8.8'
-    installer 'commons-lang:commons-lang:2.6'
 }
 
 def sharedFmlonlyForge = { Project prj ->

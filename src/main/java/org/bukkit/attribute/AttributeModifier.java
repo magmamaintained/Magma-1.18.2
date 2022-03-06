@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.NumberConversions;
