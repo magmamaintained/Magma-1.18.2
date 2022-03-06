@@ -1069,18 +1069,7 @@ project(':forge') {
 
     task checkAll(dependsOn: [checkATs, checkSAS, checkExcs, findFieldInstanceChecks]){}
 
-    task checkPatchesAndFix(type: CheckPatches, dependsOn: genPatches) {
-        patchDir = file("$rootDir/patches")
-        autoFix = true
-    }
-
-    task checkPatches(type: CheckPatches, dependsOn: genPatches) {
-        patchDir = file("$rootDir/patches")
-        autoFix = false
-    }
-
     genPatches {
-        finalizedBy checkPatches
         autoHeader true
         lineEnding = '\n'
     }
@@ -1462,4 +1451,12 @@ task setup() {  //These must be strings so that we can do lazy resolution. Else 
     if (symlinkValid)
         dependsOn ':fmlonly:extractMapped'
     dependsOn ':forge:extractMapped'
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "1000"
+        }
+    }
 }

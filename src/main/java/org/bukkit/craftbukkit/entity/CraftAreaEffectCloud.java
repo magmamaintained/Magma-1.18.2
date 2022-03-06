@@ -4,7 +4,6 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -13,6 +12,7 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.potion.CraftPotionUtil;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -214,16 +214,16 @@ public class CraftAreaEffectCloud extends CraftEntity implements AreaEffectCloud
 
     @Override
     public ProjectileSource getSource() {
-        LivingEntity source = getHandle().getOwner();
+        net.minecraft.world.entity.LivingEntity source = getHandle().getOwner();
         return (source == null) ? null : (LivingEntity) source.getBukkitEntity();
     }
 
     @Override
     public void setSource(ProjectileSource shooter) {
         if (shooter instanceof CraftLivingEntity) {
-            getHandle().setOwner((LivingEntity) ((CraftLivingEntity) shooter).getHandle());
+            getHandle().setOwner((net.minecraft.world.entity.LivingEntity) ((CraftLivingEntity) shooter).getHandle());
         } else {
-            getHandle().setOwner((LivingEntity) null);
+            getHandle().setOwner((net.minecraft.world.entity.LivingEntity) null);
         }
     }
 }

@@ -1,5 +1,132 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
+@@ -1,5 +_,13 @@
+ package net.minecraft.commands;
+ 
++import javax.annotation.Nullable;
++import java.util.Collection;
++import java.util.LinkedHashSet;
++import java.util.Map;
++import java.util.Set;
++import java.util.function.Predicate;
++import java.util.stream.Collectors;
++import com.google.common.base.Joiner;
+ import com.google.common.collect.Maps;
+ import com.mojang.brigadier.CommandDispatcher;
+ import com.mojang.brigadier.ParseResults;
+@@ -12,99 +_,21 @@
+ import com.mojang.brigadier.tree.CommandNode;
+ import com.mojang.brigadier.tree.RootCommandNode;
+ import com.mojang.logging.LogUtils;
+-import java.util.Map;
+-import java.util.Set;
+-import java.util.function.Predicate;
+-import java.util.stream.Collectors;
+-import javax.annotation.Nullable;
+ import net.minecraft.ChatFormatting;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.Util;
+ import net.minecraft.commands.synchronization.ArgumentTypes;
+ import net.minecraft.commands.synchronization.SuggestionProviders;
+ import net.minecraft.gametest.framework.TestCommand;
+-import net.minecraft.network.chat.ClickEvent;
+-import net.minecraft.network.chat.Component;
+-import net.minecraft.network.chat.ComponentUtils;
+-import net.minecraft.network.chat.HoverEvent;
+-import net.minecraft.network.chat.MutableComponent;
+-import net.minecraft.network.chat.TextComponent;
+-import net.minecraft.network.chat.TranslatableComponent;
++import net.minecraft.network.chat.*;
+ import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
+-import net.minecraft.server.commands.AdvancementCommands;
+-import net.minecraft.server.commands.AttributeCommand;
+-import net.minecraft.server.commands.BanIpCommands;
+-import net.minecraft.server.commands.BanListCommands;
+-import net.minecraft.server.commands.BanPlayerCommands;
+-import net.minecraft.server.commands.BossBarCommands;
+-import net.minecraft.server.commands.ClearInventoryCommands;
+-import net.minecraft.server.commands.CloneCommands;
+-import net.minecraft.server.commands.DataPackCommand;
+-import net.minecraft.server.commands.DeOpCommands;
+-import net.minecraft.server.commands.DebugCommand;
+-import net.minecraft.server.commands.DefaultGameModeCommands;
+-import net.minecraft.server.commands.DifficultyCommand;
+-import net.minecraft.server.commands.EffectCommands;
+-import net.minecraft.server.commands.EmoteCommands;
+-import net.minecraft.server.commands.EnchantCommand;
+-import net.minecraft.server.commands.ExecuteCommand;
+-import net.minecraft.server.commands.ExperienceCommand;
+-import net.minecraft.server.commands.FillCommand;
+-import net.minecraft.server.commands.ForceLoadCommand;
+-import net.minecraft.server.commands.FunctionCommand;
+-import net.minecraft.server.commands.GameModeCommand;
+-import net.minecraft.server.commands.GameRuleCommand;
+-import net.minecraft.server.commands.GiveCommand;
+-import net.minecraft.server.commands.HelpCommand;
+-import net.minecraft.server.commands.ItemCommands;
+-import net.minecraft.server.commands.JfrCommand;
+-import net.minecraft.server.commands.KickCommand;
+-import net.minecraft.server.commands.KillCommand;
+-import net.minecraft.server.commands.ListPlayersCommand;
+-import net.minecraft.server.commands.LocateBiomeCommand;
+-import net.minecraft.server.commands.LocateCommand;
+-import net.minecraft.server.commands.LootCommand;
+-import net.minecraft.server.commands.MsgCommand;
+-import net.minecraft.server.commands.OpCommand;
+-import net.minecraft.server.commands.PardonCommand;
+-import net.minecraft.server.commands.PardonIpCommand;
+-import net.minecraft.server.commands.ParticleCommand;
+-import net.minecraft.server.commands.PerfCommand;
+-import net.minecraft.server.commands.PlaceFeatureCommand;
+-import net.minecraft.server.commands.PlaySoundCommand;
+-import net.minecraft.server.commands.PublishCommand;
+-import net.minecraft.server.commands.RecipeCommand;
+-import net.minecraft.server.commands.ReloadCommand;
+-import net.minecraft.server.commands.SaveAllCommand;
+-import net.minecraft.server.commands.SaveOffCommand;
+-import net.minecraft.server.commands.SaveOnCommand;
+-import net.minecraft.server.commands.SayCommand;
+-import net.minecraft.server.commands.ScheduleCommand;
+-import net.minecraft.server.commands.ScoreboardCommand;
+-import net.minecraft.server.commands.SeedCommand;
+-import net.minecraft.server.commands.SetBlockCommand;
+-import net.minecraft.server.commands.SetPlayerIdleTimeoutCommand;
+-import net.minecraft.server.commands.SetSpawnCommand;
+-import net.minecraft.server.commands.SetWorldSpawnCommand;
+-import net.minecraft.server.commands.SpectateCommand;
+-import net.minecraft.server.commands.SpreadPlayersCommand;
+-import net.minecraft.server.commands.StopCommand;
+-import net.minecraft.server.commands.StopSoundCommand;
+-import net.minecraft.server.commands.SummonCommand;
+-import net.minecraft.server.commands.TagCommand;
+-import net.minecraft.server.commands.TeamCommand;
+-import net.minecraft.server.commands.TeamMsgCommand;
+-import net.minecraft.server.commands.TeleportCommand;
+-import net.minecraft.server.commands.TellRawCommand;
+-import net.minecraft.server.commands.TimeCommand;
+-import net.minecraft.server.commands.TitleCommand;
+-import net.minecraft.server.commands.TriggerCommand;
+-import net.minecraft.server.commands.WeatherCommand;
+-import net.minecraft.server.commands.WhitelistCommand;
+-import net.minecraft.server.commands.WorldBorderCommand;
++import net.minecraft.server.commands.*;
+ import net.minecraft.server.commands.data.DataCommands;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.util.profiling.jfr.JvmProfiler;
++import org.bukkit.event.player.PlayerCommandSendEvent;
++import org.bukkit.event.server.ServerCommandEvent;
++import org.magmafoundation.magma.craftbukkit.commnd.CraftBukkitCommandHelper;
+ import org.slf4j.Logger;
+ 
+ public class Commands {
+@@ -117,6 +_,7 @@
+    private final CommandDispatcher<CommandSourceStack> f_82090_ = new CommandDispatcher<>();
+ 
+    public Commands(Commands.CommandSelection p_82093_) {
++      this(); // CraftBukkit
+       AdvancementCommands.m_136310_(this.f_82090_);
+       AttributeCommand.m_136444_(this.f_82090_);
+       ExecuteCommand.m_137042_(this.f_82090_);
 @@ -177,7 +_,7 @@
           JfrCommand.m_183645_(this.f_82090_);
        }
@@ -9,15 +136,77 @@
           TestCommand.m_127946_(this.f_82090_);
        }
  
-@@ -201,6 +_,7 @@
+@@ -201,26 +_,83 @@
        if (p_82093_.f_82144_) {
           PublishCommand.m_138184_(this.f_82090_);
        }
 +      net.minecraftforge.event.ForgeEventFactory.onCommandRegister(this.f_82090_, p_82093_);
  
        this.f_82090_.findAmbiguities((p_82108_, p_82109_, p_82110_, p_82111_) -> {
-          f_82089_.warn("Ambiguity between arguments {} and {} with inputs: {}", this.f_82090_.getPath(p_82109_), this.f_82090_.getPath(p_82110_), p_82111_);
-@@ -220,7 +_,15 @@
+-         f_82089_.warn("Ambiguity between arguments {} and {} with inputs: {}", this.f_82090_.getPath(p_82109_), this.f_82090_.getPath(p_82110_), p_82111_);
++         // LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(p_82109_), this.dispatcher.getPath(p_82110_), p_82111_); // CraftBukkit
+       });
++
++      // CraftBukkit start
++   }
++
++
++   public Commands() {
++      // CraftBukkkit end
+       this.f_82090_.setConsumer((p_82104_, p_82105_, p_82106_) -> {
+          p_82104_.getSource().m_81342_(p_82104_, p_82105_, p_82106_);
+       });
+    }
+ 
++   // CraftBukkit start
++   public int dispatchServerCommand(CommandSourceStack sender, String command) {
++      Joiner joiner = Joiner.on(" ");
++      if (command.startsWith("/")) {
++         command = command.substring(1);
++      }
++
++      ServerCommandEvent event = new ServerCommandEvent(sender.getBukkitSender(), command);
++      org.bukkit.Bukkit.getPluginManager().callEvent(event);
++      if (event.isCancelled()) {
++         return 0;
++      }
++      command = event.getCommand();
++
++      String[] args = command.split(" ");
++
++      String cmd = args[0];
++      if (cmd.startsWith("minecraft:")) cmd = cmd.substring("minecraft:".length());
++      if (cmd.startsWith("bukkit:")) cmd = cmd.substring("bukkit:".length());
++
++      // Block disallowed commands
++      if (cmd.equalsIgnoreCase("stop") || cmd.equalsIgnoreCase("kick") || cmd.equalsIgnoreCase("op")
++              || cmd.equalsIgnoreCase("deop") || cmd.equalsIgnoreCase("ban") || cmd.equalsIgnoreCase("ban-ip")
++              || cmd.equalsIgnoreCase("pardon") || cmd.equalsIgnoreCase("pardon-ip") || cmd.equalsIgnoreCase("reload")) {
++         return 0;
++      }
++
++      // Handle vanilla commands;
++      if (sender.m_81372_().getCraftServer().getCommandBlockOverride(args[0])) {
++         args[0] = "minecraft:" + args[0];
++      }
++
++      String newCommand = joiner.join(args);
++      return this.performCommand(sender, newCommand, newCommand, false);
++   }
++
+    public int m_82117_(CommandSourceStack p_82118_, String p_82119_) {
++      return this.performCommand(p_82118_, p_82119_, p_82119_, true);
++   }
++
++   public int performCommand(CommandSourceStack p_82118_, String p_82119_, String label, boolean stripSlash) {
+       StringReader stringreader = new StringReader(p_82119_);
+-      if (stringreader.canRead() && stringreader.peek() == '/') {
++      if (stripSlash && stringreader.canRead() && stringreader.peek() == '/') {
+          stringreader.skip();
++         // CraftBukkit end
+       }
+ 
+       p_82118_.m_81377_().m_129905_().m_6180_(p_82119_);
  
        try {
           try {
@@ -34,3 +223,51 @@
           } catch (CommandRuntimeException commandruntimeexception) {
              p_82118_.m_81352_(commandruntimeexception.m_79226_());
              return 0;
+@@ -229,7 +_,7 @@
+             if (commandsyntaxexception.getInput() != null && commandsyntaxexception.getCursor() >= 0) {
+                int j = Math.min(commandsyntaxexception.getInput().length(), commandsyntaxexception.getCursor());
+                MutableComponent mutablecomponent1 = (new TextComponent("")).m_130940_(ChatFormatting.GRAY).m_130938_((p_82134_) -> {
+-                  return p_82134_.m_131142_(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, p_82119_));
++                  return p_82134_.m_131142_(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, label)); // CraftBukkit
+                });
+                if (j > 10) {
+                   mutablecomponent1.m_130946_("...");
+@@ -273,10 +_,37 @@
+    }
+ 
+    public void m_82095_(ServerPlayer p_82096_) {
+-      Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
++      // CraftBukkit start
++      // Register Vanilla commands into builtRoot as before
++      Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newIdentityHashMap(); // Use identity to prevent aliasing issues
++      RootCommandNode vanillaRoot = new RootCommandNode();
++
++      RootCommandNode<CommandSourceStack> vanilla = p_82096_.f_8924_.vanillaCommandDispatcher.m_82094_().getRoot();
++      map.put(vanilla, vanillaRoot);
++      this.m_82112_(vanilla, vanillaRoot, p_82096_.m_20203_(), (Map) map);
++
++      // Now build the global commands in a second pass
+       RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
++
+       map.put(this.f_82090_.getRoot(), rootcommandnode);
+       this.m_82112_(this.f_82090_.getRoot(), rootcommandnode, p_82096_.m_20203_(), map);
++
++      Collection<String> bukkit = new LinkedHashSet<>();
++      for (CommandNode node : rootcommandnode.getChildren()) {
++         bukkit.add(node.getName());
++      }
++
++      PlayerCommandSendEvent event = new PlayerCommandSendEvent(p_82096_.getBukkitEntity(), new LinkedHashSet<>(bukkit));
++      event.getPlayer().getServer().getPluginManager().callEvent(event);
++
++      // Remove labels that were removed during the event
++      for (String orig : bukkit) {
++         if (!event.getCommands().contains(orig)) {
++            CraftBukkitCommandHelper.removeCommand(rootcommandnode, orig);
++         }
++      }
++      // CraftBukkit end
++
+       p_82096_.f_8906_.m_141995_(new ClientboundCommandsPacket(rootcommandnode));
+    }
+ 

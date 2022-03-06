@@ -1,20 +1,48 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -112,6 +_,7 @@
+@@ -110,8 +_,12 @@
+ import net.minecraft.world.scores.PlayerTeam;
+ import net.minecraft.world.scores.Scoreboard;
  import net.minecraft.world.scores.Team;
++import org.bukkit.craftbukkit.entity.CraftHumanEntity;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityExhaustionEvent;
  
  public abstract class Player extends LivingEntity {
 +   public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
     public static final String f_150081_ = "OfflinePlayer:";
     public static final int f_150082_ = 16;
     public static final int f_150083_ = 20;
-@@ -162,6 +_,9 @@
+@@ -133,10 +_,10 @@
+    protected static final EntityDataAccessor<CompoundTag> f_36092_ = SynchedEntityData.m_135353_(Player.class, EntityDataSerializers.f_135042_);
+    private long f_36109_;
+    private final Inventory f_36093_ = new Inventory(this);
+-   protected PlayerEnderChestContainer f_36094_ = new PlayerEnderChestContainer();
++   protected PlayerEnderChestContainer f_36094_ = new PlayerEnderChestContainer(this); // CraftBukkit - add "this" to constructor
+    public final InventoryMenu f_36095_;
+    public AbstractContainerMenu f_36096_;
+-   protected FoodData f_36097_ = new FoodData();
++   protected FoodData f_36097_ = new FoodData(this); // CraftBukkit - add "this" to constructor
+    protected int f_36098_;
+    public float f_36099_;
+    public float f_36100_;
+@@ -162,6 +_,19 @@
     private final ItemCooldowns f_36087_ = this.m_7478_();
     @Nullable
     public FishingHook f_36083_;
 +   private final java.util.Collection<MutableComponent> prefixes = new java.util.LinkedList<>();
 +   private final java.util.Collection<MutableComponent> suffixes = new java.util.LinkedList<>();
 +   @Nullable private Pose forcedPose;
++
++   // CraftBukkit start
++   public boolean fauxSleeping;
++   public int oldLevel = -1;
++
++   @Override
++   public CraftHumanEntity getBukkitEntity() {
++      return (CraftHumanEntity) super.getBukkitEntity();
++   }
++   // CraftBukkit end
  
     public Player(Level p_36114_, BlockPos p_36115_, float p_36116_, GameProfile p_36117_) {
        super(EntityType.f_20532_, p_36114_);
@@ -268,6 +296,19 @@
           this.m_5810_();
           this.f_19853_.m_7605_(this, (byte)30);
        }
+@@ -1253,6 +_,12 @@
+    public void m_141945_(ItemStack p_150098_, ItemStack p_150099_, ClickAction p_150100_) {
+    }
+ 
++   // CraftBukkit start
++   public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_36203_, boolean force) {
++      return m_7720_(p_36203_);
++   }
++   // CraftBukkit end
++
+    public Either<Player.BedSleepingProblem, Unit> m_7720_(BlockPos p_36203_) {
+       this.m_5802_(p_36203_);
+       this.f_36110_ = 0;
 @@ -1260,6 +_,7 @@
     }
  
@@ -333,6 +374,36 @@
        this.f_36078_ += p_36276_;
        if (this.f_36078_ < 0) {
           this.f_36078_ = 0;
+@@ -1584,11 +_,28 @@
+    public void m_36399_(float p_36400_) {
+       if (!this.f_36077_.f_35934_) {
+          if (!this.f_19853_.f_46443_) {
+-            this.f_36097_.m_38703_(p_36400_);
++            // CraftBukkit start
++            EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(this, EntityExhaustionEvent.ExhaustionReason.UNKNOWN, p_36400_);
++            if (!event.isCancelled()) {
++               this.f_36097_.m_38703_(event.getExhaustion());
++            }
++            // CraftBukkit end
+          }
++      }
++   }
+ 
++   // CraftBukkit start
++   public void causeFoodExhaustion(float f, EntityExhaustionEvent.ExhaustionReason reason) {
++      if (!this.f_36077_.f_35934_) {
++         if (!this.f_19853_.f_46443_) {
++            EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(this, reason, f);
++            if (!event.isCancelled()) {
++               this.f_36097_.m_38703_(event.getExhaustion());
++            }
++         }
+       }
+    }
++   // CraftBukkit end
+ 
+    public FoodData m_36324_() {
+       return this.f_36097_;
 @@ -1745,7 +_,11 @@
     }
  

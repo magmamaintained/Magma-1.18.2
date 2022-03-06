@@ -942,7 +942,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public void setDifficulty(Difficulty difficulty) {
-        this.getHandle().serverLevelData.setDifficulty(net.minecraft.world.Difficulty.byId(difficulty.getValue()));
+        this.getHandle().getServer().getWorldData().setDifficulty(net.minecraft.world.Difficulty.byId(difficulty.getValue()));
     }
 
     @Override
@@ -1226,7 +1226,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public File getWorldFolder() {
-        return world.convertable.getLevelPath(SavedFile.ROOT).toFile().getParentFile();
+        return world.convertable.getDimensionPath(this.world.dimension()).toFile();
     }
 
     @Override
@@ -1256,7 +1256,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public boolean canGenerateStructures() {
-        return world.serverLevelData.worldGenSettings().generateFeatures();
+        return world.worldDataServer.worldGenSettings().generateFeatures();
     }
 
     @Override
@@ -1266,7 +1266,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public void setHardcore(boolean hardcore) {
-        world.serverLevelData.settings.hardcore = hardcore;
+        world.worldDataServer.settings.hardcore = hardcore;
     }
 
     @Override
@@ -1708,14 +1708,22 @@ public class CraftWorld extends CraftRegionAccessor implements World {
         if (data != null && !particle.getDataType().isInstance(data)) {
             throw new IllegalArgumentException("data should be " + particle.getDataType() + " got " + data.getClass());
         }
+        // Magma todo
+//        getHandle().sendParticles(
+//                null, // Sender
+//                CraftParticle.toNMS(particle, data), // Particle
+//                x, y, z, // Position
+//                count,  // Count
+//                offsetX, offsetY, offsetZ, // Random offset
+//                extra, // Speed?
+//                force
+//        );
         getHandle().sendParticles(
-                null, // Sender
                 CraftParticle.toNMS(particle, data), // Particle
                 x, y, z, // Position
                 count,  // Count
                 offsetX, offsetY, offsetZ, // Random offset
-                extra, // Speed?
-                force
+                extra
         );
 
     }

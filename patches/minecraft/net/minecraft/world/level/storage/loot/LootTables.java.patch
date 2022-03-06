@@ -1,5 +1,24 @@
 --- a/net/minecraft/world/level/storage/loot/LootTables.java
 +++ b/net/minecraft/world/level/storage/loot/LootTables.java
+@@ -29,6 +_,18 @@
+       return this.f_79190_.getOrDefault(p_79218_, LootTable.f_79105_);
+    }
+ 
++   // CraftBukkit start
++   public ResourceLocation getKey(LootTable p_186521_1_) {
++      ResourceLocation key = ResourceLocation.m_135820_("");
++      for (Map.Entry<ResourceLocation, LootTable> tableMap : f_79190_.entrySet()) {
++         if (p_186521_1_.equals(tableMap.getValue())) {
++            key = tableMap.getKey();
++         }
++      }
++      return key;
++   }
++   // CraftBukkit end
++
+    protected void m_5787_(Map<ResourceLocation, JsonElement> p_79214_, ResourceManager p_79215_, ProfilerFiller p_79216_) {
+       Builder<ResourceLocation, LootTable> builder = ImmutableMap.builder();
+       JsonElement jsonelement = p_79214_.remove(BuiltInLootTables.f_78712_);
 @@ -37,8 +_,8 @@
        }
  

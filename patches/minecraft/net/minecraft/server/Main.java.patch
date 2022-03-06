@@ -67,6 +67,26 @@
           LevelSummary levelsummary = levelstoragesource$levelstorageaccess.m_78308_();
           if (levelsummary != null) {
              if (levelsummary.m_193020_()) {
+@@ -134,14 +_,17 @@
+             f_129670_.warn("Safe mode active, only vanilla datapack will be loaded");
+          }
+ 
++         DataPackConfig datapackconfig = levelstoragesource$levelstorageaccess.m_78309_();
++
+          PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource(), new FolderRepositorySource(levelstoragesource$levelstorageaccess.m_78283_(LevelResource.f_78180_).toFile(), PackSource.f_10529_));
++         DataPackConfig datapackconfig1 = MinecraftServer.m_129819_(packrepository, datapackconfig == null ? DataPackConfig.f_45842_ : datapackconfig, flag);
+ 
+          WorldStem worldstem;
+          try {
+             WorldStem.InitConfig worldstem$initconfig = new WorldStem.InitConfig(packrepository, Commands.CommandSelection.DEDICATED, dedicatedserversettings.m_139777_().f_139711_, flag);
+             worldstem = WorldStem.m_206911_(worldstem$initconfig, () -> {
+-               DataPackConfig datapackconfig = levelstoragesource$levelstorageaccess.m_78309_();
+-               return datapackconfig == null ? DataPackConfig.f_45842_ : datapackconfig;
++               DataPackConfig datapackconfigd = levelstoragesource$levelstorageaccess.m_78309_();
++               return datapackconfigd == null ? DataPackConfig.f_45842_ : datapackconfigd;
+             }, (p_206543_, p_206544_) -> {
+                RegistryAccess.Writable registryaccess$writable = RegistryAccess.m_206197_();
+                DynamicOps<Tag> dynamicops = RegistryOps.m_206813_(NbtOps.f_128958_, registryaccess$writable, p_206543_);
 @@ -181,22 +_,34 @@
           }
  
@@ -79,9 +99,9 @@
 +               net.minecraftforge.gametest.ForgeGameTestHooks.registerGametests();
 +               java.util.Collection<net.minecraft.gametest.framework.GameTestBatch> testBatches = net.minecraft.gametest.framework.GameTestRunner.m_127724_(net.minecraft.gametest.framework.GameTestRegistry.m_127658_());
 +               net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
-+               dedicatedserver1 = new net.minecraft.gametest.framework.GameTestServer(p_129697_, levelstoragesource$levelstorageaccess, packrepository, worldstem, testBatches, spawnPos);
++               dedicatedserver1 = new net.minecraft.gametest.framework.GameTestServer(optionset, datapackconfig, null, p_129697_, levelstoragesource$levelstorageaccess, packrepository, worldstem, testBatches, spawnPos);
 +            } else {
-+               dedicatedserver1 = new DedicatedServer(p_129697_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.m_14512_(), minecraftsessionservice, gameprofilerepository, gameprofilecache, LoggerChunkProgressListener::new);
++               dedicatedserver1 = new DedicatedServer(optionset,datapackconfig,null,p_129697_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.m_14512_(), minecraftsessionservice, gameprofilerepository, gameprofilecache, LoggerChunkProgressListener::new);
 +            }
              dedicatedserver1.m_129981_(optionset.valueOf(optionspec8));
              dedicatedserver1.m_129801_(optionset.valueOf(optionspec11));

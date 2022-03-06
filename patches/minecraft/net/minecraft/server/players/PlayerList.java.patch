@@ -1,5 +1,13 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
+@@ -90,6 +_,7 @@
+ import net.minecraft.world.scores.Objective;
+ import net.minecraft.world.scores.PlayerTeam;
+ import net.minecraft.world.scores.Team;
++import org.bukkit.Location;
+ import org.slf4j.Logger;
+ 
+ public abstract class PlayerList {
 @@ -118,6 +_,7 @@
     private boolean f_11209_;
     private static final boolean f_143988_ = false;
@@ -40,7 +48,7 @@
 +      net.minecraftforge.event.ForgeEventFactory.firePlayerLoggedIn( p_11263_ );
     }
  
-    protected void m_11273_(ServerScoreboard p_11274_, ServerPlayer p_11275_) {
+    public void m_11273_(ServerScoreboard p_11274_, ServerPlayer p_11275_) {
 @@ -292,6 +_,7 @@
           compoundtag1 = compoundtag;
           p_11225_.m_20258_(compoundtag);
@@ -94,20 +102,41 @@
        this.f_11200_.m_11393_(p_11281_);
        ServerPlayer serverplayer = this.m_11259_(p_11281_.getId());
        if (serverplayer != null) {
-@@ -734,13 +_,6 @@
+@@ -728,22 +_,27 @@
+ 
+    }
+ 
+-   public ServerStatsCounter m_11239_(Player p_11240_) {
+-      UUID uuid = p_11240_.m_142081_();
+-      ServerStatsCounter serverstatscounter = this.f_11202_.get(uuid);
++   // CraftBukkit start
++   public ServerStatsCounter getPlayerStats(ServerPlayer p_11240_) {
++      ServerStatsCounter serverstatisticmanager = p_11240_.m_8951_();
++      return serverstatisticmanager == null ? getPlayerStats(p_11240_.m_142081_(), p_11240_.m_5446_().getString()) : serverstatisticmanager;
++   }
++
++   public ServerStatsCounter getPlayerStats(UUID uuid, String displayName) {
++      ServerPlayer player = m_11259_(uuid);
++      ServerStatsCounter serverstatscounter = player == null ? null : (ServerStatsCounter) player.m_8951_();
        if (serverstatscounter == null) {
           File file1 = this.f_11195_.m_129843_(LevelResource.f_78175_).toFile();
           File file2 = new File(file1, uuid + ".json");
--         if (!file2.exists()) {
+          if (!file2.exists()) {
 -            File file3 = new File(file1, p_11240_.m_7755_().getString() + ".json");
 -            Path path = file3.toPath();
 -            if (FileUtil.m_133728_(path) && FileUtil.m_133734_(path) && path.startsWith(file1.getPath()) && file3.isFile()) {
--               file3.renameTo(file2);
--            }
--         }
++            File file3 = new File(file1, displayName + ".json"); // CraftBukkit
++            if(file3.exists() && file3.isFile()) {
+                file3.renameTo(file2);
+             }
+          }
  
           serverstatscounter = new ServerStatsCounter(this.f_11195_, file2);
-          this.f_11202_.put(uuid, serverstatscounter);
+-         this.f_11202_.put(uuid, serverstatscounter);
++        // this.stats.put(uuid, serverstatscounter);
+       }
+ 
+       return serverstatscounter;
 @@ -759,6 +_,8 @@
           this.f_11203_.put(uuid, playeradvancements);
        }
@@ -134,11 +163,10 @@
        this.m_11268_(new ClientboundUpdateTagsPacket(TagNetworkSerialization.m_203950_(this.f_11206_)));
        ClientboundUpdateRecipesPacket clientboundupdaterecipespacket = new ClientboundUpdateRecipesPacket(this.f_11195_.m_129894_().m_44051_());
  
-@@ -817,5 +_,13 @@
- 
+@@ -818,4 +_,16 @@
     public boolean m_11316_() {
        return this.f_11209_;
-+   }
+    }
 +
 +   public boolean addPlayer(ServerPlayer player) {
 +      return f_11196_.add(player);
@@ -146,5 +174,9 @@
 +
 +   public boolean removePlayer(ServerPlayer player) {
 +       return this.f_11196_.remove(player);
-    }
++   }
++
++   // Magma Stub
++    public void respawn(ServerPlayer entity, ServerLevel toWorld, boolean b, Location to, boolean b1) {
++    }
  }

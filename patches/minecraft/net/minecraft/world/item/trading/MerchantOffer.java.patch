@@ -1,5 +1,37 @@
 --- a/net/minecraft/world/item/trading/MerchantOffer.java
 +++ b/net/minecraft/world/item/trading/MerchantOffer.java
+@@ -4,6 +_,7 @@
+ import net.minecraft.nbt.NbtUtils;
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.item.ItemStack;
++import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe;
+ 
+ public class MerchantOffer {
+    public ItemStack f_45310_;
+@@ -17,6 +_,23 @@
+    public float f_45318_;
+    public int f_45319_ = 1;
+ 
++   // CraftBukkit start
++   private CraftMerchantRecipe bukkitHandle; // CraftBukkit
++
++   public CraftMerchantRecipe asBukkit() {
++      return (this.bukkitHandle == null) ? (this.bukkitHandle = new CraftMerchantRecipe(this)) : this.bukkitHandle;
++   }
++
++   public MerchantOffer(ItemStack itemstack, ItemStack itemstack1, ItemStack itemstack2, int uses, int maxUses, int experience, float priceMultiplier, CraftMerchantRecipe bukkit) {
++      this(itemstack, itemstack1, itemstack2, uses, maxUses, experience, priceMultiplier, 0, bukkit);
++   }
++
++   public MerchantOffer(ItemStack itemstack, ItemStack itemstack1, ItemStack itemstack2, int uses, int maxUses, int experience, float priceMultiplier, int demand, CraftMerchantRecipe bukkit) {
++      this(itemstack, itemstack1, itemstack2, uses, maxUses, experience, priceMultiplier, demand);
++      this.bukkitHandle = bukkit;
++   }
++   // CraftBukkit end
++
+    public MerchantOffer(CompoundTag p_45351_) {
+       this.f_45310_ = ItemStack.m_41712_(p_45351_.m_128469_("buy"));
+       this.f_45311_ = ItemStack.m_41712_(p_45351_.m_128469_("buyB"));
 @@ -75,7 +_,7 @@
        int i = this.f_45310_.m_41613_();
        ItemStack itemstack = this.f_45310_.m_41777_();

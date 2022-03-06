@@ -1,11 +1,42 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -116,7 +_,7 @@
+@@ -114,9 +_,38 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
++import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.entity.CraftEntity;
  import org.slf4j.Logger;
  
 -public abstract class Entity implements Nameable, EntityAccess, CommandSource {
 +public abstract class Entity extends net.minecraftforge.common.capabilities.CapabilityProvider<Entity> implements Nameable, EntityAccess, CommandSource, net.minecraftforge.common.extensions.IForgeEntity {
++
++   // CraftBukkit start
++   private static final int CURRENT_LEVEL = 2;
++   static boolean isLevelAtLeast(CompoundTag tag, int level) {
++      return tag.m_128441_("Bukkit.updateLevel") && tag.m_128451_("Bukkit.updateLevel") >= level;
++   }
++
++   private CraftEntity bukkitEntity;
++
++   public CraftEntity getBukkitEntity() {
++      if (bukkitEntity == null) {
++         bukkitEntity = CraftEntity.getEntity(f_19853_.getCraftServer(), this);
++      }
++      return bukkitEntity;
++   }
++
++   @Override
++   public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      return getBukkitEntity();
++   }
++
++   // CraftBukkit - SPIGOT-6907: re-implement LivingEntity#setMaximumAir()
++   public int getDefaultMaxAirSupply() {
++      return f_146818_;
++   }
++   // CraftBukkit end
++
     private static final Logger f_19849_ = LogUtils.getLogger();
     public static final String f_146815_ = "id";
     public static final String f_146816_ = "Passengers";
@@ -17,9 +48,30 @@
     private final EntityType<?> f_19847_;
     private int f_19848_ = f_19843_.incrementAndGet();
     public boolean f_19850_;
-@@ -229,6 +_,7 @@
+@@ -228,7 +_,28 @@
+    @Nullable
     private BlockState f_185934_ = null;
  
++   // CraftBukkit start
++   public boolean persist = true;
++   public boolean valid;
++   public boolean generation;
++   public int maxAirTicks = getDefaultMaxAirSupply(); // CraftBukkit - SPIGOT-6907: re-implement LivingEntity#setMaximumAir()
++   public org.bukkit.projectiles.ProjectileSource projectileSource; // For projectiles only
++   public boolean lastDamageCancelled; // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
++   public boolean persistentInvisibility = false;
++   public BlockPos lastLavaContact;
++
++   public float getBukkitYaw() {
++      return this.f_19857_;
++   }
++
++   public boolean isChunkLoaded() {
++      return f_19853_.m_7232_((int) Math.floor(this.m_20185_()) >> 4, (int) Math.floor(this.m_20189_()) >> 4);
++   }
++   // CraftBukkit end
++
++
     public Entity(EntityType<?> p_19870_, Level p_19871_) {
 +      super(Entity.class);
        this.f_19847_ = p_19870_;
@@ -299,11 +351,10 @@
  
     }
  
-@@ -3061,6 +_,76 @@
-    public boolean m_142265_(Level p_146843_, BlockPos p_146844_) {
+@@ -3062,11 +_,85 @@
        return true;
     }
-+
+ 
 +   /* ================================== Forge Start =====================================*/
 +
 +   private boolean canUpdate = true;
@@ -373,6 +424,17 @@
 +
 +   /* ================================== Forge End =====================================*/
 +
- 
++
     public Level m_183503_() {
        return this.f_19853_;
+    }
+ 
+-   @FunctionalInterface
++   // Magma Stub
++    public void teleportTo(ServerLevel handle, BlockPos blockPos) {
++    }
++
++    @FunctionalInterface
+    public interface MoveFunction {
+       void m_20372_(Entity p_20373_, double p_20374_, double p_20375_, double p_20376_);
+    }

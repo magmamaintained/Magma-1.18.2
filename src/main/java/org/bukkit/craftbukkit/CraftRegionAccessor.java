@@ -10,6 +10,7 @@ import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
@@ -451,7 +452,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
                 entity = net.minecraft.world.entity.EntityType.LLAMA_SPIT.create(world);
                 entity.moveTo(x, y, z, yaw, pitch);
             } else if (Firework.class.isAssignableFrom(clazz)) {
-                entity = new EntityFireworks(world, x, y, z, net.minecraft.world.item.ItemStack.EMPTY);
+                entity = new FireworkRocketEntity(world, x, y, z, net.minecraft.world.item.ItemStack.EMPTY);
             }
         } else if (Minecart.class.isAssignableFrom(clazz)) {
             if (PoweredMinecart.class.isAssignableFrom(clazz)) {

@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
+@@ -106,6 +_,7 @@
+    private float f_30516_;
+    protected boolean f_30523_ = true;
+    protected int f_30524_;
++   public int maxDomestication = 100; // CraftBukkit - store max domestication value
+ 
+    protected AbstractHorse(EntityType<? extends AbstractHorse> p_30531_, Level p_30532_) {
+       super(p_30531_, p_30532_);
 @@ -288,6 +_,7 @@
  
        this.f_30520_.m_19164_(this);

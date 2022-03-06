@@ -1,10 +1,60 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -206,6 +_,7 @@
+@@ -68,6 +_,9 @@
+ import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.pathfinder.BlockPathTypes;
+ import net.minecraft.world.level.storage.loot.LootContext;
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.event.entity.EntityTargetEvent;
++import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+ 
+ public abstract class Mob extends LivingEntity {
+    private static final EntityDataAccessor<Byte> f_21340_ = SynchedEntityData.m_135353_(Mob.class, EntityDataSerializers.f_135027_);
+@@ -112,6 +_,8 @@
+    private BlockPos f_21360_ = BlockPos.f_121853_;
+    private float f_21341_ = -1.0F;
+ 
++   public boolean aware = true; // CraftBukkit
++
+    protected Mob(EntityType<? extends Mob> p_21368_, Level p_21369_) {
+       super(p_21368_, p_21369_);
+       this.f_21345_ = new GoalSelector(p_21369_.m_46658_());
+@@ -205,7 +_,38 @@
+    }
  
     public void m_6710_(@Nullable LivingEntity p_21544_) {
++      // CraftBukkit start
++      setTarget(p_21544_, EntityTargetEvent.TargetReason.UNKNOWN, true);
++   }
++
++   public boolean setTarget(@Nullable LivingEntity p_21544_, EntityTargetEvent.TargetReason reason, boolean fireEvent) {
++      if(m_5448_() == p_21544_) return false;
++      if(fireEvent) {
++         if (reason == EntityTargetEvent.TargetReason.UNKNOWN && m_5448_() != null && p_21544_ == null) {
++            reason = m_5448_().m_6084_() ? EntityTargetEvent.TargetReason.FORGOT_TARGET : EntityTargetEvent.TargetReason.TARGET_DIED;
++         }
++         if (reason == EntityTargetEvent.TargetReason.UNKNOWN) {
++            net.minecraftforge.common.ForgeHooks.onLivingSetAttackTarget(this, p_21544_);
++         }
++         CraftLivingEntity craftLivingEntity = null;
++         if (p_21544_ != null) {
++            craftLivingEntity = (CraftLivingEntity) p_21544_.getBukkitEntity();
++         }
++         EntityTargetLivingEntityEvent event = new EntityTargetLivingEntityEvent(this.getBukkitEntity(), craftLivingEntity, reason);
++         f_19853_.getCraftServer().getPluginManager().callEvent(event);
++         if (event.isCancelled()) {
++            return false;
++         }
++         if (event.getTarget() != null) {
++            p_21544_ = ((CraftLivingEntity) event.getTarget()).getHandle();
++         } else {
++            p_21544_ = null;
++         }
++      }
++
        this.f_21362_ = p_21544_;
-+      net.minecraftforge.common.ForgeHooks.onLivingSetAttackTarget(this, p_21544_);
++      return true;
++      // CraftBukkit end
     }
  
     public boolean m_6549_(EntityType<?> p_21399_) {
@@ -32,3 +82,16 @@
           if (entity != null) {
              double d0 = entity.m_20280_(this);
              int i = this.m_6095_().m_20674_().m_21611_();
+@@ -999,6 +_,12 @@
+    public void m_21530_() {
+       this.f_21353_ = true;
+    }
++
++   // CraftBukkit start - add method
++   public void setPersistenceRequired(boolean required) {
++      this.f_21353_ = required;
++   }
++   // CraftBukkit end
+ 
+    public void m_21409_(EquipmentSlot p_21410_, float p_21411_) {
+       switch(p_21410_.m_20743_()) {

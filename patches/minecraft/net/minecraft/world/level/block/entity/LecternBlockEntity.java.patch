@@ -1,0 +1,98 @@
+--- a/net/minecraft/world/level/block/entity/LecternBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/LecternBlockEntity.java
+@@ -1,6 +_,9 @@
+ package net.minecraft.world.level.block.entity;
+ 
+ import javax.annotation.Nullable;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
+ import net.minecraft.commands.CommandSource;
+ import net.minecraft.commands.CommandSourceStack;
+ import net.minecraft.core.BlockPos;
+@@ -25,13 +_,19 @@
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.phys.Vec2;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.entity.CraftHumanEntity;
++import org.bukkit.entity.HumanEntity;
++import org.bukkit.inventory.InventoryHolder;
+ 
+ public class LecternBlockEntity extends BlockEntity implements Clearable, MenuProvider {
+    public static final int f_155617_ = 0;
+    public static final int f_155618_ = 1;
+    public static final int f_155619_ = 0;
+    public static final int f_155620_ = 1;
+-   public final Container f_59525_ = new Container() {
++   public final Container f_59525_ = new LecternInventory();
++
++   public class LecternInventory implements  Container {
+       public int m_6643_() {
+          return 1;
+       }
+@@ -91,9 +_,54 @@
+          return false;
+       }
+ 
++      // CraftBukkit start
++      public List<HumanEntity> transaction = new ArrayList<>();
++      private int maxStack = 1;
++
++      @Override
++      public List<ItemStack> getContents() {
++         return Arrays.asList(f_59527_);
++      }
++
++      @Override
++      public void onOpen(CraftHumanEntity who) {
++         transaction.add(who);
++      }
++
++      @Override
++      public void onClose(CraftHumanEntity who) {
++         transaction.remove(who);
++      }
++
++      @Override
++      public List<HumanEntity> getViewers() {
++         return transaction;
++      }
++
++      @Override
++      public InventoryHolder getOwner() {
++         return LecternBlockEntity.this.getOwner();
++      }
++
++      @Override
++      public void setMaxStackSize(int size) {
++         maxStack = size;
++      }
++
++      @Override
++      public Location getLocation() {
++         return new Location(f_58857_.getWorld(), f_58858_.m_123341_(), f_58858_.m_123342_(), f_58858_.m_123343_());
++      }
++
++      public MenuProvider getLectern() {
++         return LecternBlockEntity.this;
++      }
++      // CraftBukkit end
++
+       public void m_6211_() {
+       }
+-   };
++   }
++
+    private final ContainerData f_59526_ = new ContainerData() {
+       public int m_6413_(int p_59600_) {
+          return p_59600_ == 0 ? LecternBlockEntity.this.f_59528_ : 0;
+@@ -215,7 +_,7 @@
+    }
+ 
+    public AbstractContainerMenu m_7208_(int p_59562_, Inventory p_59563_, Player p_59564_) {
+-      return new LecternMenu(p_59562_, this.f_59525_, this.f_59526_);
++      return new LecternMenu(p_59562_, this.f_59525_, this.f_59526_, p_59563_);
+    }
+ 
+    public Component m_5446_() {

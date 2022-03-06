@@ -32,6 +32,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ObjectHolder;
+import org.bukkit.inventory.InventoryView;
 
 @Mod("containertypetest")
 public class ContainerTypeTest
@@ -55,6 +56,11 @@ public class ContainerTypeTest
             {
                 this.addSlot(new Slot(inv, i, (i % 3) * 18, (i / 3) * 18));
             }
+        }
+
+        @Override
+        public InventoryView getBukkitView() {
+            return null;
         }
 
         @Override

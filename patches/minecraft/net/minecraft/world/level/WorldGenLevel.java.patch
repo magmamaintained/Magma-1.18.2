@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/level/WorldGenLevel.java
++++ b/net/minecraft/world/level/WorldGenLevel.java
+@@ -3,6 +_,7 @@
+ import java.util.function.Supplier;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
++import net.minecraft.server.level.ServerLevel;
+ 
+ public interface WorldGenLevel extends ServerLevelAccessor {
+    long m_7328_();
+@@ -13,4 +_,11 @@
+ 
+    default void m_183406_(@Nullable Supplier<String> p_186618_) {
+    }
++
++   // CraftBukkit start
++   @Override
++   default ServerLevel getMinecraftWorld(){
++      return m_6018_();
++   }
++   // CraftBukkit end
+ }

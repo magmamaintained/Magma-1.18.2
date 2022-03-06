@@ -1,5 +1,15 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
+@@ -1,8 +_,8 @@
+ package net.minecraft.world.item;
+ 
++import javax.annotation.Nullable;
+ import java.util.List;
+ import java.util.Map;
+-import javax.annotation.Nullable;
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.NonNullList;
 @@ -80,9 +_,9 @@
                    }
                 }
@@ -29,6 +39,47 @@
     @Nullable
     public BlockPlaceContext m_7732_(BlockPlaceContext p_40609_) {
        return p_40609_;
+@@ -117,15 +_,8 @@
+       CompoundTag compoundtag = p_40605_.m_41783_();
+       if (compoundtag != null) {
+          CompoundTag compoundtag1 = compoundtag.m_128469_("BlockStateTag");
+-         StateDefinition<Block, BlockState> statedefinition = p_40606_.m_60734_().m_49965_();
+-
+-         for(String s : compoundtag1.m_128431_()) {
+-            Property<?> property = statedefinition.m_61081_(s);
+-            if (property != null) {
+-               String s1 = compoundtag1.m_128423_(s).m_7916_();
+-               blockstate = m_40593_(blockstate, property, s1);
+-            }
+-         }
++         // CraftBukkit start
++         blockstate = getBlockState(blockstate, compoundtag1);
+       }
+ 
+       if (blockstate != p_40606_) {
+@@ -135,6 +_,22 @@
+       return blockstate;
+    }
+ 
++   public static BlockState getBlockState(BlockState iblockdata, CompoundTag compoundtag1) {
++      BlockState iblockdata1 = iblockdata;
++      // CraftBukkit end
++      StateDefinition<Block, BlockState> statedefinition = iblockdata.m_60734_().m_49965_();
++
++      for (String s : compoundtag1.m_128431_()) {
++         Property<?> property = statedefinition.m_61081_(s);
++         if (property != null) {
++            String s1 = compoundtag1.m_128423_(s).m_7916_();
++            iblockdata1 = m_40593_(iblockdata1, property, s1);
++         }
++      }
++      return iblockdata1;
++   }
++
++
+    private static <T extends Comparable<T>> BlockState m_40593_(BlockState p_40594_, Property<T> p_40595_, String p_40596_) {
+       return p_40595_.m_6215_(p_40596_).map((p_40592_) -> {
+          return p_40594_.m_61124_(p_40595_, p_40592_);
 @@ -200,11 +_,19 @@
     }
  
