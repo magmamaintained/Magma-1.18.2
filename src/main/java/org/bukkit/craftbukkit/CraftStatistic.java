@@ -223,7 +223,8 @@ public enum CraftStatistic {
         Validate.isTrue(statistic.getType() == Type.UNTYPED, "Must supply additional paramater for this statistic");
         Validate.isTrue(newValue >= 0, "Value must be greater than or equal to 0");
         net.minecraft.stats.Stat nmsStatistic = CraftStatistic.getNMSStatistic(statistic);
-        manager.setValue(null, nmsStatistic, newValue);;
+        manager.setValue(null, nmsStatistic, newValue);
+        ;
     }
 
     public static void incrementStatistic(ServerStatsCounter manager, Statistic statistic, Material material) {

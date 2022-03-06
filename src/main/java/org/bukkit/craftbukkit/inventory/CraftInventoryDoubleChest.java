@@ -1,8 +1,7 @@
 package org.bukkit.craftbukkit.inventory;
 
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.CompoundContainer;
-import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.level.block.ChestBlock;
 import org.bukkit.Location;
 import org.bukkit.block.DoubleChest;

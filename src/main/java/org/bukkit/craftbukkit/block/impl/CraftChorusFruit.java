@@ -16,7 +16,7 @@ public final class CraftChorusFruit extends org.bukkit.craftbukkit.block.data.Cr
     // org.bukkit.craftbukkit.block.data.CraftMultipleFacing
 
     private static final net.minecraft.world.level.block.state.properties.BooleanProperty[] FACES = new net.minecraft.world.level.block.state.properties.BooleanProperty[]{
-        getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "north", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "east", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "south", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "west", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "up", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "down", true)
+            getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "north", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "east", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "south", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "west", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "up", true), getBoolean(net.minecraft.world.level.block.ChorusPlantBlock.class, "down", true)
     };
 
     @Override

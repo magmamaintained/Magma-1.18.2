@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.block;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;

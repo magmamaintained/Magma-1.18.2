@@ -16,7 +16,8 @@ import org.bukkit.util.Vector;
 
 public final class CraftRayTraceResult {
 
-    private CraftRayTraceResult() {}
+    private CraftRayTraceResult() {
+    }
 
     public static RayTraceResult fromNMS(World world, HitResult nmsHitResult) {
         if (nmsHitResult == null || nmsHitResult.getType() == Type.MISS) return null;

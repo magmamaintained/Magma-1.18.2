@@ -1,16 +1,16 @@
 package org.bukkit.craftbukkit.profile;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
+import java.util.Objects;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.properties.Property;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Locale;
-import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.bukkit.craftbukkit.util.JsonHelper;
 import org.bukkit.profile.PlayerTextures;
 
@@ -79,7 +79,7 @@ final class CraftPlayerTextures implements PlayerTextures {
         Property texturesProperty = otherTextures.getProperty();
         profile.setProperty(PROPERTY_NAME, texturesProperty);
         if (texturesProperty != null
-            && (!Objects.equals(profile.getUniqueId(), otherTextures.profile.getUniqueId())
+                && (!Objects.equals(profile.getUniqueId(), otherTextures.profile.getUniqueId())
                 || !Objects.equals(profile.getName(), otherTextures.profile.getName()))) {
             // We might need to rebuild the textures property for this profile:
             // TODO Only rebuild if the textures property actually stores an incompatible profileId/playerName?

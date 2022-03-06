@@ -1,11 +1,11 @@
 package org.bukkit.craftbukkit;
 
-import com.mojang.authlib.GameProfile;
 import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Level;
-import net.minecraft.server.players.UserBanListEntry;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.server.players.UserBanList;
+import net.minecraft.server.players.UserBanListEntry;
 import org.bukkit.Bukkit;
 
 public final class CraftProfileBanEntry implements org.bukkit.BanEntry {

@@ -12,7 +12,7 @@ public class CraftInventoryHorse extends CraftInventoryAbstractHorse implements 
 
     @Override
     public ItemStack getArmor() {
-       return getItem(1);
+        return getItem(1);
     }
 
     @Override

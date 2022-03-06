@@ -1,24 +1,12 @@
 package org.bukkit.craftbukkit.persistence;
 
-import com.google.common.primitives.Primitives;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.ByteArrayTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.LongArrayTag;
-import net.minecraft.nbt.ShortTag;
-import net.minecraft.nbt.StringTag;
+import com.google.common.primitives.Primitives;
+import net.minecraft.nbt.*;
 import org.bukkit.persistence.PersistentDataContainer;
 
 /**
@@ -48,12 +36,10 @@ public final class CraftPersistentDataTypeRegistry {
          * the expected primitive type.
          *
          * @param base the base to extract from
-         *
          * @return the value stored inside of the tag
-         *
          * @throws ClassCastException if the passed base is not an instanced of
-         * the defined base type and therefore is not applicable to the
-         * extractor function
+         *                            the defined base type and therefore is not applicable to the
+         *                            extractor function
          */
         T extract(Tag base) {
             if (!nbtBaseType.isInstance(base)) {
@@ -66,12 +52,10 @@ public final class CraftPersistentDataTypeRegistry {
          * Builds a tag instance wrapping around the provided value object.
          *
          * @param value the value to store inside the created tag
-         *
          * @return the new tag instance
-         *
          * @throws ClassCastException if the passed value object is not of the
-         * defined primitive type and therefore is not applicable to the builder
-         * function
+         *                            defined primitive type and therefore is not applicable to the builder
+         *                            function
          */
         Z build(Object value) {
             if (!primitiveType.isInstance(value)) {
@@ -84,7 +68,6 @@ public final class CraftPersistentDataTypeRegistry {
          * Returns if the tag instance matches the adapters one.
          *
          * @param base the base to check
-         *
          * @return if the tag was an instance of the set type
          */
         boolean isInstance(Tag base) {
@@ -98,12 +81,10 @@ public final class CraftPersistentDataTypeRegistry {
      * Creates a suitable adapter instance for the primitive class type
      *
      * @param type the type to create an adapter for
-     * @param <T> the generic type of that class
-     *
+     * @param <T>  the generic type of that class
      * @return the created adapter instance
-     *
      * @throws IllegalArgumentException if no suitable tag type adapter for this
-     * type was found
+     *                                  type was found
      */
     private <T> TagAdapter createAdapter(Class<T> type) {
         if (!Primitives.isWrapperType(type)) {
@@ -143,7 +124,7 @@ public final class CraftPersistentDataTypeRegistry {
             Primitive Arrays
          */
         if (Objects.equals(byte[].class, type)) {
-                return createAdapter(byte[].class, ByteArrayTag.class, array -> new ByteArrayTag(Arrays.copyOf(array, array.length)), n -> Arrays.copyOf(n.getAsByteArray(), n.size()));
+            return createAdapter(byte[].class, ByteArrayTag.class, array -> new ByteArrayTag(Arrays.copyOf(array, array.length)), n -> Arrays.copyOf(n.getAsByteArray(), n.size()));
         }
         if (Objects.equals(int[].class, type)) {
             return createAdapter(int[].class, IntArrayTag.class, array -> new IntArrayTag(Arrays.copyOf(array, array.length)), n -> Arrays.copyOf(n.getAsIntArray(), n.size()));
@@ -202,14 +183,12 @@ public final class CraftPersistentDataTypeRegistry {
     /**
      * Wraps the passed value into a tag instance.
      *
-     * @param type the type of the passed value
+     * @param type  the type of the passed value
      * @param value the value to be stored in the tag
-     * @param <T> the generic type of the value
-     *
+     * @param <T>   the generic type of the value
      * @return the created tag instance
-     *
      * @throws IllegalArgumentException if no suitable tag type adapter for this
-     * type was found
+     *                                  type was found
      */
     public <T> Tag wrap(Class<T> type, T value) {
         return this.adapters.computeIfAbsent(type, CREATE_ADAPTER).build(value);
@@ -220,12 +199,10 @@ public final class CraftPersistentDataTypeRegistry {
      *
      * @param type the type of the primitive value
      * @param base the base instance to check
-     * @param <T> the generic type of the type
-     *
+     * @param <T>  the generic type of the type
      * @return if the base stores values of the primitive type passed
-     *
      * @throws IllegalArgumentException if no suitable tag type adapter for this
-     * type was found
+     *                                  type was found
      */
     public <T> boolean isInstanceOf(Class<T> type, Tag base) {
         return this.adapters.computeIfAbsent(type, CREATE_ADAPTER).isInstance(base);
@@ -235,18 +212,16 @@ public final class CraftPersistentDataTypeRegistry {
      * Extracts the value out of the provided tag.
      *
      * @param type the type of the value to extract
-     * @param tag the tag to extract the value from
-     * @param <T> the generic type of the value stored inside the tag
-     *
+     * @param tag  the tag to extract the value from
+     * @param <T>  the generic type of the value stored inside the tag
      * @return the extracted value
-     *
      * @throws IllegalArgumentException if the passed base is not an instanced
-     * of the defined base type and therefore is not applicable to the extractor
-     * function
+     *                                  of the defined base type and therefore is not applicable to the extractor
+     *                                  function
      * @throws IllegalArgumentException if the found object is not of type
-     * passed
+     *                                  passed
      * @throws IllegalArgumentException if no suitable tag type adapter for this
-     * type was found
+     *                                  type was found
      */
     public <T> T extract(Class<T> type, Tag tag) throws ClassCastException, IllegalArgumentException {
         TagAdapter adapter = this.adapters.computeIfAbsent(type, CREATE_ADAPTER);

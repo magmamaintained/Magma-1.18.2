@@ -1,12 +1,12 @@
 package org.bukkit.craftbukkit.help;
 
-import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
+import com.google.common.base.Charsets;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;

@@ -1,26 +1,20 @@
 package org.bukkit.craftbukkit.entity;
 
+import java.util.*;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemCooldowns;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -35,14 +29,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
-import org.bukkit.craftbukkit.inventory.CraftContainer;
-import org.bukkit.craftbukkit.inventory.CraftInventory;
-import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest;
-import org.bukkit.craftbukkit.inventory.CraftInventoryLectern;
-import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer;
-import org.bukkit.craftbukkit.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.inventory.CraftMerchantCustom;
+import org.bukkit.craftbukkit.inventory.*;
 import org.bukkit.craftbukkit.util.CraftChatMessage;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
@@ -54,8 +41,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private CraftInventoryPlayer inventory;
@@ -349,33 +334,44 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     @Override
-    public void openInventory(InventoryView inventory) {
-        if (!(getHandle() instanceof ServerPlayer)) return; // TODO: NPC support?
-        if (((ServerPlayer) getHandle()).connection == null) return;
-        if (getHandle().containerMenu != getHandle().inventoryMenu) {
-            // fire INVENTORY_CLOSE if one already open
-            ((ServerPlayer) getHandle()).connection.handleContainerClose(new ServerboundContainerClosePacket(getHandle().containerMenu.containerId));
-        }
+    public InventoryView openInventory(Inventory inventory) {
+        if (!(getHandle() instanceof ServerPlayer)) return null;
         ServerPlayer player = (ServerPlayer) getHandle();
-        AbstractContainerMenu container;
-        if (inventory instanceof CraftInventoryView) {
-            container = ((CraftInventoryView) inventory).getHandle();
+        AbstractContainerMenu formerContainer = getHandle().containerMenu;
+
+        MenuProvider iinventory = null;
+        if (inventory instanceof CraftInventoryDoubleChest) {
+            iinventory = ((CraftInventoryDoubleChest) inventory).tile;
+        } else if (inventory instanceof CraftInventoryLectern) {
+            iinventory = ((CraftInventoryLectern) inventory).tile;
+        } else if (inventory instanceof CraftInventory) {
+            CraftInventory craft = (CraftInventory) inventory;
+            if (craft.getInventory() instanceof MenuProvider) {
+                iinventory = (MenuProvider) craft.getInventory();
+            }
+        }
+
+        if (iinventory instanceof MenuProvider) {
+            if (iinventory instanceof BlockEntity) {
+                BlockEntity te = (BlockEntity) iinventory;
+                if (!te.hasLevel()) {
+                    te.setLevel(getHandle().level);
+                }
+            }
+        }
+
+        MenuType<?> container = CraftContainer.getNotchInventoryType(inventory);
+        if (iinventory instanceof MenuProvider) {
+            getHandle().openMenu(iinventory);
         } else {
-            container = new CraftContainer(inventory, this.getHandle(), player.nextContainerCounterInt());
+            openCustomInventory(inventory, player, container);
         }
 
-        // Trigger an INVENTORY_OPEN event
-        container = CraftEventFactory.callInventoryOpenEvent(player, container);
-        if (container == null) {
-            return;
+        if (getHandle().containerMenu == formerContainer) {
+            return null;
         }
-
-        // Now open the window
-        MenuType<?> windowType = CraftContainer.getNotchInventoryType(inventory.getTopInventory());
-        String title = inventory.getTitle();
-        player.connection.send(new ClientboundOpenScreenPacket(container.containerId, windowType, CraftChatMessage.fromString(title)[0]));
-        player.containerMenu = container;
-        player.initMenu(container);
+        getHandle().containerMenu.checkReachable = false;
+        return getHandle().containerMenu.getBukkitView();
     }
 
     @Override

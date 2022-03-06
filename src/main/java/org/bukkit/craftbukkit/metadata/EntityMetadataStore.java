@@ -11,7 +11,7 @@ public class EntityMetadataStore extends MetadataStoreBase<Entity> implements Me
     /**
      * Generates a unique metadata key for an {@link Entity} UUID.
      *
-     * @param entity the entity
+     * @param entity      the entity
      * @param metadataKey The name identifying the metadata value
      * @return a unique metadata key
      * @see MetadataStoreBase#disambiguate(Object, String)

@@ -6,7 +6,7 @@ import org.bukkit.craftbukkit.block.data.CraftBlockData;
 public abstract class CraftBrewingStand extends CraftBlockData implements BrewingStand {
 
     private static final net.minecraft.world.level.block.state.properties.BooleanProperty[] HAS_BOTTLE = new net.minecraft.world.level.block.state.properties.BooleanProperty[]{
-        getBoolean("has_bottle_0"), getBoolean("has_bottle_1"), getBoolean("has_bottle_2")
+            getBoolean("has_bottle_0"), getBoolean("has_bottle_1"), getBoolean("has_bottle_2")
     };
 
     @Override

@@ -32,22 +32,22 @@ class CraftAsyncTask extends CraftTask {
                 return;
             }
             workers.add(
-                new BukkitWorker() {
-                    @Override
-                    public Thread getThread() {
-                        return thread;
-                    }
+                    new BukkitWorker() {
+                        @Override
+                        public Thread getThread() {
+                            return thread;
+                        }
 
-                    @Override
-                    public int getTaskId() {
-                        return CraftAsyncTask.this.getTaskId();
-                    }
+                        @Override
+                        public int getTaskId() {
+                            return CraftAsyncTask.this.getTaskId();
+                        }
 
-                    @Override
-                    public Plugin getOwner() {
-                        return CraftAsyncTask.this.getOwner();
-                    }
-                });
+                        @Override
+                        public Plugin getOwner() {
+                            return CraftAsyncTask.this.getOwner();
+                        }
+                    });
         }
         Throwable thrown = null;
         try {
@@ -57,9 +57,9 @@ class CraftAsyncTask extends CraftTask {
             getOwner().getLogger().log(
                     Level.WARNING,
                     String.format(
-                        "Plugin %s generated an exception while executing task %s",
-                        getOwner().getDescription().getFullName(),
-                        getTaskId()),
+                            "Plugin %s generated an exception while executing task %s",
+                            getOwner().getDescription().getFullName(),
+                            getTaskId()),
                     thrown);
         } finally {
             // Cleanup is important for any async task, otherwise ghost tasks are everywhere
@@ -77,10 +77,10 @@ class CraftAsyncTask extends CraftTask {
                     if (!removed) {
                         throw new IllegalStateException(
                                 String.format(
-                                    "Unable to remove worker %s on task %s for %s",
-                                    thread.getName(),
-                                    getTaskId(),
-                                    getOwner().getDescription().getFullName()),
+                                        "Unable to remove worker %s on task %s for %s",
+                                        thread.getName(),
+                                        getTaskId(),
+                                        getOwner().getDescription().getFullName()),
                                 thrown); // We don't want to lose the original exception, if any
                     }
                 } finally {

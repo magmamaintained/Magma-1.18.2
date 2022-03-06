@@ -8,6 +8,7 @@ import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ManuallyAbandonedConversationCanceller;
 
 /**
+ *
  */
 public class ConversationTracker {
 
@@ -59,9 +60,9 @@ public class ConversationTracker {
                 conversation.acceptInput(input);
             } catch (Throwable t) {
                 conversation.getContext().getPlugin().getLogger().log(Level.WARNING,
-                    String.format("Plugin %s generated an exception whilst handling conversation input",
-                        conversation.getContext().getPlugin().getDescription().getFullName()
-                    ), t);
+                        String.format("Plugin %s generated an exception whilst handling conversation input",
+                                conversation.getContext().getPlugin().getDescription().getFullName()
+                        ), t);
             }
         }
     }

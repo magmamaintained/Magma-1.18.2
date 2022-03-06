@@ -38,7 +38,7 @@ public class CraftLlama extends CraftChestedHorse implements Llama {
 
     @Override
     public int getStrength() {
-       return getHandle().getStrength();
+        return getHandle().getStrength();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit.command;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.regex.Matcher;

@@ -1,8 +1,8 @@
 package org.bukkit.craftbukkit.persistence;
 
 import java.util.Map;
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 

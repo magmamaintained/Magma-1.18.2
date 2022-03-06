@@ -1,13 +1,7 @@
 package org.bukkit.craftbukkit.profile;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -16,8 +10,9 @@ import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.google.gson.*;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.craftbukkit.configuration.ConfigSerializationUtil;
 

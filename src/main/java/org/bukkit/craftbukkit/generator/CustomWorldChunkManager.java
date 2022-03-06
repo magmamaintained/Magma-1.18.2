@@ -1,12 +1,12 @@
 package org.bukkit.craftbukkit.generator;
 
-import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.common.base.Preconditions;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
-import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Climate;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.generator.BiomeProvider;

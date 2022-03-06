@@ -1,10 +1,10 @@
 package org.bukkit.craftbukkit.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public final class JsonHelper {
 

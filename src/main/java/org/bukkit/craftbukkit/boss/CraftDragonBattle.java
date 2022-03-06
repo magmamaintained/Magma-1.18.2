@@ -2,12 +2,11 @@ package org.bukkit.craftbukkit.boss;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.dimension.end.DragonRespawnAnimation;
+import net.minecraft.world.level.dimension.end.EndDragonFight;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.boss.DragonBattle;
-import org.bukkit.boss.DragonBattle.RespawnPhase;
 import org.bukkit.entity.EnderDragon;
 
 public class CraftDragonBattle implements DragonBattle {

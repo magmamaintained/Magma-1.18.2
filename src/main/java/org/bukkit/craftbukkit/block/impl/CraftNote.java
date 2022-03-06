@@ -30,7 +30,7 @@ public final class CraftNote extends org.bukkit.craftbukkit.block.data.CraftBloc
 
     @Override
     public org.bukkit.Note getNote() {
-       return new org.bukkit.Note(get(NOTE));
+        return new org.bukkit.Note(get(NOTE));
     }
 
     @Override

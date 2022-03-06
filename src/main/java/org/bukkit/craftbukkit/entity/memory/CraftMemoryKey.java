@@ -6,7 +6,8 @@ import org.bukkit.entity.memory.MemoryKey;
 
 public final class CraftMemoryKey {
 
-    private CraftMemoryKey() {}
+    private CraftMemoryKey() {
+    }
 
     public static <T, U> MemoryModuleType<U> fromMemoryKey(MemoryKey<T> memoryKey) {
         return (MemoryModuleType<U>) net.minecraft.core.Registry.MEMORY_MODULE_TYPE.get(CraftNamespacedKey.toMinecraft(memoryKey.getKey()));

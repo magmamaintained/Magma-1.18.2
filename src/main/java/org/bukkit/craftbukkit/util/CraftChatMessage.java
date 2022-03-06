@@ -1,15 +1,14 @@
 package org.bukkit.craftbukkit.util;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.google.gson.JsonParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+import com.google.gson.JsonParseException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import org.bukkit.ChatColor;
@@ -72,62 +71,62 @@ public final class CraftChatMessage {
                     appendNewComponent(index);
                 }
                 switch (groupId) {
-                case 1:
-                    char c = match.toLowerCase(java.util.Locale.ENGLISH).charAt(1);
-                    ChatFormatting format = formatMap.get(c);
+                    case 1:
+                        char c = match.toLowerCase(java.util.Locale.ENGLISH).charAt(1);
+                        ChatFormatting format = formatMap.get(c);
 
-                    if (c == 'x') {
-                        hex = new StringBuilder("#");
-                    } else if (hex != null) {
-                        hex.append(c);
+                        if (c == 'x') {
+                            hex = new StringBuilder("#");
+                        } else if (hex != null) {
+                            hex.append(c);
 
-                        if (hex.length() == 7) {
-                            modifier = RESET.withColor(TextColor.parseColor(hex.toString()));
-                            hex = null;
+                            if (hex.length() == 7) {
+                                modifier = RESET.withColor(TextColor.parseColor(hex.toString()));
+                                hex = null;
+                            }
+                        } else if (format.isFormat() && format != ChatFormatting.RESET) {
+                            switch (format) {
+                                case BOLD:
+                                    modifier = modifier.withBold(Boolean.TRUE);
+                                    break;
+                                case ITALIC:
+                                    modifier = modifier.withItalic(Boolean.TRUE);
+                                    break;
+                                case STRIKETHROUGH:
+                                    modifier = modifier.withStrikethrough(Boolean.TRUE);
+                                    break;
+                                case UNDERLINE:
+                                    modifier = modifier.withUnderlined(Boolean.TRUE);
+                                    break;
+                                case OBFUSCATED:
+                                    modifier = modifier.withObfuscated(Boolean.TRUE);
+                                    break;
+                                default:
+                                    throw new AssertionError("Unexpected message format");
+                            }
+                        } else { // Color resets formatting
+                            modifier = RESET.withColor(format);
                         }
-                    } else if (format.isFormat() && format != ChatFormatting.RESET) {
-                        switch (format) {
-                        case BOLD:
-                            modifier = modifier.withBold(Boolean.TRUE);
-                            break;
-                        case ITALIC:
-                            modifier = modifier.withItalic(Boolean.TRUE);
-                            break;
-                        case STRIKETHROUGH:
-                            modifier = modifier.withStrikethrough(Boolean.TRUE);
-                            break;
-                        case UNDERLINE:
-                            modifier = modifier.withUnderlined(Boolean.TRUE);
-                            break;
-                        case OBFUSCATED:
-                            modifier = modifier.withObfuscated(Boolean.TRUE);
-                            break;
-                        default:
-                            throw new AssertionError("Unexpected message format");
+                        needsAdd = true;
+                        break;
+                    case 2:
+                        if (plain) {
+                            appendNewComponent(matcher.end(groupId));
+                        } else {
+                            if (!(match.startsWith("http://") || match.startsWith("https://"))) {
+                                match = "http://" + match;
+                            }
+                            modifier = modifier.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
+                            appendNewComponent(matcher.end(groupId));
+                            modifier = modifier.withClickEvent((ClickEvent) null);
                         }
-                    } else { // Color resets formatting
-                        modifier = RESET.withColor(format);
-                    }
-                    needsAdd = true;
-                    break;
-                case 2:
-                    if (plain) {
-                        appendNewComponent(matcher.end(groupId));
-                    } else {
-                        if (!(match.startsWith("http://") || match.startsWith("https://"))) {
-                            match = "http://" + match;
+                        break;
+                    case 3:
+                        if (needsAdd) {
+                            appendNewComponent(index);
                         }
-                        modifier = modifier.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, match));
-                        appendNewComponent(matcher.end(groupId));
-                        modifier = modifier.withClickEvent((ClickEvent) null);
-                    }
-                    break;
-                case 3:
-                    if (needsAdd) {
-                        appendNewComponent(index);
-                    }
-                    currentChatComponent = null;
-                    break;
+                        currentChatComponent = null;
+                        break;
                 }
                 currentIndex = matcher.end(groupId);
             }
