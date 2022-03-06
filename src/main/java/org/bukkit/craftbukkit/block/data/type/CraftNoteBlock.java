@@ -20,7 +20,7 @@ public abstract class CraftNoteBlock extends CraftBlockData implements NoteBlock
 
     @Override
     public org.bukkit.Note getNote() {
-       return new org.bukkit.Note(get(NOTE));
+        return new org.bukkit.Note(get(NOTE));
     }
 
     @Override

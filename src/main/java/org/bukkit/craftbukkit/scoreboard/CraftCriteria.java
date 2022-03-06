@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.scoreboard;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 

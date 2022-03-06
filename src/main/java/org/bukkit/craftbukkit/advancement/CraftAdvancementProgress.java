@@ -1,9 +1,9 @@
 package org.bukkit.craftbukkit.advancement;
 
-import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import com.google.common.collect.Lists;
 import net.minecraft.advancements.CriterionProgress;
 import net.minecraft.server.PlayerAdvancements;
 import org.bukkit.advancement.Advancement;

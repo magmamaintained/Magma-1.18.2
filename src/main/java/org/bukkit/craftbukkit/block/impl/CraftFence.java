@@ -16,7 +16,7 @@ public final class CraftFence extends org.bukkit.craftbukkit.block.data.CraftBlo
     // org.bukkit.craftbukkit.block.data.CraftMultipleFacing
 
     private static final net.minecraft.world.level.block.state.properties.BooleanProperty[] FACES = new net.minecraft.world.level.block.state.properties.BooleanProperty[]{
-        getBoolean(net.minecraft.world.level.block.FenceBlock.class, "north", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "east", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "south", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "west", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "up", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "down", true)
+            getBoolean(net.minecraft.world.level.block.FenceBlock.class, "north", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "east", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "south", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "west", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "up", true), getBoolean(net.minecraft.world.level.block.FenceBlock.class, "down", true)
     };
 
     @Override

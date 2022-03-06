@@ -1,9 +1,9 @@
 package org.bukkit.craftbukkit.block;
 
-import com.google.common.base.Preconditions;
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.List;
-import javax.annotation.Nullable;
+import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;

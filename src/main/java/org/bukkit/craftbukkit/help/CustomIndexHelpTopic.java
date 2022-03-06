@@ -9,6 +9,7 @@ import org.bukkit.help.HelpTopic;
 import org.bukkit.help.IndexHelpTopic;
 
 /**
+ *
  */
 public class CustomIndexHelpTopic extends IndexHelpTopic {
     private List<String> futureTopics;

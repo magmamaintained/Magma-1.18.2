@@ -121,7 +121,8 @@ public class CraftInventoryCustom extends CraftInventory {
         }
 
         @Override
-        public void setChanged() {}
+        public void setChanged() {
+        }
 
         @Override
         public boolean stillValid(net.minecraft.world.entity.player.Player entityhuman) {

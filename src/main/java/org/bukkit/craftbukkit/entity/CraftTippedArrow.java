@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import org.apache.commons.lang.Validate;

@@ -1,11 +1,8 @@
 package org.bukkit.craftbukkit.inventory;
 
-import com.google.common.base.Preconditions;
 import java.util.List;
-import net.minecraft.util.MathHelper;
-import org.bukkit.Material;
+import com.google.common.base.Preconditions;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantOffer;
 import org.bukkit.inventory.MerchantRecipe;
 
 public class CraftMerchantRecipe extends MerchantRecipe {

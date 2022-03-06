@@ -187,7 +187,7 @@ public class CraftEntityEquipment implements EntityEquipment {
 
     @Override
     public float getItemInMainHandDropChance() {
-       return getDropChance(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+        return getDropChance(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
     }
 
     @Override

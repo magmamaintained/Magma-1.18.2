@@ -10,7 +10,8 @@ import org.bukkit.craftbukkit.CraftWorld;
 
 public final class CraftMemoryMapper {
 
-    private CraftMemoryMapper() {}
+    private CraftMemoryMapper() {
+    }
 
     public static Object fromNms(Object object) {
         if (object instanceof GlobalPos) {

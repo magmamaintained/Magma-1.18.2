@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.inventory;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.world.item.CreativeModeTab;
 import org.bukkit.inventory.CreativeCategory;
 

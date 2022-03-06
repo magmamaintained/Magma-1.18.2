@@ -1,8 +1,8 @@
 package org.bukkit.craftbukkit;
 
+import java.util.function.Predicate;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
-import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.state.BlockState;

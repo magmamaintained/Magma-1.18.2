@@ -1,17 +1,16 @@
 package org.bukkit.craftbukkit.block.data;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
-import net.minecraft.core.net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.block.state.properties.net.minecraft.world.level.block.state.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.SoundGroup;
 import org.bukkit.block.BlockFace;
@@ -54,9 +52,9 @@ public class CraftBlockData implements BlockData {
     /**
      * Get a given EnumProperty's value as its Bukkit counterpart.
      *
-     * @param nms the NMS state to convert
+     * @param nms    the NMS state to convert
      * @param bukkit the Bukkit class
-     * @param <B> the type
+     * @param <B>    the type
      * @return the matching Bukkit type
      */
     protected <B extends Enum<B>> B get(EnumProperty<?> nms, Class<B> bukkit) {
@@ -67,9 +65,9 @@ public class CraftBlockData implements BlockData {
      * Convert all values from the given EnumProperty to their appropriate
      * Bukkit counterpart.
      *
-     * @param nms the NMS state to get values from
+     * @param nms    the NMS state to get values from
      * @param bukkit the bukkit class to convert the values to
-     * @param <B> the bukkit class type
+     * @param <B>    the bukkit class type
      * @return an immutable Set of values in their appropriate Bukkit type
      */
     @SuppressWarnings("unchecked")
@@ -86,10 +84,10 @@ public class CraftBlockData implements BlockData {
     /**
      * Set a given {@link EnumProperty} with the matching enum from Bukkit.
      *
-     * @param nms the NMS EnumProperty to set
+     * @param nms    the NMS EnumProperty to set
      * @param bukkit the matching Bukkit Enum
-     * @param <B> the Bukkit type
-     * @param <N> the NMS type
+     * @param <B>    the Bukkit type
+     * @param <N>    the NMS type
      */
     protected <B extends Enum<B>, N extends Enum<N> & StringRepresentable> void set(EnumProperty<N> nms, Enum<B> bukkit) {
         this.parsedStates = null;
@@ -157,7 +155,7 @@ public class CraftBlockData implements BlockData {
      * Convert a given Bukkit enum to its matching NMS enum type.
      *
      * @param bukkit the Bukkit enum to convert
-     * @param nms the NMS class
+     * @param nms    the NMS class
      * @return the matching NMS type
      * @throws IllegalStateException if the Enum could not be converted
      */
@@ -185,7 +183,7 @@ public class CraftBlockData implements BlockData {
      * Set the specified state's value.
      *
      * @param ibs the state to set
-     * @param v the new value
+     * @param v   the new value
      * @param <T> the state's type
      * @param <V> the value's type. Must match the state's type.
      */
@@ -290,12 +288,12 @@ public class CraftBlockData implements BlockData {
      * Get a specified {@link net.minecraft.world.level.block.state.properties.Property} from a given block's class with a
      * given name
      *
-     * @param block the class to retrieve the state from
-     * @param name the name of the state to retrieve
+     * @param block    the class to retrieve the state from
+     * @param name     the name of the state to retrieve
      * @param optional if the state can be null
      * @return the specified state or null
      * @throws IllegalStateException if the state is null and {@code optional}
-     * is false.
+     *                               is false.
      */
     private static net.minecraft.world.level.block.state.properties.Property<?> getState(Class<? extends Block> block, String name, boolean optional) {
         net.minecraft.world.level.block.state.properties.Property<?> state = null;

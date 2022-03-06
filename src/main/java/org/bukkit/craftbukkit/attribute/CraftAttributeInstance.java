@@ -1,9 +1,9 @@
 package org.bukkit.craftbukkit.attribute;
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import com.google.common.base.Preconditions;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -63,7 +63,7 @@ public class CraftAttributeInstance implements AttributeInstance {
 
     @Override
     public double getDefaultValue() {
-       return handle.getAttribute().getDefaultValue();
+        return handle.getAttribute().getDefaultValue();
     }
 
     public static net.minecraft.world.entity.ai.attributes.AttributeModifier convert(AttributeModifier bukkit) {

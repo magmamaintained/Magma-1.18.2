@@ -49,6 +49,6 @@ public class CraftSkeleton extends CraftAbstractSkeleton implements Skeleton {
 
     @Override
     public SkeletonType getSkeletonType() {
-       return SkeletonType.NORMAL;
+        return SkeletonType.NORMAL;
     }
 }

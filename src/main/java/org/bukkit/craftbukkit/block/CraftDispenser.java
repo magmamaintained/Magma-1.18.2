@@ -1,8 +1,7 @@
 package org.bukkit.craftbukkit.block;
 
-import com.google.common.base.Preconditions;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import org.bukkit.Material;
 import org.bukkit.World;

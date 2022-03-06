@@ -5,7 +5,8 @@ import org.bukkit.FluidCollisionMode;
 
 public final class CraftFluidCollisionMode {
 
-    private CraftFluidCollisionMode() {}
+    private CraftFluidCollisionMode() {
+    }
 
     public static Fluid toNMS(FluidCollisionMode fluidCollisionMode) {
         if (fluidCollisionMode == null) return null;
