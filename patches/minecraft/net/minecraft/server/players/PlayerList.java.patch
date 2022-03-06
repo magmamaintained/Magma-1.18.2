@@ -1,21 +1,42 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -90,6 +_,7 @@
+@@ -61,6 +_,7 @@
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.PlayerAdvancements;
+ import net.minecraft.server.ServerScoreboard;
++import net.minecraft.server.dedicated.DedicatedServer;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.server.network.ServerGamePacketListenerImpl;
+@@ -90,6 +_,10 @@
  import net.minecraft.world.scores.Objective;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
 +import org.bukkit.Location;
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.command.ColouredConsoleSender;
++import org.bukkit.craftbukkit.command.ConsoleCommandCompleter;
  import org.slf4j.Logger;
  
  public abstract class PlayerList {
-@@ -118,6 +_,7 @@
+@@ -118,8 +_,17 @@
     private boolean f_11209_;
     private static final boolean f_143988_ = false;
     private int f_11210_;
 +   private final List<ServerPlayer> playersView = java.util.Collections.unmodifiableList(f_11196_);
++
++   // CraftBukkit start
++   private CraftServer cserver;
  
     public PlayerList(MinecraftServer p_203842_, RegistryAccess.Frozen p_203843_, PlayerDataStorage p_203844_, int p_203845_) {
++      this.cserver = p_203842_.server = new CraftServer((DedicatedServer) p_203842_, this); // CraftBukkit
++      p_203842_.console = ColouredConsoleSender.getInstance();
++      p_203842_.reader.addCompleter(new ConsoleCommandCompleter(p_203842_.server));
++      // CraftBukkit end
++
        this.f_11195_ = p_203842_;
+       this.f_11206_ = p_203843_;
+       this.f_11193_ = p_203845_;
 @@ -153,6 +_,7 @@
        LevelData leveldata = serverlevel1.m_6106_();
        p_11263_.m_143427_(compoundtag);

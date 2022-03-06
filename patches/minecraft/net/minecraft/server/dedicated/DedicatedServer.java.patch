@@ -17,7 +17,7 @@
  import net.minecraft.network.chat.Component;
  import net.minecraft.server.ConsoleInput;
  import net.minecraft.server.MinecraftServer;
-@@ -52,11 +_,13 @@
+@@ -52,11 +_,17 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.CreativeModeTab;
  import net.minecraft.world.item.Items;
@@ -27,7 +27,11 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.entity.SkullBlockEntity;
  import net.minecraft.world.level.storage.LevelStorageSource;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.util.ForwardLogHandler;
++import org.bukkit.craftbukkit.util.TerminalConsoleWriterThread;
  import org.slf4j.Logger;
  
  public class DedicatedServer extends MinecraftServer implements ServerInterface {
@@ -50,7 +54,38 @@
              BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
  
              String s1;
-@@ -167,11 +_,13 @@
+@@ -102,6 +_,21 @@
+ 
+          }
+       };
++      // CraftBukkit start - TODO: handle command-line logging arguments
++      java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
++      global.setUseParentHandlers(false);
++      for (java.util.logging.Handler handler : global.getHandlers()) {
++         global.removeHandler(handler);
++      }
++      global.addHandler(new ForwardLogHandler());
++
++      final org.apache.logging.log4j.Logger logger = LogManager.getRootLogger();
++
++      new TerminalConsoleWriterThread(System.out, this.reader).start();
++
++      System.setOut(IoBuilder.forLogger(logger).setLevel( org.apache.logging.log4j.Level.INFO).buildPrintStream());
++      System.setErr(IoBuilder.forLogger(logger).setLevel( org.apache.logging.log4j.Level.WARN).buildPrintStream());
++      // CraftBukkit end
+       thread.setDaemon(true);
+       thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_139598_));
+       thread.start();
+@@ -163,15 +_,21 @@
+       if (!OldUsersConverter.m_11106_(this)) {
+          return false;
+       } else {
+-         this.m_129823_(new DedicatedPlayerList(this, this.m_206579_(), this.f_129745_));
++         // CraftBukkit start
++         this.m_129823_(new DedicatedPlayerList(this, this.f_129746_, this.f_129745_));
++//         server.loadPlugins();
++//         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
++         // CraftBukkit end
           long i = Util.m_137569_();
           SkullBlockEntity.m_196700_(this.m_129927_(), this.m_129925_(), this);
           GameProfileCache.m_11004_(this.m_129797_());
