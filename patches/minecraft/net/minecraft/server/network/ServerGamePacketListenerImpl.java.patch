@@ -1,5 +1,45 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -150,6 +_,9 @@
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.apache.commons.lang3.StringUtils;
++import org.bukkit.Location;
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.entity.CraftPlayer;
+ import org.slf4j.Logger;
+ 
+ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener {
+@@ -189,6 +_,20 @@
+    private int f_9740_;
+    private int f_9741_;
+ 
++   // CraftBukkit start
++   private final CraftServer cserver;
++   public boolean processedDisconnect;
++   private int lastTick = MinecraftServer.currentTick;
++   private int allowedPlayerTicks = 1;
++   private int lastDropTick = MinecraftServer.currentTick;
++   private int lastBookTick  = MinecraftServer.currentTick;
++   private int dropCount = 0;
++
++   public CraftPlayer getCraftPlayer() {
++      return (this.f_9743_ == null) ? null : (CraftPlayer) this.f_9743_.getBukkitEntity();
++   }
++   // CraftBukkit end
++
+    public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_) {
+       this.f_9745_ = p_9770_;
+       this.f_9742_ = p_9771_;
+@@ -197,6 +_,8 @@
+       p_9772_.f_8906_ = this;
+       this.f_9747_ = Util.m_137550_();
+       p_9772_.m_8967_().m_7674_();
++
++      this.cserver = p_9770_.server; // CraftBukkit
+    }
+ 
+    public void m_9933_() {
 @@ -386,9 +_,11 @@
              }
  
@@ -70,3 +110,24 @@
     }
  
     public void m_7477_(ServerboundChangeDifficultyPacket p_9839_) {
+@@ -1448,6 +_,20 @@
+ 
+    public ServerPlayer m_142253_() {
+       return this.f_9743_;
++   }
++
++   // Magma Stub
++    public void disconnect(String s) {
++    }
++
++   public void chat(String msg, boolean b) {
++   }
++
++   public void teleport(Location to) {
++   }
++
++   public final boolean isDisconnected() {
++      return !this.f_9743_.joining && !this.f_9742_.m_129536_();
+    }
+ 
+    @FunctionalInterface

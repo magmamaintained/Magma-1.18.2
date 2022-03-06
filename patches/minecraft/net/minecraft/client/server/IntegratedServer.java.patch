@@ -1,5 +1,43 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
+@@ -12,10 +_,13 @@
+ import java.util.UUID;
+ import java.util.function.BooleanSupplier;
+ import javax.annotation.Nullable;
++import com.mojang.serialization.DynamicOps;
+ import net.minecraft.CrashReport;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.SystemReport;
+ import net.minecraft.client.Minecraft;
++import net.minecraft.commands.CommandSourceStack;
++import net.minecraft.nbt.Tag;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.WorldStem;
+ import net.minecraft.server.level.ServerPlayer;
+@@ -25,10 +_,12 @@
+ import net.minecraft.stats.Stats;
+ import net.minecraft.util.ModCheck;
+ import net.minecraft.util.profiling.ProfilerFiller;
++import net.minecraft.world.level.DataPackConfig;
+ import net.minecraft.world.level.GameType;
+ import net.minecraft.world.level.storage.LevelStorageSource;
+ import net.minecraftforge.api.distmarker.Dist;
+ import net.minecraftforge.api.distmarker.OnlyIn;
++import org.bukkit.command.CommandSender;
+ import org.slf4j.Logger;
+ 
+ @OnlyIn(Dist.CLIENT)
+@@ -46,8 +_,8 @@
+    private UUID f_120019_;
+    private int f_194467_ = 0;
+ 
+-   public IntegratedServer(Thread p_205653_, Minecraft p_205654_, LevelStorageSource.LevelStorageAccess p_205655_, PackRepository p_205656_, WorldStem p_205657_, MinecraftSessionService p_205658_, GameProfileRepository p_205659_, GameProfileCache p_205660_, ChunkProgressListenerFactory p_205661_) {
+-      super(p_205653_, p_205655_, p_205656_, p_205657_, p_205654_.m_91096_(), p_205654_.m_91295_(), p_205658_, p_205659_, p_205660_, p_205661_);
++   public IntegratedServer(joptsimple.OptionSet optionSet, DataPackConfig dataPackConfig, DynamicOps<Tag> registryreadops, Thread p_205653_, Minecraft p_205654_, LevelStorageSource.LevelStorageAccess p_205655_, PackRepository p_205656_, WorldStem p_205657_, MinecraftSessionService p_205658_, GameProfileRepository p_205659_, GameProfileCache p_205660_, ChunkProgressListenerFactory p_205661_) {
++      super(optionSet, dataPackConfig, registryreadops, p_205653_, p_205655_, p_205656_, p_205657_, p_205654_.m_91096_(), p_205654_.m_91295_(), p_205658_, p_205659_, p_205660_, p_205661_);
+       this.m_129981_(p_205654_.m_91094_().m_92546_());
+       this.m_129975_(p_205654_.m_91402_());
+       this.m_129823_(new IntegratedPlayerList(this, this.m_206579_(), this.f_129745_));
 @@ -60,9 +_,10 @@
        this.m_129997_(true);
        this.m_129999_(true);
@@ -12,6 +50,18 @@
     }
  
     public void m_5705_(BooleanSupplier p_120049_) {
+@@ -112,6 +_,11 @@
+       return true;
+    }
+ 
++   @Override
++   public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      return null;
++   }
++
+    public File m_6237_() {
+       return this.f_120015_.f_91069_;
+    }
 @@ -179,6 +_,7 @@
     }
  

@@ -1,5 +1,25 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
+@@ -52,6 +_,7 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelSettings;
+ import net.minecraft.world.level.dimension.DimensionType;
++import net.minecraft.world.level.dimension.LevelStem;
+ import net.minecraft.world.level.levelgen.WorldGenSettings;
+ import org.slf4j.Logger;
+ 
+@@ -275,6 +_,11 @@
+       return new LevelStorageSource.LevelStorageAccess(p_78261_);
+    }
+ 
++   // Magma Stub
++   public LevelStorageAccess createAccess(String name, ResourceKey<LevelStem> actualDimension) throws IOException {
++      return null;
++   }
++
+    public class LevelStorageAccess implements AutoCloseable {
+       final DirectoryLock f_78270_;
+       public final Path f_78271_;
 @@ -324,6 +_,19 @@
           return LevelStorageSource.this.m_78229_(this.f_78271_.toFile(), LevelStorageSource.m_211737_(p_211748_, p_211749_, p_211750_));
        }

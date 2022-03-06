@@ -1,7 +1,11 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -49,7 +_,7 @@
+@@ -47,9 +_,11 @@
+ import net.minecraft.world.level.material.Fluids;
+ import net.minecraft.world.ticks.LevelChunkTicks;
  import net.minecraft.world.ticks.TickContainerAccess;
++import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer;
++import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry;
  import org.slf4j.Logger;
  
 -public class LevelChunk extends ChunkAccess {
@@ -9,6 +13,28 @@
     static final Logger f_62771_ = LogUtils.getLogger();
     private static final TickingBlockEntity f_156361_ = new TickingBlockEntity() {
        public void m_142224_() {
+@@ -79,6 +_,21 @@
+    private final LevelChunkTicks<Block> f_62784_;
+    private final LevelChunkTicks<Fluid> f_187943_;
+ 
++   // CraftBukkit start
++   public org.bukkit.Chunk bukkitChunk;
++
++   public org.bukkit.Chunk getBukkitChunk ( )
++   {
++      return bukkitChunk;
++   }
++
++   public boolean mustNotSave;
++   public boolean needsDecoration;
++   private static final CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new CraftPersistentDataTypeRegistry();
++   public CraftPersistentDataContainer persistentDataContainer = new CraftPersistentDataContainer( DATA_TYPE_REGISTRY );
++   // CraftBukkit end
++
++
+    public LevelChunk(Level p_187945_, ChunkPos p_187946_) {
+       this(p_187945_, p_187946_, UpgradeData.f_63320_, new LevelChunkTicks<>(), new LevelChunkTicks<>(), 0L, (LevelChunkSection[])null, (LevelChunk.PostLoadProcessor)null, (BlendingData)null);
+    }
 @@ -97,6 +_,7 @@
        this.f_62791_ = p_196861_;
        this.f_62784_ = p_196857_;

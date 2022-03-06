@@ -9,7 +9,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.bukkit.inventory.Recipe;
 
 public class RecipeIterator implements Iterator<Recipe> {
-    private final Iterator<Map.Entry<RecipeType<?>, Object2ObjectLinkedOpenHashMap<ResourceLocation, net.minecraft.world.item.crafting.Recipe<?>>>> recipes;
+    private final Iterator<Map.Entry<RecipeType<?>, Map<ResourceLocation, net.minecraft.world.item.crafting.Recipe<?>>>> recipes;
     private Iterator<net.minecraft.world.item.crafting.Recipe<?>> current;
 
     public RecipeIterator() {

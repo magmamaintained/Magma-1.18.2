@@ -16,3 +16,17 @@
              }
           } catch (ClassNotFoundException classnotfoundexception) {
           }
+@@ -126,6 +_,13 @@
+       }
+ 
+    }
++
++   // CraftBukkit start - add method from above
++   public <T> void markDirty(EntityDataAccessor<T> datawatcherobject) {
++      this.m_135379_(datawatcherobject).m_135401_(true);
++      this.f_135348_ = true;
++   }
++   // CraftBukkit end
+ 
+    public boolean m_135352_() {
+       return this.f_135348_;

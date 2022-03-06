@@ -1,5 +1,18 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
+@@ -64,6 +_,12 @@
+    private final int f_37096_;
+    private final int f_37097_;
+ 
++   // CraftBukkit start - Extra variables to enable modification of fishing wait time, values are minecraft defaults
++   public int minWaitTime = 100;
++   public int maxWaitTime = 600;
++   public boolean applyLure = true;
++   // CraftBukkit end
++
+    private FishingHook(EntityType<? extends FishingHook> p_150141_, Level p_150142_, int p_150143_, int p_150144_) {
+       super(p_150141_, p_150142_);
+       this.f_19811_ = true;
 @@ -240,7 +_,7 @@
  
     private void m_37171_() {

@@ -1,6 +1,44 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -181,10 +_,11 @@
+@@ -61,6 +_,7 @@
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.ServerScoreboard;
++import net.minecraft.server.dedicated.DedicatedServer;
+ import net.minecraft.server.level.progress.ChunkProgressListener;
+ import net.minecraft.server.players.SleepStatus;
+ import net.minecraft.sounds.SoundEvent;
+@@ -116,6 +_,7 @@
+ import net.minecraft.world.level.chunk.LevelChunkSection;
+ import net.minecraft.world.level.chunk.storage.EntityStorage;
+ import net.minecraft.world.level.dimension.DimensionType;
++import net.minecraft.world.level.dimension.LevelStem;
+ import net.minecraft.world.level.dimension.end.EndDragonFight;
+ import net.minecraft.world.level.entity.EntityPersistentStorage;
+ import net.minecraft.world.level.entity.EntityTickList;
+@@ -138,6 +_,7 @@
+ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+ import net.minecraft.world.level.storage.DimensionDataStorage;
+ import net.minecraft.world.level.storage.LevelStorageSource;
++import net.minecraft.world.level.storage.PrimaryLevelData;
+ import net.minecraft.world.level.storage.ServerLevelData;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+@@ -145,6 +_,13 @@
+ import net.minecraft.world.phys.shapes.Shapes;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import net.minecraft.world.ticks.LevelTicks;
++import org.bukkit.World;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.util.WorldUUID;
++import org.bukkit.event.entity.CreatureSpawnEvent;
++import org.bukkit.event.weather.LightningStrikeEvent;
++import org.bukkit.generator.BiomeProvider;
+ import org.slf4j.Logger;
+ 
+ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -181,13 +_,34 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -10,17 +48,47 @@
     private final StructureCheck f_196556_;
     private final boolean f_8561_;
 +   private net.minecraftforge.common.util.WorldCapabilityData capabilityData;
++
++   // CraftBukkit start
++   public PrimaryLevelData worldDataServer;
++   private int tickPosition;
++   public final LevelStorageSource.LevelStorageAccess convertable;
++   public final UUID uuid;
++
++   // Magma todo - remove this
++   public static org.bukkit.generator.ChunkGenerator generator;
++   public static org.bukkit.World.Environment environment;
++   public static org.bukkit.generator.BiomeProvider biomeProvider;
++
++   public LevelChunk getChunkIfLoaded(int x, int z) {
++      return this.f_8547_.m_62227_(x, z, false);
++   }
++
  
     public ServerLevel(MinecraftServer p_203762_, Executor p_203763_, LevelStorageSource.LevelStorageAccess p_203764_, ServerLevelData p_203765_, ResourceKey<Level> p_203766_, Holder<DimensionType> p_203767_, ChunkProgressListener p_203768_, ChunkGenerator p_203769_, boolean p_203770_, long p_203771_, List<CustomSpawner> p_203772_, boolean p_203773_) {
        super(p_203765_, p_203766_, p_203767_, p_203762_::m_129905_, false, p_203770_, p_203771_);
-@@ -223,6 +_,7 @@
++      convertable = p_203764_;
++      this.pvpMode = p_203762_.m_129799_();
++      uuid = WorldUUID.getUUID(p_203764_.f_78271_.toFile());
++      // CraftBukkit end
+       this.f_8561_ = p_203773_;
+       this.f_8548_ = p_203762_;
+       this.f_8558_ = p_203772_;
+@@ -223,7 +_,14 @@
        }
  
        this.f_143245_ = new SleepStatus();
 +      this.initCapabilities();
++
++      // CraftBukkit start
++      this.world = new CraftWorld((ServerLevel) this, generator, biomeProvider, environment);
++      // CraftBukkit end
     }
++
++
  
     public void m_8606_(int p_8607_, int p_8608_, boolean p_8609_, boolean p_8610_) {
+       this.f_8549_.m_6393_(p_8607_);
 @@ -251,8 +_,8 @@
        int i = this.m_46469_().m_46215_(GameRules.f_151486_);
        if (this.f_143245_.m_144002_(i) && this.f_143245_.m_144004_(i, this.f_8546_)) {
@@ -104,6 +172,21 @@
        }
     }
  
+@@ -740,7 +_,13 @@
+    }
+ 
+    public boolean m_7967_(Entity p_8837_) {
+-      return this.m_8872_(p_8837_);
++      // CraftBukkit start
++      return this.addFreshEntity(p_8837_, CreatureSpawnEvent.SpawnReason.DEFAULT);
++   }
++
++   public boolean addFreshEntity(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
++      return this.addEntity(entity, reason);
++      // CraftBukkit end
+    }
+ 
+    public boolean m_8847_(Entity p_8848_) {
 @@ -767,7 +_,55 @@
        this.m_8853_(p_8846_);
     }
@@ -170,7 +253,7 @@
     }
  
     private boolean m_8872_(Entity p_8873_) {
-@@ -783,7 +_,12 @@
+@@ -783,7 +_,27 @@
           f_8566_.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.m_20613_(p_8873_.m_6095_()));
           return false;
        } else {
@@ -181,9 +264,47 @@
 +         } else {
 +            return false;
 +         }
++      }
++   }
++
++   // CraftBukkit start
++   public boolean addEntity(Entity entity, CreatureSpawnEvent.SpawnReason spawnReason) {
++      if (entity.m_146910_()) {
++         // WorldServer.LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityTypes.getKey(entity.getType())); // CraftBukkit
++         return false;
++      } else {
++         if (!CraftEventFactory.doEntityAddEventCalling(this, entity, spawnReason)) {
++            return false;
++         }
++         // CraftBukkit end
++
++         return this.f_143244_.m_157533_(entity);
        }
     }
  
+@@ -805,6 +_,22 @@
+       p_143262_.m_142687_(p_143263_);
+    }
+ 
++   // CraftBukkit start
++   public boolean strikeLightning(Entity entitylightning) {
++      return this.strikeLightning(entitylightning, LightningStrikeEvent.Cause.UNKNOWN);
++   }
++
++   public boolean strikeLightning(Entity entitylightning, LightningStrikeEvent.Cause cause) {
++      LightningStrikeEvent lightning = CraftEventFactory.callLightningStrikeEvent((org.bukkit.entity.LightningStrike) entitylightning.getBukkitEntity(), cause);
++
++      if (lightning.isCancelled()) {
++         return false;
++      }
++
++      return this.m_7967_(entitylightning);
++   }
++   // CraftBukkit end
++
+    public void m_6801_(int p_8612_, BlockPos p_8613_, int p_8614_) {
+       for(ServerPlayer serverplayer : this.f_8548_.m_6846_().m_11314_()) {
+          if (serverplayer != null && serverplayer.f_19853_ == this && serverplayer.m_142049_() != p_8612_) {
 @@ -820,10 +_,20 @@
     }
  
@@ -221,6 +342,19 @@
        explosion.m_46061_();
        explosion.m_46075_(false);
        if (p_8661_ == Explosion.BlockInteraction.NONE) {
+@@ -934,6 +_,12 @@
+       return this.f_184047_;
+    }
+ 
++   // Magma stub
++   @Override
++   public ResourceKey<LevelStem> getTypeKey() {
++      return null;
++   }
++
+    @Nonnull
+    public MinecraftServer m_142572_() {
+       return this.f_8548_;
 @@ -1412,6 +_,12 @@
        });
     }

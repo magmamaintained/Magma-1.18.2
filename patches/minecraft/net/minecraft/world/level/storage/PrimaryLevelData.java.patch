@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/storage/PrimaryLevelData.java
++++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
+@@ -454,4 +_,12 @@
+    public LevelSettings m_5926_() {
+       return this.f_78443_.m_46935_();
+    }
++
++   // CraftBukkit start - Check if the name stored in NBT is the correct one
++   public void checkName(String name) {
++      if (!this.f_78443_.f_46902_.equals(name)) {
++         this.f_78443_.f_46902_ = name;
++      }
++   }
++   // CraftBukkit end
+ }

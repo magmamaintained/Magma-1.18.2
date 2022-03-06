@@ -1,0 +1,20 @@
+--- a/net/minecraft/util/worldupdate/WorldUpgrader.java
++++ b/net/minecraft/util/worldupdate/WorldUpgrader.java
+@@ -31,6 +_,7 @@
+ import net.minecraft.world.level.chunk.ChunkGenerator;
+ import net.minecraft.world.level.chunk.storage.ChunkStorage;
+ import net.minecraft.world.level.chunk.storage.RegionFile;
++import net.minecraft.world.level.dimension.DimensionType;
+ import net.minecraft.world.level.levelgen.WorldGenSettings;
+ import net.minecraft.world.level.storage.DimensionDataStorage;
+ import net.minecraft.world.level.storage.LevelStorageSource;
+@@ -50,7 +_,8 @@
+    private volatile int f_18807_;
+    private volatile int f_18808_;
+    private volatile int f_18809_;
+-   private final Object2FloatMap<ResourceKey<Level>> f_18810_ = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap<>(Util.m_137583_()));
++   private final Object2FloatMap<ResourceKey<Level>> f_18810_ = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(Util.m_137583_())); // CraftBukkit
++
+    private volatile Component f_18811_ = new TranslatableComponent("optimizeWorld.stage.counting");
+    private static final Pattern f_18812_ = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
+    private final DimensionDataStorage f_18813_;

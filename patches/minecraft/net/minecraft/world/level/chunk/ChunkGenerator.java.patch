@@ -1,0 +1,41 @@
+--- a/net/minecraft/world/level/chunk/ChunkGenerator.java
++++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
+@@ -83,6 +_,7 @@
+ import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
+ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+ import org.apache.commons.lang3.mutable.MutableBoolean;
++import org.bukkit.craftbukkit.generator.CraftLimitedRegion;
+ import org.slf4j.Logger;
+ 
+ public abstract class ChunkGenerator implements BiomeManager.NoiseBiomeSource {
+@@ -354,6 +_,30 @@
+ 
+       return null;
+    }
++
++   // CraftCity start
++   public void applyBiomeDecoration(WorldGenLevel generatoraccessseed, ChunkAccess ichunkaccess, StructureFeatureManager structuremanager, boolean vanilla) {
++      if (vanilla) {
++         m_183372_(generatoraccessseed, ichunkaccess, structuremanager);
++      }
++
++      org.bukkit.World world = generatoraccessseed.getMinecraftWorld().getWorld();
++      // only call when a populator is present (prevents unnecessary entity conversion)
++      if (!world.getPopulators().isEmpty()) {
++         CraftLimitedRegion limitedRegion = new CraftLimitedRegion(generatoraccessseed, ichunkaccess.m_7697_());
++         int x = ichunkaccess.m_7697_().f_45578_;
++         int z = ichunkaccess.m_7697_().f_45579_;
++         for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
++            WorldgenRandom seededrandom = new WorldgenRandom(new LegacyRandomSource(generatoraccessseed.m_7328_()));
++            seededrandom.m_64690_(generatoraccessseed.m_7328_(), x, z);
++            populator.populate(world, seededrandom, x, z, limitedRegion);
++         }
++         limitedRegion.saveEntities();
++         limitedRegion.breakLink();
++      }
++      // CraftBukkit end
++   }
++
+ 
+    public void m_183372_(WorldGenLevel p_187712_, ChunkAccess p_187713_, StructureFeatureManager p_187714_) {
+       ChunkPos chunkpos = p_187713_.m_7697_();
