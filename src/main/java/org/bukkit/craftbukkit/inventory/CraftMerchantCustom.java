@@ -9,7 +9,7 @@ import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 public class CraftMerchantCustom extends CraftMerchant {
 

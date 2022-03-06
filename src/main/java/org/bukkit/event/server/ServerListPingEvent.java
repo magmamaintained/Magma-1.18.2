@@ -2,7 +2,7 @@ package org.bukkit.event.server;
 
 import java.net.InetAddress;
 import java.util.Iterator;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.UndefinedNullability;
 import org.bukkit.entity.Player;

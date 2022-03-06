@@ -6,7 +6,7 @@ import java.lang.reflect.Constructor;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.data.Ageable;

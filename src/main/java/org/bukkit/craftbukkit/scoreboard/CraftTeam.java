@@ -3,7 +3,7 @@ package org.bukkit.craftbukkit.scoreboard;
 import java.util.Set;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.scores.PlayerTeam;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

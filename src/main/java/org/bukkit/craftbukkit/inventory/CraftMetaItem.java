@@ -20,7 +20,7 @@ import com.google.common.collect.*;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.BlockItem;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
