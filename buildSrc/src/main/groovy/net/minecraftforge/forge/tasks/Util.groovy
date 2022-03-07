@@ -73,6 +73,12 @@ public class Util {
 			def url = "https://libraries.minecraft.net/${path}"
 			if (!checkExists(url)) {
 				url = "https://maven.minecraftforge.net/${path}"
+				if (!checkExists(url)) { // Checks if not in the forge repo then use magma repo
+					url = "https://raw.github.com/Hexeption/Magma-Repo/master/${path}"
+					if (!checkExists(url)) { // If all else fails use maven central repo
+						url = "https://repo1.maven.org/maven2/${path}"
+					}
+				}
 			}
 			//TODO remove when Mojang launcher is updated
 			if (!classifiers && art.classifier != null) { 
