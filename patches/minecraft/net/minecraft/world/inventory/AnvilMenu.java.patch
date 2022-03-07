@@ -4,9 +4,9 @@
  import net.minecraft.world.level.block.AnvilBlock;
  import net.minecraft.world.level.block.state.BlockState;
  import org.apache.commons.lang3.StringUtils;
-+import org.bukkit.craftbukkit.inventory.CraftInventory;
-+import org.bukkit.craftbukkit.inventory.CraftInventoryAnvil;
-+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
++import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventory;
++import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryAnvil;
++import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
  import org.slf4j.Logger;
  
  public class AnvilMenu extends ItemCombinerMenu {

@@ -4,7 +4,7 @@
  import net.minecraft.util.MemoryReserve;
  import org.apache.commons.io.IOUtils;
  import org.apache.commons.lang3.ArrayUtils;
-+import org.bukkit.craftbukkit.CraftCrashReport;
++import org.bukkit.craftbukkit.v1_18_R2.CraftCrashReport;
  import org.slf4j.Logger;
  
  public class CrashReport {

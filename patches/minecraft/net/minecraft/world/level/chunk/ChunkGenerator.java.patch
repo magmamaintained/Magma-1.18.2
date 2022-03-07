@@ -4,7 +4,7 @@
  import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
  import org.apache.commons.lang3.mutable.MutableBoolean;
-+import org.bukkit.craftbukkit.generator.CraftLimitedRegion;
++import org.bukkit.craftbukkit.v1_18_R2.generator.CraftLimitedRegion;
  import org.slf4j.Logger;
  
  public abstract class ChunkGenerator implements BiomeManager.NoiseBiomeSource {

@@ -77,11 +77,10 @@
  import net.minecraft.commands.CommandSource;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
-@@ -65,6 +_,8 @@
+@@ -65,6 +_,7 @@
  import net.minecraft.core.RegistryAccess;
  import net.minecraft.data.worldgen.features.MiscOverworldFeatures;
  import net.minecraft.gametest.framework.GameTestTicker;
-+import net.minecraft.nbt.NbtOps;
 +import net.minecraft.nbt.Tag;
  import net.minecraft.network.chat.Component;
  import net.minecraft.network.chat.TextComponent;
@@ -160,9 +159,9 @@
  import net.minecraft.world.phys.Vec3;
  import org.apache.commons.lang3.Validate;
 +import org.bukkit.Bukkit;
-+import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.Main;
-+import org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager;
++import org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboardManager;
 +import org.bukkit.event.server.ServerLoadEvent;
  import org.slf4j.Logger;
  
@@ -174,7 +173,7 @@
 +   // CraftBukkit start
 +   public final DataPackConfig datapackconfiguration;
 +   public final DynamicOps<Tag> registryreadops;
-+   public org.bukkit.craftbukkit.CraftServer server;
++   public CraftServer server;
 +   public OptionSet options;
 +   public org.bukkit.command.ConsoleCommandSender console;
 +   public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
@@ -232,7 +231,7 @@
 +            f_129750_.warn((String) null, ex);
 +         }
 +      }
-+      Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
++      Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.v1_18_R2.util.ServerShutdownThread(this));
     }
 +   // CraftBukkit end
  

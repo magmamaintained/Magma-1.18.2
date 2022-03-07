@@ -4,7 +4,7 @@
     private final String[][] f_138303_;
     private final Set<Advancement> f_138304_ = Sets.newLinkedHashSet();
     private final Component f_138305_;
-+   public final org.bukkit.advancement.Advancement bukkit = new org.bukkit.craftbukkit.advancement.CraftAdvancement(this); // CraftBukkit
++   public final org.bukkit.advancement.Advancement bukkit = new org.bukkit.craftbukkit.v1_18_R2.advancement.CraftAdvancement(this); // CraftBukkit
  
     public Advancement(ResourceLocation p_138307_, @Nullable Advancement p_138308_, @Nullable DisplayInfo p_138309_, AdvancementRewards p_138310_, Map<String, Criterion> p_138311_, String[][] p_138312_) {
        this.f_138301_ = p_138307_;
