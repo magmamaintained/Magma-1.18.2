@@ -1,5 +1,21 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
+@@ -9,7 +_,6 @@
+ import io.netty.buffer.Unpooled;
+ import java.io.File;
+ import java.net.SocketAddress;
+-import java.nio.file.Path;
+ import java.text.SimpleDateFormat;
+ import java.util.List;
+ import java.util.Map;
+@@ -19,7 +_,6 @@
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.ChatFormatting;
+-import net.minecraft.FileUtil;
+ import net.minecraft.Util;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.RegistryAccess;
 @@ -61,6 +_,7 @@
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.PlayerAdvancements;
@@ -13,9 +29,9 @@
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
 +import org.bukkit.Location;
-+import org.bukkit.craftbukkit.CraftServer;
-+import org.bukkit.craftbukkit.command.ColouredConsoleSender;
-+import org.bukkit.craftbukkit.command.ConsoleCommandCompleter;
++import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
++import org.bukkit.craftbukkit.v1_18_R2.command.ColouredConsoleSender;
++import org.bukkit.craftbukkit.v1_18_R2.command.ConsoleCommandCompleter;
  import org.slf4j.Logger;
  
  public abstract class PlayerList {

@@ -1,11 +1,10 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -22,6 +_,8 @@
+@@ -22,6 +_,7 @@
  import java.util.function.BooleanSupplier;
  import java.util.regex.Pattern;
  import javax.annotation.Nullable;
 +import com.mojang.serialization.DynamicOps;
-+import joptsimple.OptionSet;
  import net.minecraft.DefaultUncaughtExceptionHandler;
  import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
  import net.minecraft.SharedConstants;
@@ -30,9 +29,9 @@
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
-+import org.bukkit.craftbukkit.command.CraftRemoteConsoleCommandSender;
-+import org.bukkit.craftbukkit.util.ForwardLogHandler;
-+import org.bukkit.craftbukkit.util.TerminalConsoleWriterThread;
++import org.bukkit.craftbukkit.v1_18_R2.command.CraftRemoteConsoleCommandSender;
++import org.bukkit.craftbukkit.v1_18_R2.util.ForwardLogHandler;
++import org.bukkit.craftbukkit.v1_18_R2.util.TerminalConsoleWriterThread;
 +import org.bukkit.event.server.RemoteServerCommandEvent;
 +import org.bukkit.event.server.ServerCommandEvent;
  import org.slf4j.Logger;

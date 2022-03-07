@@ -1,13 +1,13 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -61,6 +_,7 @@
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.ServerScoreboard;
-+import net.minecraft.server.dedicated.DedicatedServer;
- import net.minecraft.server.level.progress.ChunkProgressListener;
- import net.minecraft.server.players.SleepStatus;
- import net.minecraft.sounds.SoundEvent;
+@@ -87,7 +_,6 @@
+ import net.minecraft.world.entity.animal.Animal;
+ import net.minecraft.world.entity.animal.WaterAnimal;
+ import net.minecraft.world.entity.animal.horse.SkeletonHorse;
+-import net.minecraft.world.entity.boss.EnderDragonPart;
+ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+ import net.minecraft.world.entity.npc.Npc;
+ import net.minecraft.world.entity.player.Player;
 @@ -116,6 +_,7 @@
  import net.minecraft.world.level.chunk.LevelChunkSection;
  import net.minecraft.world.level.chunk.storage.EntityStorage;
@@ -24,17 +24,15 @@
  import net.minecraft.world.level.storage.ServerLevelData;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-@@ -145,6 +_,13 @@
+@@ -145,6 +_,11 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
  import net.minecraft.world.ticks.LevelTicks;
-+import org.bukkit.World;
-+import org.bukkit.craftbukkit.CraftWorld;
-+import org.bukkit.craftbukkit.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.util.WorldUUID;
++import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
++import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID;
 +import org.bukkit.event.entity.CreatureSpawnEvent;
 +import org.bukkit.event.weather.LightningStrikeEvent;
-+import org.bukkit.generator.BiomeProvider;
  import org.slf4j.Logger;
  
  public class ServerLevel extends Level implements WorldGenLevel {

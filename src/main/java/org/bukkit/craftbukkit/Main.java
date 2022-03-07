@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.fusesource.jansi.AnsiConsole;
 
 public class Main {

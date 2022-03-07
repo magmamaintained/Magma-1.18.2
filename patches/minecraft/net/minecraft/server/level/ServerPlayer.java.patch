@@ -24,7 +24,7 @@
  import net.minecraft.world.scores.Team;
  import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 +import org.bukkit.WeatherType;
-+import org.bukkit.craftbukkit.entity.CraftPlayer;
++import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
  import org.slf4j.Logger;
  
  public class ServerPlayer extends Player {

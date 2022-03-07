@@ -1,10 +1,18 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
+@@ -60,7 +_,6 @@
+ import net.minecraft.world.item.SpawnEggItem;
+ import net.minecraft.world.item.SwordItem;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
+-import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.LevelReader;
 @@ -68,6 +_,9 @@
  import net.minecraft.world.level.material.Fluid;
  import net.minecraft.world.level.pathfinder.BlockPathTypes;
  import net.minecraft.world.level.storage.loot.LootContext;
-+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
++import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
 +import org.bukkit.event.entity.EntityTargetEvent;
 +import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
  
