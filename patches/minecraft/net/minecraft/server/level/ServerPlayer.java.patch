@@ -16,7 +16,15 @@
  import net.minecraft.world.inventory.AbstractContainerMenu;
  import net.minecraft.world.inventory.ContainerListener;
  import net.minecraft.world.inventory.ContainerSynchronizer;
-@@ -132,8 +_,11 @@
+@@ -119,6 +_,7 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.biome.BiomeManager;
+ import net.minecraft.world.level.block.Blocks;
++import net.minecraft.world.level.block.ChestBlock;
+ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+ import net.minecraft.world.level.block.NetherPortalBlock;
+ import net.minecraft.world.level.block.entity.BlockEntity;
+@@ -132,8 +_,12 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Score;
@@ -25,6 +33,7 @@
  import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 +import org.bukkit.WeatherType;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
++import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  import org.slf4j.Logger;
  
  public class ServerPlayer extends Player {
@@ -154,7 +163,7 @@
        return this.m_9222_(p_9117_) || this.m_9222_(p_9117_.m_142300_(p_9118_.m_122424_()));
     }
  
-@@ -935,6 +_,13 @@
+@@ -935,16 +_,46 @@
        this.f_8940_ = this.f_8940_ % 100 + 1;
     }
  
@@ -168,22 +177,95 @@
     public OptionalInt m_5893_(@Nullable MenuProvider p_9033_) {
        if (p_9033_ == null) {
           return OptionalInt.empty();
-@@ -955,6 +_,7 @@
-             this.f_8906_.m_141995_(new ClientboundOpenScreenPacket(abstractcontainermenu.f_38840_, abstractcontainermenu.m_6772_(), p_9033_.m_5446_()));
-             this.m_143399_(abstractcontainermenu);
+       } else {
+-         if (this.f_36096_ != this.f_36095_) {
+-            this.m_6915_();
++         // CraftBukkit start - SPIGOT-6552: Handle inventory closing in CraftEventFactory#callInventoryOpenEvent(...)
++          /*
++         if (this.containerMenu != this.inventoryMenu) {
++            this.closeContainer();
+          }
++         */
++         // CraftBukkit end
+ 
+          this.m_9217_();
+          AbstractContainerMenu abstractcontainermenu = p_9033_.m_7208_(this.f_8940_, this.m_150109_(), this);
++
++         // CraftBukkit start - Inventory open hook
++         if (abstractcontainermenu != null) {
++            abstractcontainermenu.setTitle(p_9033_.m_5446_());
++            boolean cancelled = false;
++            abstractcontainermenu = CraftEventFactory.callInventoryOpenEvent(this, abstractcontainermenu, cancelled);
++            if (abstractcontainermenu == null && !cancelled) { // Let pre-cancelled events fall through
++               // SPIGOT-5263 - close chest if cancelled
++               if (p_9033_ instanceof Container) {
++                  ((Container) p_9033_).m_5785_(this);
++               } else if (p_9033_ instanceof ChestBlock.DoubleInventory) {
++                  // SPIGOT-5355 - double chests too :(
++                  ((ChestBlock.DoubleInventory) p_9033_).inventorylargechest.m_5785_(this);
++               }
++               return OptionalInt.empty();
++            }
++         }
++         // CraftBukkit end
++
+          if (abstractcontainermenu == null) {
+             if (this.m_5833_()) {
+                this.m_5661_((new TranslatableComponent("container.spectatorCantOpen")).m_130940_(ChatFormatting.RED), true);
+@@ -952,9 +_,12 @@
+ 
+             return OptionalInt.empty();
+          } else {
+-            this.f_8906_.m_141995_(new ClientboundOpenScreenPacket(abstractcontainermenu.f_38840_, abstractcontainermenu.m_6772_(), p_9033_.m_5446_()));
+-            this.m_143399_(abstractcontainermenu);
++            // CraftBukkit start
              this.f_36096_ = abstractcontainermenu;
++            this.f_8906_.m_141995_(new ClientboundOpenScreenPacket(abstractcontainermenu.f_38840_, abstractcontainermenu.m_6772_(), abstractcontainermenu.getTitle()));
++            // CraftBukkit end
++            this.m_143399_(abstractcontainermenu);
 +            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.f_36096_));
              return OptionalInt.of(this.f_8940_);
           }
        }
-@@ -973,6 +_,7 @@
+@@ -965,14 +_,25 @@
+    }
+ 
+    public void m_6658_(AbstractHorse p_9059_, Container p_9060_) {
+-      if (this.f_36096_ != this.f_36095_) {
+-         this.m_6915_();
+-      }
+-
++      // CraftBukkit start - Inventory open hook
+       this.m_9217_();
++      AbstractContainerMenu container = new HorseInventoryMenu(this.f_8940_, this.m_150109_(), p_9060_, p_9059_);
++      container.setTitle(p_9059_.m_5446_());
++      container = CraftEventFactory.callInventoryOpenEvent(this, container);
++      if (container == null) {
++         p_9060_.m_5785_(this);
++         return;
++      }
++      // CraftBukkit end
++      if (this.f_36096_ != this.f_36095_) {
++         this.m_6915_();
++      }
++
++      // this.nextContainerCounter();  // CraftBukkit - moved up
        this.f_8906_.m_141995_(new ClientboundHorseScreenOpenPacket(this.f_8940_, p_9060_.m_6643_(), p_9059_.m_142049_()));
-       this.f_36096_ = new HorseInventoryMenu(this.f_8940_, this.m_150109_(), p_9060_, p_9059_);
+-      this.f_36096_ = new HorseInventoryMenu(this.f_8940_, this.m_150109_(), p_9060_, p_9059_);
++      this.f_36096_ = container; // CraftBukkit
        this.m_143399_(this.f_36096_);
 +      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.f_36096_));
     }
  
     public void m_6986_(ItemStack p_9082_, InteractionHand p_9083_) {
+@@ -991,6 +_,7 @@
+    }
+ 
+    public void m_6915_() {
++      CraftEventFactory.handleInventoryCloseEvent(this); // CraftBukkit
+       this.f_8906_.m_141995_(new ClientboundContainerClosePacket(this.f_36096_.f_38840_));
+       this.m_9230_();
+    }
 @@ -998,6 +_,7 @@
     public void m_9230_() {
        this.f_36096_.m_6877_(this);
