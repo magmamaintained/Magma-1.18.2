@@ -15,7 +15,7 @@
  
  public class BeaconMenu extends AbstractContainerMenu {
     private static final int f_150481_ = 0;
-@@ -31,6 +_,22 @@
+@@ -31,12 +_,29 @@
     private final ContainerLevelAccess f_39033_;
     private final ContainerData f_39034_;
  
@@ -38,6 +38,21 @@
     public BeaconMenu(int p_39036_, Container p_39037_) {
        this(p_39036_, p_39037_, new SimpleContainerData(3), ContainerLevelAccess.f_39287_);
     }
+ 
+    public BeaconMenu(int p_39039_, Container p_39040_, ContainerData p_39041_, ContainerLevelAccess p_39042_) {
+       super(MenuType.f_39965_, p_39039_);
++      player = (Inventory) p_39040_; // CraftBukkit - TODO: check this
+       m_38886_(p_39041_, 3);
+       this.f_39034_ = p_39041_;
+       this.f_39033_ = p_39042_;
+@@ -70,6 +_,7 @@
+    }
+ 
+    public boolean m_6875_(Player p_39047_) {
++      if (!this.checkReachable) return true; // CraftBukkit
+       return m_38889_(this.f_39033_, p_39047_, Blocks.f_50273_);
+    }
+ 
 @@ -90,10 +_,8 @@
              }
  

@@ -32,6 +32,14 @@
     public GrindstoneMenu(int p_39563_, Inventory p_39564_) {
        this(p_39563_, p_39564_, ContainerLevelAccess.f_39287_);
     }
+@@ -108,6 +_,7 @@
+          this.m_38897_(new Slot(p_39567_, k, 8 + k * 18, 142));
+       }
+ 
++      player = (org.bukkit.entity.Player) p_39567_.f_35978_.getBukkitEntity(); // CraftBukkit
+    }
+ 
+    public void m_6199_(Container p_39570_) {
 @@ -144,12 +_,13 @@
              }
  
@@ -51,3 +59,11 @@
                 if (!ItemStack.m_41728_(itemstack, itemstack1)) {
                    this.f_39559_.m_6836_(0, ItemStack.f_41583_);
                    this.m_38946_();
+@@ -222,6 +_,7 @@
+    }
+ 
+    public boolean m_6875_(Player p_39572_) {
++      if (!this.checkReachable) return true; // CraftBukkit
+       return m_38889_(this.f_39561_, p_39572_, Blocks.f_50623_);
+    }
+ 

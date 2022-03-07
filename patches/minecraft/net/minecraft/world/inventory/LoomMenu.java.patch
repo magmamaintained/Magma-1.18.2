@@ -54,3 +54,31 @@
  
     public LoomMenu(int p_39856_, Inventory p_39857_) {
        this(p_39856_, p_39857_, ContainerLevelAccess.f_39287_);
+@@ -103,6 +_,7 @@
+       }
+ 
+       this.m_38895_(this.f_39846_);
++      player = (org.bukkit.entity.Player) p_39860_.f_35978_.getBukkitEntity(); // CraftBukkit
+    }
+ 
+    public int m_39891_() {
+@@ -110,6 +_,7 @@
+    }
+ 
+    public boolean m_6875_(Player p_39865_) {
++      if (!this.checkReachable) return true; // CraftBukkit
+       return m_38889_(this.f_39845_, p_39865_, Blocks.f_50617_);
+    }
+ 
+@@ -224,6 +_,11 @@
+             ListTag listtag;
+             if (compoundtag != null && compoundtag.m_128425_("Patterns", 9)) {
+                listtag = compoundtag.m_128437_("Patterns", 10);
++               // CraftBukkit start
++               while (listtag.size() > 20) {
++                  listtag.remove(20);
++               }
++               // CraftBukkit end
+             } else {
+                listtag = new ListTag();
+                if (compoundtag == null) {
