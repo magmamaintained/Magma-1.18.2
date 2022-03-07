@@ -131,6 +131,9 @@ subprojects {
             name = 'forge'
             url = 'https://maven.minecraftforge.net/'
         }
+        maven {
+             url = "https://raw.github.com/Hexeption/Magma-Repo/master/"
+        }
     }
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -237,6 +240,7 @@ def sharedDeps = {
     installer 'net.md-5:SpecialSource:1.10.0'
     installer 'com.google.guava:guava:31.0.1-jre'
     installer 'com.google.code.gson:gson:2.8.8'
+    installer 'org.magma:magma-common:2.6'
 }
 
 def sharedFmlonlyForge = { Project prj ->
