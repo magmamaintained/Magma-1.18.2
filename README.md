@@ -43,7 +43,7 @@ Please read the [CONTRIBUTING.md](https://github.com/magmafoundation/Magma-1.18.
 
 ## Chat
 
-You are welcome to visit Magma Discord server [here](https://discord.gg/6rkqngA).
+You are welcome to visit Magma Discord server [here](https://discord.gg/Magma).
 
 You could also go to Magma's subreddit [here](https://www.reddit.com/r/Magma).
 
