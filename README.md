@@ -1,7 +1,7 @@
 <div align="center">
 <img src="https://i.imgur.com/zTCTCWG.png" alt="Magma logo" align="middle"></img>
 
-![](https://img.shields.io/badge/Minecraft%20Forge-1.16.5%20--%2036.2.27%20--%20cae822ce-orange.svg?style=for-the-badge) ![](https://img.shields.io/badge/Bukkit-1.16%20r5-blue?style=for-the-badge) ![](https://img.shields.io/badge/CraftBukkit-Build%2029dd68e-orange?style=for-the-badge) ![](https://img.shields.io/badge/Spigot-Build%20988b411-yellow?style=for-the-badge) [![](https://img.shields.io/github/workflow/status/magmafoundation/Magma-1.16.x/Dev-Builds?style=for-the-badge)](https://github.com/magmafoundation/Magma-1.16.x/actions/workflows/dev-builds.yaml)
+![](https://img.shields.io/badge/Minecraft%20Forge-1.18.1%20--%2040.0.12%20--%20cae822ce-orange.svg?style=for-the-badge) ![](https://img.shields.io/badge/Bukkit-1.18%20r2-blue?style=for-the-badge) ![](https://img.shields.io/badge/CraftBukkit-Build%20NA-orange?style=for-the-badge) ![](https://img.shields.io/badge/Spigot-Build%20NA-yellow?style=for-the-badge) [![](https://img.shields.io/github/workflow/status/magmafoundation/Magma-1.16.x/Dev-Builds?style=for-the-badge)](https://github.com/magmafoundation/Magma-1.16.x/actions/workflows/dev-builds.yaml)
 </div>
 
 ## About
@@ -16,7 +16,7 @@ We hope to eliminate all issues with craftbukkit forge servers. In the end, we e
 
 ### Installation
 
-1. Download the recommended builds from the [**Releases** section](https://github.com/magmafoundation/Magma-1.16.x/releases) (**Download** the one that ends in installer) 
+1. Download the recommended builds from the [**Releases** section](https://github.com/magmafoundation/Magma-1.18.x/releases) (**Download** the one that ends in installer) 
    1. Or Download the latest jar from [Magma Site](https://magmafoundation.org/)
 2. Make a new directory(folder) for the server
 3. Move the jar that you downloaded into the new directory
@@ -27,7 +27,7 @@ We hope to eliminate all issues with craftbukkit forge servers. In the end, we e
 
 - Clone the Project
     - You can use Git GUI (like GitHub Desktop/GitKraken) or clone using the terminal using:
-        - `git clone https://github.com/magmafoundation/Magma-1.16.x/`
+        - `git clone https://github.com/magmafoundation/Magma-1.18.x/`
 - Building
     - First you want to run the build command
         - `./gradlew setup installerJar`
@@ -39,7 +39,7 @@ We hope to eliminate all issues with craftbukkit forge servers. In the end, we e
 
 If you wish to inspect Magma, submit PRs, or otherwise work with Magma itself, you're in the right place!.
 
-Please read the [CONTRIBUTING.md](https://github.com/magmafoundation/Magma-1.16.x/blob/master/CONTRIBUTING.md) to see how to contribute, setup, and run.
+Please read the [CONTRIBUTING.md](https://github.com/magmafoundation/Magma-1.18.x/blob/master/CONTRIBUTING.md) to see how to contribute, setup, and run.
 
 ## Chat
 
