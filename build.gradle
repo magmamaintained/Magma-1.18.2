@@ -59,14 +59,14 @@ ext {
     MIXIN_VERSION = '0.8.5'
 
     GIT_INFO = gradleutils.gitInfo
-    VERSION = '1.18.2-40.0.12'
-    FORGE_VERSION = '40.0.12'
+    VERSION = '1.18.2-40.0.25'
+    FORGE_VERSION = '40.0.25'
 
     SPECIAL_SOURCE = 'net.md-5:SpecialSource:1.10.0'
     BINPATCH_TOOL = 'net.minecraftforge:binarypatcher:1.0.12:fatjar'
     INSTALLER_TOOLS = 'net.minecraftforge:installertools:1.2.10'
     JAR_SPLITTER = 'net.minecraftforge:jarsplitter:1.1.4'
-    FART = 'net.minecraftforge:ForgeAutoRenamingTool:0.1.17:all'
+    FART = 'net.minecraftforge:ForgeAutoRenamingTool:0.1.22:all'
     MIN_TAG_FOR_CHANGELOG = "39.0"
 }
 
@@ -115,7 +115,6 @@ subprojects {
     group = 'net.minecraftforge'
     version = VERSION
     //println(name + ' Version: ' + version)
-
     ext {
         isNonStable = { String version ->
             def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { ver -> version.toUpperCase().contains(ver) }
@@ -564,6 +563,7 @@ project(':fmlonly') {
                           '-DlibraryDirectory=${library_directory}',
                           '-p', Util.getArtifacts(project, configurations.moduleonly, false).values().collect{"\${library_directory}/${it.downloads.artifact.path}"}.join('${classpath_separator}'),
                           '--add-modules', 'ALL-MODULE-PATH',
+                          // Additions to these JVM module args should be mirrored to server_files/args.txt and other similar blocks in the buildscript
                           '--add-opens', 'java.base/java.util.jar=cpw.mods.securejarhandler',
                           '--add-exports', 'java.base/sun.security.util=cpw.mods.securejarhandler',
                           '--add-exports', 'jdk.naming.dns/com.sun.jndi.dns=java.naming'
@@ -1081,6 +1081,16 @@ project(':forge') {
 
     task checkAll(dependsOn: [checkATs, checkSAS, checkExcs, findFieldInstanceChecks]){}
 
+    task checkPatchesAndFix(type: CheckPatches, dependsOn: genPatches) {
+        patchDir = file("$rootDir/patches")
+        autoFix = true
+    }
+
+    task checkPatches(type: CheckPatches, dependsOn: genPatches) {
+        patchDir = file("$rootDir/patches")
+        autoFix = false
+    }
+
     genPatches {
         autoHeader true
         lineEnding = '\n'
@@ -1110,6 +1120,7 @@ project(':forge') {
                           '-DlibraryDirectory=${library_directory}',
                           '-p', Util.getArtifacts(project, configurations.moduleonly, false).values().collect{'${library_directory}/' + it.downloads.artifact.path}.join('${classpath_separator}'),
                           '--add-modules', 'ALL-MODULE-PATH',
+                          // Additions to these JVM module args should be mirrored to server_files/args.txt and other similar blocks in the buildscript
                           '--add-opens', 'java.base/java.util.jar=cpw.mods.securejarhandler',
                           '--add-exports', 'java.base/sun.security.util=cpw.mods.securejarhandler',
                           '--add-exports', 'jdk.naming.dns/com.sun.jndi.dns=java.naming'
@@ -1357,6 +1368,8 @@ project(':forge') {
 
     task installerJar(type: InstallerJar, dependsOn: [genClientBinPatches, genServerBinPatches, 'signUniversalJar', launcherJson]) {
         packedDependencies = PACKED_DEPS
+        archiveBaseName = 'magma'
+        version = MC_VERSION;
         from(extraTxts)
         from(rootProject.file('/magma-logo.png')) {
             rename { 'big_logo.png' }
