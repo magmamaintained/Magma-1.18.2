@@ -113,7 +113,16 @@
              }, (p_206543_, p_206544_) -> {
                 RegistryAccess.Writable registryaccess$writable = RegistryAccess.m_206197_();
                 DynamicOps<Tag> dynamicops = RegistryOps.m_206813_(NbtOps.f_128958_, registryaccess$writable, p_206543_);
-@@ -181,26 +_,48 @@
+@@ -156,7 +_,7 @@
+                      worldgensettings = WorldGenSettings.m_64645_(registryaccess$writable);
+                   } else {
+                      DedicatedServerProperties dedicatedserverproperties = dedicatedserversettings.m_139777_();
+-                     levelsettings = new LevelSettings(dedicatedserverproperties.f_139741_, dedicatedserverproperties.f_139740_, dedicatedserverproperties.f_139752_, dedicatedserverproperties.f_139739_, false, new GameRules(), p_206544_);
++                     levelsettings = new LevelSettings(dedicatedserverproperties.f_139741_, dedicatedserverproperties.f_139740_, dedicatedserverproperties.f_139752_, dedicatedserverproperties.f_139739_, false, new GameRules(), p_206544_, Lifecycle.stable());
+                      worldgensettings = optionset.has(optionspec3) ? dedicatedserverproperties.m_180927_(registryaccess$writable).m_64671_() : dedicatedserverproperties.m_180927_(registryaccess$writable);
+                   }
+ 
+@@ -181,26 +_,49 @@
           }
  
           levelstoragesource$levelstorageaccess.m_78287_(registryaccess$frozen, worlddata);
@@ -138,7 +147,7 @@
 -               dedicatedserver1.m_139667_();
 +            dedicatedserver1.options = optionset;
 +            if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag1 && !GraphicsEnvironment.isHeadless()) {
-+               dedicatedServer.m_139667_();
++               // dedicatedServer.showGui(); //MAGMA: Disabled GUI for now
 +            }
 +
 +            if (optionset.has("port")) {
@@ -159,6 +168,7 @@
 +               dedicatedserver.halt(true);
 +               //TODO-PATCHING: Figure out what needs to be done here after the logging update.
 +               //LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
++               org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
              }
           };
 -         thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_129670_));

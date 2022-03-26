@@ -29,6 +29,15 @@
  import org.slf4j.Logger;
  
  public class GameTestServer extends MinecraftServer {
+@@ -53,7 +_,7 @@
+       p_177615_.m_46170_(GameRules.f_46134_).m_46246_(false, (MinecraftServer)null);
+       p_177615_.m_46170_(GameRules.f_46150_).m_46246_(false, (MinecraftServer)null);
+    });
+-   private static final LevelSettings f_177590_ = new LevelSettings("Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, f_177589_, DataPackConfig.f_45842_);
++   private static final LevelSettings f_177590_ = new LevelSettings("Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, f_177589_, DataPackConfig.f_45842_, Lifecycle.experimental());
+    @Nullable
+    private MultipleTestTracker f_177591_;
+ 
 @@ -75,7 +_,7 @@
                 return Pair.of(worlddata, registryaccess$frozen);
              }, Util.m_183991_(), Runnable::run).get();

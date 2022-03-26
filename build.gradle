@@ -59,8 +59,8 @@ ext {
     MIXIN_VERSION = '0.8.5'
 
     GIT_INFO = gradleutils.gitInfo
-    VERSION = '1.18.2-40.0.25'
-    FORGE_VERSION = '40.0.25'
+    VERSION = '1.18.2-40.0.31'
+    FORGE_VERSION = '40.0.31'
 
     SPECIAL_SOURCE = 'net.md-5:SpecialSource:1.10.0'
     BINPATCH_TOOL = 'net.minecraftforge:binarypatcher:1.0.12:fatjar'
@@ -1369,7 +1369,7 @@ project(':forge') {
     task installerJar(type: InstallerJar, dependsOn: [genClientBinPatches, genServerBinPatches, 'signUniversalJar', launcherJson]) {
         packedDependencies = PACKED_DEPS
         archiveBaseName = 'magma'
-        version = MC_VERSION;
+        version = VERSION;
         from(extraTxts)
         from(rootProject.file('/magma-logo.png')) {
             rename { 'big_logo.png' }
