@@ -1,20 +1,6 @@
 /*
- * Minecraft Forge
- * Copyright (c) 2016-2021.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation version 2.1
- * of the License.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Minecraft Forge - Forge Development LLC
+ * SPDX-License-Identifier: LGPL-2.1-only
  */
 
 package net.minecraftforge.fml.common.asm;
@@ -77,20 +63,20 @@ public class RuntimeEnumExtender implements ILaunchPluginService {
         final int flags = Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL | Opcodes.ACC_SYNTHETIC;
 
         FieldNode values = classNode.fields.stream().filter(f -> f.desc.contentEquals(array.getDescriptor()) && ((f.access & flags) == flags)).findFirst().orElse(null);
-        
+
         if (!classNode.interfaces.contains(MARKER_IFACE.getInternalName())) {
             return ComputeFlags.NO_REWRITE;
         }
-        
+
         //Static methods named "create" with first argument as a string
         List<MethodNode> candidates = classNode.methods.stream()
                 .filter(m -> ((m.access & Opcodes.ACC_STATIC) != 0) && m.name.equals("create"))
                 .collect(Collectors.toList());
-        
+
         if (candidates.isEmpty()) {
             throw new IllegalStateException("IExtensibleEnum has no candidate factory methods: " + classType.getClassName());
         }
-        
+
         candidates.forEach(mtd ->
         {
             Type[] args = Type.getArgumentTypes(mtd.desc);
@@ -113,7 +99,7 @@ public class RuntimeEnumExtender implements ILaunchPluginService {
                 }));
                 throw new IllegalStateException("Enum has create method with incorrect return type: " + mtd.name + mtd.desc);
             }
-            
+
             Type[] ctrArgs = new Type[args.length + 1];
             ctrArgs[0] = STRING;
             ctrArgs[1] = Type.INT_TYPE;
@@ -149,6 +135,19 @@ public class RuntimeEnumExtender implements ILaunchPluginService {
 
             mtd.access |= Opcodes.ACC_SYNCHRONIZED;
             mtd.instructions.clear();
+            mtd.localVariables.clear();
+            if (mtd.tryCatchBlocks != null)
+            {
+                mtd.tryCatchBlocks.clear();
+            }
+            if (mtd.visibleLocalVariableAnnotations != null)
+            {
+                mtd.visibleLocalVariableAnnotations.clear();
+            }
+            if (mtd.invisibleLocalVariableAnnotations != null)
+            {
+                mtd.invisibleLocalVariableAnnotations.clear();
+            }
             InstructionAdapter ins = new InstructionAdapter(mtd);
 
             int vars = 0;

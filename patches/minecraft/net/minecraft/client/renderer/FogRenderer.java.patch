@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/FogRenderer.java
 +++ b/net/minecraft/client/renderer/FogRenderer.java
-@@ -173,24 +_,42 @@
+@@ -173,24 +_,43 @@
  
        if (f_109010_ != 0.0F && f_109011_ != 0.0F && f_109012_ != 0.0F) {
           float f8 = Math.min(1.0F / f_109010_, Math.min(1.0F / f_109011_, 1.0F / f_109012_));
@@ -36,6 +36,7 @@
        FogShape fogshape = FogShape.SPHERE;
        float f;
        float f1;
++      // TODO: remove this hook in 1.19
 +      float hook = net.minecraftforge.client.ForgeHooksClient.getFogDensity(p_109026_, p_109025_, partialTicks, 0.1F);
 +      if (hook >= 0) {
 +         f = -8.0f;
