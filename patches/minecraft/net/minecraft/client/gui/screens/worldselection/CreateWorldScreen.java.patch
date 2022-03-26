@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
+@@ -18,6 +_,8 @@
+ import java.util.OptionalLong;
+ import java.util.stream.Stream;
+ import javax.annotation.Nullable;
++
++import com.mojang.serialization.Lifecycle;
+ import net.minecraft.FileUtil;
+ import net.minecraft.Util;
+ import net.minecraft.client.Minecraft;
 @@ -106,7 +_,7 @@
  
     public static CreateWorldScreen m_205424_(@Nullable Screen p_205425_) {
@@ -9,6 +18,18 @@
     }
  
     public static CreateWorldScreen m_205426_(@Nullable Screen p_205427_, WorldStem p_205428_, @Nullable Path p_205429_) {
+@@ -252,9 +_,9 @@
+       if (p_205448_) {
+          GameRules gamerules = new GameRules();
+          gamerules.m_46170_(GameRules.f_46140_).m_46246_(false, (MinecraftServer)null);
+-         return new LevelSettings(s, GameType.SPECTATOR, false, Difficulty.PEACEFUL, true, gamerules, DataPackConfig.f_45842_);
++         return new LevelSettings(s, GameType.SPECTATOR, false, Difficulty.PEACEFUL, true, gamerules, DataPackConfig.f_45842_, Lifecycle.stable());
+       } else {
+-         return new LevelSettings(s, this.f_100858_.f_101029_, this.f_100845_, this.m_170205_(), this.f_100829_ && !this.f_100845_, this.f_100844_, this.f_100846_);
++         return new LevelSettings(s, this.f_100858_.f_101029_, this.f_100845_, this.m_170205_(), this.f_100829_ && !this.f_100845_, this.f_100844_, this.f_100846_, Lifecycle.stable());
+       }
+    }
+ 
 @@ -625,6 +_,7 @@
           File file1 = path.toFile();
           if (this.f_100832_ == null) {

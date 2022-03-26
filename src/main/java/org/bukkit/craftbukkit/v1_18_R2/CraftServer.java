@@ -955,7 +955,7 @@ public final class CraftServer implements Server {
             DedicatedServerProperties.WorldGenProperties properties = new DedicatedServerProperties.WorldGenProperties(Objects.toString(creator.seed()), GsonHelper.parse((creator.generatorSettings().isEmpty()) ? "{}" : creator.generatorSettings()), creator.generateStructures(), creator.type().name().toLowerCase(Locale.ROOT));
 
             WorldGenSettings generatorsettings = WorldGenSettings.create(console.registryAccess(), properties);
-            worldSettings = new LevelSettings(name, GameType.byId(getDefaultGameMode().getValue()), hardcore, net.minecraft.world.Difficulty.EASY, false, new GameRules(), console.datapackconfiguration);
+            worldSettings = new LevelSettings(name, GameType.byId(getDefaultGameMode().getValue()), hardcore, net.minecraft.world.Difficulty.EASY, false, new GameRules(), console.datapackconfiguration, Lifecycle.stable());
             worlddata = new PrimaryLevelData(worldSettings, generatorsettings, Lifecycle.stable());
         }
         worlddata.checkName(name);

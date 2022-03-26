@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/storage/LevelSummary.java
++++ b/net/minecraft/world/level/storage/LevelSummary.java
+@@ -154,6 +_,10 @@
+       }
+    }
+ 
++   public boolean isExperimental() {
++      return this.f_78344_.getLifecycle().equals(com.mojang.serialization.Lifecycle.experimental());
++   }
++
+    public static enum BackupStatus {
+       NONE(false, false, ""),
+       DOWNGRADE(true, true, "downgrade"),
+@@ -180,5 +_,6 @@
+       public String m_164933_() {
+          return this.f_164922_;
+       }
++
+    }
+ }

@@ -1,0 +1,124 @@
+--- a/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
++++ b/net/minecraft/client/gui/screens/worldselection/WorldSelectionList.java
+@@ -64,6 +_,7 @@
+    static final DateFormat f_101646_ = new SimpleDateFormat();
+    static final ResourceLocation f_101647_ = new ResourceLocation("textures/misc/unknown_server.png");
+    static final ResourceLocation f_101648_ = new ResourceLocation("textures/gui/world_selection.png");
++   private static final ResourceLocation FORGE_EXPERIMENTAL_WARNING_ICON = new ResourceLocation("forge","textures/gui/experimental_warning.png");
+    static final Component f_101649_ = (new TranslatableComponent("selectWorld.tooltip.fromNewerVersion1")).m_130940_(ChatFormatting.RED);
+    static final Component f_101650_ = (new TranslatableComponent("selectWorld.tooltip.fromNewerVersion2")).m_130940_(ChatFormatting.RED);
+    static final Component f_101651_ = (new TranslatableComponent("selectWorld.tooltip.snapshot1")).m_130940_(ChatFormatting.GOLD);
+@@ -198,15 +_,16 @@
+          }
+ 
+          Component component = this.f_101695_.m_78376_();
+-         this.f_101693_.f_91062_.m_92883_(p_101721_, s, (float)(p_101724_ + 32 + 3), (float)(p_101723_ + 1), 16777215);
+-         this.f_101693_.f_91062_.m_92883_(p_101721_, s1, (float)(p_101724_ + 32 + 3), (float)(p_101723_ + 9 + 3), 8421504);
+-         this.f_101693_.f_91062_.m_92889_(p_101721_, component, (float)(p_101724_ + 32 + 3), (float)(p_101723_ + 9 + 9 + 3), 8421504);
++         this.f_101693_.f_91062_.m_92883_(p_101721_, s, (float) (p_101724_ + 32 + 3), (float) (p_101723_ + 1), 16777215);
++         this.f_101693_.f_91062_.m_92883_(p_101721_, s1, (float) (p_101724_ + 32 + 3), (float) (p_101723_ + 9 + 3), 8421504);
++         this.f_101693_.f_91062_.m_92889_(p_101721_, component, (float) (p_101724_ + 32 + 3), (float) (p_101723_ + 9 + 9 + 3), 8421504);
+          RenderSystem.m_157427_(GameRenderer::m_172817_);
+          RenderSystem.m_157429_(1.0F, 1.0F, 1.0F, 1.0F);
+          RenderSystem.m_157456_(0, this.f_101698_ != null ? this.f_101696_ : WorldSelectionList.f_101647_);
+          RenderSystem.m_69478_();
+          GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 0.0F, 0.0F, 32, 32, 32, 32);
+          RenderSystem.m_69461_();
++         renderExperimentalWarning(p_101721_, p_101727_, p_101728_, p_101723_, p_101724_);
+          if (this.f_101693_.f_91066_.f_92051_ || p_101729_) {
+             RenderSystem.m_157456_(0, WorldSelectionList.f_101648_);
+             GuiComponent.m_93172_(p_101721_, p_101724_, p_101723_, p_101724_ + 32, p_101723_ + 32, -1601138544);
+@@ -216,30 +_,30 @@
+             boolean flag = i < 32;
+             int j = flag ? 32 : 0;
+             if (this.f_101695_.m_78375_()) {
+-               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 96.0F, (float)j, 32, 32, 256, 256);
++               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 96.0F, (float) j, 32, 32, 256, 256);
+                if (flag) {
+                   this.f_101694_.m_101363_(this.f_101693_.f_91062_.m_92923_(WorldSelectionList.f_101653_, 175));
+                }
+             } else if (this.f_101695_.m_193020_()) {
+-               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 96.0F, (float)j, 32, 32, 256, 256);
++               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 96.0F, (float) j, 32, 32, 256, 256);
+                if (flag) {
+                   this.f_101694_.m_101363_(this.f_101693_.f_91062_.m_92923_(WorldSelectionList.f_194113_, 175));
+                }
+             } else if (this.f_101695_.m_78372_()) {
+-               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 32.0F, (float)j, 32, 32, 256, 256);
++               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 32.0F, (float) j, 32, 32, 256, 256);
+                if (this.f_101695_.m_78373_()) {
+-                  GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 96.0F, (float)j, 32, 32, 256, 256);
++                  GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 96.0F, (float) j, 32, 32, 256, 256);
+                   if (flag) {
+                      this.f_101694_.m_101363_(ImmutableList.of(WorldSelectionList.f_101649_.m_7532_(), WorldSelectionList.f_101650_.m_7532_()));
+                   }
+                } else if (!SharedConstants.m_183709_().isStable()) {
+-                  GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 64.0F, (float)j, 32, 32, 256, 256);
++                  GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 64.0F, (float) j, 32, 32, 256, 256);
+                   if (flag) {
+                      this.f_101694_.m_101363_(ImmutableList.of(WorldSelectionList.f_101651_.m_7532_(), WorldSelectionList.f_101652_.m_7532_()));
+                   }
+                }
+             } else {
+-               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 0.0F, (float)j, 32, 32, 256, 256);
++               GuiComponent.m_93133_(p_101721_, p_101724_, p_101723_, 0.0F, (float) j, 32, 32, 256, 256);
+             }
+          }
+ 
+@@ -251,7 +_,7 @@
+          } else {
+             WorldSelectionList.this.m_6987_(this);
+             this.f_101694_.m_101369_(WorldSelectionList.this.m_101684_().isPresent());
+-            if (p_101706_ - (double)WorldSelectionList.this.m_5747_() <= 32.0D) {
++            if (p_101706_ - (double) WorldSelectionList.this.m_5747_() <= 32.0D) {
+                this.m_101704_();
+                return true;
+             } else if (Util.m_137550_() - this.f_101699_ < 250L) {
+@@ -314,7 +_,7 @@
+                      try {
+                         this.m_101744_();
+                      } catch (Exception exception) {
+-                        WorldSelectionList.f_101645_.error("Failure to open 'future world'", (Throwable)exception);
++                        WorldSelectionList.f_101645_.error("Failure to open 'future world'", (Throwable) exception);
+                         this.f_101693_.m_91152_(new AlertScreen(() -> {
+                            this.f_101693_.m_91152_(this.f_101694_);
+                         }, new TranslatableComponent("selectWorld.futureworld.error.title"), new TranslatableComponent("selectWorld.futureworld.error.text")));
+@@ -420,7 +_,7 @@
+                   Path path = CreateWorldScreen.m_100906_(levelstoragesource$levelstorageaccess.m_78283_(LevelResource.f_78180_), this.f_101693_);
+                   if (worldgensettings.m_64670_()) {
+                      this.f_101693_.m_91152_(new ConfirmScreen((p_205503_) -> {
+-                        this.f_101693_.m_91152_((Screen)(p_205503_ ? CreateWorldScreen.m_205426_(this.f_101694_, worldstem, path) : this.f_101694_));
++                        this.f_101693_.m_91152_((Screen) (p_205503_ ? CreateWorldScreen.m_205426_(this.f_101694_, worldstem, path) : this.f_101694_));
+                      }, new TranslatableComponent("selectWorld.recreate.customized.title"), new TranslatableComponent("selectWorld.recreate.customized.text"), CommonComponents.f_130659_, CommonComponents.f_130656_));
+                   } else {
+                      this.f_101693_.m_91152_(CreateWorldScreen.m_205426_(this.f_101694_, worldstem, path));
+@@ -456,7 +_,7 @@
+                levelstoragesource$levelstorageaccess.close();
+             }
+          } catch (Exception exception) {
+-            WorldSelectionList.f_101645_.error("Unable to recreate world", (Throwable)exception);
++            WorldSelectionList.f_101645_.error("Unable to recreate world", (Throwable) exception);
+             this.f_101693_.m_91152_(new AlertScreen(() -> {
+                this.f_101693_.m_91152_(this.f_101694_);
+             }, new TranslatableComponent("selectWorld.recreate.error.title"), new TranslatableComponent("selectWorld.recreate.error.text")));
+@@ -524,6 +_,20 @@
+ 
+       public String m_170324_() {
+          return this.f_101695_.m_78361_();
++      }
++
++      private void renderExperimentalWarning(PoseStack stack, int mouseX, int mouseY, int top, int left) {
++         if (this.f_101695_.isExperimental()) {
++            int leftStart = left + WorldSelectionList.this.m_5759_();
++            RenderSystem.m_157456_(0, WorldSelectionList.FORGE_EXPERIMENTAL_WARNING_ICON);
++            GuiComponent.m_93133_(stack, leftStart - 36, top, 0.0F, 0.0F, 32, 32, 32, 32);
++            //Reset texture to what it was before
++            RenderSystem.m_157456_(0, this.f_101698_ != null ? this.f_101696_ : WorldSelectionList.f_101647_);
++            if (WorldSelectionList.this.m_93412_(mouseX, mouseY) == this && mouseX > leftStart - 36 && mouseX < leftStart) {
++               List<net.minecraft.util.FormattedCharSequence> tooltip = Minecraft.m_91087_().f_91062_.m_92923_(new TranslatableComponent("forge.experimentalsettings.tooltip"), 200);
++               WorldSelectionList.this.f_101654_.m_96617_(stack, tooltip, mouseX, mouseY);
++            }
++         }
+       }
+    }
+ }

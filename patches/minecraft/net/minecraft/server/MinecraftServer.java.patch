@@ -48,7 +48,7 @@
  import java.util.Map.Entry;
  import java.util.concurrent.CompletableFuture;
  import java.util.concurrent.Executor;
-@@ -49,13 +_,21 @@
+@@ -49,13 +_,22 @@
  import java.util.function.BooleanSupplier;
  import java.util.function.Consumer;
  import java.util.function.Function;
@@ -70,6 +70,7 @@
 +import com.mojang.datafixers.DataFixer;
 +import com.mojang.logging.LogUtils;
 +import com.mojang.serialization.DynamicOps;
++import com.mojang.serialization.Lifecycle;
 +import it.unimi.dsi.fastutil.longs.LongIterator;
 +import jline.console.ConsoleReader;
 +import joptsimple.OptionSet;
@@ -166,6 +167,15 @@
  import org.slf4j.Logger;
  
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
+@@ -180,7 +_,7 @@
+    private static final int f_177892_ = 6000;
+    private static final int f_177893_ = 3;
+    public static final int f_177883_ = 29999984;
+-   public static final LevelSettings f_129743_ = new LevelSettings("Demo World", GameType.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackConfig.f_45842_);
++   public static final LevelSettings f_129743_ = new LevelSettings("Demo World", GameType.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackConfig.f_45842_, Lifecycle.experimental());
+    private static final long f_177871_ = 50L;
+    public static final GameProfile f_195496_ = new GameProfile(Util.f_137441_, "Anonymous Player");
+    public final LevelStorageSource.LevelStorageAccess f_129744_;
 @@ -255,9 +_,24 @@
     protected final WorldData f_129749_;
     private volatile boolean f_195494_;
