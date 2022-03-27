@@ -19,6 +19,14 @@
 package org.magmafoundation.magma;
 
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.io.LoggerBufferedInputStream;
+import org.slf4j.LoggerFactory;
+
 /**
  * Magma
  *
@@ -32,13 +40,10 @@ public class Magma {
     private static final String BUKKIT_VERSION = "v1_18_R2";
     private static final String NMS_PREFIX = "net/minecraft/server/";
     private static Magma INSTANCE = new Magma();
+    public static Logger LOGGER = LogManager.getLogger(Magma.class);
 
     public Magma() {
         INSTANCE = this;
-
-//        if (System.getProperty("log4j.configurationFile") == null) {
-//            System.setProperty("log4j.configurationFile", "log4j2_magma.xml");
-//        }
     }
 
     public static Magma getInstance() {
