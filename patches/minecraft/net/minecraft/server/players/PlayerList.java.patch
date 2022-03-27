@@ -24,7 +24,7 @@
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.server.network.ServerGamePacketListenerImpl;
-@@ -90,6 +_,10 @@
+@@ -90,6 +_,11 @@
  import net.minecraft.world.scores.Objective;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
@@ -32,10 +32,11 @@
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.command.ColouredConsoleSender;
 +import org.bukkit.craftbukkit.v1_18_R2.command.ConsoleCommandCompleter;
++import org.magmafoundation.magma.forge.ForgeInject;
  import org.slf4j.Logger;
  
  public abstract class PlayerList {
-@@ -118,8 +_,17 @@
+@@ -118,8 +_,18 @@
     private boolean f_11209_;
     private static final boolean f_143988_ = false;
     private int f_11210_;
@@ -50,6 +51,7 @@
 +      p_203842_.reader.addCompleter(new ConsoleCommandCompleter(p_203842_.server));
 +      // CraftBukkit end
 +
++      ForgeInject.init(); //MAGMA - Forge Inject - Initialize
        this.f_11195_ = p_203842_;
        this.f_11206_ = p_203843_;
        this.f_11193_ = p_203845_;
