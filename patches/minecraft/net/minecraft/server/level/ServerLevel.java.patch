@@ -36,7 +36,16 @@
  import org.slf4j.Logger;
  
  public class ServerLevel extends Level implements WorldGenLevel {
-@@ -181,13 +_,34 @@
+@@ -163,7 +_,7 @@
+    final List<ServerPlayer> f_8546_ = Lists.newArrayList();
+    private final ServerChunkCache f_8547_;
+    private final MinecraftServer f_8548_;
+-   public final ServerLevelData f_8549_;
++   public final PrimaryLevelData f_8549_; // CraftBukkit - type
+    final EntityTickList f_143243_ = new EntityTickList();
+    public final PersistentEntitySectionManager<Entity> f_143244_;
+    public boolean f_8564_;
+@@ -181,17 +_,38 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -72,6 +81,11 @@
        this.f_8561_ = p_203773_;
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
+-      this.f_8549_ = p_203765_;
++      this.f_8549_ = (PrimaryLevelData) p_203765_;
+       p_203769_.m_211700_();
+       boolean flag = p_203762_.m_6365_();
+       DataFixer datafixer = p_203762_.m_129933_();
 @@ -223,7 +_,15 @@
        }
  

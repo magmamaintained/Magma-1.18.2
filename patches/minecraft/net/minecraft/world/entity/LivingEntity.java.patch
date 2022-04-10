@@ -902,10 +902,16 @@
           }
        } else {
           return EquipmentSlot.HEAD;
-@@ -3280,4 +_,40 @@
- 
-    public static record Fallsounds(SoundEvent f_196626_, SoundEvent f_196627_) {
+@@ -3278,6 +_,48 @@
+       this.m_20334_((double)((float)p_147206_.m_131560_() / 8000.0F), (double)((float)p_147206_.m_131561_() / 8000.0F), (double)((float)p_147206_.m_131562_() / 8000.0F));
     }
+ 
+-   public static record Fallsounds(SoundEvent f_196626_, SoundEvent f_196627_) {
+-   }
++
++
++    public static record Fallsounds(SoundEvent f_196626_, SoundEvent f_196627_) {
++   }
 +
 +   // Magma Stub
 +    public int getExpReward() {
@@ -918,6 +924,10 @@
 +
 +   public void setItemSlot(EquipmentSlot slot, ItemStack asNMSCopy, boolean silent) {
 +      this.m_8061_(slot, asNMSCopy);
++   }
++
++   public boolean addEffect(MobEffectInstance mobeffectinstance, Entity entity, EntityPotionEffectEvent.Cause command) {
++      return m_147207_(mobeffectinstance, entity);
 +   }
 +
 +   // CraftBukkit start
