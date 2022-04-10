@@ -7,7 +7,7 @@ jobs:
     container:
       image: openjdk:17-jdk
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3.0.0
       - uses: gradle/wrapper-validation-action@v1.0.3
       - run: chmod +x ./gradlew
       - run: ./gradlew setup installerJar
