@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/Bukkit-1.18%20r2-blue)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse)
 [![](https://img.shields.io/badge/CraftBukkit-Build%20NA-orange)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse?at=refs%2Fheads%2Fversion%2F1.16.5)
 [![](https://img.shields.io/badge/Spigot-Build%20NA-yellow)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse) 
-[![](https://img.shields.io/github/workflow/status/magmafoundation/Magma-1.16.x/Dev-Builds)](https://github.com/magmafoundation/Magma-1.16.x/actions/workflows/dev-builds.yaml)
+[![](https://img.shields.io/github/workflow/status/magmafoundation/Magma-1.18.x/Dev-Build)](https://github.com/magmafoundation/Magma-1.18.x/actions/workflows/dev-builds.yaml)
 [![](https://img.shields.io/discord/612695539729039411.svg?logo=discord&logoWidth=18&colorB=7289DA)](https://discord.gg/magma)
 </div>
 
