@@ -48,15 +48,49 @@
        this.f_139604_ = p_203717_;
        this.f_139602_ = new RconConsoleSource(this);
        this.f_139606_ = TextFilterClient.m_143736_(p_203717_.m_139777_().f_139724_);
-@@ -89,6 +_,7 @@
+@@ -89,12 +_,35 @@
     public boolean m_7038_() throws IOException {
        Thread thread = new Thread("Server console handler") {
           public void run() {
+-            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+-
+-            String s1;
+-            try {
+-               while(!DedicatedServer.this.m_129918_() && DedicatedServer.this.m_130010_() && (s1 = bufferedreader.readLine()) != null) {
+-                  DedicatedServer.this.m_139645_(s1, DedicatedServer.this.m_129893_());
 +            if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
-             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
- 
-             String s1;
-@@ -102,6 +_,21 @@
++            jline.console.ConsoleReader bufferedreader = reader;
++            // MC-33041, SPIGOT-5538: if System.in is not valid due to javaw, then return
++            try {
++               System.in.available();
++            } catch (IOException ex) {
++               return;
++            }
++            // CraftBukkit end
++
++            String s;
++            try {
++               // CraftBukkit start - JLine disabling compatibility
++               while (!DedicatedServer.this.m_129918_() && DedicatedServer.this.m_130010_()) {
++                  s = bufferedreader.readLine();
++
++                  // SPIGOT-5220: Throttle if EOF (ctrl^d) or stdin is /dev/null
++                  if (s == null) {
++                     try {
++                        Thread.sleep(50L);
++                     } catch (InterruptedException ex) {
++                        Thread.currentThread().interrupt();
++                     }
++                     continue;
++                  }
++                  if (s.trim().length() > 0) { // Trim to filter lines which are just spaces
++                     DedicatedServer.this.m_139645_(s, DedicatedServer.this.m_129893_());
++                  }
++                  // CraftBukkit end
+                }
+             } catch (IOException ioexception1) {
+                DedicatedServer.f_139598_.error("Exception handling console input", (Throwable)ioexception1);
+@@ -102,6 +_,27 @@
  
           }
        };
@@ -66,9 +100,15 @@
 +      for (java.util.logging.Handler handler : global.getHandlers()) {
 +         global.removeHandler(handler);
 +      }
++
 +      global.addHandler(new ForwardLogHandler());
 +
-+      final org.apache.logging.log4j.Logger logger = LogManager.getRootLogger();
++      final org.apache.logging.log4j.core.Logger logger = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
++      for (org.apache.logging.log4j.core.Appender appender : logger.getAppenders().values()) {
++         if (appender instanceof org.apache.logging.log4j.core.appender.ConsoleAppender) {
++            logger.removeAppender(appender);
++         }
++      }
 +
 +      new TerminalConsoleWriterThread(System.out, this.reader).start();
 +
@@ -124,6 +164,14 @@
        }
     }
  
+@@ -316,6 +_,7 @@
+          this.f_139601_.m_7530_();
+       }
+ 
++      System.exit(0);
+    }
+ 
+    public void m_5703_(BooleanSupplier p_139661_) {
 @@ -334,7 +_,16 @@
     public void m_139665_() {
        while(!this.f_139600_.isEmpty()) {
