@@ -56,7 +56,7 @@
              ((LiquidBlockContainer)block).m_7361_(p_150717_, p_150718_, blockstate, ((FlowingFluid)this.f_40687_).m_76068_(false));
              this.m_7718_(p_150716_, p_150717_, p_150718_);
              return true;
-@@ -140,8 +_,25 @@
+@@ -140,8 +_,30 @@
     }
  
     protected void m_7718_(@Nullable Player p_40696_, LevelAccessor p_40697_, BlockPos p_40698_) {
@@ -76,6 +76,11 @@
 +   }
 +
 +   private final java.util.function.Supplier<? extends Fluid> fluidSupplier;
++
++   public Fluid getContent() {
++      return f_40687_;
++   }
++
 +   public Fluid getFluid() { return fluidSupplier.get(); }
 +
 +   private boolean canBlockContainFluid(Level worldIn, BlockPos posIn, BlockState blockstate)
