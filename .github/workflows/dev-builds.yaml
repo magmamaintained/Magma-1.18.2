@@ -1,7 +1,7 @@
 name: Dev-Build
 on: [push]
 jobs:
-  build:
+  setup:
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     runs-on: ubuntu-20.04
     container:
@@ -9,8 +9,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.0
       - uses: gradle/wrapper-validation-action@v1.0.4
-      - run: chmod +x ./gradlew
-      - run: ./gradlew setup installerJar
+      - run: chmod +x ./gradlew setup
+  test:
+    needs: setup
+    runs-on: ubuntu-20.04
+    container:
+      image: openjdk:8-jdk
+    steps:
+      - run: ./gradlew :forge:test --tests "org.bukkit.*"
+      - run: ./gradlew :forge:test --tests "org.craftbukkit.*"
+
+  build:
+    needs: [setup, test]
+    runs-on: ubuntu-20.04
+    container:
+      image: openjdk:8-jdk
+    steps:
+      - run: ./gradlew installerJar
         env:
           STABLE_BUILD: 0
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
