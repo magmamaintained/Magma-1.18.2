@@ -9,7 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.0
       - uses: gradle/wrapper-validation-action@v1.0.4
-      - run: chmod +x ./gradlew setup
+      - run: chmod +x ./gradlew
+      - run: ./gradlew setup
   test:
     needs: setup
     runs-on: ubuntu-20.04
