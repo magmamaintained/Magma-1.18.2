@@ -208,7 +208,7 @@
 -   public final ChunkProgressListenerFactory f_129756_;
 -   private final ServerStatus f_129757_ = new ServerStatus();
 -   private final Random f_129758_ = new Random();
--   private final DataFixer f_129759_;
+-   public final DataFixer f_129759_;
 -   private String f_129760_;
 -   private int f_129761_ = -1;
 -   public final RegistryAccess.Frozen f_129746_;
@@ -407,7 +407,7 @@
 +    public final ChunkProgressListenerFactory f_129756_;
 +    private final ServerStatus f_129757_ = new ServerStatus();
 +    private final Random f_129758_ = new Random();
-+    private final DataFixer f_129759_;
++    public final DataFixer f_129759_;
 +    private String f_129760_;
 +    private int f_129761_ = -1;
 +    public final RegistryAccess.Frozen f_129746_;
