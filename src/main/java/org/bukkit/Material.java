@@ -101,7 +101,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.material.MaterialData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.magmafoundation.magma.helpers.EnumHelper;
+import org.magmafoundation.magma.helpers.EnumJ17Helper;
 
 /**
  * An enum of all material IDs accepted by the official server and client
@@ -9870,18 +9870,21 @@ public enum Material implements Keyed {
             if (material != null) {
                 material.forgeBlockID = id;
                 material.isForgeBlock = true;
+                BY_NAME.put(materialName, material);
+                return material;
             } else {
                 try {
-                    material = (Material) EnumHelper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE, Boolean.TYPE, String.class, NamespacedKey.class}, new Object[]{id, true, modName, keyForge});
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
+                    material = EnumJ17Helper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE, Boolean.TYPE, String.class, NamespacedKey.class}, new Object[]{id, true, modName, keyForge});
             BY_NAME.put(materialName, material);
             return material;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
         } else {
             try {
-                Material material = (Material) EnumHelper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE, Boolean.TYPE, String.class, NamespacedKey.class}, new Object[]{id, false, modName, keyForge});
+                Material material = EnumJ17Helper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE, Boolean.TYPE, String.class, NamespacedKey.class}, new Object[]{id, false, modName, keyForge});
                 BY_NAME.put(materialName, material);
                 return material;
             } catch (Throwable e) {

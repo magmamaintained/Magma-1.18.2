@@ -24,22 +24,22 @@ import java.util.Objects;
 public class ForgeInject {
 
     public static void init() {
-        Magma.LOGGER.warn("Injecting Material into Forge");
+        Magma.LOGGER.warn("Injecting Forge Material into Bukkit");
         addForgeItems();
-        Magma.LOGGER.warn("Injecting Blocks into Forge");
+        Magma.LOGGER.warn("Injecting Forge Blocks into Bukkit");
         addForgeBlocks();
-        Magma.LOGGER.warn("Injecting Enchantments into Forge");
+        Magma.LOGGER.warn("Injecting Forge Enchantments into Bukkit");
         addForgeEnchantments();
-        Magma.LOGGER.warn("Injecting Potions into Forge");
+        Magma.LOGGER.warn("Injecting Forge Potions into Bukkit");
         addForgePotions();
-        Magma.LOGGER.warn("Injecting Biomes into Forge");
+        Magma.LOGGER.warn("Injecting Forge Biomes into Bukkit");
         addForgeBiomes();
-        Magma.LOGGER.warn("Injecting Entities into Forge");
+        Magma.LOGGER.warn("Injecting Forge Entities into Bukkit");
         addForgeEntities();
-        Magma.LOGGER.warn("Injecting VillagerProfessions into Forge");
+        Magma.LOGGER.warn("Injecting Forge VillagerProfessions into Bukkit");
         addForgeVillagerProfessions();
 
-        Magma.LOGGER.warn("Injecting into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge into Bukkit: DONE");
     }
 
 
@@ -54,17 +54,20 @@ public class ForgeInject {
                 int id = Item.getId(item);
                 try {
                     Material material = Material.addMaterial(materialName, id, false, resourceLocation.getNamespace(), CraftNamespacedKey.fromMinecraft(resourceLocation));
-
+                    if(material == null){
+                        Magma.LOGGER.warn("Could not inject item into Bukkit: " + materialName);
+                        return;
+                    }
                     CraftMagicNumbers.ITEM_MATERIAL.put(item, material);
                     CraftMagicNumbers.MATERIAL_ITEM.put(material, item);
-                    Magma.LOGGER.warn("Injecting Material into Forge: " +  material.name());
+                    Magma.LOGGER.warn("Injecting Forge Material into Bukkit: " +  material.name());
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        Magma.LOGGER.warn("Injecting Material into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge Material into Bukkit: DONE");
 
     }
 
@@ -80,15 +83,19 @@ public class ForgeInject {
                 int id = Item.getId(block.asItem());
                 try {
                     Material material = Material.addMaterial(materialName, id, true, resourceLocation.getNamespace(), CraftNamespacedKey.fromMinecraft(resourceLocation));
+                    if (material == null) {
+                        Magma.LOGGER.warn("Could not inject block into Bukkit: " + materialName);
+                        return;
+                    }
                     CraftMagicNumbers.BLOCK_MATERIAL.put(block, material);
                     CraftMagicNumbers.MATERIAL_BLOCK.put(material, block);
-                    Magma.LOGGER.warn("Injecting Blocks into Forge: " +  material.name());
+                    Magma.LOGGER.warn("Injecting Forge Blocks into Bukkit: " +  material.name());
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
         });
-        Magma.LOGGER.warn("Injecting Blocks into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge Blocks into Bukkit: DONE");
     }
 
 
@@ -98,10 +105,10 @@ public class ForgeInject {
             if (!org.bukkit.enchantments.Enchantment.byKey.containsKey(enchantment.getKey()) || !org.bukkit.enchantments.Enchantment.byName.containsKey(enchantment.getName())) {
                 org.bukkit.enchantments.Enchantment.byKey.put(enchantment.getKey(), enchantment);
                 org.bukkit.enchantments.Enchantment.byName.put(enchantment.getName(), enchantment);
-                Magma.LOGGER.warn("Injecting Enchantments into Forge: " +  enchantment.getName());
+                Magma.LOGGER.warn("Injecting Forge Enchantments into Bukkit: " +  enchantment.getName());
             }
         });
-        Magma.LOGGER.warn("Injecting Enchantments into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge Enchantments into Bukkit: DONE");
     }
 
     private static void addForgePotions() {
@@ -112,10 +119,10 @@ public class ForgeInject {
                 PotionEffectType.byId[pet.getId()] = pet;
                 PotionEffectType.byName.put(pet.getName().toLowerCase(java.util.Locale.ENGLISH), pet);
                 PotionEffectType.byKey.put(pet.getKey(), pet);
-                Magma.LOGGER.warn("Injecting Potion into Forge: " +  pet.getName());
+                Magma.LOGGER.warn("Injecting Forge Potion into Bukkit: " +  pet.getName());
             }
         });
-        Magma.LOGGER.warn("Injecting Potion into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge Potion into Bukkit: DONE");
     }
 
     private static void addForgeBiomes() {
@@ -126,14 +133,14 @@ public class ForgeInject {
                 map.add(biomeName);
                 try {
                     Biome biome = EnumJ17Helper.addEnum0(Biome.class, biomeName, new Class[0]);
-                    Magma.LOGGER.warn("Injecting Biome into Forge: " +  biome.name());
+                    Magma.LOGGER.warn("Injecting Forge Biome into Bukkit: " +  biome.name());
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
         });
         map.clear();
-        Magma.LOGGER.warn("Injecting Biome into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge Biome into Bukkit: DONE");
     }
 
 
@@ -148,13 +155,13 @@ public class ForgeInject {
                     EntityType bukkitType = EnumJ17Helper.addEnum0(EntityType.class, entityType, new Class[]{String.class, Class.class, Integer.TYPE, Boolean.TYPE}, entityType.toLowerCase(), CraftEntity.class, typeId, false);
                     EntityType.NAME_MAP.put(entityType.toLowerCase(), bukkitType);
                     EntityType.ID_MAP.put((short) typeId, bukkitType);
-                    Magma.LOGGER.warn("Injecting Entity into Forge: " +  entityType);
+                    Magma.LOGGER.warn("Injecting Forge Entity into Bukkit: " +  entityType);
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
         });
-        Magma.LOGGER.warn("Injecting Entity into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge Entity into Bukkit: DONE");
     }
 
     private static void addForgeVillagerProfessions() {
@@ -165,13 +172,13 @@ public class ForgeInject {
                 String name = normalizeName(resourceLocation.toString());
                 try {
                     Villager.Profession profession = EnumJ17Helper.addEnum0(Villager.Profession.class, name, new Class[0]);
-                    Magma.LOGGER.warn("Injecting VillagerProfession into Forge: " +  profession.name());
+                    Magma.LOGGER.warn("Injecting Forge VillagerProfession into Bukkit: " +  profession.name());
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
         });
-        Magma.LOGGER.warn("Injecting VillagerProfession into Forge: DONE");
+        Magma.LOGGER.warn("Injecting Forge VillagerProfession into Bukkit: DONE");
     }
 
     private static String normalizeName(String name) {
