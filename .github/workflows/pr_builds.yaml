@@ -7,14 +7,14 @@ jobs:
     container:
       image: openjdk:17-jdk
     steps:
-      - uses: actions/checkout@v1
-      - uses: gradle/wrapper-validation-action@v1.0.3
+      - uses: actions/checkout@v3.0.0
+      - uses: gradle/wrapper-validation-action@v1.0.4
       - run: chmod +x ./gradlew
       - run: ./gradlew setup installerJar
         env:
           STABLE_BUILD: 0
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v2.2.2
+      - uses: actions/upload-artifact@v3.0.0
         with:
           name: Builds
           path: projects/magma/build/libs/*installer*.jar
