@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -57,7 +56,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -121,12 +122,18 @@ import net.minecraftforge.common.util.MavenVersionStringHelper;
 import net.minecraftforge.common.world.BiomeGenerationSettingsBuilder;
 import net.minecraftforge.common.world.ForgeWorldPreset;
 import net.minecraftforge.common.world.MobSpawnSettingsBuilder;
-import net.minecraftforge.event.*;
+import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.event.DifficultyChangeEvent;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.EnderManAngerEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -145,6 +152,7 @@ import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.living.LivingGetProjectileEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -1087,6 +1095,19 @@ public class ForgeHooks
         return res == Result.DEFAULT ? 0 : res == Result.DENY ? -1 : 1;
     }
 
+    public static boolean hasNoElements(Ingredient ingredient)
+    {
+        ItemStack[] items = ingredient.getItems();
+        if (items.length == 0) return true;
+        if (items.length == 1 && !ForgeConfig.SERVER.treatEmptyTagsAsAir.get())
+        {
+            //If we potentially added a barrier due to the ingredient being an empty tag, try and check if it is the stack we added
+            ItemStack item = items[0];
+            return item.getItem() == Items.BARRIER && item.getHoverName() instanceof TextComponent hoverName && hoverName.getText().startsWith("Empty Tag: ");
+        }
+        return false;
+    }
+
     public static <T> void deserializeTagAdditions(List<Tag.Entry> list, JsonObject json, List<Tag.BuilderEntry> allList)
     {
         if (json.has("remove"))
@@ -1457,6 +1478,11 @@ public class ForgeHooks
         {
             return fallback;
         }
+    }
+
+    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player, ItemStack mask)
+    {
+        return mask.isEnderMask(player, enderMan) || MinecraftForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player));
     }
 
 }

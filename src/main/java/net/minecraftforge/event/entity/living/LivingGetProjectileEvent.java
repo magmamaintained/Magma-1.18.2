@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.minecraftforge.event;
+package net.minecraftforge.event.entity.living;
 
 
 import net.minecraft.world.entity.LivingEntity;
