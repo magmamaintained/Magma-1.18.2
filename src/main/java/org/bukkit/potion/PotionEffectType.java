@@ -276,7 +276,7 @@ public abstract class PotionEffectType implements Keyed {
         return "PotionEffectType[" + id + ", " + getName() + "]";
     }
 
-    public static final PotionEffectType[] byId = new PotionEffectType[33];
+    public static final PotionEffectType[] byId = new PotionEffectType[1250];
     public static final Map<String, PotionEffectType> byName = new HashMap<String, PotionEffectType>();
     public static final Map<NamespacedKey, PotionEffectType> byKey = new HashMap<NamespacedKey, PotionEffectType>();
     // will break on updates.
