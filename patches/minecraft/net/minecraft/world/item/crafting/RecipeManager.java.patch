@@ -39,8 +39,17 @@
     }
  
     protected void m_5787_(Map<ResourceLocation, JsonElement> p_44037_, ResourceManager p_44038_, ProfilerFiller p_44039_) {
-@@ -49,9 +_,18 @@
+@@ -47,11 +_,27 @@
+       Map<RecipeType<?>, Builder<ResourceLocation, Recipe<?>>> map = Maps.newHashMap();
+       Builder<ResourceLocation, Recipe<?>> builder = ImmutableMap.builder();
  
++      // CraftBukkit start - SPIGOT-5667 make sure all types are populated and mutable
++      Map<RecipeType<?>, Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>> map1 = Maps.newHashMap();
++      for (RecipeType<?> recipeType : Registry.f_122864_) {
++         map1.put(recipeType, new Object2ObjectLinkedOpenHashMap<>());
++      }
++      // CraftBukkit end
++
        for(Entry<ResourceLocation, JsonElement> entry : p_44037_.entrySet()) {
           ResourceLocation resourcelocation = entry.getKey();
 +         if (resourcelocation.m_135815_().startsWith("_")) continue; //Forge: filter anything beginning with "_" as it's used for metadata.
@@ -59,6 +68,39 @@
              map.computeIfAbsent(recipe.m_6671_(), (p_44075_) -> {
                 return ImmutableMap.builder();
              }).put(resourcelocation, recipe);
+@@ -68,14 +_,31 @@
+       f_44006_.info("Loaded {} recipes", (int)map.size());
+    }
+ 
++   // CraftBukkit start - Magma Start
++   public void addRecipe(Recipe<?> irecipe) {
++      Map<ResourceLocation, Recipe<?>> mapMC = this.f_44007_.get(irecipe.m_6671_());
++      Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>> mapCB = this.recipesCB.get(irecipe.m_6671_());
++      if (mapMC.containsKey(irecipe.m_6423_()) || mapCB.containsKey(irecipe.m_6423_())) {
++         throw new IllegalStateException("Duplicate recipe ignored with ID " + irecipe.m_6423_());
++      } else {
++         this.f_44007_.put(irecipe.m_6671_(), ImmutableMap.<ResourceLocation, Recipe<?>>builder().putAll(mapMC).put(irecipe.m_6423_(), irecipe).build());
++         mapCB.putAndMoveToFirst(irecipe.m_6423_(), irecipe); // CraftBukkit - SPIGOT-4638: last recipe gets priority
++      }
++   }
++   // CraftBukkit end - Magma End
++
+    public boolean m_151269_() {
+       return this.f_44008_;
+    }
+ 
+    public <C extends Container, T extends Recipe<C>> Optional<T> m_44015_(RecipeType<T> p_44016_, C p_44017_, Level p_44018_) {
+-      return this.m_44054_(p_44016_).values().stream().flatMap((p_44064_) -> {
++      // CraftBukkit start
++      Optional<T> recipe = this.m_44054_(p_44016_).values().stream().flatMap((p_44064_) -> {
+          return p_44016_.m_44115_(p_44064_, p_44018_, p_44017_).stream();
+       }).findFirst();
++      p_44017_.setCurrentRecipe(recipe.orElse(null)); // CraftBukkit - Clear recipe when no recipe is found
++      // CraftBukkit end
++      return recipe;
+    }
+ 
+    public <C extends Container, T extends Recipe<C>> List<T> m_44013_(RecipeType<T> p_44014_) {
 @@ -127,11 +_,17 @@
        });
     }
@@ -78,23 +120,19 @@
     }
  
     public void m_44024_(Iterable<Recipe<?>> p_44025_) {
-@@ -152,4 +_,34 @@
+@@ -152,4 +_,23 @@
        this.f_44007_ = ImmutableMap.copyOf(map);
        this.f_199900_ = builder.build();
     }
 +
 +   // CraftBukkit start
-+   public void addRecipe(final Recipe<?> irecipe) {
-+      final Map<ResourceLocation, Recipe<?>> map = this.f_44007_.get(irecipe.m_6671_());
-+      Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>> map1 = this.recipesCB.get(irecipe.m_6671_()); // CraftBukkit
-+      if (map.containsKey(irecipe.m_6423_()) || map1.containsKey(irecipe.m_6423_())) {
-+         throw new IllegalStateException("Duplicate recipe ignored with ID " + irecipe.m_6423_());
++   public boolean removeRecipe(ResourceLocation mcKey) {
++      for (Map<ResourceLocation, Recipe<?>> recipes : f_44007_.values()) {
++         recipes.remove(mcKey);
 +      }
-+      map.put(irecipe.m_6423_(), irecipe);
++      return f_199900_.remove(mcKey) != null;
 +   }
-+   // CraftBukkit end
 +
-+   // CraftBukkit start
 +   public void clearRecipes() {
 +      this.f_44007_ = Maps.newHashMap();
 +      this.recipesCB = Maps.newHashMap();
@@ -102,14 +140,7 @@
 +         this.f_44007_.put(recipeType, Collections.emptyMap());
 +         this.recipesCB.put(recipeType, new Object2ObjectLinkedOpenHashMap<>());
 +      }
-+   }
-+
-+   public boolean removeRecipe(ResourceLocation mcKey) {
-+      for (Map<ResourceLocation, Recipe<?>> recipes : f_44007_.values()) {
-+         recipes.remove(mcKey);
-+      }
-+
-+      return f_199900_.remove(mcKey) != null;
++      this.f_199900_ = Maps.newHashMap();
 +   }
 +   // CraftBukkit end
  }
