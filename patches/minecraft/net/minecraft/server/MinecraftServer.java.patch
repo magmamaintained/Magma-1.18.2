@@ -559,7 +559,7 @@
 +
 +    protected abstract boolean m_7038_() throws IOException;
 +
-+    protected void m_130006_() {
++    protected void loadLevel(String s) { // CraftBukkit - added argument
 +        if (!JvmProfiler.f_185340_.m_183608_()) {
 +        }
 +

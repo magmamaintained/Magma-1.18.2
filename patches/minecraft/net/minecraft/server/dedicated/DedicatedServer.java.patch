@@ -118,22 +118,40 @@
        thread.setDaemon(true);
        thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_139598_));
        thread.start();
-@@ -163,15 +_,21 @@
+@@ -126,7 +_,7 @@
+       this.m_129989_(dedicatedserverproperties.f_139736_);
+       super.m_7196_(dedicatedserverproperties.f_139725_.get());
+       this.m_130004_(dedicatedserverproperties.f_139738_);
+-      this.f_129749_.m_5458_(dedicatedserverproperties.f_139740_);
++      // this.worldData.setGameType(dedicatedserverproperties.gamemode); // CraftBukkit - moved to world loading
+       f_139598_.info("Default game type: {}", (Object)dedicatedserverproperties.f_139740_);
+       InetAddress inetaddress = null;
+       if (!this.m_130009_().isEmpty()) {
+@@ -149,6 +_,12 @@
+          return false;
+       }
+ 
++      // CraftBukkit start
++      this.m_129823_(new DedicatedPlayerList(this, this.f_129746_, this.f_129745_));
++      server.loadPlugins();
++      server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
++      // CraftBukkit end
++
+       if (!this.m_129797_()) {
+          f_139598_.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+          f_139598_.warn("The server will make no attempt to authenticate usernames. Beware.");
+@@ -163,15 +_,16 @@
        if (!OldUsersConverter.m_11106_(this)) {
           return false;
        } else {
 -         this.m_129823_(new DedicatedPlayerList(this, this.m_206579_(), this.f_129745_));
-+         // CraftBukkit start
-+         this.m_129823_(new DedicatedPlayerList(this, this.f_129746_, this.f_129745_));
-+         server.loadPlugins();
-+         server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
-+         // CraftBukkit end
           long i = Util.m_137569_();
           SkullBlockEntity.m_196700_(this.m_129927_(), this.m_129925_(), this);
           GameProfileCache.m_11004_(this.m_129797_());
 +         if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this)) return false;
           f_139598_.info("Preparing level \"{}\"", (Object)this.m_7123_());
-          this.m_130006_();
+-         this.m_130006_();
++         this.loadLevel(f_129744_.m_78277_()); // CraftBukkit - pass in levelId
           long j = Util.m_137569_() - i;
           String s = String.format(Locale.ROOT, "%.3fs", (double)j / 1.0E9D);
           f_139598_.info("Done ({})! For help, type \"help\"", (Object)s);
@@ -190,20 +208,6 @@
        }
  
     }
-@@ -439,6 +_,13 @@
-       return this.m_7913_().f_139718_;
-    }
- 
-+   // CraftBukkit start
-+   @Override
-+   public CommandSender getBukkitSender(CommandSourceStack wrapper) {
-+      return console;
-+   }
-+   // CraftBukkit end
-+
-    public int m_6329_() {
-       return this.m_7913_().f_139719_;
-    }
 @@ -518,13 +_,44 @@
     }
  
@@ -251,15 +255,31 @@
        });
        return this.f_139602_.m_11513_();
     }
-@@ -543,6 +_,11 @@
- 
-    public boolean m_7779_(GameProfile p_139642_) {
+@@ -545,6 +_,11 @@
        return false;
-+   }
-+
+    }
+ 
 +   @Override //Forge: Enable formated text for colors in console.
 +   public void m_6352_(net.minecraft.network.chat.Component message, java.util.UUID p_108776_) {
 +      f_139598_.info(message.getString());
-    }
- 
++   }
++
     public int m_7186_(int p_139659_) {
+       return this.m_7913_().f_139723_ * p_139659_ / 100;
+    }
+@@ -588,4 +_,15 @@
+    public Component m_141958_() {
+       return this.f_142863_;
+    }
++
++   // CraftBukkit start
++   public boolean isDebugging() {
++      return this.m_7913_().debug;
++   }
++
++   @Override
++   public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      return console;
++   }
++   // CraftBukkit end
+ }

@@ -1,14 +1,17 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -9,7 +_,6 @@
+@@ -9,17 +_,11 @@
  import io.netty.buffer.Unpooled;
  import java.io.File;
  import java.net.SocketAddress;
 -import java.nio.file.Path;
  import java.text.SimpleDateFormat;
- import java.util.List;
- import java.util.Map;
-@@ -19,7 +_,6 @@
+-import java.util.List;
+-import java.util.Map;
+-import java.util.Optional;
+-import java.util.Set;
+-import java.util.UUID;
++import java.util.*;
  import java.util.function.Function;
  import javax.annotation.Nullable;
  import net.minecraft.ChatFormatting;
@@ -16,7 +19,7 @@
  import net.minecraft.Util;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.RegistryAccess;
-@@ -61,6 +_,7 @@
+@@ -61,9 +_,11 @@
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.PlayerAdvancements;
  import net.minecraft.server.ServerScoreboard;
@@ -24,7 +27,11 @@
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.server.network.ServerGamePacketListenerImpl;
-@@ -90,6 +_,11 @@
++import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.stats.ServerStatsCounter;
+@@ -90,6 +_,13 @@
  import net.minecraft.world.scores.Objective;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
@@ -32,6 +39,8 @@
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.command.ColouredConsoleSender;
 +import org.bukkit.craftbukkit.v1_18_R2.command.ConsoleCommandCompleter;
++import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
++import org.bukkit.event.player.PlayerLoginEvent;
 +import org.magmafoundation.magma.forge.ForgeInject;
  import org.slf4j.Logger;
  
@@ -112,6 +121,122 @@
        ServerLevel serverlevel = p_11287_.m_183503_();
        p_11287_.m_36220_(Stats.f_12989_);
        this.m_6765_(p_11287_);
+@@ -345,51 +_,96 @@
+    }
+ 
+    @Nullable
+-   public Component m_6418_(SocketAddress p_11257_, GameProfile p_11258_) {
+-      if (this.f_11198_.m_11406_(p_11258_)) {
++   // CraftBukkit start - Whole method, SocketAddress to LoginListener, added hostname to signature, return ServerPlayer
++   public ServerPlayer canPlayerLogin(ServerLoginPacketListenerImpl serverLoginPacketListener, GameProfile p_11258_, String hostname) {
++      TranslatableComponent chatmessage;
++
++      // Moved from processLogin
++      UUID uuid = Player.m_36198_(p_11258_);
++      List<ServerPlayer> list = Lists.newArrayList();
++
++
++      for (ServerPlayer value : this.f_11196_) {
++         if (value.m_142081_().equals(uuid)) {
++            list.add(value);
++         }
++      }
++
++      for (ServerPlayer serverPlayer : list) {
++         m_6765_(serverPlayer); // CraftBukkit - Force the player's inventory to be saved
++         serverPlayer.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login", new Object[0]));
++      }
++
++      // Instead of kicking then returning, we need to store the kick reason
++      // in the event, check with plugins to see if it's ok, and THEN kick
++      // depending on the outcome.
++      SocketAddress socketaddress = serverLoginPacketListener.f_10013_.m_129523_();
++
++      ServerPlayer entity = new ServerPlayer(this.f_11195_, this.f_11195_.m_129880_(Level.f_46428_), p_11258_);
++      org.bukkit.entity.Player player = entity.getBukkitEntity();
++      PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
++
++      if (m_11295_().m_11406_(p_11258_) && !m_11295_().m_11388_(p_11258_).m_7524_()) {
+          UserBanListEntry userbanlistentry = this.f_11198_.m_11388_(p_11258_);
+-         MutableComponent mutablecomponent1 = new TranslatableComponent("multiplayer.disconnect.banned.reason", userbanlistentry.m_10962_());
++         chatmessage = new TranslatableComponent("multiplayer.disconnect.banned.reason", userbanlistentry.m_10962_());
+          if (userbanlistentry.m_10961_() != null) {
+-            mutablecomponent1.m_7220_(new TranslatableComponent("multiplayer.disconnect.banned.expiration", f_11194_.format(userbanlistentry.m_10961_())));
++            chatmessage.m_7220_(new TranslatableComponent("multiplayer.disconnect.banned.expiration", f_11194_.format(userbanlistentry.m_10961_())));
+          }
+ 
+-         return mutablecomponent1;
++         // return mutablecomponent1;
++         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, CraftChatMessage.fromComponent(chatmessage));
+       } else if (!this.m_5764_(p_11258_)) {
+-         return new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
+-      } else if (this.f_11199_.m_11041_(p_11257_)) {
+-         IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(p_11257_);
++         chatmessage = new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
++         event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, CraftChatMessage.fromComponent(chatmessage));
++      } else if (m_11299_().m_11041_(socketaddress) && !m_11299_().m_11043_(socketaddress).m_7524_()) {
++         IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(socketaddress);
+          MutableComponent mutablecomponent = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.m_10962_());
+          if (ipbanlistentry.m_10961_() != null) {
+             mutablecomponent.m_7220_(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", f_11194_.format(ipbanlistentry.m_10961_())));
+          }
+ 
+-         return mutablecomponent;
++         // return mutablecomponent;
++         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, CraftChatMessage.fromComponent(mutablecomponent));
+       } else {
+-         return this.f_11196_.size() >= this.f_11193_ && !this.m_5765_(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
+-      }
++         // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
++         if (this.f_11196_.size() >= this.f_11193_ && !this.m_5765_(p_11258_)) {
++            event.disallow(PlayerLoginEvent.Result.KICK_FULL, "The server is full");
++         }
++      }
++
++      cserver.getPluginManager().callEvent(event);
++      if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
++         serverLoginPacketListener.disconnect(event.getKickMessage());
++         return null;
++      }
++      return entity;
+    }
+ 
+-   public ServerPlayer m_11300_(GameProfile p_11301_) {
+-      UUID uuid = Player.m_36198_(p_11301_);
++   public ServerPlayer getPlayerForLogin(GameProfile p_11301_, ServerPlayer player) { // CraftBukkit - added ServerPlayer
++       /* CraftBukkit startMoved up
++      UUID uuid = Player.createPlayerUUID(p_11301_);
+       List<ServerPlayer> list = Lists.newArrayList();
+ 
+-      for(int i = 0; i < this.f_11196_.size(); ++i) {
+-         ServerPlayer serverplayer = this.f_11196_.get(i);
+-         if (serverplayer.m_142081_().equals(uuid)) {
++      for(int i = 0; i < this.players.size(); ++i) {
++         ServerPlayer serverplayer = this.players.get(i);
++         if (serverplayer.getUUID().equals(uuid)) {
+             list.add(serverplayer);
+          }
+       }
+ 
+-      ServerPlayer serverplayer2 = this.f_11197_.get(p_11301_.getId());
++      ServerPlayer serverplayer2 = this.playersByUUID.get(p_11301_.getId());
+       if (serverplayer2 != null && !list.contains(serverplayer2)) {
+          list.add(serverplayer2);
+       }
+ 
+       for(ServerPlayer serverplayer1 : list) {
+-         serverplayer1.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
++         serverplayer1.connection.disconnect(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
+       }
+ 
+-      return new ServerPlayer(this.f_11195_, this.f_11195_.m_129783_(), p_11301_);
++      return new ServerPlayer(this.server, this.server.overworld(), p_11301_);
++        */
++      return player;
++      // CraftBukkit end
+    }
+ 
+    public ServerPlayer m_11236_(ServerPlayer p_11237_, boolean p_11238_) {
 @@ -450,10 +_,11 @@
        this.m_11229_(serverplayer, serverlevel1);
        this.m_11289_(serverplayer);
