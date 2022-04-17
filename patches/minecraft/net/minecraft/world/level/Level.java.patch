@@ -222,6 +222,23 @@
        explosion.m_46061_();
        explosion.m_46075_(true);
        return explosion;
+@@ -463,6 +_,16 @@
+ 
+    @Nullable
+    public BlockEntity m_7702_(BlockPos p_46716_) {
++      // CraftBukkit start - Magma - doing this is weird validate is never used so why is it here? should we remove it?
++      return getBlockEntity(p_46716_, true);
++   }
++
++   @Nullable
++   public BlockEntity getBlockEntity(BlockPos p_46716_, boolean validate) {
++      if (capturedTileEntities.containsKey(p_46716_)) {
++         return capturedTileEntities.get(p_46716_);
++      }
++      // CraftBukkit end
+       if (this.m_151570_(p_46716_)) {
+          return null;
+       } else {
 @@ -481,6 +_,7 @@
        if (!this.m_151570_(p_46748_)) {
           this.m_46745_(p_46748_).m_8114_(p_46748_);
