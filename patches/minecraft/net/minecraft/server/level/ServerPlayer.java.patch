@@ -1,5 +1,13 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -10,6 +_,7 @@
+ import java.util.OptionalInt;
+ import java.util.Random;
+ import java.util.UUID;
++import java.util.concurrent.atomic.AtomicReference;
+ import javax.annotation.Nullable;
+ import net.minecraft.BlockUtil;
+ import net.minecraft.ChatFormatting;
 @@ -82,6 +_,7 @@
  import net.minecraft.world.Container;
  import net.minecraft.world.InteractionHand;
@@ -24,16 +32,28 @@
  import net.minecraft.world.level.block.HorizontalDirectionalBlock;
  import net.minecraft.world.level.block.NetherPortalBlock;
  import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -132,8 +_,12 @@
+@@ -126,14 +_,24 @@
+ import net.minecraft.world.level.block.entity.SignBlockEntity;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.border.WorldBorder;
++import net.minecraft.world.level.dimension.LevelStem;
+ import net.minecraft.world.level.portal.PortalInfo;
+ import net.minecraft.world.level.storage.LevelData;
+ import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Score;
 +import net.minecraft.world.scores.Scoreboard;
  import net.minecraft.world.scores.Team;
  import net.minecraft.world.scores.criteria.ObjectiveCriteria;
++import org.bukkit.Bukkit;
++import org.bukkit.Location;
 +import org.bukkit.WeatherType;
++import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.event.player.PlayerChangedWorldEvent;
++import org.bukkit.event.player.PlayerTeleportEvent;
  import org.slf4j.Logger;
  
  public class ServerPlayer extends Player {
@@ -80,59 +100,119 @@
        boolean flag = this.f_19853_.m_46469_().m_46207_(GameRules.f_46142_);
        if (flag) {
           Component component = this.m_21231_().m_19293_();
-@@ -685,11 +_,12 @@
-    }
+@@ -686,10 +_,29 @@
  
     @Nullable
--   public Entity m_5489_(ServerLevel p_9180_) {
-+   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter) {
-+      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.m_46472_())) return null;
-       this.f_8927_ = true;
-       ServerLevel serverlevel = this.m_183503_();
-       ResourceKey<Level> resourcekey = serverlevel.m_46472_();
+    public Entity m_5489_(ServerLevel p_9180_) {
+-      this.f_8927_ = true;
+-      ServerLevel serverlevel = this.m_183503_();
+-      ResourceKey<Level> resourcekey = serverlevel.m_46472_();
 -      if (resourcekey == Level.f_46430_ && p_9180_.m_46472_() == Level.f_46428_) {
++      // CraftBukkit start
++      return changeDimension(p_9180_,  p_9180_.m_8871_(), PlayerTeleportEvent.TeleportCause.UNKNOWN);
++   }
++   @Nullable
++   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter) {
++      return changeDimension(p_9180_, teleporter, PlayerTeleportEvent.TeleportCause.UNKNOWN);
++   }
++
++   @Nullable
++   public Entity changeDimension(ServerLevel p_9180_, PlayerTeleportEvent.TeleportCause cause) {
++      return changeDimension(p_9180_,  p_9180_.m_8871_(), cause);
++   }
++
++   @Nullable
++   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, PlayerTeleportEvent.TeleportCause cause) {
++      // CraftBukkit end
++      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.m_46472_())) return null;
++      if (this.m_5803_()) return this; // CraftBukkit - SPIGOT-3154
++      // this.isChangingDimension = true; // CraftBukkit - Moved down and into PlayerList#changeDimension
++      AtomicReference<ServerLevel> serverlevel = new AtomicReference<>(this.m_183503_()); // For use in lambda
++      ResourceKey<Level> resourcekey = serverlevel.get().m_46472_();
 +      if (resourcekey == Level.f_46430_ && p_9180_.m_46472_() == Level.f_46428_ && teleporter.isVanilla()) { //Forge: Fix non-vanilla teleporters triggering end credits
++         this.f_8927_ = true;
           this.m_19877_();
           this.m_183503_().m_143261_(this, Entity.RemovalReason.CHANGED_DIMENSION);
           if (!this.f_8944_) {
-@@ -706,13 +_,14 @@
+@@ -705,37 +_,61 @@
+          this.f_8906_.m_141995_(new ClientboundChangeDifficultyPacket(leveldata.m_5472_(), leveldata.m_5474_()));
           PlayerList playerlist = this.f_8924_.m_6846_();
           playerlist.m_11289_(this);
-          serverlevel.m_143261_(this, Entity.RemovalReason.CHANGED_DIMENSION);
+-         serverlevel.m_143261_(this, Entity.RemovalReason.CHANGED_DIMENSION);
 -         this.m_146912_();
 -         PortalInfo portalinfo = this.m_7937_(p_9180_);
++         serverlevel.get().m_143261_(this, Entity.RemovalReason.CHANGED_DIMENSION);
 +         this.revive();
 +         PortalInfo portalinfo = teleporter.getPortalInfo(this, p_9180_, this::m_7937_);
           if (portalinfo != null) {
-+            Entity e = teleporter.placeEntity(this, serverlevel, p_9180_, this.m_146908_(), spawnPortal -> {//Forge: Start vanilla logic
-             serverlevel.m_46473_().m_6180_("moving");
-             if (resourcekey == Level.f_46428_ && p_9180_.m_46472_() == Level.f_46429_) {
-                this.f_8933_ = this.m_20182_();
+-            serverlevel.m_46473_().m_6180_("moving");
+-            if (resourcekey == Level.f_46428_ && p_9180_.m_46472_() == Level.f_46429_) {
+-               this.f_8933_ = this.m_20182_();
 -            } else if (p_9180_.m_46472_() == Level.f_46430_) {
-+            } else if (spawnPortal && p_9180_.m_46472_() == Level.f_46430_) {
-                this.m_9006_(p_9180_, new BlockPos(portalinfo.f_77676_));
-             }
- 
-@@ -724,6 +_,9 @@
-             this.m_6027_(portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_);
-             serverlevel.m_46473_().m_7238_();
-             this.m_9209_(serverlevel);
-+            return this;//forge: this is part of the ITeleporter patch
+-               this.m_9006_(p_9180_, new BlockPos(portalinfo.f_77676_));
+-            }
+-
+-            serverlevel.m_46473_().m_7238_();
+-            serverlevel.m_46473_().m_6180_("placing");
+-            this.m_143425_(p_9180_);
+-            p_9180_.m_8817_(this);
+-            this.m_19915_(portalinfo.f_77678_, portalinfo.f_77679_);
+-            this.m_6027_(portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_);
+-            serverlevel.m_46473_().m_7238_();
+-            this.m_9209_(serverlevel);
++            Entity e = teleporter.placeEntity(this, serverlevel.get(), p_9180_, this.m_146908_(), spawnPortal -> {//Forge: Start vanilla logic
++               serverlevel.get().m_46473_().m_6180_("moving");
++               if (resourcekey == Level.f_46428_ && p_9180_.m_46472_() == Level.f_46429_) {
++                  this.f_8933_ = this.m_20182_();
++               } else if (spawnPortal && p_9180_.m_46472_() == Level.f_46430_ && portalinfo.portalEventInfo != null && portalinfo.portalEventInfo.getCanCreatePortal()) {
++                  this.m_9006_(p_9180_, new BlockPos(portalinfo.f_77676_));
++               }
++
++               Location enter = this.getBukkitEntity().getLocation();
++               Location exit = (serverlevel.get() == null) ? null : new Location(p_9180_.getWorld(), portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, portalinfo.f_77679_);
++               PlayerTeleportEvent tpEvent = new PlayerTeleportEvent(this.getBukkitEntity(), enter, exit, cause);
++               Bukkit.getServer().getPluginManager().callEvent(tpEvent);
++               if (tpEvent.isCancelled() || tpEvent.getTo() == null) {
++                  return null;
++               }
++               exit = tpEvent.getTo();
++               serverlevel.set(((CraftWorld) exit.getWorld()).getHandle());
++               // CraftBukkit end
++
++               serverlevel.get().m_46473_().m_7238_();
++               serverlevel.get().m_46473_().m_6180_("placing");
++               this.m_143425_(p_9180_);
++               p_9180_.m_8817_(this);
++               this.f_8906_.teleport(exit);
++               this.f_8906_.m_9953_();
++               serverlevel.get().m_46473_().m_7238_();
++               this.m_9209_(serverlevel.get());
++               return this;//forge: this is part of the ITeleporter patch
 +            });//Forge: End vanilla logic
-+            if (e != this) throw new java.lang.IllegalArgumentException(String.format(java.util.Locale.ENGLISH, "Teleporter %s returned not the player entity but instead %s, expected PlayerEntity %s", teleporter, e, this));
++
++
++            if (e != this)
++               throw new java.lang.IllegalArgumentException(String.format(java.util.Locale.ENGLISH, "Teleporter %s returned not the player entity but instead %s, expected PlayerEntity %s", teleporter, e, this));
              this.f_8906_.m_141995_(new ClientboundPlayerAbilitiesPacket(this.m_150110_()));
              playerlist.m_11229_(this, p_9180_);
              playerlist.m_11292_(this);
-@@ -732,10 +_,12 @@
+ 
+-            for(MobEffectInstance mobeffectinstance : this.m_21220_()) {
++            for (MobEffectInstance mobeffectinstance : this.m_21220_()) {
                 this.f_8906_.m_141995_(new ClientboundUpdateMobEffectPacket(this.m_142049_(), mobeffectinstance));
              }
  
-+            if (teleporter.playTeleportSound(this, serverlevel, p_9180_))
-             this.f_8906_.m_141995_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
+-            this.f_8906_.m_141995_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
++            if (teleporter.playTeleportSound(this, serverlevel.get(), p_9180_))
++               this.f_8906_.m_141995_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
              this.f_8920_ = -1;
              this.f_8917_ = -1.0F;
              this.f_8918_ = -1;
 +            net.minecraftforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, resourcekey, p_9180_.m_46472_());
++            // CraftBukkit start
++            PlayerChangedWorldEvent changeEvent = new PlayerChangedWorldEvent(this.getBukkitEntity(), serverlevel.get().getWorld());
++            this.f_19853_.getCraftServer().getPluginManager().callEvent(changeEvent);
++            // CraftBukkit end
           }
  
           return this;

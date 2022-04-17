@@ -8,12 +8,14 @@
  import net.minecraft.world.level.block.HoneyBlock;
  import net.minecraft.world.level.block.Mirror;
  import net.minecraft.world.level.block.RenderShape;
-@@ -114,9 +_,38 @@
+@@ -114,9 +_,40 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
 +import org.bukkit.command.CommandSender;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
++import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityCombustEvent;
  import org.slf4j.Logger;
  
 -public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -106,6 +108,53 @@
  
     }
  
+@@ -497,15 +_,45 @@
+ 
+    public void m_20093_() {
+       if (!this.m_5825_()) {
+-         this.m_20254_(15);
++         // CraftBukkit start - Fallen in lava TODO: this event spams!
++         if (this instanceof LivingEntity && f_19831_ <= 0) {
++            // not on fire yet
++            org.bukkit.block.Block damager = (lastLavaContact == null) ? null : org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(f_19853_, lastLavaContact);
++            org.bukkit.entity.Entity damagee = this.getBukkitEntity();
++            EntityCombustEvent combustEvent = new org.bukkit.event.entity.EntityCombustByBlockEvent(damager, damagee, 15);
++            this.f_19853_.getCraftServer().getPluginManager().callEvent(combustEvent);
++            if (!combustEvent.isCancelled()) {
++               this.setSecondsOnFire(combustEvent.getDuration(), false);
++            }
++         } else {
++            // This will be called every single tick the entity is in lava, so don't throw an event
++            this.setSecondsOnFire(15, false);
++         }
++         CraftEventFactory.blockDamage = (lastLavaContact) == null ? null : org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(f_19853_, lastLavaContact);
+          if (this.m_6469_(DamageSource.f_19308_, 4.0F)) {
+             this.m_5496_(SoundEvents.f_11909_, 0.4F, 2.0F + this.f_19796_.nextFloat() * 0.4F);
+          }
++         CraftEventFactory.blockDamage = null;
++         // CraftBukkit end - we also don't throw an event unless the object in lava is living, to save on some event calls
+ 
+       }
+    }
+ 
+    public void m_20254_(int p_20255_) {
++      // CraftBukkit start
++      this.setSecondsOnFire(p_20255_, true);
++   }
++
++   public void setSecondsOnFire(int p_20255_, boolean callEvent) {
++      if (callEvent) {
++         EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), p_20255_);
++         this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
++         if (event.isCancelled()) {
++            return;
++         }
++         p_20255_ = event.getDuration();
++      }
++      // CraftBukkit end
+       int i = p_20255_ * 20;
+       if (this instanceof LivingEntity) {
+          i = ProtectionEnchantment.m_45138_((LivingEntity)this, i);
 @@ -621,12 +_,12 @@
                 double d1 = vec3.f_82479_;
                 double d2 = vec3.f_82480_;
