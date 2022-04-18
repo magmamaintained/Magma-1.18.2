@@ -255,7 +255,7 @@
     }
  
     private boolean m_8872_(Entity p_8873_) {
-@@ -783,7 +_,27 @@
+@@ -783,15 +_,41 @@
           f_8566_.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.m_20613_(p_8873_.m_6095_()));
           return false;
        } else {
@@ -284,6 +284,21 @@
        }
     }
  
+    public boolean m_8860_(Entity p_8861_) {
++      // CraftBukkit start
++      return this.tryAddFreshEntityWithPassengers(p_8861_, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++   }
++
++   public boolean tryAddFreshEntityWithPassengers(Entity p_8861_, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
++      // CraftBukkit end
+       if (p_8861_.m_142428_().map(Entity::m_142081_).anyMatch(this.f_143244_::m_157550_)) {
+          return false;
+       } else {
+-         this.m_47205_(p_8861_);
++         this.addFreshEntityWithPassengers(p_8861_, reason); // CraftBukkit
+          return true;
+       }
+    }
 @@ -805,6 +_,22 @@
        p_143262_.m_142687_(p_143263_);
     }
