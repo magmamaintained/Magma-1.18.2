@@ -1,7 +1,10 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -148,7 +_,7 @@
+@@ -146,14 +_,15 @@
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import org.bukkit.event.entity.CreatureSpawnEvent;
  import org.slf4j.Logger;
  
 -public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T> {
@@ -9,6 +12,12 @@
     private static final Logger f_20534_ = LogUtils.getLogger();
     public static final String f_147037_ = "EntityTag";
     private final Holder.Reference<EntityType<?>> f_204038_ = Registry.f_122826_.m_203693_(this);
+    private static final float f_147038_ = 1.3964844F;
+-   public static final EntityType<AreaEffectCloud> f_20476_ = m_20634_("area_effect_cloud", EntityType.Builder.<AreaEffectCloud>m_20704_(AreaEffectCloud::new, MobCategory.MISC).m_20719_().m_20699_(6.0F, 0.5F).m_20702_(10).m_20717_(Integer.MAX_VALUE));
++   public static final EntityType<AreaEffectCloud> f_20476_ = m_20634_("area_effect_cloud", EntityType.Builder.<AreaEffectCloud>m_20704_(AreaEffectCloud::new, MobCategory.MISC).m_20719_().m_20699_(6.0F, 0.5F).m_20702_(10).m_20717_(10)); // CraftBukkit - SPIGOT-3729: track area effect clouds
+    public static final EntityType<ArmorStand> f_20529_ = m_20634_("armor_stand", EntityType.Builder.<ArmorStand>m_20704_(ArmorStand::new, MobCategory.MISC).m_20699_(0.5F, 1.975F).m_20702_(10));
+    public static final EntityType<Arrow> f_20548_ = m_20634_("arrow", EntityType.Builder.<Arrow>m_20704_(Arrow::new, MobCategory.MISC).m_20699_(0.5F, 0.5F).m_20702_(4).m_20717_(20));
+    public static final EntityType<Axolotl> f_147039_ = m_20634_("axolotl", EntityType.Builder.<Axolotl>m_20704_(Axolotl::new, MobCategory.AXOLOTLS).m_20699_(0.75F, 0.42F).m_20702_(10));
 @@ -283,6 +_,11 @@
     private ResourceLocation f_20546_;
     private final EntityDimensions f_20547_;
@@ -42,14 +51,39 @@
     }
  
     @Nullable
-@@ -317,6 +_,7 @@
+@@ -315,9 +_,18 @@
+ 
+    @Nullable
     public T m_20600_(ServerLevel p_20601_, @Nullable CompoundTag p_20602_, @Nullable Component p_20603_, @Nullable Player p_20604_, BlockPos p_20605_, MobSpawnType p_20606_, boolean p_20607_, boolean p_20608_) {
++      // CraftBukkit start
++      return this.spawn(p_20601_, p_20602_, p_20603_, p_20604_, p_20605_, p_20606_, p_20607_, p_20608_, CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
++   }
++
++   @Nullable
++   public T spawn(ServerLevel p_20601_, @Nullable CompoundTag p_20602_, @Nullable Component p_20603_, @Nullable Player p_20604_, BlockPos p_20605_, MobSpawnType p_20606_, boolean p_20607_, boolean p_20608_, CreatureSpawnEvent.SpawnReason spawnReason) {
        T t = this.m_20655_(p_20601_, p_20602_, p_20603_, p_20604_, p_20605_, p_20606_, p_20607_, p_20608_);
        if (t != null) {
+-         p_20601_.m_47205_(t);
 +         if (t instanceof net.minecraft.world.entity.Mob && net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn((net.minecraft.world.entity.Mob) t, p_20601_, p_20605_.m_123341_(), p_20605_.m_123342_(), p_20605_.m_123343_(), null, p_20606_)) return null;
-          p_20601_.m_47205_(t);
++         p_20601_.addFreshEntityWithPassengers(t, spawnReason);
++         return !t.m_146910_() ? t : null;
++         // CraftBukkit end
        }
  
+       return t;
+@@ -350,7 +_,11 @@
+             t.m_6593_(p_20658_);
+          }
+ 
+-         m_20620_(p_20656_, p_20659_, t, p_20657_);
++         try {
++            m_20620_(p_20656_, p_20659_, t, p_20657_);
++         } catch (Throwable t0) {
++            f_20534_.warn("Error loading spawn eg NBT", t0);
++         }
+          return t;
+       }
+    }
 @@ -544,14 +_,23 @@
     }
  

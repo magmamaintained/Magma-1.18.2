@@ -45,3 +45,12 @@
              BlockState blockstate = Fox.this.f_19853_.m_8055_(this.f_25602_);
              if (blockstate.m_60713_(Blocks.f_50685_)) {
                 this.m_148928_(blockstate);
+@@ -888,7 +_,7 @@
+       }
+ 
+       private void m_148926_(BlockState p_148927_) {
+-         CaveVines.m_152953_(p_148927_, Fox.this.f_19853_, this.f_25602_);
++         CaveVines.use(p_148927_, Fox.this.f_19853_, this.f_25602_, Fox.this); // CraftBukkit
+       }
+ 
+       private void m_148928_(BlockState p_148929_) {
