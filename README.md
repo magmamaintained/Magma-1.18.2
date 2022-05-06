@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/Bukkit-1.18%20r2-blue)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse)
 [![](https://img.shields.io/badge/CraftBukkit-Build%20NA-orange)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse?at=refs%2Fheads%2Fversion%2F1.16.5)
 [![](https://img.shields.io/badge/Spigot-Build%20NA-yellow)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse) 
-[![](https://img.shields.io/github/workflow/status/magmafoundation/Magma-1.18.x/Dev-Build)](https://github.com/magmafoundation/Magma-1.18.x/actions/workflows/dev-builds.yaml)
+[![Build Status](https://git.magmafoundation.org/magmafoundation/Magma-1-18-x/badges/1.18.x/pipeline.svg)](https://git.magmafoundation.org/magmafoundation/Magma-1-18-x/-/pipelines)
 [![](https://img.shields.io/discord/612695539729039411.svg?logo=discord&logoWidth=18&colorB=7289DA)](https://discord.gg/magma)
 </div>
 
@@ -29,14 +29,14 @@ You might be able to use the Waterfall fork called [Lightfall](https://github.co
 
 Magma for Minecraft 1.12 and above can be found in their own repositories.
 
-- Click [here](https://github.com/magmafoundation/Magma) to visit the 1.12 repository.
-- Click [here](https://github.com/magmafoundation/Magma-1.16.x) to visit the 1.16 repository.
+- Click [here](https://git.magmafoundation.org/magmafoundation/Magma) to visit the 1.12 repository.
+- Click [here](https://git.magmafoundation.org/magmafoundation/Magma-1-16-x) to visit the 1.16 repository.
 
 ## 🪣 Deployment
 
 ### Installation
 
-1. Download the recommended builds from the [**Releases** section](https://github.com/magmafoundation/Magma-1.18.x/releases) (**Download** the one that ends in installer) 
+1. Download the recommended builds from the [**Releases** section](https://git.magmafoundation.org/magmafoundation/Magma-1-18-x/-/releases) (**Download** the one that ends in installer) 
    1. Or Download the latest jar from [Magma Site](https://magmafoundation.org/)
 2. Make a new directory(folder) for the server
 3. Move the jar that you downloaded into the new directory
@@ -47,7 +47,7 @@ Magma for Minecraft 1.12 and above can be found in their own repositories.
 
 - Clone the Project
     - You can use Git GUI (like GitHub Desktop/GitKraken) or clone using the terminal using:
-        - `git clone https://github.com/magmafoundation/Magma-1.18.x/`
+        - `git clone http://git.magmafoundation.org/magmafoundation/Magma-1-18-x.git`
 - Building
     - First you want to run the build command
         - `./gradlew setup installerJar`
@@ -59,7 +59,7 @@ Magma for Minecraft 1.12 and above can be found in their own repositories.
 
 If you wish to inspect Magma, submit PRs, or otherwise work with Magma itself, you're in the right place!.
 
-Please read the [CONTRIBUTING.md](https://github.com/magmafoundation/Magma-1.18.x/blob/master/CONTRIBUTING.md) to see how to contribute, setup, and run.
+Please read the [CONTRIBUTING.md](https://git.magmafoundation.org/magmafoundation/Magma-1-18-x/-/blob/1.18.x/CONTRIBUTING.md) to see how to contribute, setup, and run.
 
 ## 💬 Chat
 
