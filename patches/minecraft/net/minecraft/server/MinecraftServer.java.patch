@@ -169,7 +169,7 @@
  import org.slf4j.Logger;
  
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
--   private static final Logger f_129750_ = LogUtils.getLogger();
+-   public static final Logger f_129750_ = LogUtils.getLogger();
 -   public static final String f_195495_ = "vanilla";
 -   private static final float f_177884_ = 0.8F;
 -   private static final int f_177885_ = 100;
@@ -368,7 +368,7 @@
 -      if (!serverleveldata.m_6535_()) {
 -         try {
 -            m_177896_(serverlevel, serverleveldata, worldgensettings.m_64660_(), flag);
-+    private static final Logger f_129750_ = LogUtils.getLogger();
++    public static final Logger f_129750_ = LogUtils.getLogger();
 +    public static final String f_195495_ = "vanilla";
 +    private static final float f_177884_ = 0.8F;
 +    private static final int f_177885_ = 100;
