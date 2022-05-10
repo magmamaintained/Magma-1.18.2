@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/ItemBasedSteering.java
 +++ b/net/minecraft/world/entity/ItemBasedSteering.java
-@@ -54,4 +_,13 @@
-    public boolean m_20851_() {
-       return this.f_20837_.m_135370_(this.f_20839_);
+@@ -39,6 +_,14 @@
+       }
     }
-+
+ 
 +   // CraftBukkit add setBoostTicks(int)
 +   public void setBoostTicks(int ticks) {
 +      this.f_20834_ = true;
@@ -13,4 +12,12 @@
 +      this.f_20837_.m_135381_(this.f_20838_, this.f_20836_);
 +   }
 +   // CraftBukkit end
+    public void m_20847_(CompoundTag p_20848_) {
+       p_20848_.m_128379_("Saddle", this.m_20851_());
+    }
+@@ -54,4 +_,5 @@
+    public boolean m_20851_() {
+       return this.f_20837_.m_135370_(this.f_20839_);
+    }
++
  }

@@ -372,6 +372,30 @@
     @Nonnull
     public MinecraftServer m_142572_() {
        return this.f_8548_;
+@@ -956,12 +_,21 @@
+    }
+ 
+    public <T extends ParticleOptions> int m_8767_(T p_8768_, double p_8769_, double p_8770_, double p_8771_, int p_8772_, double p_8773_, double p_8774_, double p_8775_, double p_8776_) {
+-      ClientboundLevelParticlesPacket clientboundlevelparticlespacket = new ClientboundLevelParticlesPacket(p_8768_, false, p_8769_, p_8770_, p_8771_, (float)p_8773_, (float)p_8774_, (float)p_8775_, (float)p_8776_, p_8772_);
++
++      // CraftBukkit - visibility api support
++      return sendParticles(null, p_8768_, p_8769_, p_8770_, p_8771_, p_8772_, p_8773_, p_8774_, p_8775_, p_8776_, false);
++   }
++
++   public <T extends ParticleOptions> int sendParticles(ServerPlayer sender, T p_8768_,  double p_8769_, double p_8770_, double p_8771_, int p_8772_, double p_8773_, double p_8774_, double p_8775_, double p_8776_, boolean force) {
++      ClientboundLevelParticlesPacket clientboundlevelparticlespacket = new ClientboundLevelParticlesPacket(p_8768_, force, p_8769_, p_8770_, p_8771_, (float) p_8773_, (float) p_8774_, (float) p_8775_, (float) p_8776_, p_8772_);
++      // CraftBukkit end
+       int i = 0;
+ 
+       for(int j = 0; j < this.f_8546_.size(); ++j) {
+          ServerPlayer serverplayer = this.f_8546_.get(j);
+-         if (this.m_8636_(serverplayer, false, p_8769_, p_8770_, p_8771_, clientboundlevelparticlespacket)) {
++         if (sender != null && !serverplayer.getBukkitEntity().canSee(sender.getBukkitEntity())) continue; // CraftBukkit
++
++         if (this.m_8636_(serverplayer, force, p_8769_, p_8770_, p_8771_, clientboundlevelparticlespacket)) {  // CraftBukkit
+             ++i;
+          }
+       }
 @@ -1412,6 +_,12 @@
        });
     }
