@@ -138,7 +138,7 @@
        this.f_187610_.values().forEach((p_187988_) -> {
           this.m_156404_(p_187988_);
           this.m_156406_(p_187988_);
-@@ -605,6 +_,41 @@
+@@ -605,6 +_,46 @@
        this.f_196848_ = p_196865_;
     }
  
@@ -175,7 +175,12 @@
 +   {
 +      capProvider.reviveCaps();
 +   }
-+   // FORGE END
++
++    // FORGE END
++
++   // Magma Stub
++   public void unloadCallback() {
++   }
 +
     class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
        private final T f_156428_;
