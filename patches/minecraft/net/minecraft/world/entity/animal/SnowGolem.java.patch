@@ -1,16 +1,22 @@
 --- a/net/minecraft/world/entity/animal/SnowGolem.java
 +++ b/net/minecraft/world/entity/animal/SnowGolem.java
-@@ -40,7 +_,7 @@
+@@ -39,8 +_,9 @@
+ import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  
 -public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob {
 +public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob, net.minecraftforge.common.IForgeShearable {
     private static final EntityDataAccessor<Byte> f_29899_ = SynchedEntityData.m_135353_(SnowGolem.class, EntityDataSerializers.f_135027_);
     private static final byte f_149047_ = 16;
     private static final float f_149048_ = 1.7F;
-@@ -97,7 +_,7 @@
-             this.m_6469_(DamageSource.f_19307_, 1.0F);
+@@ -94,10 +_,10 @@
+          BlockPos blockpos = new BlockPos(i, j, k);
+          Biome biome = this.f_19853_.m_204166_(blockpos).m_203334_();
+          if (biome.m_198910_(blockpos)) {
+-            this.m_6469_(DamageSource.f_19307_, 1.0F);
++            this.m_6469_(CraftEventFactory.MELTING, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
           }
  
 -         if (!this.f_19853_.m_46469_().m_46207_(GameRules.f_46132_)) {
@@ -18,15 +24,17 @@
              return;
           }
  
-@@ -108,7 +_,7 @@
+@@ -108,8 +_,8 @@
              j = Mth.m_14107_(this.m_20186_());
              k = Mth.m_14107_(this.m_20189_() + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
              BlockPos blockpos1 = new BlockPos(i, j, k);
 -            if (this.f_19853_.m_8055_(blockpos1).m_60795_() && blockstate.m_60710_(this.f_19853_, blockpos1)) {
+-               this.f_19853_.m_46597_(blockpos1, blockstate);
 +            if (this.f_19853_.m_46859_(blockpos) && blockstate.m_60710_(this.f_19853_, blockpos)) {
-                this.f_19853_.m_46597_(blockpos1, blockstate);
++               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockFormEvent(this.f_19853_, blockpos1, blockstate, this); // CraftBukkit
              }
           }
+       }
 @@ -134,7 +_,7 @@
  
     protected InteractionResult m_6071_(Player p_29920_, InteractionHand p_29921_) {
@@ -36,6 +44,16 @@
           this.m_5851_(SoundSource.PLAYERS);
           this.m_146852_(GameEvent.f_157781_, p_29920_);
           if (!this.f_19853_.f_46443_) {
+@@ -153,7 +_,9 @@
+       this.f_19853_.m_6269_((Player)null, this, SoundEvents.f_12480_, p_29907_, 1.0F, 1.0F);
+       if (!this.f_19853_.m_5776_()) {
+          this.m_29936_(false);
++         this.forceDrops = true; // CraftBukkit
+          this.m_5552_(new ItemStack(Items.f_42047_), 1.7F);
++         this.forceDrops = false; // CraftBukkit
+       }
+ 
+    }
 @@ -193,5 +_,22 @@
  
     public Vec3 m_7939_() {
