@@ -1,0 +1,51 @@
+--- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
++++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+@@ -67,6 +_,13 @@
+ import org.slf4j.Logger;
+ 
+ public class Axolotl extends Animal implements LerpingModel, Bucketable {
++
++   // CraftBukkit start - SPIGOT-6907: re-implement LivingEntity#setMaximumAir()
++   @Override
++   public int getDefaultMaxAirSupply() {
++      return f_149099_;
++   }
++   // CraftBukkit end
+    private static final Logger f_212250_ = LogUtils.getLogger();
+    public static final int f_149090_ = 200;
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super Axolotl>>> f_149091_ = ImmutableList.of(SensorType.f_26811_, SensorType.f_26822_, SensorType.f_26814_, SensorType.f_148315_, SensorType.f_148316_);
+@@ -174,7 +_,7 @@
+    }
+ 
+    public int m_6062_() {
+-      return 6000;
++      return maxAirTicks; // CraftBukkit - SPIGOT-6907: re-implement LivingEntity#setMaximumAir()
+    }
+ 
+    public Axolotl.Variant m_149179_() {
+@@ -219,6 +_,7 @@
+ 
+    public void m_142139_(boolean p_149196_) {
+       this.f_19804_.m_135381_(f_149098_, p_149196_);
++      this.setPersistenceRequired(this.m_21532_()); // CraftBukkit - SPIGOT-4106 update persistence
+    }
+ 
+    @Nullable
+@@ -378,7 +_,7 @@
+       int i = mobeffectinstance != null ? mobeffectinstance.m_19557_() : 0;
+       if (i < 2400) {
+          i = Math.min(2400, 100 + i);
+-         p_149174_.m_147207_(new MobEffectInstance(MobEffects.f_19605_, i, 0), this);
++         p_149174_.addEffect(new MobEffectInstance(MobEffects.f_19605_, i, 0), this, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.AXOLOTL); // CraftBukkit
+       }
+ 
+       p_149174_.m_21195_(MobEffects.f_19599_);
+@@ -448,7 +_,7 @@
+    }
+ 
+    public boolean m_6785_(double p_149183_) {
+-      return !this.m_142392_() && !this.m_8077_();
++      return true; // CraftBukkit
+    }
+ 
+    public static boolean m_186249_(EntityType<? extends LivingEntity> p_186250_, ServerLevelAccessor p_186251_, MobSpawnType p_186252_, BlockPos p_186253_, Random p_186254_) {
