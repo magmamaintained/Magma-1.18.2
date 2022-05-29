@@ -351,7 +351,7 @@ public class CraftBlockData implements BlockData {
         register(net.minecraft.world.level.block.BedBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBed::new);
         register(net.minecraft.world.level.block.BeehiveBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBeehive::new);
         register(net.minecraft.world.level.block.BeetrootBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBeetroot::new);
-        register(net.minecraft.world.level.block.BeetrootBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBell::new);
+        register(net.minecraft.world.level.block.BellBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBell::new);
         register(net.minecraft.world.level.block.BlastFurnaceBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBlastFurnace::new);
         register(net.minecraft.world.level.block.BrewingStandBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBrewingStand::new);
         register(net.minecraft.world.level.block.BubbleColumnBlock.class, org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftBubbleColumn::new);
