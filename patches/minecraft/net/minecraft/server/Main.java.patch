@@ -18,7 +18,7 @@
  import joptsimple.OptionParser;
  import joptsimple.OptionSet;
  import joptsimple.OptionSpec;
-@@ -56,184 +_,251 @@
+@@ -56,184 +_,268 @@
  import org.slf4j.Logger;
  
  public class Main {
@@ -277,8 +277,25 @@
 +
 +            PackRepository packrepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource(), new FolderRepositorySource(levelstoragesource$levelstorageaccess.m_78283_(LevelResource.f_78180_).toFile(), PackSource.f_10529_));
 +
++            // CraftBukkit start
++            File bukkitDataPackFolder = new File(levelstoragesource$levelstorageaccess.m_78283_(LevelResource.f_78180_).toFile(), "bukkit");
++            if (!bukkitDataPackFolder.exists()) {
++                bukkitDataPackFolder.mkdirs();
++            }
++            File mcMeta = new File(bukkitDataPackFolder, "pack.mcmeta");
++            try {
++                com.google.common.io.Files.write("{\n"
++                        + "    \"pack\": {\n"
++                        + "        \"description\": \"Data pack for resources provided by Bukkit plugins\",\n"
++                        + "        \"pack_format\": " + SharedConstants.m_183709_().getPackVersion() + "\n"
++                        + "    }\n"
++                        + "}\n", mcMeta, com.google.common.base.Charsets.UTF_8);
++            } catch (java.io.IOException ex) {
++                throw new RuntimeException("Could not initialize Bukkit datapack", ex);
++            }
 +            AtomicReference<DataPackConfig> config = new AtomicReference<>();
 +            AtomicReference<DynamicOps<Tag>> ops = new AtomicReference<>();
++            // CraftBukkit end
 +
 +            DataPackConfig datapackconfig1 = MinecraftServer.m_129819_(packrepository, datapackconfig == null ? DataPackConfig.f_45842_ : datapackconfig, flag);
 +
@@ -416,7 +433,7 @@
 +    }
 +
 +    public static void m_195488_(LevelStorageSource.LevelStorageAccess p_195489_, DataFixer p_195490_, boolean p_195491_, BooleanSupplier p_195492_, WorldGenSettings p_195493_) {
-+        f_129670_.info("Forcing world upgrade!");
++        f_129670_.info("Forcing world upgrade! {}", p_195489_.m_78277_()); // CraftBukkit
 +        WorldUpgrader worldupgrader = new WorldUpgrader(p_195489_, p_195490_, p_195493_, p_195491_);
 +        Component component = null;
 +
