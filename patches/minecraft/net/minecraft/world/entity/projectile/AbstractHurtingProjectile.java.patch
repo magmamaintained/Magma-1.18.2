@@ -1,6 +1,12 @@
 --- a/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
 +++ b/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
-@@ -18,6 +_,8 @@
+@@ -13,11 +_,14 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.phys.HitResult;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
+ 
+ public abstract class AbstractHurtingProjectile extends Projectile {
     public double f_36813_;
     public double f_36814_;
     public double f_36815_;
@@ -9,30 +15,45 @@
  
     protected AbstractHurtingProjectile(EntityType<? extends AbstractHurtingProjectile> p_36833_, Level p_36834_) {
        super(p_36833_, p_36834_);
-@@ -42,6 +_,17 @@
-       this.m_19915_(p_36827_.m_146908_(), p_36827_.m_146909_());
-    }
- 
-+   // CraftBukkit start
-+   public void setDirection(double p_36821_, double p_36822_, double p_36823_) {
-+      double d0 = Math.sqrt(p_36821_ * p_36821_ + p_36822_ * p_36822_ + p_36823_ * p_36823_);
-+      if (d0 != 0.0D) {
-+         this.f_36813_ = p_36821_ / d0 * 0.1D;
-+         this.f_36814_ = p_36822_ / d0 * 0.1D;
-+         this.f_36815_ = p_36823_ / d0 * 0.1D;
-+      }
+@@ -27,6 +_,12 @@
+       this(p_36817_, p_36824_);
+       this.m_7678_(p_36818_, p_36819_, p_36820_, this.m_146908_(), this.m_146909_());
+       this.m_20090_();
++      // CraftBukkit start - Added setDirection method
++      this.setDirection(p_36821_, p_36822_, p_36823_);
 +   }
-+   // CraftBukkit end
 +
-    protected void m_8097_() {
-    }
- 
-@@ -64,7 +_,7 @@
++   public void setDirection(double p_36821_, double p_36822_, double p_36823_) {
++      // CraftBukkit end
+       double d0 = Math.sqrt(p_36821_ * p_36821_ + p_36822_ * p_36822_ + p_36823_ * p_36823_);
+       if (d0 != 0.0D) {
+          this.f_36813_ = p_36821_ / d0 * 0.1D;
+@@ -64,8 +_,14 @@
           }
  
           HitResult hitresult = ProjectileUtil.m_37294_(this, this::m_5603_);
 -         if (hitresult.m_6662_() != HitResult.Type.MISS) {
+-            this.m_6532_(hitresult);
 +         if (hitresult.m_6662_() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
-             this.m_6532_(hitresult);
++            this.preOnHit(hitresult); // CraftBukkit - projectile hit event
++
++            // CraftBukkit start - Fire ProjectileHitEvent
++            if (this.m_146910_()) {
++               CraftEventFactory.callProjectileHitEvent(this, hitresult);
++            }
++            // CraftBukkit end
           }
  
+          this.m_20101_();
+@@ -142,6 +_,11 @@
+          Entity entity = p_36839_.m_7639_();
+          if (entity != null) {
+             if (!this.f_19853_.f_46443_) {
++               // CraftBukkit start
++               if (CraftEventFactory.handleNonLivingEntityDamageEvent(this, p_36839_, p_36840_, false)) {
++                  return false;
++               }
++               // CraftBukkit end
+                Vec3 vec3 = entity.m_20154_();
+                this.m_20256_(vec3);
+                this.f_36813_ = vec3.f_82479_ * 0.1D;

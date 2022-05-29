@@ -1,13 +1,12 @@
 --- a/net/minecraft/world/entity/projectile/Arrow.java
 +++ b/net/minecraft/world/entity/projectile/Arrow.java
-@@ -221,4 +_,23 @@
+@@ -124,6 +_,25 @@
        }
- 
     }
-+
+ 
 +   // CraftBukkit start accessor methods
 +   public void refreshEffects() {
-+      this.m_20088_().m_135381_(f_36854_, PotionUtils.m_43564_((Collection) PotionUtils.m_43561_(this.f_36855_, (Collection) this.f_36852_)));
++      this.m_20088_().m_135381_(Arrow.f_36854_, PotionUtils.m_43564_((Collection) PotionUtils.m_43561_(this.f_36855_, (Collection) this.f_36852_)));
 +   }
 +
 +   public String getPotionType() {
@@ -16,11 +15,29 @@
 +
 +   public void setPotionType(String string) {
 +      this.f_36855_ = Registry.f_122828_.m_7745_(new net.minecraft.resources.ResourceLocation(string));
-+      this.m_20088_().m_135381_(f_36854_, PotionUtils.m_43564_((Collection) PotionUtils.m_43561_(this.f_36855_, (Collection) this.f_36852_)));
++      this.m_20088_().m_135381_(Arrow.f_36854_, PotionUtils.m_43564_((Collection) PotionUtils.m_43561_(this.f_36855_, (Collection) this.f_36852_)));
 +   }
 +
 +   public boolean isTipped() {
 +      return !(this.f_36852_.isEmpty() && this.f_36855_ == Potions.f_43598_);
 +   }
 +   // CraftBukkit end
- }
++
+    public int m_36889_() {
+       return this.f_19804_.m_135370_(f_36854_);
+    }
+@@ -178,12 +_,12 @@
+       Entity entity = this.m_150173_();
+ 
+       for(MobEffectInstance mobeffectinstance : this.f_36855_.m_43488_()) {
+-         p_36873_.m_147207_(new MobEffectInstance(mobeffectinstance.m_19544_(), Math.max(mobeffectinstance.m_19557_() / 8, 1), mobeffectinstance.m_19564_(), mobeffectinstance.m_19571_(), mobeffectinstance.m_19572_()), entity);
++         p_36873_.addEffect(new MobEffectInstance(mobeffectinstance.m_19544_(), Math.max(mobeffectinstance.m_19557_() / 8, 1), mobeffectinstance.m_19564_(), mobeffectinstance.m_19571_(), mobeffectinstance.m_19572_()), entity, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
+       }
+ 
+       if (!this.f_36852_.isEmpty()) {
+          for(MobEffectInstance mobeffectinstance1 : this.f_36852_) {
+-            p_36873_.m_147207_(mobeffectinstance1, entity);
++            p_36873_.addEffect(mobeffectinstance1, entity, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
+          }
+       }
+ 
