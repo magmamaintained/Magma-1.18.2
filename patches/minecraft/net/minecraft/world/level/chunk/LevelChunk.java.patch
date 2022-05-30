@@ -13,7 +13,16 @@
     static final Logger f_62771_ = LogUtils.getLogger();
     private static final TickingBlockEntity f_156361_ = new TickingBlockEntity() {
        public void m_142224_() {
-@@ -79,6 +_,21 @@
+@@ -70,7 +_,7 @@
+    private final Map<BlockPos, LevelChunk.RebindableTickingBlockEntityWrapper> f_156362_ = Maps.newHashMap();
+    private boolean f_62775_;
+    private boolean f_196848_ = false;
+-   public final Level f_62776_;
++   public final ServerLevel f_62776_; // CraftBukkit - type
+    @Nullable
+    private Supplier<ChunkHolder.FullChunkStatus> f_62790_;
+    @Nullable
+@@ -79,13 +_,28 @@
     private final LevelChunkTicks<Block> f_62784_;
     private final LevelChunkTicks<Fluid> f_187943_;
  
@@ -35,15 +44,51 @@
     public LevelChunk(Level p_187945_, ChunkPos p_187946_) {
        this(p_187945_, p_187946_, UpgradeData.f_63320_, new LevelChunkTicks<>(), new LevelChunkTicks<>(), 0L, (LevelChunkSection[])null, (LevelChunk.PostLoadProcessor)null, (BlendingData)null);
     }
-@@ -97,6 +_,7 @@
+ 
+    public LevelChunk(Level p_196854_, ChunkPos p_196855_, UpgradeData p_196856_, LevelChunkTicks<Block> p_196857_, LevelChunkTicks<Fluid> p_196858_, long p_196859_, @Nullable LevelChunkSection[] p_196860_, @Nullable LevelChunk.PostLoadProcessor p_196861_, @Nullable BlendingData p_196862_) {
+       super(p_196855_, p_196856_, p_196854_, p_196854_.m_5962_().m_175515_(Registry.f_122885_), p_196859_, p_196860_, p_196862_);
+-      this.f_62776_ = p_196854_;
++      this.f_62776_ = (ServerLevel) p_196854_; // CraftBukkit - type
+       this.f_156363_ = new Int2ObjectOpenHashMap<>();
+ 
+       for(Heightmap.Types heightmap$types : Heightmap.Types.values()) {
+@@ -97,6 +_,9 @@
        this.f_62791_ = p_196861_;
        this.f_62784_ = p_196857_;
        this.f_187943_ = p_196858_;
 +      this.capProvider.initInternal();
++      // CraftBukkit start
++      this.bukkitChunk = new org.bukkit.craftbukkit.v1_18_R2.CraftChunk(this);
     }
  
     public LevelChunk(ServerLevel p_196850_, ProtoChunk p_196851_, @Nullable LevelChunk.PostLoadProcessor p_196852_) {
-@@ -233,14 +_,14 @@
+@@ -123,6 +_,10 @@
+ 
+       this.m_8094_(p_196851_.m_6332_());
+       this.f_187603_ = true;
++      this.needsDecoration = true; // CraftBukkit
++      // CraftBukkit start
++      this.persistentDataContainer = p_196851_.persistentDataContainer; // SPIGOT-6814: copy PDC to account for 1.17 to 1.18 chunk upgrading.
++      // CraftBukkit end
+    }
+ 
+    public TickContainerAccess<Block> m_183531_() {
+@@ -205,8 +_,14 @@
+       }
+    }
+ 
++   // CraftBukkit start
+    @Nullable
+    public BlockState m_6978_(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_) {
++      return this.setBlockState(p_62865_, p_62866_, p_62867_, true);
++   }
++
++   public BlockState setBlockState(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_, boolean doPlace) {
++      // CraftBukkit end
+       int i = p_62865_.m_123342_();
+       LevelChunkSection levelchunksection = this.m_183278_(this.m_151564_(i));
+       boolean flag = levelchunksection.m_188008_();
+@@ -233,14 +_,15 @@
              boolean flag2 = blockstate.m_155947_();
              if (!this.f_62776_.f_46443_) {
                 blockstate.m_60753_(this.f_62776_, p_62865_, p_62866_, p_62867_);
@@ -56,14 +101,22 @@
                 return null;
              } else {
 -               if (!this.f_62776_.f_46443_) {
-+            if (!this.f_62776_.f_46443_ && !this.f_62776_.captureBlockSnapshots) {
++               // CraftBukkit - Don't place while processing the BlockPlaceEvent, unless it's a BlockContainer. Prevents blocks such as TNT from activating when cancelled.
++               if (!this.f_62776_.f_46443_ && doPlace && (!this.f_62776_.captureBlockStates || block instanceof net.minecraft.world.level.block.BaseEntityBlock)) {
                    p_62866_.m_60696_(this.f_62776_, p_62865_, blockstate, p_62867_);
                 }
  
-@@ -283,6 +_,10 @@
+@@ -282,7 +_,16 @@
+ 
     @Nullable
     public BlockEntity m_5685_(BlockPos p_62868_, LevelChunk.EntityCreationType p_62869_) {
-       BlockEntity blockentity = this.f_187610_.get(p_62868_);
+-      BlockEntity blockentity = this.f_187610_.get(p_62868_);
++      // CraftBukkit start
++      BlockEntity blockentity = f_62776_.capturedTileEntities.get(p_62868_);
++      if (blockentity == null) {
++         blockentity = (BlockEntity) this.f_187610_.get(p_62868_);
++      }
++      // CraftBukkit end
 +      if (blockentity != null && blockentity.m_58901_()) {
 +         f_187610_.remove(p_62868_);
 +         blockentity = null;
@@ -89,6 +142,21 @@
        }
  
     }
+@@ -344,7 +_,13 @@
+          if (blockentity != null && blockentity != p_156374_) {
+             blockentity.m_7651_();
+          }
+-
++         // CraftBukkit start
++      } else {
++         System.out.println("Attempted to place a tile entity (" + p_156374_ + ") at " + p_156374_.m_58899_().m_123341_() + "," + p_156374_.m_58899_().m_123342_() + "," + p_156374_.m_58899_().m_123343_()
++                 + " (" + m_8055_(blockpos) + ") where there was no entity tile!");
++         System.out.println("Chunk coordinates: " + (this.f_187604_.f_45578_ * 16) + "," + (this.f_187604_.f_45579_ * 16));
++         new Exception().printStackTrace();
++         // CraftBukkit end
+       }
+    }
+ 
 @@ -352,9 +_,14 @@
     public CompoundTag m_8051_(BlockPos p_62932_) {
        BlockEntity blockentity = this.m_7702_(p_62932_);
@@ -104,6 +172,74 @@
        } else {
           CompoundTag compoundtag = this.f_187609_.get(p_62932_);
           if (compoundtag != null) {
+@@ -369,6 +_,13 @@
+    public void m_8114_(BlockPos p_62919_) {
+       if (this.m_156370_()) {
+          BlockEntity blockentity = this.f_187610_.remove(p_62919_);
++
++         // CraftBukkit start - SPIGOT-5561: Also remove from pending map
++         if (!f_187609_.isEmpty()) {
++            f_187609_.remove(p_62919_);
++         }
++         // CraftBukkit end
++
+          if (blockentity != null) {
+             this.m_156396_(blockentity);
+             blockentity.m_7651_();
+@@ -412,6 +_,53 @@
+ 
+    }
+ 
++   // CraftBukkit start
++   public void loadCallback() {
++      org.bukkit.Server server = this.f_62776_.getCraftServer();
++      if (server != null) {
++         /*
++          * If it's a new world, the first few chunks are generated inside
++          * the World constructor. We can't reliably alter that, so we have
++          * no way of creating a CraftWorld/CraftServer at that point.
++          */
++         server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkLoadEvent(this.bukkitChunk, this.needsDecoration));
++         if (this.needsDecoration) {
++            this.needsDecoration = false;
++            java.util.Random random = new java.util.Random();
++            random.setSeed(f_62776_.m_7328_());
++            long xRand = random.nextLong() / 2L * 2L + 1L;
++            long zRand = random.nextLong() / 2L * 2L + 1L;
++            random.setSeed((long) this.f_187604_.f_45578_ * xRand + (long) this.f_187604_.f_45579_ * zRand ^ f_62776_.m_7328_());
++            org.bukkit.World world = this.f_62776_.getWorld();
++            if (world != null) {
++               this.f_62776_.populating = true;
++               try {
++                  for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
++                     populator.populate(world, random, bukkitChunk);
++                  }
++               } finally {
++                  this.f_62776_.populating = false;
++               }
++            }
++            server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkPopulateEvent(bukkitChunk));
++         }
++      }
++   }
++
++   public void unloadCallback() {
++      org.bukkit.Server server = this.f_62776_.getCraftServer();
++      org.bukkit.event.world.ChunkUnloadEvent unloadEvent = new org.bukkit.event.world.ChunkUnloadEvent(this.bukkitChunk, this.m_6344_());
++      server.getPluginManager().callEvent(unloadEvent);
++      // note: saving can be prevented, but not forced if no saving is actually required
++      this.mustNotSave = !unloadEvent.isSaveChunk();
++   }
++
++   @Override
++   public boolean m_6344_() {
++      return super.m_6344_() && !this.mustNotSave;
++   }
++// CraftBukkit end
++
+    public boolean m_6430_() {
+       return false;
+    }
 @@ -433,7 +_,7 @@
        p_187974_.accept((p_187968_, p_187969_, p_187970_) -> {
           BlockEntity blockentity = this.m_5685_(p_187968_, LevelChunk.EntityCreationType.IMMEDIATE);
@@ -138,7 +274,7 @@
        this.f_187610_.values().forEach((p_187988_) -> {
           this.m_156404_(p_187988_);
           this.m_156406_(p_187988_);
-@@ -605,6 +_,46 @@
+@@ -605,6 +_,42 @@
        this.f_196848_ = p_196865_;
     }
  
@@ -177,10 +313,6 @@
 +   }
 +
 +    // FORGE END
-+
-+   // Magma Stub
-+   public void unloadCallback() {
-+   }
 +
     class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {
        private final T f_156428_;
