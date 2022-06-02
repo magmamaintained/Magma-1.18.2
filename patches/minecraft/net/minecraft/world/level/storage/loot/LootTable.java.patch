@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
+@@ -16,6 +_,7 @@
+ import java.util.Random;
+ import java.util.function.BiFunction;
+ import java.util.function.Consumer;
++import java.util.stream.Collectors;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.GsonHelper;
+ import net.minecraft.util.Mth;
+@@ -27,6 +_,9 @@
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+ import org.apache.commons.lang3.ArrayUtils;
++import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
++import org.bukkit.event.world.LootGenerateEvent;
+ import org.slf4j.Logger;
+ 
+ public class LootTable {
 @@ -34,13 +_,13 @@
     public static final LootTable f_79105_ = new LootTable(LootContextParamSets.f_81410_, new LootPool[0], new LootItemFunction[0]);
     public static final LootContextParamSet f_79106_ = LootContextParamSets.f_81420_;
@@ -43,6 +61,28 @@
        }
  
        for(int j = 0; j < this.f_79110_.length; ++j) {
+@@ -104,8 +_,21 @@
+    }
+ 
+    public void m_79123_(Container p_79124_, LootContext p_79125_) {
++      // CraftBukkit start
++      this.fillInventory(p_79124_, p_79125_, false);
++   }
++
++   public void fillInventory(Container p_79124_, LootContext p_79125_, boolean plugin) {
++      // CraftBukkit end
+       List<ItemStack> list = this.m_79129_(p_79125_);
+       Random random = p_79125_.m_78933_();
++      // CraftBukkit start
++      LootGenerateEvent event = CraftEventFactory.callLootGenerateEvent(p_79124_, this, p_79125_, list, plugin);
++      if (event.isCancelled()) {
++         return;
++      }
++      list = event.getLoot().stream().map(CraftItemStack::asNMSCopy).collect(Collectors.toList());
++      // CraftBukkit end
+       List<Integer> list1 = this.m_79126_(p_79124_, random);
+       this.m_79138_(list, list1.size(), random);
+ 
 @@ -176,6 +_,48 @@
        return new LootTable.Builder();
     }
