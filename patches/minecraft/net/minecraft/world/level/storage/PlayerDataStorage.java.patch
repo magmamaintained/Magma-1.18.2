@@ -1,12 +1,11 @@
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -3,13 +_,17 @@
+@@ -2,16 +_,21 @@
+ 
  import com.mojang.datafixers.DataFixer;
  import com.mojang.logging.LogUtils;
- import java.io.File;
-+import java.io.FileInputStream;
-+import java.io.InputStream;
- import javax.annotation.Nullable;
+-import java.io.File;
+-import javax.annotation.Nullable;
  import net.minecraft.Util;
  import net.minecraft.nbt.CompoundTag;
  import net.minecraft.nbt.NbtIo;
@@ -17,15 +16,25 @@
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
  import org.slf4j.Logger;
  
++import javax.annotation.Nullable;
++import java.io.File;
++import java.io.FileInputStream;
++import java.io.InputStream;
++
  public class PlayerDataStorage {
-@@ -31,6 +_,7 @@
+    private static final Logger f_78426_ = LogUtils.getLogger();
+    private final File f_78427_;
+@@ -31,8 +_,9 @@
           File file2 = new File(this.f_78427_, p_78434_.m_20149_() + ".dat");
           File file3 = new File(this.f_78427_, p_78434_.m_20149_() + ".dat_old");
           Util.m_137462_(file2, file1, file3);
 +         net.minecraftforge.event.ForgeEventFactory.firePlayerSavingEvent(p_78434_, f_78427_, p_78434_.m_20149_());
        } catch (Exception exception) {
-          f_78426_.warn("Failed to save player data for {}", (Object)p_78434_.m_7755_().getString());
+-         f_78426_.warn("Failed to save player data for {}", (Object)p_78434_.m_7755_().getString());
++         f_78426_.warn("Failed to save player data for {}: {}", (Object)p_78434_.m_7755_().getString(), exception.getMessage());
        }
+ 
+    }
 @@ -51,13 +_,38 @@
        }
  
