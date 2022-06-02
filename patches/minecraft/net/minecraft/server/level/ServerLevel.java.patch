@@ -67,7 +67,7 @@
        this.f_8561_ = p_203773_;
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
-@@ -223,7 +_,16 @@
+@@ -223,7 +_,15 @@
        }
  
        this.f_143245_ = new SleepStatus();
@@ -76,7 +76,6 @@
 +      // CraftBukkit start
 +      this.world = new CraftWorld((ServerLevel) this, generator, biomeProvider, environment);
 +      m_6857_().world = this;
-+      this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
 +      // CraftBukkit end
     }
 +
