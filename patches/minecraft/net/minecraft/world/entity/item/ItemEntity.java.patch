@@ -177,11 +177,6 @@
           int i = itemstack.m_41613_();
 -         if (this.f_31986_ == 0 && (this.f_31982_ == null || this.f_31982_.equals(p_32040_.m_142081_())) && p_32040_.m_150109_().m_36054_(itemstack)) {
 +
-+         int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, p_32040_);
-+         if (hook < 0) return;
-+
-+         ItemStack copy = itemstack.m_41777_();
-+
 +         // CraftBukkit start - fire PlayerPickupItemEvent
 +         int canHold = p_32040_.m_150109_().canHold(itemstack);
 +         int remaining = i - canHold;
@@ -221,6 +216,11 @@
 +            this.f_31986_ = -1;
 +         }
 +         // CraftBukkit end
++
++         int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, p_32040_);
++         if (hook < 0) return;
++
++         ItemStack copy = itemstack.m_41777_();
 +
 +         if (this.f_31986_ == 0 && (this.f_31982_ == null || lifespan - this.f_31985_ <= 200 || this.f_31982_.equals(p_32040_.m_142081_())) && (hook == 1 || i <= 0 || p_32040_.m_150109_().m_36054_(itemstack))) {
 +            copy.m_41764_(copy.m_41613_() - m_32055_().m_41613_());
