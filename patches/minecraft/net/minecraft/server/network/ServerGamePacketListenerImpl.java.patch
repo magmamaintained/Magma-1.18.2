@@ -127,7 +127,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.BlockHitResult;
-@@ -149,1309 +_,1835 @@
+@@ -149,1309 +_,1837 @@
  import net.minecraft.world.phys.shapes.BooleanOp;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
@@ -3245,6 +3245,8 @@
 +    }
 +
 +    public void teleport(Location to) {
++        // Magma temp - todo add real teleport
++        m_9780_(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch(), Collections.emptySet());
 +    }
 +
 +    public final boolean isDisconnected() {

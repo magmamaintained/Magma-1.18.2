@@ -29,22 +29,26 @@
  import net.minecraft.world.level.entity.EntityTypeTest;
  import net.minecraft.world.level.entity.LevelEntityGetter;
  import net.minecraft.world.level.gameevent.GameEvent;
-@@ -62,8 +_,13 @@
+@@ -62,8 +_,17 @@
  import net.minecraft.world.level.storage.WritableLevelData;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.scores.Scoreboard;
 +import org.bukkit.Bukkit;
++import org.bukkit.World;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 +import org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState;
++import org.bukkit.craftbukkit.v1_18_R2.util.CraftSpawnCategory;
 +import org.bukkit.entity.SpawnCategory;
++import org.bukkit.generator.ChunkGenerator;
++import org.magmafoundation.magma.forge.ForgeInject;
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
 +public abstract class Level extends net.minecraftforge.common.capabilities.CapabilityProvider<Level> implements LevelAccessor, AutoCloseable, net.minecraftforge.common.extensions.IForgeLevel {
     public static final Codec<ResourceKey<Level>> f_46427_ = ResourceLocation.f_135803_.xmap(ResourceKey.m_135797_(Registry.f_122819_), ResourceKey::m_135782_);
     public static final ResourceKey<Level> f_46428_ = ResourceKey.m_135785_(Registry.f_122819_, new ResourceLocation("overworld"));
     public static final ResourceKey<Level> f_46429_ = ResourceKey.m_135785_(Registry.f_122819_, new ResourceLocation("the_nether"));
-@@ -98,8 +_,37 @@
+@@ -98,8 +_,57 @@
     private final BiomeManager f_46420_;
     private final ResourceKey<Level> f_46421_;
     private long f_186455_;
@@ -58,7 +62,9 @@
 +   public CraftWorld world;
 +   public boolean pvpMode;
 +   public boolean keepSpawnInMemory = true;
-+   public org.bukkit.generator.ChunkGenerator generator;
++   public static org.bukkit.generator.ChunkGenerator generator;
++   public static org.bukkit.World.Environment environment;
++   public static org.bukkit.generator.BiomeProvider biomeProvider;
 +   public boolean preventPoiUpdated = false; // CraftBukkit - SPIGOT-5710
 +   public boolean captureBlockStates = false;
 +   public boolean captureTreeGeneration = false;
@@ -76,9 +82,27 @@
 +      return (CraftServer) Bukkit.getServer();
 +   }
 +   public abstract ResourceKey<LevelStem> getTypeKey();
++
++   public static void setGeneratorAndEnv(ChunkGenerator gen, World.Environment env) {
++      generator = gen;
++      environment = env;
++   }
  
     protected Level(WritableLevelData p_204149_, ResourceKey<Level> p_204150_, Holder<DimensionType> p_204151_, Supplier<ProfilerFiller> p_204152_, boolean p_204153_, boolean p_204154_, long p_204155_) {
 +      super(Level.class);
++      // CraftBukkit Ticks things
++      for (SpawnCategory spawnCategory : SpawnCategory.values()) {
++         if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
++            this.ticksPerSpawnCategory.put(spawnCategory, (long) this.getCraftServer().getTicksPerSpawns(spawnCategory));
++         }
++      }
++      if (generator == null) {
++         generator = getCraftServer().getGenerator(p_204150_.getRegistryName().m_135827_());
++      }
++      if (environment == null) {
++         environment = ForgeInject.environment.get(getTypeKey());
++      }
++      // CraftBukkit end
        this.f_46446_ = p_204152_;
        this.f_46442_ = p_204149_;
        this.f_204147_ = p_204151_;

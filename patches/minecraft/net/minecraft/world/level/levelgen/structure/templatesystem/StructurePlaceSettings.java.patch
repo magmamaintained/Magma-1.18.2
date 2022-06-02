@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings.java
++++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings.java
+@@ -142,6 +_,13 @@
+       int i = p_74388_.size();
+       if (i == 0) {
+          throw new IllegalStateException("No palettes");
++         // CraftBukkit start
++      } else if (this.f_74369_ > 0) {
++         if (this.f_74369_ >= i) {
++            throw new IllegalArgumentException("Palette index out of bounds. Got " + this.f_74369_ + " where there are only " + i + " palettes available.");
++         }
++         return p_74388_.get(this.f_74369_);
++         // CraftBukkit end
+       } else {
+          return p_74388_.get(this.m_74399_(p_74389_).nextInt(i));
+       }

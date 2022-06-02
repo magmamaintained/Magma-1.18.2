@@ -1006,7 +1006,7 @@ public final class CraftServer implements Server {
 
 //        ServerLevel internal = (ServerLevel) new ServerLevel(console, console.executor, worldSession, worlddata, worldKey, holder, getServer().progressListenerFactory.create(11),
 //                chunkgenerator, worlddata.worldGenSettings().isDebug(), j, creator.environment() == Environment.NORMAL ? list : ImmutableList.of(), true, creator.environment(), generator, biomeProvider);
-
+        net.minecraft.world.level.Level.setGeneratorAndEnv(generator, creator.environment()); // Magma
         ServerLevel internal = (ServerLevel) new ServerLevel(console, console.executor, worldSession, worlddata, worldKey, holder, getServer().progressListenerFactory.create(11),
                 chunkgenerator, worlddata.worldGenSettings().isDebug(), j, creator.environment() == Environment.NORMAL ? list : ImmutableList.of(), true); // Magma - todo
 

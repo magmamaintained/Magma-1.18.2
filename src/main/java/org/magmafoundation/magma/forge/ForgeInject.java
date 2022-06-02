@@ -1,8 +1,16 @@
 package org.magmafoundation.magma.forge;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
@@ -19,10 +27,17 @@ import org.magmafoundation.magma.helpers.EnumJ17Helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import static org.bukkit.Material.normalizeName;
 
 public class ForgeInject {
 
+    public static BiMap<ResourceKey<LevelStem>, World.Environment> environment = HashBiMap.create(ImmutableMap.<ResourceKey<LevelStem>, World.Environment>builder()
+            .put(LevelStem.OVERWORLD, World.Environment.NORMAL)
+            .put(LevelStem.NETHER, World.Environment.NETHER)
+            .put(LevelStem.END, World.Environment.THE_END)
+            .build());
     public static void init() {
         Magma.LOGGER.warn("Injecting Forge Material into Bukkit");
         addForgeItems();
@@ -179,6 +194,22 @@ public class ForgeInject {
             }
         });
         Magma.LOGGER.warn("Injecting Forge VillagerProfession into Bukkit: DONE");
+    }
+
+    public static void addForgeEnvironment(net.minecraft.core.Registry<LevelStem> registry) {
+        int i = World.Environment.values().length;
+        for (Map.Entry<ResourceKey<LevelStem>, LevelStem> entry : registry.entrySet()) {
+            ResourceKey<LevelStem> key = entry.getKey();
+            World.Environment environment1 = environment.get(key);
+            if (environment1 == null) {
+                String name = normalizeName(key.location().toString());
+                int id = i - 1;
+                environment1 = EnumJ17Helper.addEnum(World.Environment.class, name, new Class[] {Integer.TYPE}, new Object[] {id});
+                environment.put(key, environment1);
+                Magma.LOGGER.info(String.format("Injected new Forge DimensionType %s.", environment1));
+                i++;
+            }
+        }
     }
 
     private static String normalizeName(String name) {

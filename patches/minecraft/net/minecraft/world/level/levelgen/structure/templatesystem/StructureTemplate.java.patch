@@ -1,5 +1,18 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
+@@ -18,11 +_,7 @@
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.IdMapper;
+ import net.minecraft.core.Vec3i;
+-import net.minecraft.nbt.CompoundTag;
+-import net.minecraft.nbt.DoubleTag;
+-import net.minecraft.nbt.IntTag;
+-import net.minecraft.nbt.ListTag;
+-import net.minecraft.nbt.NbtUtils;
++import net.minecraft.nbt.*;
+ import net.minecraft.world.Clearable;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
 @@ -49,6 +_,8 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
@@ -121,4 +134,46 @@
 +               if (placementIn.m_74414_() && p_205061_ instanceof Mob) {
                    ((Mob)p_205061_).m_6518_(p_74524_, p_74524_.m_6436_(new BlockPos(vec31)), MobSpawnType.STRUCTURE, (SpawnGroupData)null, compoundtag);
                 }
+ 
+@@ -405,11 +_,9 @@
+    }
+ 
+    private static Optional<Entity> m_74543_(ServerLevelAccessor p_74544_, CompoundTag p_74545_) {
+-      try {
+-         return EntityType.m_20642_(p_74545_, p_74544_.m_6018_());
+-      } catch (Exception exception) {
+-         return Optional.empty();
+-      }
++      // CraftBukkit start
++      return EntityType.m_20642_(p_74545_, p_74544_.m_6018_());
++      // CraftBukkit end
+    }
+ 
+    public Vec3i m_163808_(Rotation p_163809_) {
+@@ -601,6 +_,12 @@
+       p_74619_.m_128365_("entities", listtag);
+       p_74619_.m_128365_("size", this.m_74625_(this.f_74484_.m_123341_(), this.f_74484_.m_123342_(), this.f_74484_.m_123343_()));
+       p_74619_.m_128405_("DataVersion", SharedConstants.m_183709_().getWorldVersion());
++
++      // CraftBukkit Start - PDC
++      if (!this.persistentDataContainer.isEmpty()) {
++         p_74619_.m_128365_("BukkitValues", this.persistentDataContainer.toTagCompound());
++      }
++      // CraftBukkit end
+       return p_74619_;
+    }
+ 
+@@ -633,6 +_,13 @@
+             this.f_74483_.add(new StructureTemplate.StructureEntityInfo(vec3, blockpos, compoundtag1));
+          }
+       }
++
++      // CraftBukkit start - PDC
++      Tag base = p_74639_.m_128423_("BukkitValues");
++      if (base instanceof CompoundTag) {
++         this.persistentDataContainer.putAll((CompoundTag) base);
++      }
++      // CraftBukkit end
+ 
+    }
  
