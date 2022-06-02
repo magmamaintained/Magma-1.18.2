@@ -1,12 +1,13 @@
 --- a/net/minecraft/world/level/block/entity/LecternBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/LecternBlockEntity.java
-@@ -1,6 +_,9 @@
+@@ -1,6 +_,10 @@
  package net.minecraft.world.level.block.entity;
  
  import javax.annotation.Nullable;
 +import java.util.ArrayList;
 +import java.util.Arrays;
 +import java.util.List;
++import java.util.UUID;
  import net.minecraft.commands.CommandSource;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.core.BlockPos;
@@ -19,7 +20,8 @@
 +import org.bukkit.entity.HumanEntity;
 +import org.bukkit.inventory.InventoryHolder;
  
- public class LecternBlockEntity extends BlockEntity implements Clearable, MenuProvider {
+-public class LecternBlockEntity extends BlockEntity implements Clearable, MenuProvider {
++public class LecternBlockEntity extends BlockEntity implements Clearable, MenuProvider, CommandSource { // CraftBukkit - CommandSource
     public static final int f_155617_ = 0;
     public static final int f_155618_ = 1;
     public static final int f_155619_ = 0;
@@ -31,6 +33,26 @@
        public int m_6643_() {
           return 1;
        }
+@@ -69,10 +_,18 @@
+       }
+ 
+       public void m_6836_(int p_59585_, ItemStack p_59586_) {
++         // CraftBukkit start
++         if (p_59585_ == 0) {
++            LecternBlockEntity.this.m_59536_(p_59586_);
++            if (LecternBlockEntity.this.m_58904_() != null) {
++               LecternBlock.m_54497_(LecternBlockEntity.this.m_58904_(), LecternBlockEntity.this.m_58899_(), LecternBlockEntity.this.m_58900_(), LecternBlockEntity.this.m_59567_());
++            }
++         }
++         // CraftBukkit end
+       }
+ 
+       public int m_6893_() {
+-         return 1;
++         return maxStack; // CraftBukkit
+       }
+ 
+       public void m_6596_() {
 @@ -91,9 +_,54 @@
           return false;
        }
@@ -87,12 +109,54 @@
     private final ContainerData f_59526_ = new ContainerData() {
        public int m_6413_(int p_59600_) {
           return p_59600_ == 0 ? LecternBlockEntity.this.f_59528_ : 0;
+@@ -148,7 +_,7 @@
+       if (i != this.f_59528_) {
+          this.f_59528_ = i;
+          this.m_6596_();
+-         LecternBlock.m_54488_(this.m_58904_(), this.m_58899_(), this.m_58900_());
++         if (this.f_58857_ != null) LecternBlock.m_54488_(this.m_58904_(), this.m_58899_(), this.m_58900_()); // CraftBukkit
+       }
+ 
+    }
+@@ -170,6 +_,32 @@
+       return p_59555_;
+    }
+ 
++   // CraftBukkit start
++   @Override
++   public void m_6352_(Component ichatbasecomponent, UUID uuid) {
++   }
++
++   @Override
++   public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      return wrapper.m_81373_() != null ? wrapper.m_81373_().getBukkitSender(wrapper) : new org.bukkit.craftbukkit.v1_18_R2.command.CraftBlockCommandSender(wrapper, this);
++   }
++
++   @Override
++   public boolean m_6999_() {
++      return false;
++   }
++
++   @Override
++   public boolean m_7028_() {
++      return false;
++   }
++
++   @Override
++   public boolean m_6102_() {
++      return false;
++   }
++   // CraftBukkit end
++
+    private CommandSourceStack m_59534_(@Nullable Player p_59535_) {
+       String s;
+       Component component;
 @@ -215,7 +_,7 @@
     }
  
     public AbstractContainerMenu m_7208_(int p_59562_, Inventory p_59563_, Player p_59564_) {
 -      return new LecternMenu(p_59562_, this.f_59525_, this.f_59526_);
-+      return new LecternMenu(p_59562_, this.f_59525_, this.f_59526_, p_59563_);
++      return new LecternMenu(p_59562_, this.f_59525_, this.f_59526_, p_59563_); // CraftBukkit
     }
  
     public Component m_5446_() {
