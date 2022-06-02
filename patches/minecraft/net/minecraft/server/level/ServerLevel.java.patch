@@ -36,7 +36,7 @@
  import org.slf4j.Logger;
  
  public class ServerLevel extends Level implements WorldGenLevel {
-@@ -181,13 +_,34 @@
+@@ -181,13 +_,29 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -53,11 +53,6 @@
 +   public final LevelStorageSource.LevelStorageAccess convertable;
 +   public final UUID uuid;
 +
-+   // Magma todo - remove this
-+   public static org.bukkit.generator.ChunkGenerator generator;
-+   public static org.bukkit.World.Environment environment;
-+   public static org.bukkit.generator.BiomeProvider biomeProvider;
-+
 +   public LevelChunk getChunkIfLoaded(int x, int z) {
 +      return this.f_8547_.m_62227_(x, z, false);
 +   }
@@ -72,18 +67,16 @@
        this.f_8561_ = p_203773_;
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
-@@ -223,7 +_,18 @@
+@@ -223,7 +_,16 @@
        }
  
        this.f_143245_ = new SleepStatus();
 +      this.initCapabilities();
 +
 +      // CraftBukkit start
-+      if (p_203765_ instanceof PrimaryLevelData) {
-+         this.worldDataServer = (PrimaryLevelData) p_203765_;
-+      }
 +      this.world = new CraftWorld((ServerLevel) this, generator, biomeProvider, environment);
 +      m_6857_().world = this;
++      this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
 +      // CraftBukkit end
     }
 +

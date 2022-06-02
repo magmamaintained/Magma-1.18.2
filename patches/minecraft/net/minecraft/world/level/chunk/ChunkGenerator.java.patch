@@ -13,7 +13,7 @@
        return null;
     }
 +
-+   // CraftCity start
++   // CraftBukkit start
 +   public void applyBiomeDecoration(WorldGenLevel generatoraccessseed, ChunkAccess ichunkaccess, StructureFeatureManager structuremanager, boolean vanilla) {
 +      if (vanilla) {
 +         m_183372_(generatoraccessseed, ichunkaccess, structuremanager);

@@ -8,15 +8,9 @@
  
  public interface WorldGenLevel extends ServerLevelAccessor {
     long m_7328_();
-@@ -13,4 +_,11 @@
+@@ -13,4 +_,5 @@
  
     default void m_183406_(@Nullable Supplier<String> p_186618_) {
     }
 +
-+   // CraftBukkit start
-+   @Override
-+   default ServerLevel getMinecraftWorld(){
-+      return m_6018_();
-+   }
-+   // CraftBukkit end
  }

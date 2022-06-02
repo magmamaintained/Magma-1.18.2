@@ -18,7 +18,7 @@
  import joptsimple.OptionParser;
  import joptsimple.OptionSet;
  import joptsimple.OptionSpec;
-@@ -56,184 +_,268 @@
+@@ -56,184 +_,266 @@
  import org.slf4j.Logger;
  
  public class Main {
@@ -375,20 +375,17 @@
 +
 +                return dedicatedserver1;
 +            });
-+         /* CraftBukkit start
           Thread thread = new Thread("Server Shutdown Thread") {
              public void run() {
--               dedicatedserver.m_7570_(true);
 +               // FORGE: Halting as GameTestServer will cause issues as it always calls System#exit on both crash and normal exit, so skip it
 +               if (!(dedicatedserver instanceof net.minecraft.gametest.framework.GameTestServer))
-+               dedicatedserver.halt(true);
+                dedicatedserver.m_7570_(true);
 +               //TODO-PATCHING: Figure out what needs to be done here after the logging update.
 +               //LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
 +               org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
              }
           };
--         thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_129670_));
-+         thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
+          thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_129670_));
           Runtime.getRuntime().addShutdownHook(thread);
 -      } catch (Exception exception1) {
 -         f_129670_.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable)exception1);
@@ -425,7 +422,6 @@
 -      }
 -
 -   }
-+         */ // CraftBukkit end
 +        } catch (Exception exception1) {
 +            f_129670_.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable) exception1);
 +        }

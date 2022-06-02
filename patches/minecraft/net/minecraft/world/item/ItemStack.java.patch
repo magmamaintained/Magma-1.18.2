@@ -93,7 +93,7 @@
     @Nullable
     private CompoundTag f_41590_;
     private boolean f_41591_;
-@@ -132,33 +_,61 @@
+@@ -132,14 +_,29 @@
        p_41606_.ifPresent(this::m_41751_);
     }
  
@@ -127,8 +127,7 @@
     }
  
     private void m_41617_() {
-+      if (this.f_41591_ && this == ItemStack.f_41583_) throw new AssertionError("TRAP"); // CraftBukkit
-       this.f_41591_ = false;
+@@ -147,18 +_,30 @@
        this.f_41591_ = this.m_41619_();
     }
  
