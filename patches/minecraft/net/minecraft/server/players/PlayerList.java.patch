@@ -250,6 +250,31 @@
        if (flag2) {
           serverplayer.f_8906_.m_141995_(new ClientboundSoundPacket(SoundEvents.f_12377_, SoundSource.BLOCKS, (double)blockpos.m_123341_(), (double)blockpos.m_123342_(), (double)blockpos.m_123343_(), 1.0F, 1.0F));
        }
+@@ -482,6 +_,24 @@
+ 
+    }
+ 
++   // CraftBukkit start - add a world/entity limited version
++   public void broadcastAll(Packet packet, Player entityhuman) {
++      for (int i = 0; i < this.f_11196_.size(); ++i) {
++         ServerPlayer entityplayer =  this.f_11196_.get(i);
++         if (entityhuman != null && !entityplayer.getBukkitEntity().canSee(entityhuman.getBukkitEntity())) {
++            continue;
++         }
++         ((ServerPlayer) this.f_11196_.get(i)).f_8906_.m_141995_(packet);
++      }
++   }
++
++   public void broadcastAll(Packet packet, Level world) {
++      for (int i = 0; i < world.m_6907_().size(); ++i) {
++         ((ServerPlayer) world.m_6907_().get(i)).f_8906_.m_141995_(packet);
++      }
++   }
++   // CraftBukkit end
++
+    public void m_11270_(Packet<?> p_11271_, ResourceKey<Level> p_11272_) {
+       for(ServerPlayer serverplayer : this.f_11196_) {
+          if (serverplayer.f_19853_.m_46472_() == p_11272_) {
 @@ -538,6 +_,7 @@
     }
  
