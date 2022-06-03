@@ -16,15 +16,17 @@
  import net.minecraft.world.level.dimension.end.EndDragonFight;
  import net.minecraft.world.level.entity.EntityPersistentStorage;
  import net.minecraft.world.level.entity.EntityTickList;
-@@ -138,6 +_,7 @@
+@@ -136,15 +_,18 @@
+ import net.minecraft.world.level.portal.PortalForcer;
+ import net.minecraft.world.level.saveddata.maps.MapIndex;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
- import net.minecraft.world.level.storage.DimensionDataStorage;
- import net.minecraft.world.level.storage.LevelStorageSource;
-+import net.minecraft.world.level.storage.PrimaryLevelData;
- import net.minecraft.world.level.storage.ServerLevelData;
+-import net.minecraft.world.level.storage.DimensionDataStorage;
+-import net.minecraft.world.level.storage.LevelStorageSource;
+-import net.minecraft.world.level.storage.ServerLevelData;
++import net.minecraft.world.level.storage.*;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-@@ -145,6 +_,11 @@
+ import net.minecraft.world.phys.shapes.BooleanOp;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
  import net.minecraft.world.ticks.LevelTicks;
@@ -146,7 +148,7 @@
        }
  
     }
-@@ -656,9 +_,10 @@
+@@ -656,10 +_,12 @@
              ++p_8664_.f_19797_;
              ProfilerFiller profilerfiller = this.m_46473_();
              profilerfiller.m_6521_(() -> {
@@ -156,17 +158,29 @@
              profilerfiller.m_6174_("tickPassenger");
 +            if (p_8664_.canUpdate())
              p_8664_.m_6083_();
++            p_8664_.postTick(); // CraftBukkit
              profilerfiller.m_7238_();
  
-@@ -695,6 +_,7 @@
+             for(Entity entity : p_8664_.m_20197_()) {
+@@ -679,6 +_,7 @@
+    public void m_8643_(@Nullable ProgressListener p_8644_, boolean p_8645_, boolean p_8646_) {
+       ServerChunkCache serverchunkcache = this.m_7726_();
+       if (!p_8646_) {
++         org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
+          if (p_8644_ != null) {
+             p_8644_.m_6309_(new TranslatableComponent("menu.savingLevel"));
+          }
+@@ -695,7 +_,9 @@
              this.f_143244_.m_157554_();
           }
  
 +         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Save(this));
        }
++
     }
  
-@@ -740,7 +_,13 @@
+    private void m_8806_() {
+@@ -740,15 +_,33 @@
     }
  
     public boolean m_7967_(Entity p_8837_) {
@@ -181,6 +195,28 @@
     }
  
     public boolean m_8847_(Entity p_8848_) {
+-      return this.m_8872_(p_8848_);
++      // CraftBukkit start
++      return this.addWithUUID(p_8848_, CreatureSpawnEvent.SpawnReason.DEFAULT);
++   }
++
++   public boolean addWithUUID(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
++      return this.addEntity(entity, reason);
++      // CraftBukkit end
+    }
+ 
+    public void m_143334_(Entity p_143335_) {
+-      this.m_8872_(p_143335_);
++      // CraftBukkit start
++      this.addDuringTeleport(p_143335_, CreatureSpawnEvent.SpawnReason.DEFAULT);
++   }
++
++   public void addDuringTeleport(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
++      this.addEntity(entity, reason);
++      // CraftBukkit end
+    }
+ 
+    public void m_8622_(ServerPlayer p_8623_) {
 @@ -767,7 +_,55 @@
        this.m_8853_(p_8846_);
     }
@@ -291,7 +327,7 @@
           return true;
        }
     }
-@@ -805,6 +_,22 @@
+@@ -805,12 +_,41 @@
        p_143262_.m_142687_(p_143263_);
     }
  
@@ -312,8 +348,27 @@
 +   // CraftBukkit end
 +
     public void m_6801_(int p_8612_, BlockPos p_8613_, int p_8614_) {
++      // CraftBukkit start
++      Player entityhuman = null;
++      Entity entity = this.m_6815_(p_8612_);
++      if (entity instanceof Player) entityhuman = (Player) entity;
++      // CraftBukkit end
++
        for(ServerPlayer serverplayer : this.f_8548_.m_6846_().m_11314_()) {
           if (serverplayer != null && serverplayer.f_19853_ == this && serverplayer.m_142049_() != p_8612_) {
+             double d0 = (double)p_8613_.m_123341_() - serverplayer.m_20185_();
+             double d1 = (double)p_8613_.m_123342_() - serverplayer.m_20186_();
+             double d2 = (double)p_8613_.m_123343_() - serverplayer.m_20189_();
++
++            // CraftBukkit start
++            if (entityhuman != null && !serverplayer.getBukkitEntity().canSee(entityhuman.getBukkitEntity())) {
++               continue;
++            }
++            // CraftBukkit end
++
+             if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
+                serverplayer.f_8906_.m_141995_(new ClientboundBlockDestructionPacket(p_8612_, p_8613_, p_8614_));
+             }
 @@ -820,10 +_,20 @@
     }
  
@@ -388,20 +443,56 @@
              ++i;
           }
        }
-@@ -1412,6 +_,12 @@
-       });
+@@ -1048,6 +_,7 @@
     }
  
+    public void m_142325_(String p_143305_, MapItemSavedData p_143306_) {
++      p_143306_.id = p_143305_; // CraftBukkit
+       this.m_142572_().m_129783_().m_8895_().m_164855_(p_143305_, p_143306_);
+    }
+ 
+@@ -1400,16 +_,38 @@
+    }
+ 
+    public static void m_8617_(ServerLevel p_8618_) {
++      // CraftBukkit start
++      ServerLevel.makeObsidianPlatform(p_8618_, null);
++   }
++
++   public static void makeObsidianPlatform(ServerLevel p_8618_, Entity entity) {
++      // CraftBukkit end
+       BlockPos blockpos = f_8562_;
+       int i = blockpos.m_123341_();
+       int j = blockpos.m_123342_() - 2;
+       int k = blockpos.m_123343_();
++      // CraftBukkit start
++      org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator(p_8618_);
+       BlockPos.m_121976_(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach((p_207578_) -> {
+-         p_8618_.m_46597_(p_207578_, Blocks.f_50016_.m_49966_());
++         blockList.m_7731_(p_207578_, Blocks.f_50016_.m_49966_(), 3);
+       });
+       BlockPos.m_121976_(i - 2, j, k - 2, i + 2, j, k + 2).forEach((p_184101_) -> {
+-         p_8618_.m_46597_(p_184101_, Blocks.f_50080_.m_49966_());
++         blockList.m_7731_(p_184101_, Blocks.f_50080_.m_49966_(), 3);
+       });
++      org.bukkit.World bworld = p_8618_.getWorld();
++      org.bukkit.event.world.PortalCreateEvent portalEvent = new org.bukkit.event.world.PortalCreateEvent((List<org.bukkit.block.BlockState>) (List) blockList.getList(), bworld, (entity == null) ? null : entity.getBukkitEntity(), org.bukkit.event.world.PortalCreateEvent.CreateReason.END_PLATFORM);
++
++      p_8618_.getCraftServer().getPluginManager().callEvent(portalEvent);
++      if (!portalEvent.isCancelled()) {
++         blockList.updateList();
++      }
++      // CraftBukkit end
++   }
++
 +   protected void initCapabilities() {
 +      this.gatherCapabilities();
 +      capabilityData = this.m_8895_().m_164861_(e -> net.minecraftforge.common.util.WorldCapabilityData.load(e, getCapabilities()), () -> new net.minecraftforge.common.util.WorldCapabilityData(getCapabilities()), net.minecraftforge.common.util.WorldCapabilityData.ID);
 +      capabilityData.setCapabilities(getCapabilities());
-+   }
-+
-    public LevelEntityGetter<Entity> m_142646_() {
-       return this.f_143244_.m_157567_();
     }
-@@ -1497,10 +_,8 @@
+ 
+    public LevelEntityGetter<Entity> m_142646_() {
+@@ -1497,14 +_,13 @@
              ServerLevel.this.f_143246_.add(mob);
           }
  
@@ -414,6 +505,11 @@
                 ServerLevel.this.f_143247_.put(enderdragonpart.m_142049_(), enderdragonpart);
              }
           }
+ 
++         p_143371_.valid = true; // CraftBukkit
+       }
+ 
+       public void m_141981_(Entity p_143375_) {
 @@ -1525,10 +_,8 @@
              ServerLevel.this.f_143246_.remove(mob);
           }
@@ -427,10 +523,19 @@
                 ServerLevel.this.f_143247_.remove(enderdragonpart.m_142049_());
              }
           }
-@@ -1538,6 +_,8 @@
+@@ -1538,6 +_,17 @@
              gameeventlistenerregistrar.m_157854_(p_143375_.f_19853_);
           }
  
++         // CraftBukkit start
++         p_143375_.valid = false;
++         if (!(p_143375_ instanceof ServerPlayer)) {
++            for (ServerPlayer player : f_8546_) {
++               player.getBukkitEntity().onEntityRemove(p_143375_);
++            }
++         }
++         // CraftBukkit end
++
 +         p_143375_.onRemovedFromWorld();
 +         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityLeaveWorldEvent(p_143375_, ServerLevel.this));
        }
