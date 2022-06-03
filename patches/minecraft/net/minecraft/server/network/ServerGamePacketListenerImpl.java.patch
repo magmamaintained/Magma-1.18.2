@@ -1867,7 +1867,7 @@
 +        this.f_9745_.m_129929_();
 +        this.f_9745_.m_6846_().m_11264_( (new TranslatableComponent( "multiplayer.player.left", this.f_9743_.m_5446_() )).m_130940_( ChatFormatting.YELLOW ), ChatType.SYSTEM, Util.f_137441_ );
 +        this.f_9743_.m_9231_();
-+        this.f_9745_.m_6846_().m_11286_( this.f_9743_ );
++        this.f_9745_.m_6846_().remove( this.f_9743_ );
 +        this.f_9743_.m_8967_().m_7670_();
 +        if (this.m_9956_()) {
 +            f_9744_.info( "Stopping singleplayer server as player logged out" );

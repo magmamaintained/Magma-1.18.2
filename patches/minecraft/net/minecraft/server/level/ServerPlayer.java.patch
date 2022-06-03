@@ -1194,7 +1194,7 @@
           return optional1;
        }
 @@ -774,12 +_,22 @@
-    private void m_9209_(ServerLevel p_9210_) {
+    public void m_9209_(ServerLevel p_9210_) {
        ResourceKey<Level> resourcekey = p_9210_.m_46472_();
        ResourceKey<Level> resourcekey1 = this.f_19853_.m_46472_();
 -      CriteriaTriggers.f_10588_.m_19757_(this, resourcekey, resourcekey1);
