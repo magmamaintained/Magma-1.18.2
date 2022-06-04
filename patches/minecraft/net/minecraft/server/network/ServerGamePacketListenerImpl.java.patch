@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2418 @@
+@@ -118,1340 +_,2419 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -2018,6 +2018,7 @@
 +                        }
 +                    }
 +                    // CraftBukkit end
++                    this.f_9743_.m_182294_(false);
 +                }
 +
 +                return;
