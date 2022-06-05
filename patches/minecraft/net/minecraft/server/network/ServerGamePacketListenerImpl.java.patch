@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2419 @@
+@@ -118,1340 +_,2414 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -2067,9 +2067,7 @@
 +                this.f_9743_.m_9243_();
 +                int i = this.f_9743_.f_19853_.m_151558_();
 +                if (blockpos.m_123342_() < i) {
-+                    double dist = f_9743_.m_21051_( net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get() ).m_22135_() + 3;
-+                    dist *= dist;
-+                    if (this.f_9766_ == null && this.f_9743_.m_20275_( (double) blockpos.m_123341_() + 0.5D, (double) blockpos.m_123342_() + 0.5D, (double) blockpos.m_123343_() + 0.5D ) < dist && serverlevel.m_7966_( this.f_9743_, blockpos )) {
++                    if (this.f_9766_ == null && this.f_9743_.m_20275_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.5D, (double)blockpos.m_123343_() + 0.5D) < 64.0D && serverlevel.m_7966_(this.f_9743_, blockpos)) {
 +                        this.f_9743_.m_5810_(); // CraftBukkit - SPIGOT-4706
 +                        InteractionResult interactionresult = this.f_9743_.f_8941_.m_7179_( this.f_9743_, serverlevel, itemstack, interactionhand, blockhitresult );
 +                        if (direction == Direction.UP && !interactionresult.m_19077_() && blockpos.m_123342_() >= i - 1 && m_9790_( this.f_9743_, itemstack )) {
@@ -2541,9 +2539,6 @@
 +                            f_9743_.f_36096_.m_150429_();
 +                        }
 +                        // CraftBukkit end
-+
-+                        if (net.minecraftforge.common.ForgeHooks.onInteractEntityAt( f_9743_, entity, entity.m_20182_(), p_143679_ ) != null)
-+                            return;
 +                        if (interactionresult.m_19077_()) {
 +                            CriteriaTriggers.f_10565_.m_61494_( ServerGamePacketListenerImpl.this.f_9743_, itemstack, entity );
 +                            if (interactionresult.m_19080_()) {
