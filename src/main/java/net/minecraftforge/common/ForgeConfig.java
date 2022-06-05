@@ -1,5 +1,5 @@
 /*
- * Minecraft Forge - Forge Development LLC
+ * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
@@ -20,6 +20,8 @@ import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 public class ForgeConfig {
     public static class Server {
         public final BooleanValue removeErroringBlockEntities;
+
+        public final BooleanValue removeErroringEntities;
 
         public final BooleanValue fullBoundingBoxLadders;
 
@@ -42,6 +44,12 @@ public class ForgeConfig {
                     .translation("forge.configgui.removeErroringBlockEntities")
                     .worldRestart()
                     .define("removeErroringBlockEntities", false);
+
+            removeErroringEntities = builder
+                    .comment("Set this to true to remove any Entity (Note: Does not include BlockEntities) that throws an error in its tick method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.")
+                    .translation("forge.configgui.removeErroringEntities")
+                    .worldRestart()
+                    .define("removeErroringEntities", false);
 
             fullBoundingBoxLadders = builder
                     .comment("Set this to true to check the entire entity's collision bounding box for ladders instead of just the block they are in. Causes noticeable differences in mechanics so default is vanilla behavior. Default: false.")
@@ -112,6 +120,9 @@ public class ForgeConfig {
     public static class Client {
         public final BooleanValue alwaysSetupTerrainOffThread;
 
+        public final BooleanValue forgeLightPipelineEnabled;
+
+        @Deprecated(forRemoval = true, since = "1.18.2")
         public final BooleanValue experimentalForgeLightPipelineEnabled;
 
         public final BooleanValue showLoadWarnings;
@@ -130,6 +141,11 @@ public class ForgeConfig {
                         "Not recommended for computers without a significant number of cores available.")
                 .translation("forge.configgui.alwaysSetupTerrainOffThread")
                 .define("alwaysSetupTerrainOffThread", false);
+
+            forgeLightPipelineEnabled = builder
+                    .comment("Enable the Forge block rendering pipeline - fixes the lighting of custom models.")
+                    .translation("forge.configgui.forgeLightPipelineEnabled")
+                    .define("forgeLightPipelineEnabled", true);
 
             experimentalForgeLightPipelineEnabled = builder
                 .comment("EXPERIMENTAL: Enable the Forge block rendering pipeline - fixes the lighting of custom models.")

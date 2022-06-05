@@ -136,7 +136,7 @@
           TestCommand.m_127946_(this.f_82090_);
        }
  
-@@ -201,26 +_,83 @@
+@@ -201,26 +_,85 @@
        if (p_82093_.f_82144_) {
           PublishCommand.m_138184_(this.f_82090_);
        }
@@ -214,7 +214,9 @@
 +            ParseResults<CommandSourceStack> parse = this.f_82090_.parse(stringreader, p_82118_);
 +            net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(parse);
 +            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
-+               if (event.getException() != null) {
++               if (event.getException() instanceof Exception exception) {
++                  throw exception;
++               } else if (event.getException() != null) {
 +                  com.google.common.base.Throwables.throwIfUnchecked(event.getException());
 +               }
 +               return 1;
@@ -232,7 +234,7 @@
                 });
                 if (j > 10) {
                    mutablecomponent1.m_130946_("...");
-@@ -273,10 +_,37 @@
+@@ -273,10 +_,38 @@
     }
  
     public void m_82095_(ServerPlayer p_82096_) {
@@ -267,7 +269,8 @@
 +         }
 +      }
 +      // CraftBukkit end
-+
++      // FORGE: Use our own command node merging method to handle redirect nodes properly, see issue #7551
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.f_82090_.getRoot(), rootcommandnode, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
        p_82096_.f_8906_.m_141995_(new ClientboundCommandsPacket(rootcommandnode));
     }
  
