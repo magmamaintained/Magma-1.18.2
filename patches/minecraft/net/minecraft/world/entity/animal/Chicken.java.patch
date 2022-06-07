@@ -1,17 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Chicken.java
 +++ b/net/minecraft/world/entity/animal/Chicken.java
-@@ -69,6 +_,11 @@
-    }
- 
-    public void m_8107_() {
-+      // CraftBukkit start
-+      if (this.m_28264_()) {
-+         this.setPersistenceRequired(!this.m_6785_(0));
-+      }
-+      // CraftBukkit end
-       super.m_8107_();
-       this.f_28229_ = this.f_28226_;
-       this.f_28228_ = this.f_28227_;
 @@ -87,7 +_,9 @@
        this.f_28226_ += this.f_28230_ * 2.0F;
        if (!this.f_19853_.f_46443_ && this.m_6084_() && !this.m_6162_() && !this.m_28264_() && --this.f_28231_ <= 0) {

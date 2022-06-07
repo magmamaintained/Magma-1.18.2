@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
-@@ -7,6 +_,9 @@
+@@ -7,8 +_,22 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.DispenserBlock;
@@ -9,7 +9,20 @@
 +import org.bukkit.event.block.BlockDispenseEvent;
  
  public class DefaultDispenseItemBehavior implements DispenseItemBehavior {
++
++   // CraftBukkit start
++   private boolean dropper;
++
++   public DefaultDispenseItemBehavior(boolean dropper) {
++      this.dropper = dropper;
++   }
++   // CraftBukkit end
++
++   public DefaultDispenseItemBehavior() {}
++
     public final ItemStack m_6115_(BlockSource p_123391_, ItemStack p_123392_) {
+       ItemStack itemstack = this.m_7498_(p_123391_, p_123392_);
+       this.m_6823_(p_123391_);
 @@ -18,13 +_,20 @@
  
     protected ItemStack m_7498_(BlockSource p_123385_, ItemStack p_123386_) {
@@ -18,7 +31,7 @@
        ItemStack itemstack = p_123386_.m_41620_(1);
 -      m_123378_(p_123385_.m_7727_(), itemstack, 6, direction, position);
 +      // CraftBukkit start
-+      if (!spawnItem(p_123385_.m_7727_(), itemstack, 6, direction, p_123385_)) {
++      if (!spawnItem(p_123385_.m_7727_(), itemstack, 6, direction, p_123385_, dropper)) {
 +         itemstack.m_41769_(1);
 +      }
 +      // CraftBukkit end
@@ -27,7 +40,7 @@
  
 -   public static void m_123378_(Level p_123379_, ItemStack p_123380_, int p_123381_, Direction p_123382_, Position p_123383_) {
 +   // CraftBukkit start - void -> boolean return, IPosition -> ISourceBlock last argument
-+   public static boolean spawnItem(Level p_123379_, ItemStack p_123380_, int p_123381_, Direction p_123382_, BlockSource blockSource) {
++   public static boolean spawnItem(Level p_123379_, ItemStack p_123380_, int p_123381_, Direction p_123382_, BlockSource blockSource, boolean dropper) {
 +      if (p_123380_.m_41619_()) return true;
 +      Position p_123383_ = DispenserBlock.m_52720_(blockSource);
 +      // CraftBukkit end
@@ -56,7 +69,7 @@
 +      itementity.m_32045_(CraftItemStack.asNMSCopy(event.getItem()));
 +      itementity.m_20256_(CraftVector.toNMS(event.getVelocity()));
 +
-+      if (!event.getItem().getType().equals(craftItem.getType())) {
++      if (!dropper && !event.getItem().getType().equals(craftItem.getType())) {
 +         // Chain to handler for new item
 +         ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
 +         DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.f_52661_.get(eventStack.m_41720_());

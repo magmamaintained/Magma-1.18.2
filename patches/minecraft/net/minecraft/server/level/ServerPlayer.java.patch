@@ -120,7 +120,7 @@
  import net.minecraft.world.level.block.HorizontalDirectionalBlock;
  import net.minecraft.world.level.block.NetherPortalBlock;
  import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -132,10 +_,28 @@
+@@ -132,10 +_,29 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Score;
@@ -131,6 +131,7 @@
 +import org.bukkit.Location;
 +import org.bukkit.WeatherType;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
++import org.bukkit.craftbukkit.v1_18_R2.CraftWorldBorder;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftPortalEvent;
@@ -204,7 +205,7 @@
              }
  
           }
-@@ -227,22 +_,87 @@
+@@ -227,22 +_,88 @@
     public int f_8943_;
     public boolean f_8944_;
  
@@ -220,6 +221,7 @@
 +   public boolean joining = true;
 +   public boolean sentListPacket = false;
 +   public Integer clientViewDistance;
++   public String kickLeaveMessage = null; // SPIGOT-3034: Forward leave message to PlayerQuitEvent
 +   public String locale = "en_us"; // CraftBukkit - add, lowercase
 +
 +   @Override
@@ -630,7 +632,7 @@
              this.f_8917_ = this.m_21223_();
              this.f_8918_ = this.f_36097_.m_38702_();
              this.f_8919_ = this.f_36097_.m_38722_() == 0.0F;
-@@ -458,54 +_,72 @@
+@@ -458,54 +_,75 @@
  
           if (this.m_21223_() + this.m_6103_() != this.f_8911_) {
              this.f_8911_ = this.m_21223_() + this.m_6103_();
@@ -696,6 +698,9 @@
 +         if (this.oldLevel != this.f_36078_) {
 +            CraftEventFactory.callPlayerLevelChangeEvent( this.getBukkitEntity(), this.oldLevel, this.f_36078_ );
 +            this.oldLevel = this.f_36078_;
++         }
++         if (this.getBukkitEntity().hasClientWorldBorder()) {
++            ((CraftWorldBorder) this.getBukkitEntity().getWorldBorder()).getHandle().m_61969_();
 +         }
 +         // CraftBukkit end
  
@@ -2195,7 +2200,7 @@
        }
  
     }
-@@ -1501,24 +_,157 @@
+@@ -1501,24 +_,158 @@
     }
  
     public boolean m_142265_(Level p_143406_, BlockPos p_143407_) {
@@ -2358,6 +2363,7 @@
 +         this.m_6756_( this.newExp );
 +      }
 +      this.keepLevel = false;
++      this.m_20334_(0, 0, 0); // CraftBukkit - SPIGOT-6948: Reset velocity on death
 +   }
 +   // CraftBukkit end
  }

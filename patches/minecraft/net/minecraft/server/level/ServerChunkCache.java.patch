@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -79,6 +_,24 @@
+@@ -79,6 +_,16 @@
        this.m_8488_();
     }
  
@@ -10,15 +10,7 @@
 +      if (chunk == null) {
 +         return false;
 +      }
-+      return chunk.m_212234_() != null;
-+   }
-+
-+   public LevelChunk getChunkUnchecked( int chunkX, int chunkZ) {
-+      ChunkHolder chunk = this.f_8325_.m_140174_(ChunkPos.m_45589_(chunkX, chunkZ));
-+      if (chunk == null) {
-+         return null;
-+      }
-+      return chunk.getFullChunkUnchecked();
++      return chunk.getFullChunkNow() != null;
 +   }
 +   // CraftBukkit end
 +

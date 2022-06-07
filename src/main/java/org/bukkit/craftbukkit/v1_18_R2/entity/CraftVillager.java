@@ -3,6 +3,7 @@ package org.bukkit.craftbukkit.v1_18_R2.entity;
 import java.util.Locale;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,6 +13,8 @@ import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.ZombieVillager;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 public class CraftVillager extends CraftAbstractVillager implements Villager {
 
@@ -115,6 +118,12 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
     @Override
     public void shakeHead() {
         getHandle().setUnhappy();
+    }
+
+    @Override
+    public ZombieVillager zombify() {
+        net.minecraft.world.entity.monster.ZombieVillager entityzombievillager = Zombie.zombifyVillager(getHandle().level.getMinecraftWorld(), getHandle(), getHandle().blockPosition(), isSilent(), CreatureSpawnEvent.SpawnReason.CUSTOM);
+        return (entityzombievillager != null) ? (ZombieVillager) entityzombievillager.getBukkitEntity() : null;
     }
 
     public static Profession nmsToBukkitProfession(VillagerProfession nms) {

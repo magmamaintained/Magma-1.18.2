@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.block;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -45,6 +47,8 @@ import org.bukkit.craftbukkit.v1_18_R2.util.CraftRayTraceResult;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftVoxelShape;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockFertilizeEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -481,9 +485,39 @@ public class CraftBlock implements Block {
     @Override
     public boolean applyBoneMeal(BlockFace face) {
         Direction direction = blockFaceToNotch(face);
-        UseOnContext context = new UseOnContext(getCraftWorld().getHandle(), null, InteractionHand.MAIN_HAND, Items.BONE_MEAL.getDefaultInstance(), new BlockHitResult(Vec3.ZERO, direction, getPosition(), false));
+        BlockFertilizeEvent event = null;
+        ServerLevel world = getCraftWorld().getHandle();
+        UseOnContext context = new UseOnContext(world, null, InteractionHand.MAIN_HAND, Items.BONE_MEAL.getDefaultInstance(), new BlockHitResult(Vec3.ZERO, direction, getPosition(), false));
 
-        return BoneMealItem.applyBonemeal(context) == InteractionResult.SUCCESS;
+        // SPIGOT-6895: Call StructureGrowEvent and BlockFertilizeEvent
+        world.captureTreeGeneration = true;
+        InteractionResult result = BoneMealItem.applyBonemeal(context);
+        world.captureTreeGeneration = false;
+
+        if (world.capturedBlockStates.size() > 0) {
+            TreeType treeType = SaplingBlock.treeType;
+            SaplingBlock.treeType = null;
+            List<org.bukkit.block.BlockState> blocks = new ArrayList<>(world.capturedBlockStates.values());
+            world.capturedBlockStates.clear();
+            StructureGrowEvent structureEvent = null;
+
+            if (treeType != null) {
+                structureEvent = new StructureGrowEvent(getLocation(), treeType, true, null, blocks);
+                Bukkit.getPluginManager().callEvent(structureEvent);
+            }
+
+            event = new BlockFertilizeEvent(CraftBlock.at(world, getPosition()), null, blocks);
+            event.setCancelled(structureEvent != null && structureEvent.isCancelled());
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (!event.isCancelled()) {
+                for (org.bukkit.block.BlockState blockstate : blocks) {
+                    blockstate.update(true);
+                }
+            }
+        }
+
+        return result == InteractionResult.SUCCESS && (event == null || !event.isCancelled());
     }
 
     @Override

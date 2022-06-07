@@ -2,12 +2,10 @@ package org.bukkit;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-
 import java.lang.reflect.Constructor;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import org.apache.commons.lang3.Validate;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -5068,7 +5066,7 @@ public enum Material implements Keyed {
             case YELLOW_WOOL:
             case ZOMBIE_HEAD:
             case ZOMBIE_WALL_HEAD:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return 0 <= id && id < 256;
@@ -5123,7 +5121,7 @@ public enum Material implements Keyed {
             case SUSPICIOUS_STEW:
             case SWEET_BERRIES:
             case TROPICAL_FISH:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_BREAD:
             case LEGACY_CARROT_ITEM:
             case LEGACY_BAKED_POTATO:
@@ -5154,7 +5152,7 @@ public enum Material implements Keyed {
             case LEGACY_BEETROOT:
             case LEGACY_CHORUS_FRUIT:
             case LEGACY_BEETROOT_SOUP:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -5186,7 +5184,7 @@ public enum Material implements Keyed {
      * but the returned Material will be a modern material (ie this method is
      * useful for updating stored data).
      *
-     * @param name       Name of the material to get
+     * @param name Name of the material to get
      * @param legacyName whether this is a legacy name lookup
      * @return Material if found, or null
      */
@@ -5226,9 +5224,9 @@ public enum Material implements Keyed {
      * namespace, converted to uppercase, then stripped of special characters in
      * an attempt to format it like the enum.
      *
-     * @param name       Name of the material to get
+     * @param name Name of the material to get
      * @param legacyName whether this is a legacy name (see
-     *                   {@link #getMaterial(java.lang.String, boolean)}
+     * {@link #getMaterial(java.lang.String, boolean)}
      * @return Material if found, or null
      */
     @Nullable
@@ -5272,7 +5270,7 @@ public enum Material implements Keyed {
             case MUSIC_DISC_STRAD:
             case MUSIC_DISC_WAIT:
             case MUSIC_DISC_WARD:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return id >= LEGACY_GOLD_RECORD.id && id <= LEGACY_RECORD_12.id;
@@ -5979,7 +5977,7 @@ public enum Material implements Keyed {
             case YELLOW_TERRACOTTA:
             case YELLOW_WALL_BANNER:
             case YELLOW_WOOL:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_STONE:
             case LEGACY_GRASS:
             case LEGACY_DIRT:
@@ -6179,7 +6177,7 @@ public enum Material implements Keyed {
             case LEGACY_BLACK_GLAZED_TERRACOTTA:
             case LEGACY_CONCRETE:
             case LEGACY_CONCRETE_POWDER:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -6197,7 +6195,7 @@ public enum Material implements Keyed {
             case AIR:
             case CAVE_AIR:
             case VOID_AIR:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_AIR:
                 //</editor-fold>
                 return true;
@@ -6347,7 +6345,7 @@ public enum Material implements Keyed {
             case YELLOW_CARPET:
             case ZOMBIE_HEAD:
             case ZOMBIE_WALL_HEAD:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_AIR:
             case LEGACY_SAPLING:
             case LEGACY_POWERED_RAIL:
@@ -6398,7 +6396,7 @@ public enum Material implements Keyed {
             case LEGACY_BEETROOT_BLOCK:
             case LEGACY_END_GATEWAY:
             case LEGACY_STRUCTURE_VOID:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -6624,7 +6622,7 @@ public enum Material implements Keyed {
             case YELLOW_CARPET:
             case YELLOW_WALL_BANNER:
             case YELLOW_WOOL:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_WOOD:
             case LEGACY_LOG:
             case LEGACY_LEAVES:
@@ -6680,7 +6678,7 @@ public enum Material implements Keyed {
             case LEGACY_JUNGLE_DOOR:
             case LEGACY_ACACIA_DOOR:
             case LEGACY_DARK_OAK_DOOR:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -6838,7 +6836,7 @@ public enum Material implements Keyed {
             case WITHER_ROSE:
             case YELLOW_CARPET:
             case YELLOW_WOOL:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_WOOD:
             case LEGACY_LOG:
             case LEGACY_LEAVES:
@@ -6876,7 +6874,7 @@ public enum Material implements Keyed {
             case LEGACY_ACACIA_FENCE:
             case LEGACY_ACACIA_STAIRS:
             case LEGACY_DARK_OAK_STAIRS:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -7071,7 +7069,7 @@ public enum Material implements Keyed {
             case YELLOW_BANNER:
             case YELLOW_CARPET:
             case YELLOW_WOOL:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_LAVA_BUCKET:
             case LEGACY_COAL_BLOCK:
             case LEGACY_BLAZE_ROD:
@@ -7135,7 +7133,7 @@ public enum Material implements Keyed {
             case LEGACY_WOOL:
             case LEGACY_CARPET:
             case LEGACY_BOWL:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -7481,7 +7479,7 @@ public enum Material implements Keyed {
             case YELLOW_SHULKER_BOX:
             case YELLOW_TERRACOTTA:
             case YELLOW_WOOL:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_STONE:
             case LEGACY_GRASS:
             case LEGACY_DIRT:
@@ -7580,7 +7578,7 @@ public enum Material implements Keyed {
             case LEGACY_BLACK_GLAZED_TERRACOTTA:
             case LEGACY_CONCRETE:
             case LEGACY_CONCRETE_POWDER:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -7619,12 +7617,12 @@ public enum Material implements Keyed {
             case SAND:
             case WHITE_CONCRETE_POWDER:
             case YELLOW_CONCRETE_POWDER:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_SAND:
             case LEGACY_GRAVEL:
             case LEGACY_ANVIL:
             case LEGACY_CONCRETE_POWDER:
-                //</editor-fold>
+            //</editor-fold>
                 return true;
             default:
                 return false;
@@ -7766,7 +7764,7 @@ public enum Material implements Keyed {
             case YELLOW_CANDLE_CAKE:
             case YELLOW_WALL_BANNER:
             case ZOMBIE_WALL_HEAD:
-                // ----- Legacy Separator -----
+            // ----- Legacy Separator -----
             case LEGACY_ACACIA_DOOR:
             case LEGACY_BED_BLOCK:
             case LEGACY_BEETROOT_BLOCK:
@@ -7819,7 +7817,7 @@ public enum Material implements Keyed {
             case LEGACY_WATER:
             case LEGACY_WOODEN_DOOR:
             case LEGACY_WOOD_DOUBLE_STEP:
-                //</editor-fold>
+            //</editor-fold>
                 return false;
             default:
                 return true;
@@ -7828,13 +7826,13 @@ public enum Material implements Keyed {
 
     /**
      * Checks if this Material can be interacted with.
-     * <p>
+     *
      * Interactable materials include those with functionality when they are
      * interacted with by a player such as chests, furnaces, etc.
-     * <p>
+     *
      * Some blocks such as piston heads and stairs are considered interactable
      * though may not perform any additional functionality.
-     * <p>
+     *
      * Note that the interactability of some materials may be dependant on their
      * state as well. This method will return true if there is at least one
      * state in which additional interact handling is performed for the
@@ -9717,12 +9715,12 @@ public enum Material implements Keyed {
 
     /**
      * Returns a value that represents how 'slippery' the block is.
-     * <p>
+     *
      * Blocks with higher slipperiness, like {@link Material#ICE} can be slid on
      * further by the player and other entities.
-     * <p>
+     *
      * Most blocks have a default slipperiness of {@code 0.6f}.
-     * <p>
+     *
      * Only available when {@link #isBlock()} is true.
      *
      * @return the slipperiness of this block
@@ -9773,7 +9771,7 @@ public enum Material implements Keyed {
 
     /**
      * Get the best suitable slot for this Material.
-     * <p>
+     *
      * For most items this will be {@link EquipmentSlot#HAND}.
      *
      * @return the best EquipmentSlot for this Material
@@ -9831,10 +9829,10 @@ public enum Material implements Keyed {
     /**
      * Return an immutable copy of all default {@link Attribute}s and their
      * {@link AttributeModifier}s for a given {@link EquipmentSlot}.
-     * <p>
+     *
      * Default attributes are those that are always preset on some items, such
      * as the attack damage on weapons or the armor value on armor.
-     * <p>
+     *
      * Only available when {@link #isItem()} is true.
      *
      * @param slot the {@link EquipmentSlot} to check
