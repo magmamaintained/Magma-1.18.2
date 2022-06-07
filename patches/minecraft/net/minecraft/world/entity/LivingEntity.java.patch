@@ -532,7 +532,7 @@
 -            f1 = p_21017_;
 -            p_21017_ = 0.0F;
 +         // CraftBukkit - Moved into damageEntity0(DamageSource, float)
-+         if (false && p_21017_ > 0.0F && this.m_21275_(p_21016_)) {
++         if (false && f > 0.0F && this.m_21275_(p_21016_)) {
 +            net.minecraftforge.event.entity.living.ShieldBlockEvent ev = net.minecraftforge.common.ForgeHooks.onShieldBlock(this, p_21016_, p_21017_);
 +            if(!ev.isCanceled()) {
 +            if(ev.shieldTakesDamage()) this.m_7909_(p_21017_);
@@ -557,7 +557,7 @@
  
 -            this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
 +            // CraftBukkit start
-+            if (!this.damageEntity0(p_21016_, f - this.f_20898_)) {
++            if (!this.damageEntity0(p_21016_, p_21017_ - this.f_20898_)) {
 +               return false;
 +            }
 +            // CraftBukkit end
@@ -893,6 +893,7 @@
     }
  
     protected void m_6475_(DamageSource p_21240_, float p_21241_) {
++
 +   }
 +
 +   // CraftBukkit start
@@ -910,11 +911,6 @@
 -         }
 -
 -         if (f2 != 0.0F) {
--            float f1 = this.m_21223_();
--            this.m_21153_(f1 - f2);
--            this.m_21231_().m_19289_(p_21240_, f1, f2);
--            this.m_7911_(this.m_6103_() - f2);
--            this.m_146852_(GameEvent.f_157808_, p_21240_.m_7639_());
 +         final boolean human = this instanceof Player;
 +         float originalDamage = p_21241_;
 +         Function<Double, Double> hardHat = f -> {
@@ -935,7 +931,7 @@
 +         p_21241_ += armorModifier;
 +
 +         Function<Double, Double> resistance = f -> {
-+            if (!p_21240_.m_19379_() && LivingEntity.this.m_21023_(MobEffects.f_19606_) && p_21240_ != p_21240_.f_19317_) {
++            if (!p_21240_.m_19379_() && LivingEntity.this.m_21023_(MobEffects.f_19606_) && p_21240_ != DamageSource.f_19317_) {
 +               int i = (LivingEntity.this.m_21124_(MobEffects.f_19606_).m_19564_() + 1) * 5;
 +               int j = 25 - i;
 +               float f1 = f.floatValue() * (float) j;
@@ -1007,6 +1003,8 @@
 +            ((ServerPlayer) p_21240_.m_7639_()).m_36222_(Stats.f_12929_, Math.round(f2 * 10.0F));
 +         }
 +
++         p_21241_ = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, p_21240_, p_21241_);
++
 +         if (p_21241_ > 0 || !human) {
 +            if (human) {
 +               // PAIL: Be sure to drag all this code from the Player subclass each update.
@@ -1016,17 +1014,17 @@
 +               }
 +            }
 +            // CraftBukkit end
-+            f2 = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, p_21240_, f2);
-+            if (f2 != 0.0F) {
-+               float f1 = this.m_21223_();
-+               this.m_21231_().m_19289_(p_21240_, f1, f2);
-+               this.m_21153_(f1 - f2); // Forge: moved to fix MC-121048
-+               // CraftBukkit start
-+               if (!human) {
-+                  this.m_7911_(this.m_6103_() - p_21241_);
-+               }
-+               this.m_146852_(GameEvent.f_157808_, p_21240_.m_7639_());
+             float f1 = this.m_21223_();
+-            this.m_21153_(f1 - f2);
+-            this.m_21231_().m_19289_(p_21240_, f1, f2);
+-            this.m_7911_(this.m_6103_() - f2);
++            this.m_21231_().m_19289_(p_21240_, f1, p_21241_);
++            this.m_21153_(f1 - p_21241_); // Forge: moved to fix MC-121048
++            // CraftBukkit start
++            if (!human) {
++               this.m_7911_(this.m_6103_() - p_21241_);
 +            }
+             this.m_146852_(GameEvent.f_157808_, p_21240_.m_7639_());
 +
 +            return true;
 +         } else {
