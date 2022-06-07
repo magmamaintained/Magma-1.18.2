@@ -1773,4 +1773,16 @@ public class CraftWorld extends CraftRegionAccessor implements World {
             this.persistentDataContainer.putAll((CompoundTag) c);
         }
     }
+
+    // Spigot start
+    private final org.bukkit.World.Spigot spigot = new org.bukkit.World.Spigot()
+    {
+
+    };
+
+    public org.bukkit.World.Spigot spigot()
+    {
+        return spigot;
+    }
+    // Spigot end
 }
