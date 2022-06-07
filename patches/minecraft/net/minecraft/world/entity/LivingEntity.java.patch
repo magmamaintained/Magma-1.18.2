@@ -347,7 +347,7 @@
              iterator.remove();
           }
  
-@@ -877,17 +_,48 @@
+@@ -877,17 +_,49 @@
        return this.m_147207_(p_21165_, (Entity)null);
     }
  
@@ -361,6 +361,7 @@
 +   }
 +
 +   public boolean addEffect(MobEffectInstance p_147208_, @Nullable Entity p_147209_, EntityPotionEffectEvent.Cause cause) {
++      org.spigotmc.AsyncCatcher.catchOp("effect add"); // Spigot
 +      if (isTickingEffects) {
 +         effectsToProcess.add(new ProcessableEffect(p_147208_, cause));
 +         return true;

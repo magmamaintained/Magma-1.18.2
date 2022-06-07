@@ -96,15 +96,24 @@
     }
  
     boolean m_183879_(ChunkPos p_183880_) {
-@@ -1070,7 +_,7 @@
+@@ -1070,7 +_,8 @@
     }
  
     protected void m_140199_(Entity p_140200_) {
 -      if (!(p_140200_ instanceof EnderDragonPart)) {
++      org.spigotmc.AsyncCatcher.catchOp("entity track"); // Spigot
 +      if (!(p_140200_ instanceof net.minecraftforge.entity.PartEntity)) {
           EntityType<?> entitytype = p_140200_.m_6095_();
           int i = entitytype.m_20681_() * 16;
           if (i != 0) {
+@@ -1098,6 +_,7 @@
+    }
+ 
+    protected void m_140331_(Entity p_140332_) {
++      org.spigotmc.AsyncCatcher.catchOp("entity untrack"); // Spigot
+       if (p_140332_ instanceof ServerPlayer) {
+          ServerPlayer serverplayer = (ServerPlayer)p_140332_;
+          this.m_140192_(serverplayer, false);
 @@ -1239,7 +_,7 @@
        public final Set<ServerPlayerConnection> f_140475_ = Sets.newIdentityHashSet();
  
@@ -114,9 +123,19 @@
           this.f_140472_ = p_140478_;
           this.f_140473_ = p_140479_;
           this.f_140474_ = SectionPos.m_123194_(p_140478_);
-@@ -1288,11 +_,18 @@
+@@ -1280,6 +_,7 @@
+       }
+ 
+       public void m_140485_(ServerPlayer p_140486_) {
++         org.spigotmc.AsyncCatcher.catchOp("player tracker clear"); // Spigot
+          if (this.f_140475_.remove(p_140486_.f_8906_)) {
+             this.f_140471_.m_8534_(p_140486_);
+          }
+@@ -1287,12 +_,20 @@
+       }
  
        public void m_140497_(ServerPlayer p_140498_) {
++         org.spigotmc.AsyncCatcher.catchOp("player tracker update"); // Spigot
           if (p_140498_ != this.f_140472_) {
 -            Vec3 vec3 = p_140498_.m_20182_().m_82546_(this.f_140471_.m_8540_());
 +            Vec3 vec3 = p_140498_.m_20182_().m_82546_(this.f_140472_.m_20182_()); // MC-155077, SPIGOT-5113

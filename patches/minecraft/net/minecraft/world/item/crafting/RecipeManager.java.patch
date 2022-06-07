@@ -68,12 +68,13 @@
              map.computeIfAbsent(recipe.m_6671_(), (p_44075_) -> {
                 return ImmutableMap.builder();
              }).put(resourcelocation, recipe);
-@@ -68,14 +_,31 @@
+@@ -68,14 +_,32 @@
        f_44006_.info("Loaded {} recipes", (int)map.size());
     }
  
 +   // CraftBukkit start - Magma Start
 +   public void addRecipe(Recipe<?> irecipe) {
++      org.spigotmc.AsyncCatcher.catchOp("Recipe Add"); // Spigot
 +      Map<ResourceLocation, Recipe<?>> mapMC = this.f_44007_.get(irecipe.m_6671_());
 +      Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>> mapCB = this.recipesCB.get(irecipe.m_6671_());
 +      if (mapMC.containsKey(irecipe.m_6423_()) || mapCB.containsKey(irecipe.m_6423_())) {
