@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Ocelot.java
 +++ b/net/minecraft/world/entity/animal/Ocelot.java
-@@ -123,7 +_,7 @@
-    }
- 
-    public boolean m_6785_(double p_29041_) {
--      return !this.m_29038_() && this.f_19797_ > 2400;
-+      return !this.m_29038_() /*&& this.tickCount > 2400*/; // CraftBukkit
-    }
- 
-    public static AttributeSupplier.Builder m_29036_() {
 @@ -164,7 +_,8 @@
        if ((this.f_28984_ == null || this.f_28984_.m_25955_()) && !this.m_29038_() && this.m_6898_(itemstack) && p_29021_.m_20280_(this) < 9.0D) {
           this.m_142075_(p_29021_, p_29022_, itemstack);

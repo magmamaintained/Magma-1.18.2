@@ -119,7 +119,7 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable, Persiste
      * Plugins should check that hasCustomModelData() returns <code>true</code>
      * before calling this method.
      *
-     * @return the localized name that is set
+     * @return the custom model data that is set
      */
     int getCustomModelData();
 
@@ -357,6 +357,18 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable, Persiste
      * @see AttributeModifier#getUniqueId()
      */
     boolean removeAttributeModifier(@NotNull Attribute attribute, @NotNull AttributeModifier modifier);
+
+    /**
+     * Get this ItemMeta as an NBT string.
+     * <p>
+     * This string should not be relied upon as a serializable value. If
+     * serialization is desired, the {@link ConfigurationSerializable} API
+     * should be used instead.
+     *
+     * @return the NBT string
+     */
+    @NotNull
+    String getAsString();
 
     /**
      * Returns a public custom tag container capable of storing tags on the

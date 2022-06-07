@@ -69,15 +69,6 @@
     }
  
     @VisibleForDebug
-@@ -162,7 +_,7 @@
-    }
- 
-    public boolean m_6785_(double p_34775_) {
--      return !this.m_21532_();
-+      return true; // CraftBukkit - SPIGOT-6278
-    }
- 
-    protected void m_6851_(DifficultyInstance p_34692_) {
 @@ -282,7 +_,7 @@
        } else if (this.m_34773_()) {
           return PiglinArmPose.CROSSBOW_CHARGE;

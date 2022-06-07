@@ -193,15 +193,6 @@
                 this.m_8127_();
              }
           } else if (this.m_20146_() < this.m_6062_()) {
-@@ -528,7 +_,7 @@
- 
-    protected void m_6153_() {
-       ++this.f_20919_;
--      if (this.f_20919_ == 20 && !this.f_19853_.m_5776_()) {
-+      if (this.f_20919_ >= 20 && !this.m_146910_() && !this.f_19853_.m_5776_()) { // CraftBukkit - (this.deathTicks == 20) -> (this.deathTicks >= 20 && !this.dead)
-          this.f_19853_.m_7605_(this, (byte)60);
-          this.m_142687_(Entity.RemovalReason.KILLED);
-       }
 @@ -619,8 +_,14 @@
     }
  

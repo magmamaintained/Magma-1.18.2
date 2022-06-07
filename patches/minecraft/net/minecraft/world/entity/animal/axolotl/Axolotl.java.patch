@@ -23,14 +23,6 @@
     }
  
     public Axolotl.Variant m_149179_() {
-@@ -219,6 +_,7 @@
- 
-    public void m_142139_(boolean p_149196_) {
-       this.f_19804_.m_135381_(f_149098_, p_149196_);
-+      this.setPersistenceRequired(this.m_21532_()); // CraftBukkit - SPIGOT-4106 update persistence
-    }
- 
-    @Nullable
 @@ -378,7 +_,7 @@
        int i = mobeffectinstance != null ? mobeffectinstance.m_19557_() : 0;
        if (i < 2400) {
@@ -40,12 +32,3 @@
        }
  
        p_149174_.m_21195_(MobEffects.f_19599_);
-@@ -448,7 +_,7 @@
-    }
- 
-    public boolean m_6785_(double p_149183_) {
--      return !this.m_142392_() && !this.m_8077_();
-+      return true; // CraftBukkit
-    }
- 
-    public static boolean m_186249_(EntityType<? extends LivingEntity> p_186250_, ServerLevelAccessor p_186251_, MobSpawnType p_186252_, BlockPos p_186253_, Random p_186254_) {
