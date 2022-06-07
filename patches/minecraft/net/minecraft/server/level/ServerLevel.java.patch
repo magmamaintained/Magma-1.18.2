@@ -276,7 +276,7 @@
        Entity entity = this.m_142646_().m_142694_(p_8854_.m_142081_());
        if (entity != null) {
           f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_142081_().toString());
-@@ -775,7 +_,8 @@
+@@ -775,23 +_,52 @@
           this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
@@ -286,7 +286,8 @@
     }
  
     private boolean m_8872_(Entity p_8873_) {
-@@ -783,15 +_,42 @@
++      org.spigotmc.AsyncCatcher.catchOp("entity add"); // Spigot
+       if (p_8873_.m_146910_()) {
           f_8566_.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.m_20613_(p_8873_.m_6095_()));
           return false;
        } else {
@@ -455,7 +456,7 @@
        this.m_142572_().m_129783_().m_8895_().m_164855_(p_143305_, p_143306_);
     }
  
-@@ -1400,16 +_,38 @@
+@@ -1400,19 +_,42 @@
     }
  
     public static void m_8617_(ServerLevel p_8618_) {
@@ -496,7 +497,19 @@
     }
  
     public LevelEntityGetter<Entity> m_142646_() {
-@@ -1497,14 +_,13 @@
++      org.spigotmc.AsyncCatcher.catchOp("Chunk getEntities call"); // Spigot
+       return this.f_143244_.m_157567_();
+    }
+ 
+@@ -1480,6 +_,7 @@
+       }
+ 
+       public void m_141985_(Entity p_143371_) {
++         org.spigotmc.AsyncCatcher.catchOp("entity register"); // Spigot
+          ServerLevel.this.m_7726_().m_8463_(p_143371_);
+          if (p_143371_ instanceof ServerPlayer) {
+             ServerPlayer serverplayer = (ServerPlayer)p_143371_;
+@@ -1497,17 +_,17 @@
              ServerLevel.this.f_143246_.add(mob);
           }
  
@@ -514,6 +527,10 @@
        }
  
        public void m_141981_(Entity p_143375_) {
++         org.spigotmc.AsyncCatcher.catchOp("entity unregister"); // Spigot
+          ServerLevel.this.m_7726_().m_8443_(p_143375_);
+          if (p_143375_ instanceof ServerPlayer) {
+             ServerPlayer serverplayer = (ServerPlayer)p_143375_;
 @@ -1525,10 +_,8 @@
              ServerLevel.this.f_143246_.remove(mob);
           }
