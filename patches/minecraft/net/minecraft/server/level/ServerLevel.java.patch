@@ -69,6 +69,15 @@
        this.f_8561_ = p_203773_;
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
+@@ -197,7 +_,7 @@
+       DataFixer datafixer = p_203762_.m_129933_();
+       EntityPersistentStorage<Entity> entitypersistentstorage = new EntityStorage(this, p_203764_.m_197394_(p_203766_).resolve("entities"), datafixer, flag, p_203762_);
+       this.f_143244_ = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage);
+-      this.f_8547_ = new ServerChunkCache(this, p_203764_, datafixer, p_203762_.m_129909_(), p_203763_, p_203769_, p_203762_.m_6846_().m_11312_(), p_203762_.m_6846_().m_184213_(), flag, p_203768_, this.f_143244_::m_157524_, () -> {
++      this.f_8547_ = new ServerChunkCache(this, p_203764_, datafixer, p_203762_.m_129909_(), p_203763_, p_203769_, this.spigotConfig.viewDistance, this.spigotConfig.simulationDistance, flag, p_203768_, this.f_143244_::m_157524_, () -> { // Spigot
+          return p_203762_.m_129783_().m_8895_();
+       });
+       this.f_8552_ = new PortalForcer(this);
 @@ -223,7 +_,15 @@
        }
  
