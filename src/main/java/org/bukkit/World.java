@@ -1,24 +1,10 @@
 package org.bukkit;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.boss.DragonBattle;
-import org.bukkit.entity.AbstractArrow;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LightningStrike;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.SpawnCategory;
+import org.bukkit.entity.*;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
@@ -36,6 +22,13 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Represents a world, which may contain entities, chunks and blocks
@@ -2592,6 +2585,29 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
     // Spigot start
     public class Spigot {
 
+        /**
+         * Strikes lightning at the given {@link Location} and possibly without sound
+         *
+         * @param loc The location to strike lightning
+         * @param isSilent Whether this strike makes no sound
+         * @return The lightning entity.
+         */
+        @NotNull
+        public LightningStrike strikeLightning(@NotNull Location loc, boolean isSilent) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        /**
+         * Strikes lightning at the given {@link Location} without doing damage and possibly without sound
+         *
+         * @param loc The location to strike lightning
+         * @param isSilent Whether this strike makes no sound
+         * @return The lightning entity.
+         */
+        @NotNull
+        public LightningStrike strikeLightningEffect(@NotNull Location loc, boolean isSilent) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 
     @NotNull
