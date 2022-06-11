@@ -1,16 +1,5 @@
 package org.bukkit.craftbukkit.v1_18_R2;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -160,6 +149,18 @@ import org.magmafoundation.magma.Magma;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public final class CraftServer implements Server {
     private final String serverName = "CraftBukkit";
@@ -2189,7 +2190,11 @@ public final class CraftServer implements Server {
     // Spigot start
     private final org.bukkit.Server.Spigot spigot = new org.bukkit.Server.Spigot()
     {
-
+        @Override
+        public YamlConfiguration getConfig()
+        {
+            return org.spigotmc.SpigotConfig.config;
+        }
     };
 
     public org.bukkit.Server.Spigot spigot()

@@ -1,27 +1,89 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -18,9 +_,12 @@
- import java.util.Set;
- import java.util.UUID;
- import java.util.concurrent.atomic.AtomicInteger;
-+import java.util.concurrent.atomic.AtomicReference;
- import java.util.function.Predicate;
- import java.util.stream.Stream;
- import javax.annotation.Nullable;
-+import javax.sound.sampled.Port;
-+
- import net.minecraft.BlockUtil;
- import net.minecraft.CrashReport;
- import net.minecraft.CrashReportCategory;
-@@ -83,7 +_,6 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.Blocks;
+@@ -1,31 +_,14 @@
+ package net.minecraft.world.entity;
+ 
+ import com.google.common.collect.ImmutableList;
++import com.google.common.collect.ImmutableList.Builder;
+ import com.google.common.collect.Iterables;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Sets;
+-import com.google.common.collect.ImmutableList.Builder;
+ import com.mojang.logging.LogUtils;
+ import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
+ import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+-import java.util.Arrays;
+-import java.util.Collections;
+-import java.util.HashSet;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Optional;
+-import java.util.Random;
+-import java.util.Set;
+-import java.util.UUID;
+-import java.util.concurrent.atomic.AtomicInteger;
+-import java.util.function.Predicate;
+-import java.util.stream.Stream;
+-import javax.annotation.Nullable;
+-import net.minecraft.BlockUtil;
+-import net.minecraft.CrashReport;
+-import net.minecraft.CrashReportCategory;
+-import net.minecraft.ReportedException;
+-import net.minecraft.Util;
++import net.minecraft.*;
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.commands.CommandSource;
+ import net.minecraft.commands.CommandSourceStack;
+@@ -35,11 +_,7 @@
+ import net.minecraft.core.SectionPos;
+ import net.minecraft.core.particles.BlockParticleOption;
+ import net.minecraft.core.particles.ParticleTypes;
+-import net.minecraft.nbt.CompoundTag;
+-import net.minecraft.nbt.DoubleTag;
+-import net.minecraft.nbt.FloatTag;
+-import net.minecraft.nbt.ListTag;
+-import net.minecraft.nbt.StringTag;
++import net.minecraft.nbt.*;
+ import net.minecraft.network.chat.ClickEvent;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.HoverEvent;
+@@ -74,21 +_,8 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
+ import net.minecraft.world.item.enchantment.ProtectionEnchantment;
+-import net.minecraft.world.level.BlockGetter;
+-import net.minecraft.world.level.ChunkPos;
+-import net.minecraft.world.level.ClipContext;
+-import net.minecraft.world.level.Explosion;
+-import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.ItemLike;
+-import net.minecraft.world.level.Level;
+-import net.minecraft.world.level.block.Block;
+-import net.minecraft.world.level.block.Blocks;
 -import net.minecraft.world.level.block.FenceGateBlock;
- import net.minecraft.world.level.block.HoneyBlock;
- import net.minecraft.world.level.block.Mirror;
- import net.minecraft.world.level.block.RenderShape;
-@@ -114,9 +_,55 @@
+-import net.minecraft.world.level.block.HoneyBlock;
+-import net.minecraft.world.level.block.Mirror;
+-import net.minecraft.world.level.block.RenderShape;
+-import net.minecraft.world.level.block.Rotation;
+-import net.minecraft.world.level.block.SoundType;
++import net.minecraft.world.level.*;
++import net.minecraft.world.level.block.*;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+ import net.minecraft.world.level.border.WorldBorder;
+@@ -103,20 +_,71 @@
+ import net.minecraft.world.level.material.PushReaction;
+ import net.minecraft.world.level.portal.PortalInfo;
+ import net.minecraft.world.level.portal.PortalShape;
+-import net.minecraft.world.phys.AABB;
+-import net.minecraft.world.phys.BlockHitResult;
+-import net.minecraft.world.phys.HitResult;
+-import net.minecraft.world.phys.Vec2;
+-import net.minecraft.world.phys.Vec3;
++import net.minecraft.world.phys.*;
+ import net.minecraft.world.phys.shapes.BooleanOp;
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
@@ -31,6 +93,7 @@
 +import org.bukkit.block.BlockFace;
 +import org.bukkit.command.CommandSender;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
++import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
@@ -45,8 +108,17 @@
 +import org.bukkit.event.vehicle.VehicleExitEvent;
 +import org.bukkit.plugin.PluginManager;
  import org.slf4j.Logger;
- 
+-
 -public abstract class Entity implements Nameable, EntityAccess, CommandSource {
++import org.spigotmc.CustomTimingsHandler;
++
++import javax.annotation.Nullable;
++import java.util.*;
++import java.util.concurrent.atomic.AtomicInteger;
++import java.util.concurrent.atomic.AtomicReference;
++import java.util.function.Predicate;
++import java.util.stream.Stream;
++
 +public abstract class Entity extends net.minecraftforge.common.capabilities.CapabilityProvider<Entity> implements Nameable, EntityAccess, CommandSource, net.minecraftforge.common.extensions.IForgeEntity {
 +
 +   // CraftBukkit start
@@ -86,7 +158,7 @@
     private final EntityType<?> f_19847_;
     private int f_19848_ = f_19843_.incrementAndGet();
     public boolean f_19850_;
-@@ -175,6 +_,7 @@
+@@ -175,12 +_,13 @@
     public double f_19790_;
     public double f_19791_;
     public double f_19792_;
@@ -94,7 +166,14 @@
     public float f_19793_;
     public boolean f_19794_;
     protected final Random f_19796_ = new Random();
-@@ -228,7 +_,28 @@
+    public int f_19797_;
+    public int f_19831_ = -this.m_6101_();
+-   protected boolean f_19798_;
++   public boolean f_19798_;
+    protected Object2DoubleMap<TagKey<Fluid>> f_19799_ = new Object2DoubleArrayMap<>(2);
+    protected boolean f_19800_;
+    private final Set<TagKey<Fluid>> f_19801_ = new HashSet<>();
+@@ -228,7 +_,37 @@
     @Nullable
     private BlockState f_185934_ = null;
  
@@ -107,6 +186,15 @@
 +   public boolean lastDamageCancelled; // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
 +   public boolean persistentInvisibility = false;
 +   public BlockPos lastLavaContact;
++   public CustomTimingsHandler tickTimer = SpigotTimings.getEntityTimings(this); // Spigot
++
++   // Spigot start
++   public final org.spigotmc.ActivationRange.ActivationType activationType = org.spigotmc.ActivationRange.initializeEntityActivationType(this);
++   public final boolean defaultActivationState;
++   public long activatedTick = Integer.MIN_VALUE;
++   public void inactiveTick() { }
++   // Spigot end
++
 +
 +   public float getBukkitYaw() {
 +      return this.f_19857_;
@@ -123,6 +211,20 @@
        this.f_19847_ = p_19870_;
        this.f_19853_ = p_19871_;
        this.f_19815_ = p_19870_.m_20680_();
+@@ -236,6 +_,13 @@
+       this.f_19826_ = BlockPos.f_121853_;
+       this.f_185933_ = ChunkPos.f_186419_;
+       this.f_19838_ = Vec3.f_82478_;
++      // Spigot start
++      if (f_19853_ != null) {
++         this.defaultActivationState = org.spigotmc.ActivationRange.initializeEntityActivationState(this, f_19853_.spigotConfig);
++      } else {
++         this.defaultActivationState = false;
++      }
++      // Spigot end
+       this.f_19804_ = new SynchedEntityData(this);
+       this.f_19804_.m_135372_(f_19805_, (byte)0);
+       this.f_19804_.m_135372_(f_19832_, this.m_6062_());
 @@ -247,7 +_,11 @@
        this.f_19804_.m_135372_(f_146800_, 0);
        this.m_8097_();
@@ -274,6 +376,14 @@
        int i = p_20255_ * 20;
        if (this instanceof LivingEntity) {
           i = ProtectionEnchantment.m_45138_((LivingEntity)this, i);
+@@ -550,6 +_,7 @@
+    }
+ 
+    public void m_6478_(MoverType p_19973_, Vec3 p_19974_) {
++      SpigotTimings.entityMoveTimer.startTiming(); // Spigot
+       if (this.f_19794_) {
+          this.m_6034_(this.m_20185_() + p_19974_.f_82479_, this.m_20186_() + p_19974_.f_82480_, this.m_20189_() + p_19974_.f_82481_);
+       } else {
 @@ -612,6 +_,28 @@
                 block.m_5548_(this.f_19853_, this);
              }
@@ -318,7 +428,7 @@
                 this.f_19788_ += (float)Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3) * 0.6F;
                 if (this.f_19788_ > this.f_19829_ && !blockstate.m_60795_()) {
                    this.f_19829_ = this.m_6059_();
-@@ -659,25 +_,23 @@
+@@ -659,26 +_,25 @@
  
              this.m_146872_();
              float f2 = this.m_6041_();
@@ -356,8 +466,10 @@
 +
 +         this.f_19853_.m_46473_().m_7238_();
        }
++      SpigotTimings.entityMoveTimer.stopTiming(); // Spigot
     }
  
+    protected boolean m_196406_(Vec3 p_196625_) {
 @@ -715,10 +_,10 @@
        int j = Mth.m_14107_(this.f_19825_.f_82480_ - (double)0.2F);
        int k = Mth.m_14107_(this.f_19825_.f_82481_);

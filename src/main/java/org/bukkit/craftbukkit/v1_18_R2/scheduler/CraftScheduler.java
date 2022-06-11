@@ -1,12 +1,5 @@
 package org.bukkit.craftbukkit.v1_18_R2.scheduler;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.IntUnaryOperator;
-import java.util.logging.Level;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.plugin.IllegalPluginAccessException;
@@ -15,6 +8,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.IntUnaryOperator;
+import java.util.logging.Level;
 
 /**
  * The fundamental concepts for this implementation:
@@ -405,7 +406,9 @@ public class CraftScheduler implements BukkitScheduler {
             if (task.isSync()) {
                 currentTask = task;
                 try {
+                    task.timings.startTiming(); // Spigot
                     task.run();
+                    task.timings.stopTiming(); // Spigot
                 } catch (final Throwable throwable) {
                     task.getOwner().getLogger().log(
                             Level.WARNING,

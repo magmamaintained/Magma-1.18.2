@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -1,8 +_,5 @@
+ package net.minecraft.world.entity.item;
+ 
+-import java.util.Objects;
+-import java.util.UUID;
+-import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.chat.Component;
 @@ -12,6 +_,7 @@
  import net.minecraft.network.syncher.EntityDataAccessor;
  import net.minecraft.network.syncher.EntityDataSerializers;
@@ -8,12 +17,16 @@
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.sounds.SoundSource;
  import net.minecraft.stats.Stats;
-@@ -29,6 +_,8 @@
+@@ -29,6 +_,12 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.Vec3;
 +import org.bukkit.event.entity.EntityPickupItemEvent;
 +import org.bukkit.event.player.PlayerPickupItemEvent;
++
++import javax.annotation.Nullable;
++import java.util.Objects;
++import java.util.UUID;
  
  public class ItemEntity extends Entity {
     private static final EntityDataAccessor<ItemStack> f_31984_ = SynchedEntityData.m_135353_(ItemEntity.class, EntityDataSerializers.f_135033_);
@@ -87,7 +100,7 @@
  
 -         if (!this.f_19853_.f_46443_ && this.f_31985_ >= 6000) {
 +         ItemStack item = this.m_32055_();
-+         if (!this.f_19853_.f_46443_ && this.f_31985_ >= lifespan) {
++         if (!this.f_19853_.f_46443_ && this.f_31985_ >= f_19853_.spigotConfig.itemDespawnRate) { // Spigot
 +             int hook = net.minecraftforge.event.ForgeEventFactory.onItemExpire(this, item);
 +             if (hook < 0) this.m_146870_();
 +             else          this.lifespan += hook;
@@ -274,7 +287,7 @@
     public void m_32065_() {
        this.m_32062_();
 -      this.f_31985_ = 5999;
-+      this.f_31985_ = m_32055_().getEntityLifespan(f_19853_) - 1;
++      this.f_31985_ = f_19853_.spigotConfig.itemDespawnRate - 1; // Spigot
     }
  
     public float m_32008_(float p_32009_) {
