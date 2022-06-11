@@ -1,14 +1,31 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -22,6 +_,7 @@
- import java.util.function.BooleanSupplier;
- import java.util.regex.Pattern;
- import javax.annotation.Nullable;
+@@ -7,29 +_,12 @@
+ import com.mojang.authlib.minecraft.MinecraftSessionService;
+ import com.mojang.datafixers.DataFixer;
+ import com.mojang.logging.LogUtils;
+-import java.io.BufferedReader;
+-import java.io.IOException;
+-import java.io.InputStreamReader;
+-import java.io.Writer;
+-import java.net.InetAddress;
+-import java.net.Proxy;
+-import java.nio.charset.StandardCharsets;
+-import java.nio.file.Files;
+-import java.nio.file.Path;
+-import java.util.Collections;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.function.BooleanSupplier;
+-import java.util.regex.Pattern;
+-import javax.annotation.Nullable;
+-import net.minecraft.DefaultUncaughtExceptionHandler;
+-import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
+-import net.minecraft.SharedConstants;
+-import net.minecraft.SystemReport;
+-import net.minecraft.Util;
 +import com.mojang.serialization.DynamicOps;
- import net.minecraft.DefaultUncaughtExceptionHandler;
- import net.minecraft.DefaultUncaughtExceptionHandlerWithName;
- import net.minecraft.SharedConstants;
-@@ -30,6 +_,7 @@
++import net.minecraft.*;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.NonNullList;
@@ -16,7 +33,7 @@
  import net.minecraft.network.chat.Component;
  import net.minecraft.server.ConsoleInput;
  import net.minecraft.server.MinecraftServer;
-@@ -52,11 +_,20 @@
+@@ -52,13 +_,36 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.CreativeModeTab;
  import net.minecraft.world.item.Items;
@@ -29,6 +46,7 @@
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.command.CraftRemoteConsoleCommandSender;
 +import org.bukkit.craftbukkit.v1_18_R2.util.ForwardLogHandler;
 +import org.bukkit.craftbukkit.v1_18_R2.util.TerminalConsoleWriterThread;
@@ -36,7 +54,22 @@
 +import org.bukkit.event.server.ServerCommandEvent;
  import org.slf4j.Logger;
  
++import javax.annotation.Nullable;
++import java.io.IOException;
++import java.io.Writer;
++import java.net.InetAddress;
++import java.net.Proxy;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.Collections;
++import java.util.List;
++import java.util.Locale;
++import java.util.function.BooleanSupplier;
++import java.util.regex.Pattern;
++
  public class DedicatedServer extends MinecraftServer implements ServerInterface {
+    static final Logger f_139598_ = LogUtils.getLogger();
+    private static final int f_142864_ = 5000;
 @@ -78,8 +_,8 @@
     @Nullable
     private final Component f_142863_;
@@ -201,8 +234,11 @@
     }
  
     public void m_5703_(BooleanSupplier p_139661_) {
-@@ -334,7 +_,16 @@
+@@ -332,11 +_,21 @@
+    }
+ 
     public void m_139665_() {
++      SpigotTimings.serverCommandTimer.startTiming(); // Spigot
        while(!this.f_139600_.isEmpty()) {
           ConsoleInput consoleinput = this.f_139600_.remove(0);
 -         this.m_129892_().m_82117_(consoleinput.f_135929_, consoleinput.f_135928_);
@@ -217,8 +253,11 @@
 +         server.dispatchServerCommand(console, consoleinput);
 +         // CraftBukkit end
        }
- 
+-
++      SpigotTimings.serverCommandTimer.stopTiming(); // Spigot
     }
+ 
+    public boolean m_6982_() {
 @@ -518,13 +_,44 @@
     }
  

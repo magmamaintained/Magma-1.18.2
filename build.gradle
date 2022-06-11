@@ -228,6 +228,9 @@ def sharedDeps = {
     installer 'org.lwjgl:lwjgl-stb:3.2.2'
     */
 
+    //Spigot
+    installer 'net.md-5:bungeecord-chat:1.16-R0.4'
+
 
     installer 'org.yaml:snakeyaml:1.30'
     installer 'org.apache.maven:maven-resolver-provider:3.8.4'

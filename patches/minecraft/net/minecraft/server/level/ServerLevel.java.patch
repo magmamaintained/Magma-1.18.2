@@ -1,6 +1,80 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -87,7 +_,6 @@
+@@ -9,55 +_,19 @@
+ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+ import it.unimi.dsi.fastutil.longs.LongSet;
+ import it.unimi.dsi.fastutil.longs.LongSets;
++import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+-import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+-import java.io.IOException;
+-import java.io.Writer;
+-import java.nio.file.Files;
+-import java.nio.file.Path;
+-import java.util.ArrayList;
+-import java.util.Comparator;
+-import java.util.List;
+-import java.util.Objects;
+-import java.util.Optional;
+-import java.util.Set;
+-import java.util.UUID;
+-import java.util.concurrent.Executor;
+-import java.util.function.BooleanSupplier;
+-import java.util.function.Function;
+-import java.util.function.Predicate;
+-import java.util.stream.Collectors;
+-import java.util.stream.Stream;
+-import javax.annotation.Nonnull;
+-import javax.annotation.Nullable;
+ import net.minecraft.CrashReport;
+ import net.minecraft.Util;
+-import net.minecraft.core.BlockPos;
+-import net.minecraft.core.Direction;
+-import net.minecraft.core.Holder;
+-import net.minecraft.core.HolderSet;
+-import net.minecraft.core.Registry;
+-import net.minecraft.core.RegistryAccess;
+-import net.minecraft.core.SectionPos;
++import net.minecraft.core.*;
+ import net.minecraft.core.particles.ParticleOptions;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.TranslatableComponent;
+ import net.minecraft.network.protocol.Packet;
+-import net.minecraft.network.protocol.game.ClientboundAddVibrationSignalPacket;
+-import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
+-import net.minecraft.network.protocol.game.ClientboundBlockEventPacket;
+-import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+-import net.minecraft.network.protocol.game.ClientboundExplodePacket;
+-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+-import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
+-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+-import net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket;
+-import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+-import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+-import net.minecraft.network.protocol.game.DebugPackets;
++import net.minecraft.network.protocol.game.*;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.ServerScoreboard;
+@@ -73,13 +_,7 @@
+ import net.minecraft.util.profiling.ProfilerFiller;
+ import net.minecraft.world.DifficultyInstance;
+ import net.minecraft.world.damagesource.DamageSource;
+-import net.minecraft.world.entity.Entity;
+-import net.minecraft.world.entity.EntityType;
+-import net.minecraft.world.entity.LightningBolt;
+-import net.minecraft.world.entity.LivingEntity;
+-import net.minecraft.world.entity.Mob;
+-import net.minecraft.world.entity.MobCategory;
+-import net.minecraft.world.entity.ReputationEventHandler;
++import net.minecraft.world.entity.*;
+ import net.minecraft.world.entity.ai.navigation.PathNavigation;
+ import net.minecraft.world.entity.ai.village.ReputationEventType;
+ import net.minecraft.world.entity.ai.village.poi.PoiManager;
+@@ -87,24 +_,13 @@
  import net.minecraft.world.entity.animal.Animal;
  import net.minecraft.world.entity.animal.WaterAnimal;
  import net.minecraft.world.entity.animal.horse.SkeletonHorse;
@@ -8,25 +82,49 @@
  import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
  import net.minecraft.world.entity.npc.Npc;
  import net.minecraft.world.entity.player.Player;
-@@ -116,6 +_,7 @@
+ import net.minecraft.world.entity.raid.Raid;
+ import net.minecraft.world.entity.raid.Raids;
+ import net.minecraft.world.item.crafting.RecipeManager;
+-import net.minecraft.world.level.BlockEventData;
+-import net.minecraft.world.level.ChunkPos;
+-import net.minecraft.world.level.CustomSpawner;
+-import net.minecraft.world.level.Explosion;
+-import net.minecraft.world.level.ExplosionDamageCalculator;
+-import net.minecraft.world.level.ForcedChunksSavedData;
+-import net.minecraft.world.level.GameRules;
+-import net.minecraft.world.level.Level;
+-import net.minecraft.world.level.NaturalSpawner;
+-import net.minecraft.world.level.StructureFeatureManager;
+-import net.minecraft.world.level.WorldGenLevel;
++import net.minecraft.world.level.*;
+ import net.minecraft.world.level.biome.Biome;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+@@ -116,13 +_,9 @@
  import net.minecraft.world.level.chunk.LevelChunkSection;
  import net.minecraft.world.level.chunk.storage.EntityStorage;
  import net.minecraft.world.level.dimension.DimensionType;
 +import net.minecraft.world.level.dimension.LevelStem;
  import net.minecraft.world.level.dimension.end.EndDragonFight;
- import net.minecraft.world.level.entity.EntityPersistentStorage;
- import net.minecraft.world.level.entity.EntityTickList;
-@@ -136,15 +_,18 @@
- import net.minecraft.world.level.portal.PortalForcer;
- import net.minecraft.world.level.saveddata.maps.MapIndex;
+-import net.minecraft.world.level.entity.EntityPersistentStorage;
+-import net.minecraft.world.level.entity.EntityTickList;
+-import net.minecraft.world.level.entity.EntityTypeTest;
+-import net.minecraft.world.level.entity.LevelCallback;
+-import net.minecraft.world.level.entity.LevelEntityGetter;
+-import net.minecraft.world.level.entity.PersistentEntitySectionManager;
++import net.minecraft.world.level.entity.*;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.gameevent.GameEventListenerRegistrar;
+ import net.minecraft.world.level.gameevent.vibrations.VibrationPath;
+@@ -138,6 +_,7 @@
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
--import net.minecraft.world.level.storage.DimensionDataStorage;
--import net.minecraft.world.level.storage.LevelStorageSource;
--import net.minecraft.world.level.storage.ServerLevelData;
-+import net.minecraft.world.level.storage.*;
+ import net.minecraft.world.level.storage.DimensionDataStorage;
+ import net.minecraft.world.level.storage.LevelStorageSource;
++import net.minecraft.world.level.storage.PrimaryLevelData;
+ import net.minecraft.world.level.storage.ServerLevelData;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.BooleanOp;
+@@ -145,8 +_,27 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
  import net.minecraft.world.ticks.LevelTicks;
@@ -37,7 +135,23 @@
 +import org.bukkit.event.weather.LightningStrikeEvent;
  import org.slf4j.Logger;
  
++import javax.annotation.Nonnull;
++import javax.annotation.Nullable;
++import java.io.IOException;
++import java.io.Writer;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.util.*;
++import java.util.concurrent.Executor;
++import java.util.function.BooleanSupplier;
++import java.util.function.Function;
++import java.util.function.Predicate;
++import java.util.stream.Collectors;
++import java.util.stream.Stream;
++
  public class ServerLevel extends Level implements WorldGenLevel {
+    public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
+    private static final int f_184049_ = 12000;
 @@ -181,13 +_,29 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
@@ -105,8 +219,28 @@
           }
  
           this.m_8804_();
-@@ -281,7 +_,7 @@
+@@ -264,6 +_,7 @@
+       this.m_46465_();
+       this.m_8809_();
+       profilerfiller.m_6182_("tickPending");
++      timings.doTickPending.startTiming(); // Spigot
+       if (!this.m_46659_()) {
+          long k = this.m_46467_();
+          profilerfiller.m_6180_("blockTicks");
+@@ -272,28 +_,33 @@
+          this.f_184047_.m_193225_(k, 65536, this::m_184076_);
+          profilerfiller.m_7238_();
+       }
++      timings.doTickPending.stopTiming(); // Spigot
+ 
+       profilerfiller.m_6182_("raid");
+       this.f_8565_.m_37957_();
+       profilerfiller.m_6182_("chunkSource");
+       this.m_7726_().m_201698_(p_8794_, true);
+       profilerfiller.m_6182_("blockEvents");
++      timings.doSounds.startTiming(); // Spigot
        this.m_8807_();
++      timings.doSounds.stopTiming(); // Spigot
        this.f_8557_ = false;
        profilerfiller.m_7238_();
 -      boolean flag = !this.f_8546_.isEmpty() || !this.m_8902_().isEmpty();
@@ -114,7 +248,21 @@
        if (flag) {
           this.m_8886_();
        }
-@@ -313,7 +_,9 @@
+ 
+       if (flag || this.f_8551_++ < 300) {
+          profilerfiller.m_6180_("entities");
++         timings.tickEntities.startTiming(); // Spigot
+          if (this.f_8559_ != null) {
+             profilerfiller.m_6180_("dragonFight");
+             this.f_8559_.m_64095_();
+             profilerfiller.m_7238_();
+          }
+ 
++         timings.entityTick.startTiming(); // Spigot
+          this.f_143243_.m_156910_((p_184065_) -> {
+             if (!p_184065_.m_146910_()) {
+                if (this.m_143342_(p_184065_)) {
+@@ -313,12 +_,16 @@
                       }
  
                       profilerfiller.m_6180_("tick");
@@ -125,6 +273,13 @@
                       profilerfiller.m_7238_();
                    }
                 }
+             }
+          });
++         timings.entityTick.stopTiming(); // Spigot
++         timings.tickEntities.stopTiming(); // Spigot
+          profilerfiller.m_7238_();
+          this.m_46463_();
+       }
 @@ -402,6 +_,7 @@
           BlockPos blockpos2 = this.m_5452_(Heightmap.Types.MOTION_BLOCKING, this.m_46496_(i, 0, j, 15));
           BlockPos blockpos3 = blockpos2.m_7495_();
@@ -157,6 +312,23 @@
        }
  
     }
+@@ -633,6 +_,7 @@
+    }
+ 
+    public void m_8647_(Entity p_8648_) {
++      p_8648_.tickTimer.startTiming(); // Spigot
+       p_8648_.m_146867_();
+       ProfilerFiller profilerfiller = this.m_46473_();
+       ++p_8648_.f_19797_;
+@@ -646,7 +_,7 @@
+       for(Entity entity : p_8648_.m_20197_()) {
+          this.m_8662_(p_8648_, entity);
+       }
+-
++      p_8648_.tickTimer.stopTiming(); // Spigot
+    }
+ 
+    private void m_8662_(Entity p_8663_, Entity p_8664_) {
 @@ -656,10 +_,12 @@
              ++p_8664_.f_19797_;
              ProfilerFiller profilerfiller = this.m_46473_();
