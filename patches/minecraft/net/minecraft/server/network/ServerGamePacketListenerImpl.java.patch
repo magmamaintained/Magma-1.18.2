@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2415 @@
+@@ -118,1340 +_,2422 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -148,6 +148,7 @@
 -import org.apache.commons.lang3.StringUtils;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
++import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
@@ -336,6 +337,7 @@
 +    // CraftBukkit end
 +
 +    public void m_9933_() {
++        SpigotTimings.playerConnectionTimer.startTiming(); // Spigot
 +        this.m_9953_();
 +        this.f_9743_.f_19854_ = this.f_9743_.m_20185_();
 +        this.f_9743_.f_19855_ = this.f_9743_.m_20186_();
@@ -521,6 +523,7 @@
 +            this.m_9942_( new TranslatableComponent( "multiplayer.disconnect.idling" ) );
 +        }
 +
++        SpigotTimings.playerConnectionTimer.stopTiming(); // Spigot
 +    }
 +
 +    public void m_9953_() {
@@ -2355,6 +2358,7 @@
 +    }
 +
 +    private void m_9957_(String p_9958_) {
++        SpigotTimings.playerCommandTimer.startTiming(); // Spigot
 +        // CraftBukkit start - whole method
 +        f_9744_.info( this.f_9743_.m_6302_() + " issued server command: " + p_9958_ );
 +
@@ -2364,6 +2368,7 @@
 +        this.cserver.getPluginManager().callEvent( event );
 +
 +        if (event.isCancelled()) {
++            SpigotTimings.playerCommandTimer.stopTiming(); // Spigot
 +            return;
 +        }
 +
@@ -2375,6 +2380,8 @@
 +            player.sendMessage( org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command" );
 +            java.util.logging.Logger.getLogger( ServerGamePacketListenerImpl.class.getName() ).log( java.util.logging.Level.SEVERE, null, ex );
 +            return;
++        } finally {
++            SpigotTimings.playerCommandTimer.stopTiming(); // Spigot
 +        }
 +        // this.server.getCommands().performCommand(this.player.createCommandSourceStack(), p_9958_);
 +        // CraftBukkit end

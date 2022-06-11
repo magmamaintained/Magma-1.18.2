@@ -1,5 +1,24 @@
 --- a/net/minecraft/world/entity/NeutralMob.java
 +++ b/net/minecraft/world/entity/NeutralMob.java
+@@ -1,14 +_,15 @@
+ package net.minecraft.world.entity;
+ 
+-import java.util.Objects;
+-import java.util.UUID;
+-import javax.annotation.Nullable;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ 
++import javax.annotation.Nullable;
++import java.util.Objects;
++import java.util.UUID;
++
+ public interface NeutralMob {
+    String f_147283_ = "AngerTime";
+    String f_147284_ = "AngryAt";
 @@ -108,7 +_,7 @@
     default void m_21662_() {
        this.m_6703_((LivingEntity)null);
