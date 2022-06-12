@@ -246,7 +246,7 @@
           this.f_139601_.m_7530_();
        }
  
-+      System.exit(0);
++      Runtime.getRuntime().halt(0);
     }
  
     public void m_5703_(BooleanSupplier p_139661_) {
