@@ -6,6 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -335,5 +338,50 @@ public class SpigotConfig
         ( (RangedAttribute) Attributes.MOVEMENT_SPEED ).maxValue = movementSpeed;
         attackDamage = getDouble( "settings.attribute.attackDamage.max", attackDamage );
         ( (RangedAttribute) Attributes.ATTACK_DAMAGE ).maxValue = attackDamage;
+    }
+
+    public static boolean debug;
+    private static void debug()
+    {
+        debug = getBoolean( "settings.debug", false );
+        if ( debug && !LogManager.getRootLogger().isTraceEnabled() )
+        {
+            // Enable debug logging
+            LoggerContext ctx = (LoggerContext) LogManager.getContext( false );
+            Configuration conf = ctx.getConfiguration();
+            conf.getLoggerConfig( LogManager.ROOT_LOGGER_NAME ).setLevel( org.apache.logging.log4j.Level.ALL );
+            ctx.updateLoggers( conf );
+        }
+        if ( LogManager.getRootLogger().isTraceEnabled() )
+        {
+            Bukkit.getLogger().info( "Debug logging is enabled" );
+        } else
+        {
+            Bukkit.getLogger().info( "Debug logging is disabled" );
+        }
+    }
+
+    public static boolean disableAdvancementSaving;
+    public static List<String> disabledAdvancements;
+    private static void disabledAdvancements() {
+        disableAdvancementSaving = getBoolean("advancements.disable-saving", false);
+        disabledAdvancements = getList("advancements.disabled", Arrays.asList(new String[]{"minecraft:story/disabled"}));
+    }
+
+    public static boolean logVillagerDeaths;
+    public static boolean logNamedDeaths;
+    private static void logDeaths() {
+        logVillagerDeaths = getBoolean("settings.log-villager-deaths", true);
+        logNamedDeaths = getBoolean("settings.log-named-deaths", true);
+    }
+
+    public static boolean disablePlayerDataSaving;
+    private static void disablePlayerDataSaving() {
+        disablePlayerDataSaving = getBoolean("players.disable-saving", false);
+    }
+
+    public static boolean belowZeroGenerationInExistingChunks;
+    private static void belowZeroGenerationInExistingChunks() {
+        belowZeroGenerationInExistingChunks = getBoolean("world-settings.default.below-zero-generation-in-existing-chunks", true);
     }
 }

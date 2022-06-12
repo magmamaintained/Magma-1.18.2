@@ -2859,7 +2859,7 @@
 +
 +    public void m_9831_(Packet<?> p_9832_, @Nullable GenericFutureListener<? extends Future<? super Void>> p_9833_) {
 +        // CraftBukkit start
-+        if (p_9832_ == null) {
++        if (p_9832_ == null || this.processedDisconnect) { // Spigot
 +            return;
 +        } else if (p_9832_ instanceof ClientboundSetDefaultSpawnPositionPacket) {
 +            ClientboundSetDefaultSpawnPositionPacket packet6 = (ClientboundSetDefaultSpawnPositionPacket) p_9832_;
@@ -3607,7 +3607,7 @@
 +            boolean flag = p_9915_.m_134561_() < 0;
 +            ItemStack itemstack = p_9915_.m_134564_();
 +            CompoundTag compoundtag = BlockItem.m_186336_( itemstack );
-+            if (!itemstack.m_41619_() && compoundtag != null && compoundtag.m_128441_( "x" ) && compoundtag.m_128441_( "y" ) && compoundtag.m_128441_( "z" )) {
++            if (!itemstack.m_41619_() && compoundtag != null && compoundtag.m_128441_( "x" ) && compoundtag.m_128441_( "y" ) && compoundtag.m_128441_( "z" ) && this.f_9743_.getBukkitEntity().hasPermission("minecraft.nbt.copy")) { // Spigot
 +                BlockPos blockpos = BlockEntity.m_187472_( compoundtag );
 +                BlockEntity blockentity = this.f_9743_.f_19853_.m_7702_( blockpos );
 +                if (blockentity != null) {

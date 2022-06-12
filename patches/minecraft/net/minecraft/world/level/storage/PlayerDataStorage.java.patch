@@ -24,6 +24,14 @@
  public class PlayerDataStorage {
     private static final Logger f_78426_ = LogUtils.getLogger();
     private final File f_78427_;
+@@ -24,6 +_,7 @@
+    }
+ 
+    public void m_78433_(Player p_78434_) {
++      if (org.spigotmc.SpigotConfig.disablePlayerDataSaving) return; // Spigot
+       try {
+          CompoundTag compoundtag = p_78434_.m_20240_(new CompoundTag());
+          File file1 = File.createTempFile(p_78434_.m_20149_() + "-", ".dat", this.f_78427_);
 @@ -31,8 +_,9 @@
           File file2 = new File(this.f_78427_, p_78434_.m_20149_() + ".dat");
           File file3 = new File(this.f_78427_, p_78434_.m_20149_() + ".dat_old");
