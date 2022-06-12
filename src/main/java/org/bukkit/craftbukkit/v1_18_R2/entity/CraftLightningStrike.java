@@ -6,7 +6,7 @@ import org.bukkit.entity.LightningStrike;
 
 public class CraftLightningStrike extends CraftEntity implements LightningStrike {
     public CraftLightningStrike(final CraftServer server, final net.minecraft.world.entity.LightningBolt entity) {
-        super(server, entity);
+        super( server, entity );
     }
 
     @Override
@@ -31,7 +31,10 @@ public class CraftLightningStrike extends CraftEntity implements LightningStrike
 
     // Spigot start
     private final LightningStrike.Spigot spigot = new LightningStrike.Spigot() {
-
+        @Override
+        public boolean isSilent() {
+            return getHandle().isSilent;
+        }
     };
 
     @Override

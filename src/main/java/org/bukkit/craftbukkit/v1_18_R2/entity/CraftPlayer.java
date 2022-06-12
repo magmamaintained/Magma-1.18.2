@@ -1,14 +1,5 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
-import javax.annotation.Nullable;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.BaseEncoding;
@@ -76,6 +67,16 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.scoreboard.Scoreboard;
+
+import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @DelegateDeserialization(CraftOfflinePlayer.class)
 public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -1659,7 +1660,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         }
         net.minecraft.world.entity.ai.attributes.AttributeInstance dummy = new net.minecraft.world.entity.ai.attributes.AttributeInstance(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH, (attribute) -> {
         });
-        dummy.setBaseValue(scaledHealth ? healthScale : getMaxHealth());
+        // Spigot start
+        double healthMod = scaledHealth ? healthScale : getMaxHealth();
+        if ( healthMod >= Float.MAX_VALUE || healthMod <= 0 )
+        {
+            healthMod = 20; // Reset health
+            getServer().getLogger().warning( getName() + " tried to crash the server with a large health attribute" );
+        }
+        dummy.setBaseValue(healthMod);
+        // Spigot end
         collection.add(dummy);
     }
 
@@ -1855,7 +1864,24 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                 server.getServer().getPlayerList().respawn( getHandle(), false );
             }
         }
+
+        @Override
+        public Set<Player> getHiddenPlayers()
+        {
+            Set<Player> ret = new HashSet<Player>();
+            for ( UUID u : hiddenEntities.keySet() )
+            {
+                Player p = getServer().getPlayer( u );
+                if ( p != null )
+                {
+                    ret.add( p );
+                }
+            }
+
+            return java.util.Collections.unmodifiableSet( ret );
+        }
     };
+
 
     public Player.Spigot spigot()
     {

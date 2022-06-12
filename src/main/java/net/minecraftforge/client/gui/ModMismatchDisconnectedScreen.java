@@ -1,23 +1,29 @@
 /*
- * Minecraft Forge
- * Copyright (c) 2016-2022.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation version 2.1
- * of the License.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Copyright (c) Forge Development LLC and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
  */
 
 package net.minecraftforge.client.gui;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.MultiLineLabel;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.HoverEvent.Action;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraftforge.common.ForgeI18n;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.network.ConnectionData.ModMismatchData;
+import net.minecraftforge.network.NetworkRegistry;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,35 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineLabel;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.HoverEvent.Action;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraftforge.common.ForgeI18n;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.network.ConnectionData.ModMismatchData;
-import net.minecraftforge.network.NetworkRegistry;
 
 public class ModMismatchDisconnectedScreen extends Screen
 {

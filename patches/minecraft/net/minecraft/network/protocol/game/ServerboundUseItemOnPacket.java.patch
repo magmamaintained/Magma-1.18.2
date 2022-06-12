@@ -1,0 +1,13 @@
+--- a/net/minecraft/network/protocol/game/ServerboundUseItemOnPacket.java
++++ b/net/minecraft/network/protocol/game/ServerboundUseItemOnPacket.java
+@@ -8,8 +_,10 @@
+ public class ServerboundUseItemOnPacket implements Packet<ServerGamePacketListener> {
+    private final BlockHitResult f_134691_;
+    private final InteractionHand f_134692_;
++   public long timestamp; // Spigot
+ 
+    public ServerboundUseItemOnPacket(InteractionHand p_134695_, BlockHitResult p_134696_) {
++      this.timestamp = System.currentTimeMillis(); // Spigot
+       this.f_134692_ = p_134695_;
+       this.f_134691_ = p_134696_;
+    }

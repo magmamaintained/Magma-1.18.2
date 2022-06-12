@@ -1,10 +1,5 @@
 package org.bukkit.craftbukkit.v1_18_R2;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
@@ -23,6 +18,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
@@ -76,6 +72,12 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Consumer;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class CraftWorld extends CraftRegionAccessor implements World {
     public static final int CUSTOM_DIMENSION_OFFSET = 10;
@@ -1796,6 +1798,25 @@ public class CraftWorld extends CraftRegionAccessor implements World {
     private final org.bukkit.World.Spigot spigot = new org.bukkit.World.Spigot()
     {
 
+        @Override
+        public LightningStrike strikeLightning(Location loc, boolean isSilent)
+        {
+            LightningBolt lightning = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create( world );
+            lightning.moveTo( loc.getX(), loc.getY(), loc.getZ() );
+            lightning.isSilent = isSilent;
+            world.strikeLightning( lightning );
+            return (LightningStrike) lightning.getBukkitEntity();
+        }
+
+        @Override
+        public LightningStrike strikeLightningEffect(Location loc, boolean isSilent)
+        {
+            LightningBolt lightning = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create( world );
+            lightning.moveTo( loc.getX(), loc.getY(), loc.getZ() );
+            lightning.visualOnly = true;
+            lightning.isSilent = isSilent;
+            return (LightningStrike) lightning.getBukkitEntity();
+        }
     };
 
     public org.bukkit.World.Spigot spigot()
