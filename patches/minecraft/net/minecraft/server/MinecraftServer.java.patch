@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1930 @@
+@@ -144,1693 +_,1943 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -408,7 +408,7 @@
 +    @Nullable
 +    private MinecraftServer.TimeProfiler f_177876_;
 +    private boolean f_177877_;
-+    private final ServerConnectionListener f_129755_;
++    private ServerConnectionListener f_129755_;
 +    public final ChunkProgressListenerFactory f_129756_;
 +    private final ServerStatus f_129757_ = new ServerStatus();
 +    private final Random f_129758_ = new Random();
@@ -515,7 +515,7 @@
 +            p_206554_.m_143974_(this);
 +        }
 +
-+        this.f_129755_ = new ServerConnectionListener(this);
++        // this.connection = new ServerConnectionListener(this); // Spigot
 +        this.f_129756_ = p_206555_;
 +        this.f_129744_ = p_206547_;
 +        this.f_129745_ = p_206547_.m_78301_();
@@ -2469,6 +2469,12 @@
 +            }
 +        } catch (Throwable throwable1) {
 +            f_129750_.error("Encountered an unexpected exception", throwable1);
++            // Spigot Start
++            if ( throwable1.getCause() != null )
++            {
++                MinecraftServer.f_129750_.error( "\tCause of unexpected exception was", throwable1.getCause() );
++            }
++            // Spigot End
 +            CrashReport crashreport = m_206568_(throwable1);
 +            this.m_177935_(crashreport.m_178626_());
 +            File file1 = new File(new File(this.m_6237_(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
@@ -2708,7 +2714,14 @@
 +                serverlevel.m_8793_(p_129954_);
 +                serverlevel.timings.doTick.stopTiming(); // Spigot
 +            } catch (Throwable throwable) {
-+                CrashReport crashreport = CrashReport.m_127521_(throwable, "Exception ticking world");
++                // Spigot Start
++                CrashReport crashreport;
++                try {
++                    crashreport = CrashReport.m_127521_(throwable, "Exception ticking world");
++                } catch (Throwable t) {
++                    throw new RuntimeException("Error generating crash report", t);
++                }
++                // Spigot End
 +                serverlevel.m_6026_(crashreport);
 +                throw new ReportedException(crashreport);
 +            }
@@ -3011,7 +3024,7 @@
 +
 +    @Nullable
 +    public ServerConnectionListener m_129919_() {
-+        return this.f_129755_;
++        return this.f_129755_ == null ? this.f_129755_ = new ServerConnectionListener(this) : this.f_129755_; // Spigot
 +    }
 +
 +    public boolean m_129920_() {

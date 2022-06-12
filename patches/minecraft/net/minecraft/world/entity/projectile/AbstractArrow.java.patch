@@ -17,6 +17,23 @@
  
  public abstract class AbstractArrow extends Projectile {
     private static final double f_150120_ = 2.0D;
+@@ -64,6 +_,16 @@
+    @Nullable
+    private List<Entity> f_36702_;
+ 
++   // Spigot Start
++   @Override
++   public void inactiveTick() {
++      if (this.f_36703_) {
++         this.f_36697_ += 1;
++      }
++      super.inactiveTick();
++   }
++   // Spigot End
++
+    protected AbstractArrow(EntityType<? extends AbstractArrow> p_36721_, Level p_36722_) {
+       super(p_36721_, p_36722_);
+    }
 @@ -184,8 +_,8 @@
                 }
              }
