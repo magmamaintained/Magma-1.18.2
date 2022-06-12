@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1993 @@
+@@ -144,1693 +_,1999 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -580,6 +580,12 @@
 +    }
 +
 +    protected abstract boolean m_7038_() throws IOException;
++
++    // Magma WYML
++    // https://github.com/ThePaul-T/WYML/blob/64ddaaca62c2905c6b881c26364f9eb8e785ce64/common/src/main/java/net/creeperhost/wyml/mixins/MixinMinecraftServer.java#L61
++    protected void m_130006_() {
++        loadLevel(null);
++    }
 +
 +    protected void loadLevel(String s) { // CraftBukkit - added argument
 +        if (!JvmProfiler.f_185340_.m_183608_()) {
