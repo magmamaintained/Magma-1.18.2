@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1978 @@
+@@ -144,1693 +_,1993 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -146,6 +146,7 @@
 +import org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboardManager;
 +import org.bukkit.event.server.ServerLoadEvent;
 +import org.magmafoundation.magma.Magma;
++import org.magmafoundation.magma.Metrics;
 +import org.magmafoundation.magma.forge.ForgeInject;
  import org.slf4j.Logger;
  
@@ -487,7 +488,11 @@
 +    public final double[] recentTps = new double[ 3 ];
 +    // Spigot end
 +
++    // Magma start
++    private static MinecraftServer instance;
 +    private Magma magma;
++    private static Metrics metrics;
++    // Magma end
 +
 +    public static <S extends MinecraftServer> S m_129872_(Function<Thread, S> p_129873_) {
 +        AtomicReference<S> atomicreference = new AtomicReference<>();
@@ -509,6 +514,7 @@
 +
 +    public MinecraftServer(OptionSet options, DataPackConfig p_129768_, DynamicOps<Tag> registryreadops, Thread p_206546_, LevelStorageSource.LevelStorageAccess p_206547_, PackRepository p_206548_, WorldStem p_206549_, Proxy p_206550_, DataFixer p_206551_, @Nullable MinecraftSessionService p_206552_, @Nullable GameProfileRepository p_206553_, @Nullable GameProfileCache p_206554_, ChunkProgressListenerFactory p_206555_) {
 +        super("Server");
++        instance = this; // Magma
 +        this.f_129746_ = p_206549_.f_206894_();
 +        this.f_129749_ = p_206549_.f_206895_();
 +        this.f_129747_ = p_206550_;
@@ -542,6 +548,11 @@
 +        }
 +
 +        //Magma start - add magma
++        if(metrics == null){
++            metrics = new Metrics();
++            // metrics.addCustomChart(new Metrics.SimplePie("number_of_mods", () -> String.valueOf(ServerAPI.getModSize()))); // Report how many mods are running // MAGMA TODO: Add Server API
++        }
++
 +        this.magma = new Magma();
 +        //Magma end
 +
@@ -3603,6 +3614,10 @@
 +    @Deprecated
 +    public static MinecraftServer getServer() {
 +        return (Bukkit.getServer() instanceof CraftServer) ? ((CraftServer) Bukkit.getServer()).getServer() : null;
++    }
++
++    public static MinecraftServer getServerInstance() {
++        return instance;
 +    }
 +    // CraftBukkit end
 +
