@@ -100,7 +100,7 @@
        p_47030_.m_46473_().m_7238_();
     }
  
-@@ -179,13 +_,19 @@
+@@ -179,13 +_,20 @@
                          }
  
                          mob.m_7678_(d0, (double)i, d1, p_47040_.f_46441_.nextFloat() * 360.0F, 0.0F);
@@ -115,7 +115,8 @@
 -                           p_47044_.m_47100_(mob, p_47041_);
 -                           if (j >= mob.m_5792_()) {
 +                           // CraftBukkit start
-+                           p_47040_.addFreshEntityWithPassengers(mob, CreatureSpawnEvent.SpawnReason.NATURAL);
++                           p_47040_.m_47205_(mob); // , CreatureSpawnEvent.SpawnReason.NATURAL); // Magma TODO: Find a better way to add CreatureSpawnEvent.SpawnReason.NATURAL to this call
++                                                                       // Make Botania crash in mixin hell @https://github.com/VazkiiMods/Botania/blob/951bac20da6d8032b2db19a632d9fe3d4130930d/Xplat/src/main/java/vazkii/botania/mixin/MixinNaturalSpawner.java#L31
 +                           if (!mob.m_146910_()) {
 +                              ++j;
 +                              ++l1;
