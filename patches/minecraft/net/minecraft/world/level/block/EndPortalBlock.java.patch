@@ -1,6 +1,10 @@
 --- a/net/minecraft/world/level/block/EndPortalBlock.java
 +++ b/net/minecraft/world/level/block/EndPortalBlock.java
-@@ -5,6 +_,7 @@
+@@ -1,10 +_,10 @@
+ package net.minecraft.world.level.block;
+ 
+-import java.util.Random;
+ import net.minecraft.core.BlockPos;
  import net.minecraft.core.particles.ParticleTypes;
  import net.minecraft.resources.ResourceKey;
  import net.minecraft.server.level.ServerLevel;
@@ -8,7 +12,7 @@
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.BlockGetter;
-@@ -13,11 +_,14 @@
+@@ -13,11 +_,16 @@
  import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
  import net.minecraft.world.level.block.state.BlockBehaviour;
  import net.minecraft.world.level.block.state.BlockState;
@@ -20,6 +24,8 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
 +import org.bukkit.event.entity.EntityPortalEnterEvent;
 +import org.bukkit.event.player.PlayerTeleportEvent;
++
++import java.util.Random;
  
  public class EndPortalBlock extends BaseEntityBlock {
     protected static final VoxelShape f_53014_ = Block.m_49796_(0.0D, 6.0D, 0.0D, 16.0D, 12.0D, 16.0D);

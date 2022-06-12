@@ -152,7 +152,7 @@
  public class ServerLevel extends Level implements WorldGenLevel {
     public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
     private static final int f_184049_ = 12000;
-@@ -181,13 +_,29 @@
+@@ -181,23 +_,40 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -183,7 +183,10 @@
        this.f_8561_ = p_203773_;
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
-@@ -197,7 +_,7 @@
+       this.f_8549_ = p_203765_;
++      p_203769_.conf = spigotConfig; // Spigot
+       p_203769_.m_211700_();
+       boolean flag = p_203762_.m_6365_();
        DataFixer datafixer = p_203762_.m_129933_();
        EntityPersistentStorage<Entity> entitypersistentstorage = new EntityStorage(this, p_203764_.m_197394_(p_203766_).resolve("entities"), datafixer, flag, p_203762_);
        this.f_143244_ = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage);
@@ -712,7 +715,7 @@
           ServerLevel.this.m_7726_().m_8463_(p_143371_);
           if (p_143371_ instanceof ServerPlayer) {
              ServerPlayer serverplayer = (ServerPlayer)p_143371_;
-@@ -1497,17 +_,24 @@
+@@ -1497,17 +_,41 @@
              ServerLevel.this.f_143246_.add(mob);
           }
  
@@ -731,6 +734,23 @@
  
        public void m_141981_(Entity p_143375_) {
 +         org.spigotmc.AsyncCatcher.catchOp("entity unregister"); // Spigot
++         // Spigot start
++         if ( p_143375_ instanceof Player )
++         {
++            m_142572_().f_129762_.values().stream().map( ServerLevel::m_8895_ ).forEach( (worldData) ->
++            {
++               for (Object o : worldData.f_78144_.values() )
++               {
++                  if ( o instanceof MapItemSavedData )
++                  {
++                     MapItemSavedData map = (MapItemSavedData) o;
++                     map.f_77896_.remove( (Player) p_143375_ );
++                     map.f_77893_.removeIf( holdingPlayer -> holdingPlayer.f_77959_ == p_143375_ );
++                  }
++               }
++            } );
++         }
++         // Spigot end
 +         // Spigot Start
 +         if (p_143375_.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(p_143375_ instanceof ServerPlayer) || p_143375_.m_146911_() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
 +            for (org.bukkit.entity.HumanEntity h : Lists.newArrayList(((org.bukkit.inventory.InventoryHolder) p_143375_.getBukkitEntity()).getInventory().getViewers())) {

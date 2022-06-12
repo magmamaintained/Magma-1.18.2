@@ -5,22 +5,22 @@
 
 package net.minecraftforge.client.model.pipeline;
 
-import java.util.List;
-import java.util.Random;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.ForgeConfig;
+
+import java.util.List;
+import java.util.Random;
 
 public class ForgeBlockModelRenderer extends ModelBlockRenderer
 {
@@ -39,10 +39,11 @@ public class ForgeBlockModelRenderer extends ModelBlockRenderer
     @Override
     public boolean tesselateWithoutAO(BlockAndTintGetter level, BakedModel model, BlockState state, BlockPos pos, PoseStack poseStack, VertexConsumer buffer, boolean checkSides, Random rand, long seed, int packedOverlay, IModelData modelData)
     {
-        if(ForgeConfig.CLIENT.forgeLightPipelineEnabled.get())
+        if(ForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.get())
         {
             VertexBufferConsumer consumer = consumerFlat.get();
             consumer.setBuffer(buffer);
+            consumer.setPackedOverlay(packedOverlay);
 
             VertexLighterFlat lighter = lighterFlat.get();
             lighter.setParent(consumer);
@@ -59,10 +60,11 @@ public class ForgeBlockModelRenderer extends ModelBlockRenderer
     @Override
     public boolean tesselateWithAO(BlockAndTintGetter level, BakedModel model, BlockState state, BlockPos pos, PoseStack poseStack, VertexConsumer buffer, boolean checkSides, Random rand, long seed, int packedOverlay, IModelData modelData)
     {
-        if(ForgeConfig.CLIENT.forgeLightPipelineEnabled.get())
+        if(ForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.get())
         {
             VertexBufferConsumer consumer = consumerSmooth.get();
             consumer.setBuffer(buffer);
+            consumer.setPackedOverlay(packedOverlay);
 
             VertexLighterSmoothAo lighter = lighterSmooth.get();
             lighter.setParent(consumer);

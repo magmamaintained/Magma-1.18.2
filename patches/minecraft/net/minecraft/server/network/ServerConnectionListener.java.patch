@@ -1,7 +1,58 @@
 --- a/net/minecraft/server/network/ServerConnectionListener.java
 +++ b/net/minecraft/server/network/ServerConnectionListener.java
-@@ -50,11 +_,12 @@
+@@ -4,14 +_,7 @@
+ import com.google.common.util.concurrent.ThreadFactoryBuilder;
+ import com.mojang.logging.LogUtils;
+ import io.netty.bootstrap.ServerBootstrap;
+-import io.netty.channel.Channel;
+-import io.netty.channel.ChannelException;
+-import io.netty.channel.ChannelFuture;
+-import io.netty.channel.ChannelHandlerContext;
+-import io.netty.channel.ChannelInboundHandlerAdapter;
+-import io.netty.channel.ChannelInitializer;
+-import io.netty.channel.ChannelOption;
+-import io.netty.channel.EventLoopGroup;
++import io.netty.channel.*;
+ import io.netty.channel.epoll.Epoll;
+ import io.netty.channel.epoll.EpollEventLoopGroup;
+ import io.netty.channel.epoll.EpollServerSocketChannel;
+@@ -24,22 +_,9 @@
+ import io.netty.util.HashedWheelTimer;
+ import io.netty.util.Timeout;
+ import io.netty.util.Timer;
+-import java.io.IOException;
+-import java.net.InetAddress;
+-import java.net.SocketAddress;
+-import java.util.Collections;
+-import java.util.Iterator;
+-import java.util.List;
+-import java.util.concurrent.TimeUnit;
+-import javax.annotation.Nullable;
+ import net.minecraft.CrashReport;
+ import net.minecraft.ReportedException;
+-import net.minecraft.network.Connection;
+-import net.minecraft.network.PacketDecoder;
+-import net.minecraft.network.PacketEncoder;
+-import net.minecraft.network.RateKickingConnection;
+-import net.minecraft.network.Varint21FrameDecoder;
+-import net.minecraft.network.Varint21LengthFieldPrepender;
++import net.minecraft.network.*;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.TextComponent;
+ import net.minecraft.network.protocol.PacketFlow;
+@@ -48,13 +_,23 @@
+ import net.minecraft.util.LazyLoadedValue;
+ import org.slf4j.Logger;
  
++import javax.annotation.Nullable;
++import java.io.IOException;
++import java.net.InetAddress;
++import java.net.SocketAddress;
++import java.util.Collections;
++import java.util.Iterator;
++import java.util.List;
++import java.util.concurrent.TimeUnit;
++
  public class ServerConnectionListener {
     private static final Logger f_9701_ = LogUtils.getLogger();
 +   private static final int READ_TIMEOUT = Integer.parseInt(System.getProperty("forge.readTimeout", "30"));
@@ -54,3 +105,28 @@
  
     public SocketAddress m_9708_() {
        ChannelFuture channelfuture;
+@@ -130,6 +_,13 @@
+ 
+    public void m_9721_() {
+       synchronized(this.f_9704_) {
++         // Spigot Start
++         // This prevents players from 'gaming' the server, and strategically relogging to increase their position in the tick order
++         if ( org.spigotmc.SpigotConfig.playerShuffle > 0 && MinecraftServer.currentTick % org.spigotmc.SpigotConfig.playerShuffle == 0 )
++         {
++            Collections.shuffle( this.f_9704_ );
++         }
++         // Spigot End
+          Iterator<Connection> iterator = this.f_9704_.iterator();
+ 
+          while(iterator.hasNext()) {
+@@ -151,6 +_,10 @@
+                      connection.m_129540_();
+                   }
+                } else {
++                  // Spigot Start
++                  // Fix a race condition where a NetworkManager could be unregistered just before connection.
++                  if (connection.preparing) continue;
++                  // Spigot End
+                   iterator.remove();
+                   connection.m_129541_();
+                }

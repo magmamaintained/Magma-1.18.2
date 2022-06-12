@@ -1,18 +1,33 @@
 --- a/net/minecraft/commands/CommandSourceStack.java
 +++ b/net/minecraft/commands/CommandSourceStack.java
-@@ -14,6 +_,7 @@
- import java.util.function.BinaryOperator;
- import java.util.stream.Stream;
- import javax.annotation.Nullable;
+@@ -7,13 +_,7 @@
+ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+ import com.mojang.brigadier.suggestion.Suggestions;
+ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+-import java.util.Collection;
+-import java.util.Objects;
+-import java.util.Set;
+-import java.util.concurrent.CompletableFuture;
+-import java.util.function.BinaryOperator;
+-import java.util.stream.Stream;
+-import javax.annotation.Nullable;
 +import com.mojang.brigadier.tree.CommandNode;
  import net.minecraft.ChatFormatting;
  import net.minecraft.Util;
  import net.minecraft.commands.arguments.EntityAnchorArgument;
-@@ -35,7 +_,7 @@
+@@ -35,7 +_,15 @@
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
  
 -public class CommandSourceStack implements SharedSuggestionProvider {
++import javax.annotation.Nullable;
++import java.util.Collection;
++import java.util.Objects;
++import java.util.Set;
++import java.util.concurrent.CompletableFuture;
++import java.util.function.BinaryOperator;
++import java.util.stream.Stream;
++
 +public class CommandSourceStack implements SharedSuggestionProvider, net.minecraftforge.common.extensions.IForgeCommandSourceStack {
     public static final SimpleCommandExceptionType f_81286_ = new SimpleCommandExceptionType(new TranslatableComponent("permissions.requires.player"));
     public static final SimpleCommandExceptionType f_81287_ = new SimpleCommandExceptionType(new TranslatableComponent("permissions.requires.entity"));
@@ -48,7 +63,7 @@
     public Vec3 m_81371_() {
        return this.f_81289_;
     }
-@@ -207,7 +_,7 @@
+@@ -207,13 +_,13 @@
        Component component = (new TranslatableComponent("chat.type.admin", this.m_81357_(), p_81367_)).m_130944_(new ChatFormatting[]{ChatFormatting.GRAY, ChatFormatting.ITALIC});
        if (this.f_81294_.m_129900_().m_46207_(GameRules.f_46144_)) {
           for(ServerPlayer serverplayer : this.f_81294_.m_6846_().m_11314_()) {
@@ -57,6 +72,13 @@
                 serverplayer.m_6352_(component, Util.f_137441_);
              }
           }
+       }
+ 
+-      if (this.f_81288_ != this.f_81294_ && this.f_81294_.m_129900_().m_46207_(GameRules.f_46141_)) {
++      if (this.f_81288_ != this.f_81294_ && this.f_81294_.m_129900_().m_46207_(GameRules.f_46141_) && !org.spigotmc.SpigotConfig.silentCommandBlocks) { // Spigot
+          this.f_81294_.m_6352_(component, Util.f_137441_);
+       }
+ 
 @@ -267,4 +_,10 @@
     public RegistryAccess m_5894_() {
        return this.f_81294_.m_206579_();

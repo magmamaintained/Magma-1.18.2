@@ -5,16 +5,15 @@
 
 package net.minecraftforge.common;
 
-import static net.minecraftforge.fml.Logging.FORGEMOD;
-
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import static net.minecraftforge.fml.Logging.FORGEMOD;
 
 
 public class ForgeConfig {
@@ -120,9 +119,7 @@ public class ForgeConfig {
     public static class Client {
         public final BooleanValue alwaysSetupTerrainOffThread;
 
-        public final BooleanValue forgeLightPipelineEnabled;
 
-        @Deprecated(forRemoval = true, since = "1.18.2")
         public final BooleanValue experimentalForgeLightPipelineEnabled;
 
         public final BooleanValue showLoadWarnings;
@@ -141,11 +138,6 @@ public class ForgeConfig {
                         "Not recommended for computers without a significant number of cores available.")
                 .translation("forge.configgui.alwaysSetupTerrainOffThread")
                 .define("alwaysSetupTerrainOffThread", false);
-
-            forgeLightPipelineEnabled = builder
-                    .comment("Enable the Forge block rendering pipeline - fixes the lighting of custom models.")
-                    .translation("forge.configgui.forgeLightPipelineEnabled")
-                    .define("forgeLightPipelineEnabled", true);
 
             experimentalForgeLightPipelineEnabled = builder
                 .comment("EXPERIMENTAL: Enable the Forge block rendering pipeline - fixes the lighting of custom models.")

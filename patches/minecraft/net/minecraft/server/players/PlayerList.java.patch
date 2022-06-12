@@ -7,22 +7,21 @@
  import com.google.common.collect.Lists;
  import com.google.common.collect.Maps;
  import com.google.common.collect.Sets;
-@@ -9,17 +_,13 @@
+@@ -7,19 +_,7 @@
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Dynamic;
  import io.netty.buffer.Unpooled;
- import java.io.File;
- import java.net.SocketAddress;
+-import java.io.File;
+-import java.net.SocketAddress;
 -import java.nio.file.Path;
- import java.text.SimpleDateFormat;
+-import java.text.SimpleDateFormat;
 -import java.util.List;
 -import java.util.Map;
 -import java.util.Optional;
 -import java.util.Set;
 -import java.util.UUID;
-+import java.util.*;
-+import java.util.concurrent.CopyOnWriteArrayList;
- import java.util.function.Function;
-+import java.util.stream.Collectors;
- import javax.annotation.Nullable;
+-import java.util.function.Function;
+-import javax.annotation.Nullable;
  import net.minecraft.ChatFormatting;
 -import net.minecraft.FileUtil;
  import net.minecraft.Util;
@@ -70,7 +69,7 @@
  import net.minecraft.sounds.SoundEvents;
  import net.minecraft.sounds.SoundSource;
  import net.minecraft.stats.ServerStatsCounter;
-@@ -90,6 +_,15 @@
+@@ -90,8 +_,26 @@
  import net.minecraft.world.scores.Objective;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
@@ -85,7 +84,18 @@
 +import org.magmafoundation.magma.forge.ForgeInject;
  import org.slf4j.Logger;
  
++import javax.annotation.Nullable;
++import java.io.File;
++import java.net.SocketAddress;
++import java.text.SimpleDateFormat;
++import java.util.*;
++import java.util.concurrent.CopyOnWriteArrayList;
++import java.util.function.Function;
++import java.util.stream.Collectors;
++
  public abstract class PlayerList {
+    public static final File f_11189_ = new File("banned-players.json");
+    public static final File f_11190_ = new File("banned-ips.json");
 @@ -101,14 +_,16 @@
     private static final int f_143987_ = 600;
     private static final SimpleDateFormat f_11194_ = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
@@ -138,11 +148,24 @@
        ResourceKey<Level> resourcekey = compoundtag != null ? DimensionType.m_63911_(new Dynamic<>(NbtOps.f_128958_, compoundtag.m_128423_("Dimension"))).resultOrPartial(f_11188_::error).orElse(Level.f_46428_) : Level.f_46428_;
        ServerLevel serverlevel = this.f_11195_.m_129880_(resourcekey);
        ServerLevel serverlevel1;
-@@ -149,18 +_,23 @@
+@@ -149,18 +_,36 @@
           s1 = p_11262_.m_129523_().toString();
        }
  
 -      f_11188_.info("{}[{}] logged in with entity id {} at ({}, {}, {})", p_11263_.m_7755_().getString(), s1, p_11263_.m_142049_(), p_11263_.m_20185_(), p_11263_.m_20186_(), p_11263_.m_20189_());
++      // Spigot start - spawn location event
++      org.bukkit.entity.Player spawnPlayer = p_11263_.getBukkitEntity();
++      org.spigotmc.event.player.PlayerSpawnLocationEvent ev = new org.spigotmc.event.player.PlayerSpawnLocationEvent(spawnPlayer, spawnPlayer.getLocation());
++      cserver.getPluginManager().callEvent(ev);
++
++      Location loc = ev.getSpawnLocation();
++      serverlevel = ((CraftWorld) loc.getWorld()).getHandle();
++
++      p_11263_.spawnIn(serverlevel);
++      p_11263_.f_8941_.m_9260_((ServerLevel) p_11263_.f_19853_);
++      p_11263_.m_19890_(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
++      // Spigot end
++
 +      // CraftBukkit - Moved message to after join
 +      // LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", p_11263_.getName().getString(), s1, p_11263_.getId(), p_11263_.getX(), p_11263_.getY(), p_11263_.getZ());
        LevelData leveldata = serverlevel1.m_6106_();

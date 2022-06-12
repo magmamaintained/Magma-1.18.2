@@ -55,7 +55,7 @@
  import net.minecraft.world.level.entity.EntityTypeTest;
  import net.minecraft.world.level.entity.LevelEntityGetter;
  import net.minecraft.world.level.gameevent.GameEvent;
-@@ -59,845 +_,1144 @@
+@@ -59,845 +_,1155 @@
  import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
  import net.minecraft.world.level.storage.LevelData;
@@ -299,6 +299,7 @@
 +    public boolean populating;
 +    public final SpigotTimings.WorldTimingsHandler timings; // Spigot
 +    public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
++    public static BlockPos lastPhysicsProblem; // Spigot
 +
 +    public CraftWorld getWorld() {
 +        return this.world;
@@ -877,7 +878,13 @@
 +                }
 +
 +                if (blockSnapshot == null) { // Don't notify clients or update physics while capturing blockstates
-+                    this.markAndNotifyBlock( p_46605_, levelchunk, blockstate, p_46606_, p_46607_, p_46608_ );
++                    // Spigot start
++                    try {
++                        this.markAndNotifyBlock( p_46605_, levelchunk, blockstate, p_46606_, p_46607_, p_46608_ );
++                    } catch (StackOverflowError ex) {
++                        lastPhysicsProblem = new BlockPos(p_46605_);
++                    }
++                    // Spigot end
 +                }
 +
 +                return true;
@@ -1036,6 +1043,10 @@
 +                }
 +                // CraftBukkit end
 +                blockstate.m_60690_( this, p_46587_, p_46588_, p_46589_, false );
++                // Spigot Start
++            } catch (StackOverflowError ex) {
++                lastPhysicsProblem = new BlockPos(p_46587_);
++                // Spigot End
 +            } catch (Throwable throwable) {
 +                CrashReport crashreport = CrashReport.m_127521_( throwable, "Exception while updating neighbours" );
 +                CrashReportCategory crashreportcategory = crashreport.m_127514_( "Block being updated" );

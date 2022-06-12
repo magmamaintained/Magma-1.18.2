@@ -1,26 +1,41 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -8,13 +_,17 @@
+@@ -8,13 +_,6 @@
  import com.mojang.logging.LogUtils;
  import com.mojang.serialization.DynamicOps;
  import com.mojang.serialization.Lifecycle;
-+
- import java.awt.GraphicsEnvironment;
- import java.io.File;
- import java.net.Proxy;
- import java.nio.file.Path;
- import java.nio.file.Paths;
-+import java.util.Arrays;
- import java.util.Optional;
-+import java.util.concurrent.atomic.AtomicReference;
- import java.util.function.BooleanSupplier;
-+
+-import java.awt.GraphicsEnvironment;
+-import java.io.File;
+-import java.net.Proxy;
+-import java.nio.file.Path;
+-import java.nio.file.Paths;
+-import java.util.Optional;
+-import java.util.function.BooleanSupplier;
  import joptsimple.OptionParser;
  import joptsimple.OptionSet;
  import joptsimple.OptionSpec;
-@@ -56,184 +_,274 @@
+@@ -48,192 +_,297 @@
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.LevelSettings;
+ import net.minecraft.world.level.levelgen.WorldGenSettings;
+-import net.minecraft.world.level.storage.LevelResource;
+-import net.minecraft.world.level.storage.LevelStorageSource;
+-import net.minecraft.world.level.storage.LevelSummary;
+-import net.minecraft.world.level.storage.PrimaryLevelData;
+-import net.minecraft.world.level.storage.WorldData;
++import net.minecraft.world.level.storage.*;
  import org.slf4j.Logger;
  
++import java.awt.*;
++import java.io.File;
++import java.net.Proxy;
++import java.nio.file.Path;
++import java.nio.file.Paths;
++import java.util.Arrays;
++import java.util.Optional;
++import java.util.concurrent.atomic.AtomicReference;
++import java.util.function.BooleanSupplier;
++
  public class Main {
 -   private static final Logger f_129670_ = LogUtils.getLogger();
 -
@@ -224,7 +239,16 @@
 +            Path path1 = Paths.get("eula.txt");
 +            Eula eula = new Eula(path1);
 +
-+            if (!eula.m_135944_()) {
++            // Spigot Start
++            boolean eulaAgreed = Boolean.getBoolean( "com.mojang.eula.agree" );
++            if ( eulaAgreed )
++            {
++                System.err.println( "You have used the Spigot command line EULA agreement flag." );
++                System.err.println( "By using this setting you are indicating your agreement to Mojang's EULA (https://account.mojang.com/documents/minecraft_eula)." );
++                System.err.println( "If you do not agree to the above EULA please stop your server and remove this flag immediately." );
++            }
++            // Spigot End
++            if (!eula.m_135944_() && !eulaAgreed) { // Spigot
 +                f_129670_.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
 +                return;
 +            }

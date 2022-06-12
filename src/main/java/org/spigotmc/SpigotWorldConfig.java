@@ -261,4 +261,66 @@ public class SpigotWorldConfig
         nerfSpawnerMobs = getBoolean( "nerf-spawner-mobs", false );
         log( "Nerfing mobs spawned from spawners: " + nerfSpawnerMobs );
     }
+
+
+    public boolean enableZombiePigmenPortalSpawns;
+    private void enableZombiePigmenPortalSpawns()
+    {
+        enableZombiePigmenPortalSpawns = getBoolean( "enable-zombie-pigmen-portal-spawns", true );
+        log( "Allow Zombie Pigmen to spawn from portal blocks: " + enableZombiePigmenPortalSpawns );
+    }
+
+    public int dragonDeathSoundRadius;
+    private void keepDragonDeathPerWorld()
+    {
+        dragonDeathSoundRadius = getInt( "dragon-death-sound-radius", 0 );
+    }
+
+    public int witherSpawnSoundRadius;
+    private void witherSpawnSoundRadius()
+    {
+        witherSpawnSoundRadius = getInt( "wither-spawn-sound-radius", 0 );
+    }
+
+    public int endPortalSoundRadius;
+    private void endPortalSoundRadius()
+    {
+        endPortalSoundRadius = getInt( "end-portal-sound-radius", 0 );
+    }
+
+    public int villageSeed;
+    public int desertSeed;
+    public int iglooSeed;
+    public int jungleSeed;
+    public int swampSeed;
+    public int monumentSeed;
+    public int oceanSeed;
+    public int outpostSeed;
+    public int shipwreckSeed;
+    public int slimeSeed;
+    public int endCitySeed;
+    public int netherSeed;
+    public int mansionSeed;
+    public int fossilSeed;
+    public int portalSeed;
+    private void initWorldGenSeeds()
+    {
+        villageSeed = getInt( "seed-village", 10387312 );
+        desertSeed = getInt( "seed-desert", 14357617 );
+        iglooSeed = getInt( "seed-igloo", 14357618 );
+        jungleSeed = getInt( "seed-jungle", 14357619 );
+        swampSeed = getInt( "seed-swamp", 14357620 );
+        monumentSeed = getInt( "seed-monument", 10387313 );
+        shipwreckSeed = getInt( "seed-shipwreck", 165745295 );
+        oceanSeed = getInt( "seed-ocean", 14357621 );
+        outpostSeed = getInt( "seed-outpost", 165745296 );
+        endCitySeed = getInt( "seed-endcity", 10387313 );
+        slimeSeed = getInt( "seed-slime", 987234911 );
+        netherSeed = getInt( "seed-nether", 30084232 );
+        mansionSeed = getInt( "seed-mansion", 10387319 );
+        fossilSeed = getInt( "seed-fossil", 14357921 );
+        portalSeed = getInt( "seed-portal", 34222645 );
+        log( "Custom Map Seeds:  Village: " + villageSeed + " Desert: " + desertSeed + " Igloo: " + iglooSeed + " Jungle: " + jungleSeed + " Swamp: " + swampSeed + " Monument: " + monumentSeed
+                + " Ocean: " + oceanSeed + " Shipwreck: " + shipwreckSeed + " End City: " + endCitySeed + " Slime: " + slimeSeed + " Nether: " + netherSeed + " Mansion: " + mansionSeed + " Fossil: " + fossilSeed + " Portal: " + portalSeed );
+    }
 }
