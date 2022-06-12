@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1976 @@
+@@ -144,1693 +_,1978 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -2539,6 +2539,7 @@
 +                }
 +                // CraftBukkit end
 +                this.m_6988_();
++                Runtime.getRuntime().halt(0);
 +            }
 +
 +        }
@@ -2655,6 +2656,7 @@
 +    }
 +
 +    public void m_6988_() {
++        System.exit(0);
 +    }
 +
 +    public void m_5705_(BooleanSupplier p_129871_) {
