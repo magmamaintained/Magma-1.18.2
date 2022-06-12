@@ -227,7 +227,7 @@
        if (!this.m_46659_()) {
           long k = this.m_46467_();
           profilerfiller.m_6180_("blockTicks");
-@@ -272,28 +_,33 @@
+@@ -272,28 +_,34 @@
           this.f_184047_.m_193225_(k, 65536, this::m_184076_);
           profilerfiller.m_7238_();
        }
@@ -258,6 +258,7 @@
              profilerfiller.m_7238_();
           }
  
++         org.spigotmc.ActivationRange.activateEntities(this); // Spigot
 +         timings.entityTick.startTiming(); // Spigot
           this.f_143243_.m_156910_((p_184065_) -> {
              if (!p_184065_.m_146910_()) {
@@ -312,10 +313,17 @@
        }
  
     }
-@@ -633,6 +_,7 @@
+@@ -633,6 +_,14 @@
     }
  
     public void m_8647_(Entity p_8648_) {
++      // Spigot start
++      if (!org.spigotmc.ActivationRange.checkIfActive(p_8648_)) {
++         p_8648_.f_19797_++;
++         p_8648_.inactiveTick();
++         return;
++      }
++      // Spigot end
 +      p_8648_.tickTimer.startTiming(); // Spigot
        p_8648_.m_146867_();
        ProfilerFiller profilerfiller = this.m_46473_();
