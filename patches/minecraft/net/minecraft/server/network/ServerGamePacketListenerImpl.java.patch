@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2422 @@
+@@ -118,1340 +_,2443 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -330,6 +330,7 @@
 +    private float lastPitch = Float.MAX_VALUE;
 +    private float lastYaw = Float.MAX_VALUE;
 +    private boolean justTeleported = false;
++    private boolean hasMoved; // Spigot
 +
 +    public CraftPlayer getCraftPlayer() {
 +        return (this.f_9743_ == null) ? null : (CraftPlayer) this.f_9743_.getBukkitEntity();
@@ -697,6 +698,7 @@
 +                    flag2 = true;
 +                    f_9744_.warn( "{} (vehicle of {}) moved wrongly! {}", entity.m_7755_().getString(), this.f_9743_.m_7755_().getString(), Math.sqrt( d10 ) );
 +                }
++                Location curPos = this.getCraftPlayer().getLocation(); // Spigot
 +
 +                entity.m_19890_( d3, d4, d5, f, f1 );
 +                f_9743_.m_19890_(d3, d4, d5, this.f_9743_.m_146908_(), this.f_9743_.m_146909_()); // CraftBukkit
@@ -712,6 +714,17 @@
 +
 +                // CraftBukkit start - fire PlayerMoveEvent
 +                org.bukkit.entity.Player player = this.getCraftPlayer();
++                // Spigot Start
++                if ( !hasMoved )
++                {
++                    lastPosX = curPos.getX();
++                    lastPosY = curPos.getY();
++                    lastPosZ = curPos.getZ();
++                    lastYaw = curPos.getYaw();
++                    lastPitch = curPos.getPitch();
++                    hasMoved = true;
++                }
++                // Spigot End
 +                Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
 +                Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
 +
@@ -736,7 +749,7 @@
 +                    this.lastPitch = to.getPitch();
 +
 +                    // Skip the first time we do this
-+                    if (from.getX() != Double.MAX_VALUE) {
++                    if (true) { // Spigot - don't skip any move events
 +                        Location oldTo = to.clone();
 +                        PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
 +                        this.cserver.getPluginManager().callEvent(event);
@@ -2360,7 +2373,8 @@
 +    private void m_9957_(String p_9958_) {
 +        SpigotTimings.playerCommandTimer.startTiming(); // Spigot
 +        // CraftBukkit start - whole method
-+        f_9744_.info( this.f_9743_.m_6302_() + " issued server command: " + p_9958_ );
++        if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
++            f_9744_.info( this.f_9743_.m_6302_() + " issued server command: " + p_9958_ );
 +
 +        CraftPlayer player = this.getCraftPlayer();
 +
@@ -2501,6 +2515,13 @@
 +        if (this.f_9743_.m_6107_()) return; // CraftBukkit
 +        ServerLevel serverlevel = this.f_9743_.m_183503_();
 +        final Entity entity = p_9866_.m_179603_( serverlevel );
++        // Spigot Start
++        if ( entity == f_9743_ && !f_9743_.m_5833_() )
++        {
++            disconnect( "Cannot interact with self!" );
++            return;
++        }
++        // Spigot End
 +        this.f_9743_.m_9243_();
 +        this.f_9743_.m_20260_( p_9866_.m_134061_() );
 +        if (entity != null) {

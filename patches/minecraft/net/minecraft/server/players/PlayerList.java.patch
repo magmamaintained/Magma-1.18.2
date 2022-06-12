@@ -427,7 +427,7 @@
 -      } else if (this.f_11199_.m_11041_(p_11257_)) {
 -         IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(p_11257_);
 +         chatmessage = new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
-+         event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, CraftChatMessage.fromComponent(chatmessage));
++         event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, org.spigotmc.SpigotConfig.whitelistMessage); // Spigot
 +      } else if (m_11299_().m_11041_(socketaddress) && !m_11299_().m_11043_(socketaddress).m_7524_()) {
 +         IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(socketaddress);
           MutableComponent mutablecomponent = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.m_10962_());
@@ -443,7 +443,7 @@
 -      }
 +         // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
 +         if (this.f_11196_.size() >= this.f_11193_ && !this.m_5765_(p_11258_)) {
-+            event.disallow(PlayerLoginEvent.Result.KICK_FULL, "The server is full");
++            event.disallow(PlayerLoginEvent.Result.KICK_FULL, org.spigotmc.SpigotConfig.serverFullMessage); // Spigot
 +         }
 +      }
 +
@@ -525,7 +525,7 @@
        serverplayer.f_8906_ = p_11237_.f_8906_;
        serverplayer.m_9015_(p_11237_, p_11238_);
        serverplayer.m_20234_(p_11237_.m_142049_());
-@@ -418,46 +_,109 @@
+@@ -418,46 +_,114 @@
        }
  
        boolean flag2 = false;
@@ -584,6 +584,11 @@
 +         org.bukkit.entity.Player respawnPlayer = serverplayer.getBukkitEntity();
 +         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(respawnPlayer, location, isBedSpawn && !flag2, flag2);
 +         cserver.getPluginManager().callEvent(respawnEvent);
++         // Spigot Start
++         if (p_11237_.f_8906_.isDisconnected()) {
++            return p_11237_;
++         }
++         // Spigot End
 +         location = respawnEvent.getRespawnLocation();
 +         if (!flag) p_11237_.reset(); // SPIGOT-4785
 +      } else {

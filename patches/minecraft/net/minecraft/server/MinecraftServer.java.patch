@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1928 @@
+@@ -144,1693 +_,1930 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -2491,6 +2491,7 @@
 +                    this.f_129723_.m_196559_();
 +                }
 +
++                org.spigotmc.WatchdogThread.doStop(); // Spigot
 +                net.minecraftforge.server.ServerLifecycleHooks.handleServerStopped(this);
 +                // CraftBukkit start - Restore terminal to original settings
 +                try {
@@ -2662,6 +2663,7 @@
 +        long i1 = Util.m_137569_();
 +        this.f_129735_.m_13755_(i1 - i);
 +        this.f_129754_.m_7238_();
++        org.spigotmc.WatchdogThread.tick(); // Spigot
 +        net.minecraftforge.event.ForgeEventFactory.onPostServerTick(p_129871_);
 +        SpigotTimings.serverTickTimer.stopTiming(); // Spigot
 +        org.spigotmc.CustomTimingsHandler.tick(); // Spigot
