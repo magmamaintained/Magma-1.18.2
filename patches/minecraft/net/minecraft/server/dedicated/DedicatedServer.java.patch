@@ -33,7 +33,7 @@
  import net.minecraft.network.chat.Component;
  import net.minecraft.server.ConsoleInput;
  import net.minecraft.server.MinecraftServer;
-@@ -52,13 +_,36 @@
+@@ -52,13 +_,37 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.CreativeModeTab;
  import net.minecraft.world.item.Items;
@@ -52,6 +52,7 @@
 +import org.bukkit.craftbukkit.v1_18_R2.util.TerminalConsoleWriterThread;
 +import org.bukkit.event.server.RemoteServerCommandEvent;
 +import org.bukkit.event.server.ServerCommandEvent;
++import org.magmafoundation.magma.configuration.MagmaConfig;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -151,7 +152,7 @@
        thread.setDaemon(true);
        thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_139598_));
        thread.start();
-@@ -120,13 +_,19 @@
+@@ -120,13 +_,23 @@
           this.m_129913_(dedicatedserverproperties.f_139730_);
        }
  
@@ -160,6 +161,10 @@
 +      org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
 +      org.spigotmc.SpigotConfig.registerCommands();
 +      // Spigot end
++
++      // Magma start
++      MagmaConfig.instance.registerCommands();
++      // Magma end
 +
        this.m_129997_(dedicatedserverproperties.f_139733_);
        this.m_129999_(dedicatedserverproperties.f_139734_);
