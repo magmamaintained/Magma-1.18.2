@@ -172,7 +172,7 @@
        f_139598_.info("Default game type: {}", (Object)dedicatedserverproperties.f_139740_);
        InetAddress inetaddress = null;
        if (!this.m_130009_().isEmpty()) {
-@@ -149,6 +_,11 @@
+@@ -149,10 +_,22 @@
           return false;
        }
  
@@ -184,6 +184,18 @@
        if (!this.m_129797_()) {
           f_139598_.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
           f_139598_.warn("The server will make no attempt to authenticate usernames. Beware.");
+-         f_139598_.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
++         // Spigot start
++         if (org.spigotmc.SpigotConfig.bungee) {
++            DedicatedServer.f_139598_.warn("Whilst this makes it possible to use BungeeCord, unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
++            DedicatedServer.f_139598_.warn("Please see http://www.spigotmc.org/wiki/firewall-guide/ for further information.");
++         } else {
++            DedicatedServer.f_139598_.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
++         }
++         // Spigot end
+          f_139598_.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
+       }
+ 
 @@ -163,15 +_,16 @@
        if (!OldUsersConverter.m_11106_(this)) {
           return false;

@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1943 @@
+@@ -144,1693 +_,1976 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -480,6 +480,12 @@
 +    public Commands vanillaCommandDispatcher;
 +    private boolean forceTicks;
 +    // CraftBukkit end
++    // Spigot start
++    public static final int TPS = 20;
++    public static final int TICK_TIME = 1000000000 / TPS;
++    private static final int SAMPLE_INTERVAL = 100;
++    public final double[] recentTps = new double[ 3 ];
++    // Spigot end
 +
 +    private Magma magma;
 +
@@ -2393,6 +2399,13 @@
 +            f_129750_.error("Failed to unlock level {}", this.f_129744_.m_78277_(), ioexception);
 +        }
 +
++        // Spigot start
++        if (org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly) {
++            f_129750_.info("Saving usercache.json");
++            this.m_129927_().m_11006_();
++        }
++        // Spigot end
++
 +    }
 +
 +    public String m_130009_() {
@@ -2423,6 +2436,13 @@
 +
 +    }
 +
++    // Spigot Start
++    private static double calcTps(double avg, double exp, double tps)
++    {
++        return ( avg * exp ) + ( tps * ( 1 - exp ) );
++    }
++    // Spigot End
++
 +    protected void m_130011_() {
 +        try {
 +            if (this.m_7038_()) {
@@ -2432,8 +2452,11 @@
 +                this.f_129757_.m_134912_(new ServerStatus.Version(SharedConstants.m_183709_().getName(), SharedConstants.m_183709_().getProtocolVersion()));
 +                this.m_129878_(this.f_129757_);
 +
++               // Spigot start
++                Arrays.fill( recentTps, 20 );
++                long curTime, tickSection = Util.m_137550_(), tickCount = 1;
 +                while (this.f_129764_) {
-+                    long i = Util.m_137550_() - this.f_129726_;
++                    long i = (curTime = Util.m_137550_()) - this.f_129726_;
 +                    if (i > 5000L && this.f_129726_ - this.f_129718_ >= 30000L) { // CraftBukkit
 +                        long j = i / 50L;
 +                        if (server.getWarnOnOverload()) // CraftBukkit
@@ -2441,6 +2464,16 @@
 +                        this.f_129726_ += j * 50L;
 +                        this.f_129718_ = this.f_129726_;
 +                    }
++
++                    if ( tickCount++ % SAMPLE_INTERVAL == 0 )
++                    {
++                        double currentTps = 1E3 / ( curTime - tickSection ) * SAMPLE_INTERVAL;
++                        recentTps[0] = calcTps( recentTps[0], 0.92, currentTps ); // 1/exp(5sec/1min)
++                        recentTps[1] = calcTps( recentTps[1], 0.9835, currentTps ); // 1/exp(5sec/5min)
++                        recentTps[2] = calcTps( recentTps[2], 0.9945, currentTps ); // 1/exp(5sec/15min)
++                        tickSection = curTime;
++                    }
++                    // Spigot end
 +
 +                    if (this.f_177877_) {
 +                        this.f_177877_ = false;
