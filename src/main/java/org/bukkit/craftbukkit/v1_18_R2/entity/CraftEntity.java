@@ -412,6 +412,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         } else if (entity instanceof Marker) {
             return new CraftMarker(server, (Marker) entity);
         }
+        //Magma - instead of throwing an AssertionError we return a custom entity
         return new CraftCustomEntity(server, entity);
         // CHECKSTYLE:ON
     }
