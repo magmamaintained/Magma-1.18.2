@@ -54,6 +54,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
+import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
 
 public abstract class CraftEntity implements org.bukkit.entity.Entity {
     private static PermissibleBase perm;
@@ -411,9 +412,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         } else if (entity instanceof Marker) {
             return new CraftMarker(server, (Marker) entity);
         }
+        return new CraftCustomEntity(server, entity);
         // CHECKSTYLE:ON
-
-        throw new AssertionError("Unknown entity " + (entity == null ? null : entity.getClass()));
     }
 
     @Override
