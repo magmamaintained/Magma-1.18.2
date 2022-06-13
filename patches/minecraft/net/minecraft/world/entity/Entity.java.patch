@@ -173,7 +173,7 @@
     protected Object2DoubleMap<TagKey<Fluid>> f_19799_ = new Object2DoubleArrayMap<>(2);
     protected boolean f_19800_;
     private final Set<TagKey<Fluid>> f_19801_ = new HashSet<>();
-@@ -228,7 +_,37 @@
+@@ -228,7 +_,41 @@
     @Nullable
     private BlockState f_185934_ = null;
  
@@ -204,6 +204,10 @@
 +      return f_19853_.m_7232_((int) Math.floor(this.m_20185_()) >> 4, (int) Math.floor(this.m_20189_()) >> 4);
 +   }
 +   // CraftBukkit end
++
++   //Magma start - add entity spawn reason in the entity class
++   public CreatureSpawnEvent.SpawnReason spawnReason = CreatureSpawnEvent.SpawnReason.DEFAULT;
++   //Magma end
 +
 +
     public Entity(EntityType<?> p_19870_, Level p_19871_) {
