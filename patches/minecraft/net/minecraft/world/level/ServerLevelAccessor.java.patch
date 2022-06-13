@@ -1,13 +1,25 @@
 --- a/net/minecraft/world/level/ServerLevelAccessor.java
 +++ b/net/minecraft/world/level/ServerLevelAccessor.java
-@@ -7,6 +_,17 @@
+@@ -2,11 +_,29 @@
+ 
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.entity.Entity;
++import org.bukkit.event.entity.CreatureSpawnEvent;
++import org.jetbrains.annotations.Nullable;
+ 
+ public interface ServerLevelAccessor extends LevelAccessor {
     ServerLevel m_6018_();
  
++   default void prepareEntity(Entity entity, @Nullable CreatureSpawnEvent.SpawnReason spawnReason) {
++      entity.spawnReason = (spawnReason != null ? spawnReason : CreatureSpawnEvent.SpawnReason.DEFAULT);
++   }
++
     default void m_47205_(Entity p_47206_) {
 -      p_47206_.m_142428_().forEach(this::m_7967_);
 -   }
 +      // CraftBukkit start
-+      this.addFreshEntityWithPassengers(p_47206_, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++      //Magma - move spawn reason to the entity class
++      this.addFreshEntityWithPassengers(p_47206_, p_47206_.spawnReason);
 +   }
 +
 +   default void addFreshEntityWithPassengers(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
