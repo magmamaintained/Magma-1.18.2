@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2477 @@
+@@ -118,1340 +_,2495 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -146,11 +146,13 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
 -import org.apache.commons.lang3.StringUtils;
++import org.bukkit.Bukkit;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
@@ -2101,9 +2103,16 @@
 +    }
 +
 +    public void m_6371_(ServerboundUseItemOnPacket p_9930_) {
++        System.out.println("UseItemOn called");
 +        PacketUtils.m_131359_( p_9930_, this, this.f_9743_.m_183503_() );
-+        if (this.f_9743_.m_6107_()) return; // CraftBukkit
-+        if (!checkLimit(p_9930_.timestamp)) return; // Spigot - check limit
++        if (this.f_9743_.m_6107_()) {
++            System.out.println("Player is immobile");
++            return; // CraftBukkit
++        }
++        if (!checkLimit(p_9930_.timestamp)) {
++            System.out.println("limit reached, dropping packet");
++            return; // Spigot - check limit
++        }
 +        ServerLevel serverlevel = this.f_9743_.m_183503_();
 +        InteractionHand interactionhand = p_9930_.m_134703_();
 +        ItemStack itemstack = this.f_9743_.m_21120_( interactionhand );
@@ -2121,6 +2130,7 @@
 +                    if (this.f_9766_ == null && this.f_9743_.m_20275_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.5D, (double)blockpos.m_123343_() + 0.5D) < 64.0D && serverlevel.m_7966_(this.f_9743_, blockpos)) {
 +                        this.f_9743_.m_5810_(); // CraftBukkit - SPIGOT-4706
 +                        InteractionResult interactionresult = this.f_9743_.f_8941_.m_7179_( this.f_9743_, serverlevel, itemstack, interactionhand, blockhitresult );
++                        System.out.println("InteractionResult: " + interactionresult);
 +                        if (direction == Direction.UP && !interactionresult.m_19077_() && blockpos.m_123342_() >= i - 1 && m_9790_( this.f_9743_, itemstack )) {
 +                            Component component = (new TranslatableComponent( "build.tooHigh", i - 1 )).m_130940_( ChatFormatting.RED );
 +                            this.f_9743_.m_9146_( component, ChatType.GAME_INFO, Util.f_137441_ );
@@ -2133,6 +2143,7 @@
 +                    this.f_9743_.m_9146_( component1, ChatType.GAME_INFO, Util.f_137441_ );
 +                }
 +
++                System.out.println("Sending packets");
 +                this.f_9743_.f_8906_.m_141995_( new ClientboundBlockUpdatePacket( serverlevel, blockpos ) );
 +                this.f_9743_.f_8906_.m_141995_( new ClientboundBlockUpdatePacket( serverlevel, blockpos.m_142300_( direction ) ) );
 +            } else {
@@ -2141,6 +2152,7 @@
 +        } else {
 +            f_9744_.warn( "Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.", this.f_9743_.m_36316_().getName(), blockpos, this.f_9743_.m_142538_() );
 +        }
++        System.out.println("Packet handled");
 +    }
 +
 +    // Spigot start - limit place/interactions
@@ -3305,6 +3317,12 @@
 +                    }
 +
 +                    InventoryView inventory = this.f_9743_.f_36096_.getBukkitView();
++                    //Magma start - Forge Inventory View
++                    if (inventory == null) {
++                        inventory = new CraftInventoryView(this.f_9743_.getBukkitEntity(), Bukkit.createInventory(this.f_9743_.getBukkitEntity(), InventoryType.CHEST), this.f_9743_.f_36096_);
++                        this.f_9743_.f_36096_.setBukkitView(inventory);
++                    }
++                    //Magma end
 +                    InventoryType.SlotType type = inventory.getSlotType( p_9856_.m_133962_() );
 +
 +                    InventoryClickEvent event;
