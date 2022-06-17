@@ -46,6 +46,7 @@ public class ServerCommandEvent extends ServerEvent implements Cancellable {
     private boolean cancel = false;
 
     public ServerCommandEvent(@NotNull final CommandSender sender, @NotNull final String command) {
+        super(false, true);
         this.command = command;
         this.sender = sender;
     }

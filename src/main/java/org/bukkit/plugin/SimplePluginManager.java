@@ -560,6 +560,13 @@ public final class SimplePluginManager implements PluginManager {
      */
     @Override
     public void callEvent(@NotNull Event event) {
+        //Magma start - Add ability to synchronously and asynchronously fire events [Potential fix for mcreator mods]
+        if (event.canBeRunFromAllThreads()) {
+            fireEvent(event);
+            return;
+        }
+        //Magma end
+
         if (event.isAsynchronous()) {
             if (Thread.holdsLock(this)) {
                 throw new IllegalStateException(event.getEventName() + " cannot be triggered asynchronously from inside synchronized code.");
