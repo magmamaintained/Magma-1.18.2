@@ -54,6 +54,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
+import org.magmafoundation.magma.craftbukkit.entity.CraftCustomAbstractHorse;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
 
 public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -149,6 +150,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                             return new CraftSkeletonHorse(server, (net.minecraft.world.entity.animal.horse.SkeletonHorse) entity);
                         } else if (entity instanceof net.minecraft.world.entity.animal.horse.ZombieHorse) {
                             return new CraftZombieHorse(server, (net.minecraft.world.entity.animal.horse.ZombieHorse) entity);
+                        } else {
+                            return new CraftCustomAbstractHorse(server, (net.minecraft.world.entity.animal.horse.AbstractHorse) entity);
                         }
                     } else if (entity instanceof net.minecraft.world.entity.animal.Rabbit) {
                         return new CraftRabbit(server, (net.minecraft.world.entity.animal.Rabbit) entity);

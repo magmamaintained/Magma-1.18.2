@@ -119,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,1999 @@
+@@ -144,1693 +_,2005 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -140,6 +140,7 @@
  import net.minecraft.world.phys.Vec3;
  import org.apache.commons.lang3.Validate;
 +import org.bukkit.Bukkit;
++import org.bukkit.command.CommandSender;
 +import org.bukkit.craftbukkit.Main;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
@@ -2163,6 +2164,11 @@
 +        // CraftBukkit end
 +        worldborder.m_61931_(serverleveldata.m_5813_());
 +        this.f_129755_.acceptConnections(); // CraftBukkit
++    }
++
++    @Override
++    public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++        return console;
 +    }
 +
 +    private static void m_177896_(ServerLevel p_177897_, ServerLevelData p_177898_, boolean p_177899_, boolean p_177900_) {

@@ -14,4 +14,8 @@ public abstract class ServerEvent extends Event {
     public ServerEvent(boolean isAsync) {
         super(isAsync);
     }
+
+    public ServerEvent(boolean isAsync, boolean runFromAllThreads) {
+        super(isAsync, runFromAllThreads);
+    }
 }
