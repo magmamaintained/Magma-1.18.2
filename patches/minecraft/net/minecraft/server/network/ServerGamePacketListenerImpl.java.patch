@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2477 @@
+@@ -118,1340 +_,2485 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -146,11 +146,13 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
 -import org.apache.commons.lang3.StringUtils;
++import org.bukkit.Bukkit;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
@@ -3305,6 +3307,12 @@
 +                    }
 +
 +                    InventoryView inventory = this.f_9743_.f_36096_.getBukkitView();
++                    //Magma start - Forge Inventory View
++                    if (inventory == null) {
++                        inventory = new CraftInventoryView(this.f_9743_.getBukkitEntity(), Bukkit.createInventory(this.f_9743_.getBukkitEntity(), InventoryType.CHEST), this.f_9743_.f_36096_);
++                        this.f_9743_.f_36096_.setBukkitView(inventory);
++                    }
++                    //Magma end
 +                    InventoryType.SlotType type = inventory.getSlotType( p_9856_.m_133962_() );
 +
 +                    InventoryClickEvent event;
