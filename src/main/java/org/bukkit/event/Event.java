@@ -16,6 +16,8 @@ public abstract class Event {
     private String name;
     private final boolean async;
 
+    private final boolean runFromAllThreads;
+
     /**
      * The default constructor is defined for cleaner code. This constructor
      * assumes the event is synchronous.
@@ -32,7 +34,12 @@ public abstract class Event {
      *     by default from default constructor
      */
     public Event(boolean isAsync) {
+        this(isAsync, false);
+    }
+
+    public Event(boolean isAsync, boolean runFromAllThreads) {
         this.async = isAsync;
+        this.runFromAllThreads = runFromAllThreads;
     }
 
     /**
@@ -77,6 +84,15 @@ public abstract class Event {
      */
     public final boolean isAsynchronous() {
         return async;
+    }
+
+    /*
+     * This is a hack to allow us to use the same code for both synchronous
+     * and asynchronous events.
+     * @return true if the event can be triggered asynchronously and synchronously
+     */
+    public final boolean canBeRunFromAllThreads() {
+        return runFromAllThreads;
     }
 
     public enum Result {
