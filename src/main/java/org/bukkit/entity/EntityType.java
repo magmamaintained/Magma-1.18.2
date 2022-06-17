@@ -19,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magmafoundation.magma.craftbukkit.entity.CraftCustomAbstractHorse;
 
 public enum EntityType implements Keyed {
 
@@ -285,7 +286,11 @@ public enum EntityType implements Keyed {
     /**
      * An unknown entity without an Entity Class
      */
-    UNKNOWN(null, null, -1, false);
+    UNKNOWN(null, null, -1, false),
+    /**
+     * A custom forge entity.
+     */
+    HORSE_MODDED("horse_modded", CraftCustomAbstractHorse.class, -1, false);
 
     private final String name;
     private final Class<? extends Entity> clazz;

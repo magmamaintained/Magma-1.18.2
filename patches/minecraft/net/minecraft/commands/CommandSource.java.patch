@@ -1,17 +1,17 @@
 --- a/net/minecraft/commands/CommandSource.java
 +++ b/net/minecraft/commands/CommandSource.java
-@@ -1,8 +_,9 @@
+@@ -1,7 +_,9 @@
  package net.minecraft.commands;
  
 -import java.util.UUID;
  import net.minecraft.network.chat.Component;
- 
-+import java.util.UUID;
++import org.apache.logging.log4j.LogManager;
 +
++import java.util.UUID;
+ 
  public interface CommandSource {
     CommandSource f_80164_ = new CommandSource() {
-       public void m_6352_(Component p_80172_, UUID p_80173_) {
-@@ -19,6 +_,13 @@
+@@ -19,6 +_,14 @@
        public boolean m_6102_() {
           return false;
        }
@@ -19,7 +19,8 @@
 +      // CraftBukkit start
 +      @Override
 +      public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
-+         throw new UnsupportedOperationException("Not supported yet.");
++         LogManager.getLogger("Magma").debug("getBukkitSender is not supported yet");
++         return null; //Magma - Don't throw new UnsupportedOperationException("getBukkitSender is not supported yet"); Exception. Let's just return null :)
 +      }
 +      // CraftBukkit end
     };
