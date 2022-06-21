@@ -1375,7 +1375,6 @@ project(':forge') {
     task installerJar(type: InstallerJar, dependsOn: [genClientBinPatches, genServerBinPatches, 'signUniversalJar', launcherJson]) {
         packedDependencies = PACKED_DEPS
         archiveBaseName = 'magma'
-        archiveClassifier = versioning.info.commit.substring(0, 8) + "-installer"
         from(extraTxts)
         from(rootProject.file('/magma-logo.png')) {
             rename { 'big_logo.png' }
@@ -1465,6 +1464,7 @@ project(':forge') {
                     artifactId = 'Magma'
                     description = 'Minecraft Forge Hybrid server implementing the Spigot/Bukkit API (Cauldron for 1.18)'
                     url = 'https://git.magmafoundation.org/magmafoundation/Magma-1-18-x'
+                    version = MAGMA_VERISON
 
                     scm {
                         url = 'https://git.magmafoundation.org/magmafoundation/Magma-1-18-x'
