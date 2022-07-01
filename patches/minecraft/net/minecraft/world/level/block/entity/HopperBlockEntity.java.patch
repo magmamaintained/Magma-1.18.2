@@ -105,7 +105,7 @@
              boolean flag = false;
              if (!p_155582_.m_7983_()) {
 -               flag = m_155562_(p_155579_, p_155580_, p_155581_, p_155582_);
-+               flag = ejectItems(p_155579_, p_155580_, p_155581_, (Container) p_155582_, p_155582_); // CraftBukkit
++               flag = ejectItems(p_155579_, p_155580_, p_155581_, p_155582_); //Magma - use original method
              }
  
              if (!p_155582_.m_59404_()) {
@@ -118,12 +118,13 @@
                 m_155232_(p_155579_, p_155580_, p_155581_);
                 return true;
              }
-@@ -131,7 +_,8 @@
+@@ -131,7 +_,9 @@
        return true;
     }
  
 -   private static boolean m_155562_(Level p_155563_, BlockPos p_155564_, BlockState p_155565_, Container p_155566_) {
-+   private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, BlockState p_155565_, Container iinventory, HopperBlockEntity p_155566_) {
++   //Magma start - add original method and remove bukkit one
++   private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, BlockState p_155565_, HopperBlockEntity p_155566_) {
 +      if (net.minecraftforge.items.VanillaInventoryCodeHooks.insertHook(p_155566_)) return true;
        Container container = m_155592_(p_155563_, p_155564_, p_155565_);
        if (container == null) {
@@ -136,7 +137,7 @@
 +                  //ItemStack itemstack1 = addItem(p_155566_, container, p_155566_.removeItem(i, 1), direction);
 +
 +                  // CraftBukkit start - Call event when pushing items into other inventories
-+                  CraftItemStack oitemstack = CraftItemStack.asCraftMirror(iinventory.m_7407_(i, p_155563_.spigotConfig.hopperAmount)); // Spigot
++                  CraftItemStack oitemstack = CraftItemStack.asCraftMirror(p_155566_.m_7407_(i, p_155563_.spigotConfig.hopperAmount)); // Spigot
 +
 +                  org.bukkit.inventory.Inventory destinationInventory;
 +                  // Have to special case large chests as they work oddly
@@ -146,7 +147,7 @@
 +                     destinationInventory = container.getOwner().getInventory();
 +                  }
 +
-+                  InventoryMoveItemEvent event = new InventoryMoveItemEvent(iinventory.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
++                  InventoryMoveItemEvent event = new InventoryMoveItemEvent(p_155566_.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
 +                  p_155563_.getCraftServer().getPluginManager().callEvent(event);
 +
 +                  if (event.isCancelled()) {
@@ -155,7 +156,7 @@
 +                     return false;
 +                  }
 +                  int originalAmount = event.getItem().getAmount();
-+                  ItemStack itemstack1 = m_59326_(iinventory, container, CraftItemStack.asNMSCopy(event.getItem()), direction);
++                  ItemStack itemstack1 = m_59326_(p_155566_, container, CraftItemStack.asNMSCopy(event.getItem()), direction);
 +                  // CraftBukkit end
 +
                    if (itemstack1.m_41619_()) {
@@ -167,6 +168,14 @@
                    p_155566_.m_6836_(i, itemstack);
                 }
              }
+@@ -157,6 +_,7 @@
+          }
+       }
+    }
++   //Magma end
+ 
+    private static IntStream m_59339_(Container p_59340_, Direction p_59341_) {
+       return p_59340_ instanceof WorldlyContainer ? IntStream.of(((WorldlyContainer)p_59340_).m_7071_(p_59341_)) : IntStream.range(0, p_59340_.m_6643_());
 @@ -176,11 +_,13 @@
     }
  
