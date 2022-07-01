@@ -8,12 +8,13 @@
  import net.minecraft.util.Mth;
  import net.minecraft.world.effect.MobEffectInstance;
  import net.minecraft.world.entity.Entity;
-@@ -35,6 +_,8 @@
+@@ -35,6 +_,9 @@
  import net.minecraft.world.item.MapItem;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
  import net.minecraft.world.phys.Vec3;
 +import org.bukkit.entity.Player;
 +import org.bukkit.event.player.PlayerVelocityEvent;
++import org.jetbrains.annotations.Nullable;
  import org.slf4j.Logger;
  
  public class ServerEntity {
@@ -132,7 +133,7 @@
           this.f_8510_.f_19864_ = false;
        }
  
-@@ -189,16 +_,20 @@
+@@ -189,16 +_,31 @@
     public void m_8534_(ServerPlayer p_8535_) {
        this.f_8510_.m_6452_(p_8535_);
        p_8535_.f_8906_.m_141995_(new ClientboundRemoveEntitiesPacket(this.f_8510_.m_142049_()));
@@ -141,12 +142,22 @@
  
     public void m_8541_(ServerPlayer p_8542_) {
 -      this.m_8536_(p_8542_.f_8906_::m_141995_);
-+      this.sendPairingData(p_8542_.f_8906_::m_141995_, p_8542_); // CraftBukkit - add player
++      this.sendPairingData_ent = p_8542_;
++      this.m_8536_(p_8542_.f_8906_::m_141995_); // CraftBukkit - add player
        this.f_8510_.m_6457_(p_8542_);
 +      net.minecraftforge.event.ForgeEventFactory.onStartEntityTracking(this.f_8510_, p_8542_);
     }
  
--   public void m_8536_(Consumer<Packet<?>> p_8537_) {
++   //Magma start - add original method to prevent errors with mods relying on it [fix for quark]
++   @Nullable public ServerPlayer sendPairingData_ent = null;
+    public void m_8536_(Consumer<Packet<?>> p_8537_) {
++      if (sendPairingData_ent == null)
++         throw new IllegalStateException("sendPairingData_ent is null");
++      this.sendPairingData(p_8537_, sendPairingData_ent);
++      sendPairingData_ent = null;
++   }
++   //Magma end
++
 +   public void sendPairingData(Consumer<Packet<?>> p_8537_, ServerPlayer entityplayer) { // CraftBukkit - add player
        if (this.f_8510_.m_146910_()) {
 -         f_8508_.warn("Fetching packet for removed entity {}", (Object)this.f_8510_);
