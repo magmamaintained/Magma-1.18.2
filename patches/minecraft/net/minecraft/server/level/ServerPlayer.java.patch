@@ -989,7 +989,7 @@
        } else {
           return portalinfo;
        }
-@@ -686,86 +_,160 @@
+@@ -686,76 +_,149 @@
  
     @Nullable
     public Entity m_5489_(ServerLevel p_9180_) {
@@ -1175,19 +1175,31 @@
  
     }
  
--   protected Optional<BlockUtil.FoundRectangle> m_183318_(ServerLevel p_184131_, BlockPos p_184132_, boolean p_184133_, WorldBorder p_184134_) {
--      Optional<BlockUtil.FoundRectangle> optional = super.m_183318_(p_184131_, p_184132_, p_184133_, p_184134_);
--      if (optional.isPresent()) {
-+   protected Optional<BlockUtil.FoundRectangle> getExitPortal(ServerLevel p_184131_, BlockPos p_184132_, boolean p_184133_, WorldBorder p_184134_, int searchRadius, boolean canCreatePortal, int createRadius) { // CraftBukkit
-+      Optional<BlockUtil.FoundRectangle> optional = super.getExitPortal( p_184131_, p_184132_, p_184133_, p_184134_, searchRadius, canCreatePortal, createRadius ); // CraftBukkit
-+      if (optional.isPresent() || !canCreatePortal) { // CraftBukkit
-          return optional;
++   //Magma start - add original method
+    protected Optional<BlockUtil.FoundRectangle> m_183318_(ServerLevel p_184131_, BlockPos p_184132_, boolean p_184133_, WorldBorder p_184134_) {
+       Optional<BlockUtil.FoundRectangle> optional = super.m_183318_(p_184131_, p_184132_, p_184133_, p_184134_);
+       if (optional.isPresent()) {
+@@ -763,9 +_,27 @@
        } else {
--         Direction.Axis direction$axis = this.f_19853_.m_8055_(this.f_19819_).m_61145_(NetherPortalBlock.f_54904_).orElse(Direction.Axis.X);
--         Optional<BlockUtil.FoundRectangle> optional1 = p_184131_.m_8871_().m_77666_(p_184132_, direction$axis);
+          Direction.Axis direction$axis = this.f_19853_.m_8055_(this.f_19819_).m_61145_(NetherPortalBlock.f_54904_).orElse(Direction.Axis.X);
+          Optional<BlockUtil.FoundRectangle> optional1 = p_184131_.m_8871_().m_77666_(p_184132_, direction$axis);
 -         if (!optional1.isPresent()) {
 -            f_8907_.error("Unable to create a portal, likely target out of worldborder");
 -         }
++         /*if (!optional1.isPresent()) {
++            LOGGER.error("Unable to create a portal, likely target out of worldborder");
++         }*/ //CraftBukkit commented this out for some reason, but I'm not sure why.
++
++         return optional1;
++      }
++   }
++   //Magma end
++
++   protected Optional<BlockUtil.FoundRectangle> getExitPortal(ServerLevel p_184131_, BlockPos p_184132_, boolean p_184133_, WorldBorder p_184134_, int searchRadius, boolean canCreatePortal, int createRadius) { // CraftBukkit
++      Optional<BlockUtil.FoundRectangle> optional = super.getExitPortal( p_184131_, p_184132_, p_184133_, p_184134_, searchRadius, canCreatePortal, createRadius ); // CraftBukkit
++      if (optional.isPresent() || !canCreatePortal) { // CraftBukkit
++         return optional;
++      } else {
 +         Direction.Axis direction$axis = this.f_19853_.m_8055_( this.f_19819_ ).m_61145_( NetherPortalBlock.f_54904_ ).orElse( Direction.Axis.X );
 +         Optional<BlockUtil.FoundRectangle> optional1 = p_184131_.m_8871_().createPortal( p_184132_, direction$axis, this, createRadius );
 +         // CraftBukkit start
