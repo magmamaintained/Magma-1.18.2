@@ -170,12 +170,20 @@
                                flag = true;
                             }
                          }
-@@ -492,8 +_,11 @@
+@@ -492,8 +_,21 @@
           return this.f_47113_;
        }
  
--      boolean m_186548_(MobCategory p_186549_, ChunkPos p_186550_) {
--         int i = p_186549_.m_21608_() * this.f_47110_ / NaturalSpawner.f_46978_;
++      //Magma - add original canSpawnForCategory method for mods that implement this
+       boolean m_186548_(MobCategory p_186549_, ChunkPos p_186550_) {
+          int i = p_186549_.m_21608_() * this.f_47110_ / NaturalSpawner.f_46978_;
++         if (this.f_47111_.getInt(p_186549_) >= i) {
++            return false;
++         } else {
++            return this.f_186542_.m_186504_(p_186549_, p_186550_);
++         }
++      }
++      //Magma - end
 +      // CraftBukkit start
 +      boolean canSpawnForCategory(MobCategory p_186549_, ChunkPos p_186550_, int limit) {
 +         int i = limit * this.f_47110_ / NaturalSpawner.f_46978_;
