@@ -8,7 +8,7 @@
  
  public class ShearsItem extends Item {
     public ShearsItem(Item.Properties p_43074_) {
-@@ -46,6 +_,36 @@
+@@ -46,6 +_,39 @@
        } else {
           return 15.0F;
        }
@@ -29,7 +29,10 @@
 +                    net.minecraft.world.item.enchantment.EnchantmentHelper.m_44843_(net.minecraft.world.item.enchantment.Enchantments.f_44987_, stack));
 +            java.util.Random rand = new java.util.Random();
 +            drops.forEach(d -> {
++               //Magma - make sure shear drops actually drop
++               d.preShearDrop();
 +               net.minecraft.world.entity.item.ItemEntity ent = entity.m_5552_(d, 1.0F);
++               d.postShearDrop();
 +               ent.m_20256_(ent.m_20184_().m_82520_((double)((rand.nextFloat() - rand.nextFloat()) * 0.1F), (double)(rand.nextFloat() * 0.05F), (double)((rand.nextFloat() - rand.nextFloat()) * 0.1F)));
 +            });
 +            stack.m_41622_(1, playerIn, e -> e.m_21190_(hand));
