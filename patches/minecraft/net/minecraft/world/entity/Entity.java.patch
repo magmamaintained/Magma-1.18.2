@@ -690,18 +690,19 @@
        } catch (Throwable throwable) {
           CrashReport crashreport = CrashReport.m_127521_(throwable, "Loading entity NBT");
           CrashReportCategory crashreportcategory = crashreport.m_127514_("Entity being loaded");
-@@ -1638,8 +_,23 @@
+@@ -1638,9 +_,23 @@
        } else if (this.f_19853_.f_46443_) {
           return null;
        } else {
 +         // CraftBukkit start - Capture drops for death event
-+         if (this instanceof LivingEntity && !((LivingEntity) this).forceDrops) {
++         if (this instanceof LivingEntity && !((LivingEntity) this).forceDrops && !p_19985_.forceShearDrop) { //Magma - make sure entities drop from shearing
 +            ((LivingEntity) this).drops.add(org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy(p_19985_));
 +            return null;
 +         }
 +         // CraftBukkit end
           ItemEntity itementity = new ItemEntity(this.f_19853_, this.m_20185_(), this.m_20186_() + (double)p_19986_, this.m_20189_(), p_19985_);
           itementity.m_32060_();
+-         this.f_19853_.m_7967_(itementity);
 +         // CraftBukkit start
 +         EntityDropItemEvent event = new EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) itementity.getBukkitEntity());
 +         Bukkit.getPluginManager().callEvent(event);
@@ -710,10 +711,10 @@
 +         }
 +         // CraftBukkit end
 +         if (captureDrops() != null) captureDrops().add(itementity);
-+         else
-          this.f_19853_.m_7967_(itementity);
++         else this.f_19853_.m_7967_(itementity);
           return itementity;
        }
+    }
 @@ -1676,6 +_,7 @@
  
     public void m_6083_() {
