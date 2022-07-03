@@ -237,7 +237,11 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.LevelSettings;
  import net.minecraft.world.level.biome.Biome;
-@@ -252,7 +_,7 @@
+@@ -249,10 +_,11 @@
+ import net.minecraftforge.api.distmarker.OnlyIn;
+ import org.apache.commons.io.FileUtils;
+ import org.lwjgl.util.tinyfd.TinyFileDialogs;
++import org.magmafoundation.magma.helpers.ServerInitHelper;
  import org.slf4j.Logger;
  
  @OnlyIn(Dist.CLIENT)
@@ -608,12 +612,13 @@
              worldstem.m_206901_();
              YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(this.f_91030_);
              MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
-@@ -1885,7 +_,7 @@
+@@ -1885,7 +_,8 @@
              SkullBlockEntity.m_196700_(gameprofilecache, minecraftsessionservice, this);
              GameProfileCache.m_11004_(false);
              this.f_91007_ = MinecraftServer.m_129872_((p_210695_) -> {
 -               return new IntegratedServer(p_210695_, this, levelstoragesource$levelstorageaccess, packrepository, worldstem, minecraftsessionservice, gameprofilerepository, gameprofilecache, (p_210795_) -> {
-+               return new IntegratedServer(null, null, null, p_210695_, this, levelstoragesource$levelstorageaccess, packrepository, worldstem, minecraftsessionservice, gameprofilerepository, gameprofilecache, (p_210795_) -> { //TODO-PATCHING: Handle the registry freeze delay again.
++               ServerInitHelper.init(null, null, null);
++               return new IntegratedServer(p_210695_, this, levelstoragesource$levelstorageaccess, packrepository, worldstem, minecraftsessionservice, gameprofilerepository, gameprofilecache, (p_210795_) -> { //TODO-PATCHING: Handle the registry freeze delay again.
                    StoringChunkProgressListener storingchunkprogresslistener = new StoringChunkProgressListener(p_210795_ + 0);
                    this.f_90999_.set(storingchunkprogresslistener);
                    return ProcessorChunkProgressListener.m_143583_(storingchunkprogresslistener, this.f_91023_::add);
