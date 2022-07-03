@@ -16,12 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma.download;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+package org.magmafoundation.magma.utils;
 
 /**
  * Project: Magma
@@ -29,23 +24,29 @@ import java.net.URLConnection;
  * @author Malcolm (M1lc0lm)
  * @date 03.07.2022 - 17:19
  *
- * Made with help of Shawizz
+ * Code by MohistMC (https://github.com/MohistMC)
  */
-public class NetworkUtil {
+public class SystemType {
 
-    public static URLConnection getConn(String URL) {
-        URLConnection conn = null;
-        try {
-            conn = new URL(URL).openConnection();
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return conn;
-    }
+	public enum OS {
+		WINDOWS, LINUX, MAC, SOLARIS
+	};// Operating systems.
 
-    public static InputStream getInput(String URL) throws IOException {
-        return getConn(URL).getInputStream();
-    }
+	private static OS os = null;
 
+	public static OS getOS() {
+		if (os == null) {
+			String operSys = System.getProperty("os.name").toLowerCase();
+			if (operSys.contains("win")) {
+				os = OS.WINDOWS;
+			} else if (operSys.contains("nix") || operSys.contains("nux") || operSys.contains("aix")) {
+				os = OS.LINUX;
+			} else if (operSys.contains("mac")) {
+				os = OS.MAC;
+			} else if (operSys.contains("sunos")) {
+				os = OS.SOLARIS;
+			}
+		}
+		return os;
+	}
 }

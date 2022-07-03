@@ -1,22 +1,6 @@
-/*
- * MohistMC
- * Copyright (C) 2018-2022.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package org.magmafoundation.magma.utils;
+
+import io.izzel.arclight.api.Unsafe;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -31,7 +15,6 @@ import java.security.AccessControlContext;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Project: Magma
@@ -39,41 +22,29 @@ import java.util.stream.Stream;
  * @author Malcolm (M1lc0lm)
  * @date 03.07.2022 - 17:19
  *
- * Made with help of Shawizz
+ * Inspired and made with Shawiiz_z and Arclight (Izzel)
  */
-public class MagmaModuleManager {
+public class BSLPreInit {
 
 	private static final MethodHandles.Lookup IMPL_LOOKUP = Unsafe.lookup();
 
-	List<Module> loadedModules = new ArrayList<>();
-
-	public MagmaModuleManager(List<String> args) {
+	public BSLPreInit() {
 		try {
-			/*
-			This code allows to call methods in the jdk.internal.module.Modules class.
-			If this fails, methods won't be able to be called, but modules can still be loaded.
-			 */
-			sun.misc.Unsafe unsafe = this.getUnsafe();
-			unsafe.putObject(MagmaModuleManager.class, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), Class.class.getModule());
-
-			this.applyLaunchArgs(args);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			/*
-			Adding module options cannot be done dynamically, but we can still add modules dynamically.
-			The other way to add module options is run the server jar again with the needed flags.
-			 */
-		}
+			Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+			f.setAccessible(true);
+			sun.misc.Unsafe unsafe = (sun.misc.Unsafe) f.get(null);
+			unsafe.putObject(BSLPreInit.class, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), Class.class.getModule());
+		} catch (Exception ignored) {}
 	}
 
-	public void applyLaunchArgs(List<String> args) {
-		//Just read each lines of launch args
+	public void setupStartup(List<String> args) {
 		for(String arg : args) {
 			if(arg.startsWith("-p ")) {
 				try {
 					loadModules(arg.substring(2).trim());
-				} catch (Throwable ignored) {}
+				} catch (Throwable throwable) {
+					throwable.printStackTrace();
+				}
 			} else if(arg.startsWith("--add-opens")) {
 				String option = arg.split("--add-opens ")[1];
 				this.addOpens(option.split("/")[0], option.split("/")[1].split("=")[0], option.split("=")[1]);
@@ -90,12 +61,8 @@ public class MagmaModuleManager {
 		this.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
 	}
 
-
-	/*
-	Find and get a module by its name in the current module layer and the modules that are dynamically loaded.
-	 */
 	public Optional<Module> findModule(String name) {
-		return Stream.concat(this.getDefaultModuleLayer().modules().stream(), this.loadedModules.stream()).filter(module -> module.getName().equals(name)).findAny();
+		return ModuleLayer.boot().modules().stream().findAny();
 	}
 
 	public void addOpens(String moduleName, String packageName, String applyTo) {
@@ -110,16 +77,11 @@ public class MagmaModuleManager {
 		this.addModuleOption("addExportsToAllUnnamed", moduleName, packageName, null);
 	}
 
-	/*
-	Methods that should be used: addExports, addExportsToAllUnnamed, addOpens, addOpensToAllUnnamed
-
-	This method allows to dynamically add a module option
-	 */
 	private void addModuleOption(String methodName, String moduleFrom, String packageName, String moduleTo) {
 		try {
 			Optional<Module> moduleFrom_ = findModule(moduleFrom);
 			Optional<Module> moduleTo_ = findModule(moduleTo);
-			if(!moduleFrom_.isPresent()) return; //The module hasn't been found, we can't add the module option.
+			if(moduleFrom_.isEmpty()) return; //The module hasn't been found, we can't add the module option.
 
 			//The target module has been found
 			if(moduleTo_.isPresent()) {
@@ -133,6 +95,8 @@ public class MagmaModuleManager {
 			e.printStackTrace();
 		}
 	}
+
+	//Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java#L420)
 
 	private void addToPath(Path path) {
 		try {
@@ -158,10 +122,9 @@ public class MagmaModuleManager {
 		}
 	}
 
-    //Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java#L420)
 	private void loadModules(String modulePath) throws Throwable{
 		// Find all extra modules
-		ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(OSUtil.getOS() == OSUtil.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(this::addToPath).toArray(Path[]::new));
+		ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(SystemType.getOS() == SystemType.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(this::addToPath).toArray(Path[]::new));
 		MethodHandle loadModuleMH = IMPL_LOOKUP.findVirtual(Class.forName("jdk.internal.loader.BuiltinClassLoader"), "loadModule", MethodType.methodType(void.class, ModuleReference.class));
 
 		// Resolve modules to a new config
@@ -230,20 +193,5 @@ public class MagmaModuleManager {
 		}))));
 	}
 
-	/*
-	Get the module layer (calling ModuleLayer.boot)
-	 */
-	private ModuleLayer getDefaultModuleLayer() {
-		return ModuleLayer.boot();
-	}
-
-	/*
-	Get the unsafe class instance
-	 */
-	public sun.misc.Unsafe getUnsafe() throws IllegalAccessException, NoSuchFieldException {
-		Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-		f.setAccessible(true);
-		return (sun.misc.Unsafe) f.get(null);
-	}
 }
 

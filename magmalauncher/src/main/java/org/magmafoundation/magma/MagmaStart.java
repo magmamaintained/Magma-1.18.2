@@ -16,22 +16,17 @@ package org.magmafoundation.magma;/*
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.magmafoundation.magma.action.v_1_18_2.v_1_18_2;
 import org.magmafoundation.magma.betterui.BetterUI;
-import org.magmafoundation.magma.libraries.DefaultLibraries;
+import org.magmafoundation.magma.installer.MagmaInstaller;
 import org.magmafoundation.magma.updater.MagmaUpdater;
-import org.magmafoundation.magma.utils.DataParser;
-import org.magmafoundation.magma.utils.MagmaModuleManager;
-import org.yaml.snakeyaml.Yaml;
+import org.magmafoundation.magma.utils.BSLPreInit;
+import org.magmafoundation.magma.utils.JarTool;
+import org.magmafoundation.magma.utils.SystemType;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.magmafoundation.magma.MagmaConstants.*;
@@ -47,73 +42,58 @@ public class MagmaStart {
     public static List<String> mainArgs = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
-
         mainArgs.addAll(List.of(args));
-
-        DataParser.parseVersions();
-        DataParser.parseLaunchArgs();
-        DataParser.parseLibrariesClassPath();
-
         BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
 
-        if(Float.parseFloat(System.getProperty("java.class.version")) < 61){
-            System.out.println("Your Java version is not supported. Please update to Java 17 or higher.");
+        if(Float.parseFloat(System.getProperty("java.class.version")) < 61) {
+            System.out.println("[MAGMA] Your Java version is not supported. Please update to Java 17 or higher.");
             System.exit(1);
         }
 
-        DefaultLibraries.downloadRepoLibs();
-        new v_1_18_2().run();
+        if(mainArgs.contains("-noserver")) {
+            System.out.println("[MAGMA] Argument -noserver detected. Skipping server startup.");
+            System.exit(1); //-noserver -> Do not run the Minecraft server, only let the installation running.
+        }
 
-        MagmaModuleManager magmaModuleManager = new MagmaModuleManager(DataParser.launchArgs);
+        new MagmaInstaller();
 
-        if(mainArgs.contains("-noserver"))
-            System.exit(0); //-noserver -> Do not run the Minecraft server, only let the installation running.
+        List<String> launchArgs = JarTool.readFileLinesFromJar("data/" + (SystemType.getOS().equals(SystemType.OS.WINDOWS) ? "win" : "unix") + "_args.txt");
+        List<String> forgeArgs = new ArrayList<>();
+        launchArgs.stream()
+                .filter(s -> s.startsWith("--launchTarget") ||
+                        s.startsWith("--fml.forgeVersion") ||
+                        s.startsWith("--fml.mcVersion") ||
+                        s.startsWith("--fml.forgeGroup") ||
+                        s.startsWith("--fml.mcpVersion")).
+                findAny().
+                ifPresent(s -> {
+                    forgeArgs.add(s.split(" ")[0]);
+                    forgeArgs.add(s.split(" ")[1]);
+                });
 
+        BSLPreInit bslPreInit = new BSLPreInit();
+        bslPreInit.setupStartup(launchArgs);
 
-        if (!BetterUI.checkEula(Paths.get("eula.txt")))
+        if(!BetterUI.checkEula(Paths.get("eula.txt")))
             System.exit(0);
 
-        Path path = Paths.get("magma.yml");
-        if (Files.exists(path)) {
-            try (InputStream stream = Files.newInputStream(path)) {
-                Yaml yaml = new Yaml();
-                Map<String, Object> data = yaml.load(stream);
-                Map<String, Object> forge = (Map<String, Object>) data.get("magma");
-                MagmaUpdater updater = new MagmaUpdater();
-                if (mainArgs.stream().noneMatch(s -> s.equalsIgnoreCase("-dau"))) {
-                    mainArgs.stream().filter(s -> s.equalsIgnoreCase("-dau")).findFirst().ifPresent(o -> mainArgs.remove(o));
-                    System.out.println("Checking for updates...");
-                    if (updater.versionChecker() && forge.get("auto-update").equals(true))
-                        updater.downloadJar();
-                }
-            }
-        }
-
-        List<String> forgeArgs = new ArrayList<>();
-        for(String arg : DataParser.launchArgs.stream()
-                .filter(s -> s.startsWith("--launchTarget") || s.startsWith("--fml.forgeVersion") || s.startsWith("--fml.mcVersion") || s.startsWith("--fml.forgeGroup") || s.startsWith("--fml.mcpVersion")).collect(Collectors.toList())) {
-            forgeArgs.add(arg.split(" ")[0]);
-            forgeArgs.add(arg.split(" ")[1]);
-        }
-
-        String[] args_ = Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new);
+        if(Arrays.stream(args).
+                anyMatch(s -> s.contains("-dau")))
+            Arrays.stream(args).
+                    filter(s -> s.contains("-dau")).
+                    findFirst().
+                    ifPresent(o -> mainArgs.remove(o));
+        else
+            MagmaUpdater.checkForUpdates();
 
         try {
             var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
             var method = cl.getMethod("main", String[].class);
-            method.invoke(null, (Object) args_);
-        }catch (Exception e){
-            try {
-                magmaModuleManager.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
-                var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
-                var method = cl.getMethod("main", String[].class);
-                method.invoke(null, (Object) args_);
-            }catch (Exception e1){
-                System.out.println("Installation finished, please restart server.");
-                System.exit(0);
-            }
+            method.invoke(null, (Object) Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new));
+        } catch (Exception e) {
+            System.out.println("Installation finished, please restart server.");
+            System.exit(0);
         }
     }
-
 
 }

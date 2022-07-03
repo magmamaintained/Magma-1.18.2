@@ -28,12 +28,10 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Project: Magma
  *
- * @author Malcolm (M1lc0lm)
+ * @author Malcolm (M1lc0lm) / Hexeption / Mgazul
  * @date 03.07.2022 - 17:19
- *
- * Made with help of Hexeption
  */
-public class MD5Checksum {
+public class MD5 {
 
 	// Check MD5
 	public static boolean checkMD5(File file, String md5sum) throws IOException {
@@ -92,10 +90,36 @@ public class MD5Checksum {
 		return complete.digest();
 	}
 
+	public static byte[] createChecksum(InputStream fis) throws Exception {
+		byte[] buffer = new byte[1024];
+		MessageDigest complete = MessageDigest.getInstance("MD5");
+		int numRead;
+
+		do {
+			numRead = fis.read(buffer);
+			if (numRead > 0) {
+				complete.update(buffer, 0, numRead);
+			}
+		} while (numRead != -1);
+
+		fis.close();
+		return complete.digest();
+	}
+
 	// see this How-to for a faster way to convert
 	// a byte array to a HEX string
 	public static String getMD5Checksum(String filename) throws Exception {
 		byte[] b = createChecksum(filename);
+		String result = "";
+
+		for (int i=0; i < b.length; i++) {
+			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+		}
+		return result;
+	}
+
+	public static String getMD5Checksum(InputStream fis) throws Exception {
+		byte[] b = createChecksum(fis);
 		String result = "";
 
 		for (int i=0; i < b.length; i++) {
