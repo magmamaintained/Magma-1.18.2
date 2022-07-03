@@ -116,7 +116,7 @@ public abstract class AbstractMagmaInstaller {
 
     protected void copyFileFromJar(File file, String pathInJar) throws Exception {
         InputStream is = MagmaStart.class.getClassLoader().getResourceAsStream(pathInJar);
-        if(!file.exists() || !MD5.getMD5Checksum(file.getName()).equals(MD5.getMD5Checksum(is)) || file.length() <= 1) {
+        if(!file.exists() || !MD5.getMD5Checksum(file.getAbsolutePath()).equals(MD5.getMD5Checksum(is)) || file.length() <= 1) {
             file.getParentFile().mkdirs();
             file.createNewFile();
             if(is != null) Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);

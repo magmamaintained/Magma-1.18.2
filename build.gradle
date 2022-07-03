@@ -1395,7 +1395,7 @@ project(':forge') {
         archiveClassifier = 'server'
         archiveExtension = 'jar'
         archiveBaseName = 'magma'
-        archiveVersion = MAGMA_VERSION
+        archiveVersion = VERSION
         destinationDirectory = file('build/libs')
 
         def CLASS_PATH = Util.getArtifacts(project, project.configurations.installer, false).values().collect { "libraries/${it.downloads.artifact.path}" } +
@@ -1525,38 +1525,6 @@ project(':forge') {
         }
         from(genServerBinPatches.output) {
             rename { 'data/server.lzma' }
-        }
-    }
-
-    task makeMdk(type: Zip) {
-        archiveBaseName = project.name
-        archiveClassifier = 'mdk'
-        archiveVersion = project.version
-        destinationDirectory = file('build/org.magmafoundation.magma.libs')
-
-        from rootProject.file('gradlew')
-        from rootProject.file('gradlew.bat')
-        from extraTxts
-        from(rootProject.file('gradle/')){
-            into('gradle/')
-        }
-        from(rootProject.file('mdk/')){
-            rootProject.file('mdk/gitignore.txt').eachLine{
-                if (!it.trim().isEmpty() && !it.trim().startsWith('#'))
-                    exclude it
-            }
-            filter(ReplaceTokens, tokens: [
-                FORGE_VERSION: project.version,
-                FORGE_GROUP: project.group,
-                FORGE_NAME: project.name,
-                MC_VERSION: MC_VERSION,
-                MAPPING_CHANNEL: MAPPING_CHANNEL,
-                MAPPING_VERSION: MAPPING_VERSION,
-                FORGE_SPEC_VERSION: SPEC_VERSION.split("\\.")[0],
-                MC_NEXT_VERSION: "1."+((MC_VERSION.split("[\\.-]")[1] as int)+1)
-            ])
-            rename 'gitignore\\.txt', '.gitignore'
-            rename 'gitattributes\\.txt', '.gitattributes'
         }
     }
 
