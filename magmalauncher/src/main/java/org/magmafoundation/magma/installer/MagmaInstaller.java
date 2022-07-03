@@ -147,8 +147,8 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
         String storedServerMD5 = null;
         String storedMohistMD5 = null;
-        String serverMD5 = MD5.getMD5Checksum(serverJar.getName());
-        String magmaMD5 = MD5.getMD5Checksum(JarTool.getFile().getName());
+        String serverMD5 = MD5.getMD5Checksum(serverJar.getAbsolutePath());
+        String magmaMD5 = MD5.getMD5Checksum(JarTool.getFile().getAbsolutePath());
 
         if (installInfo.exists()) {
             List<String> infoLines = Files.readAllLines(installInfo.toPath());
@@ -182,7 +182,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                             libPath + "trove/trove/1.0.2/trove-1.0.2.jar"
                     ))));
             unmute();
-            serverMD5 = MD5.getMD5Checksum(serverJar.getName());
+            serverMD5 = MD5.getMD5Checksum(serverJar.getAbsolutePath());
         }
 
         FileWriter fw = new FileWriter(installInfo);
@@ -200,7 +200,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         dependencies.put(new File("libraries/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"), new ArrayList<>(Arrays.asList("e8cee80f1719c02ef3076ff42bab0ad9", "https://s01.oss.sonatype.org/content/repositories/snapshots/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar")));
 
         for (File lib : dependencies.keySet()) {
-            if(lib.exists() && Objects.equals(MD5.getMD5Checksum(lib.getName()), dependencies.get(lib).get(0))) {
+            if(lib.exists() && Objects.equals(MD5.getMD5Checksum(lib.getAbsolutePath()), dependencies.get(lib).get(0))) {
                 System.out.println("Loading library " + lib.getName());
                 JarLoader.loadJar(lib);
                 continue;
@@ -210,7 +210,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             try {
                 NetworkUtils.downloadFile(dependencies.get(lib).get(1), lib, dependencies.get(lib).get(0));
                 JarLoader.loadJar(lib);
-                System.out.println("Downloaded and loaded " + lib.getName() + ". md5: " + MD5.getMD5Checksum(lib.getName()));
+                System.out.println("Downloaded and loaded " + lib.getName() + ". md5: " + MD5.getMD5Checksum(lib.getAbsolutePath()));
             } catch (Exception e) {
                 e.printStackTrace();
             }

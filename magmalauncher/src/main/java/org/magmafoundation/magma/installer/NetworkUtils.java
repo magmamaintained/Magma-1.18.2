@@ -42,7 +42,7 @@ public class NetworkUtils {
         fc.transferFrom(rbc, 0, Long.MAX_VALUE);
         fc.close();
         rbc.close();
-        String MD5 = org.magmafoundation.magma.utils.MD5.getMD5Checksum(f.getName());
+        String MD5 = org.magmafoundation.magma.utils.MD5.getMD5Checksum(f.getAbsolutePath());
         if(md5 != null && MD5 != null && !MD5.equals(md5.toLowerCase())) {
             f.delete();
             throw new Exception("md5");

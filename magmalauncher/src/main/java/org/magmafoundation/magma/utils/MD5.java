@@ -108,14 +108,18 @@ public class MD5 {
 
 	// see this How-to for a faster way to convert
 	// a byte array to a HEX string
-	public static String getMD5Checksum(String filename) throws Exception {
-		byte[] b = createChecksum(filename);
-		String result = "";
+	public static String getMD5Checksum(String filename) {
+		try {
+			byte[] b = createChecksum(filename);
+			String result = "";
 
-		for (int i=0; i < b.length; i++) {
-			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+			for (int i = 0; i < b.length; i++) {
+				result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+			}
+			return result;
+		} catch (Exception e){
+			return null;
 		}
-		return result;
 	}
 
 	public static String getMD5Checksum(InputStream fis) throws Exception {
