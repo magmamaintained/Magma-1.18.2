@@ -28,6 +28,14 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.util.*;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public class DefaultLibraries {
 
 	public static void downloadRepoLibs() throws Exception {

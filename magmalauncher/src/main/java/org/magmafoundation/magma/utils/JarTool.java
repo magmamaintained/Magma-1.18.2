@@ -25,8 +25,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @Author Mgazul
- * @create 2019/10/12 20:26
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz/Mgazul
  */
 public class JarTool {
 

@@ -21,10 +21,12 @@ package org.magmafoundation.magma.utils;
 import java.io.File;
 
 /**
- * JarUtils
+ * Project: Magma
  *
- * @author Hexeption admin@hexeption.co.uk
- * @since 20/11/2021 - 01:32 pm
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Hexeption
  */
 public class JarUtils {
 

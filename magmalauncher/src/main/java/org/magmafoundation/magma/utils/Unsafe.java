@@ -9,6 +9,14 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Arclight
+ */
 @SuppressWarnings("all")
 public class Unsafe {
 

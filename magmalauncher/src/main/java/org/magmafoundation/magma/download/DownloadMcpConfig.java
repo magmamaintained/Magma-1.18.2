@@ -21,6 +21,14 @@ package org.magmafoundation.magma.download;
 import java.io.File;
 import java.nio.file.Files;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public class DownloadMcpConfig {
 
     public static void run(String mc_version, String mcp_version) {

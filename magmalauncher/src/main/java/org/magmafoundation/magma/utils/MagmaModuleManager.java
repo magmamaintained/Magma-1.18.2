@@ -34,9 +34,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author M1lc0lm / Shawiiz_z
- * @version 1
- * @date 04/05/2022 22:57
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
  */
 public class MagmaModuleManager {
 

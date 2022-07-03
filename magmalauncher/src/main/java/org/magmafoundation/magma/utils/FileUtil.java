@@ -28,9 +28,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Shawiiz_z
- * @version 0.1
- * @date 09/05/2022 22:07
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
  */
 public class FileUtil {
 
