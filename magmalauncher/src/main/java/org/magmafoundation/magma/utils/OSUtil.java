@@ -19,9 +19,12 @@
 package org.magmafoundation.magma.utils;
 
 /**
- * @author Shawiiz_z
- * @version 0.1
- * @date 09/05/2022 22:16
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
  */
 public class OSUtil {
 	public enum OS {

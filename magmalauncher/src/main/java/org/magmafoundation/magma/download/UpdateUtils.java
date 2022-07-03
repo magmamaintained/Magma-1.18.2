@@ -32,8 +32,15 @@ import java.nio.file.StandardOpenOption;
 
 import static org.magmafoundation.magma.download.NetworkUtil.getConn;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public class UpdateUtils {
-
 
 	public static void downloadFile(String URL, File f) throws Exception {
 		downloadFile(URL, f, null);

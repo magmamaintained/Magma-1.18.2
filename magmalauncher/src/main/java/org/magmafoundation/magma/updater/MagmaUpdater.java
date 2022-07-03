@@ -20,6 +20,12 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ */
 public class MagmaUpdater {
 
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();

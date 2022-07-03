@@ -5,6 +5,12 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Project: Magma
+ *
+ * @author JustRed23 / Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ */
 public class BetterUI {
 
     private static boolean enabled = true,  enableBigLogo = true;

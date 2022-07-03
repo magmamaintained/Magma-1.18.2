@@ -24,9 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Shawiiz_z
- * @version 0.1
- * @date 09/05/2022 22:05
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
  */
 public class DataParser {
 	public static HashMap<String, String> versionMap = new HashMap<>();

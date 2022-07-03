@@ -22,6 +22,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public class DownloadMinecraftJar {
 
     public static void run(File minecraft_server) throws IOException {

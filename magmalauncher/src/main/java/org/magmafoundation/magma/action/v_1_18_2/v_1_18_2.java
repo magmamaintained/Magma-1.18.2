@@ -45,6 +45,14 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public class v_1_18_2 implements Version {
 
 	private static List<String> loadedLibsPaths = new ArrayList<>();

@@ -26,10 +26,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MD5Checksum
+ * Project: Magma
  *
- * @author Hexeption admin@hexeption.co.uk
- * @since 20/11/2021 - 03:02 pm
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Hexeption
  */
 public class MD5Checksum {
 

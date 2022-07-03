@@ -33,6 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public abstract class Action {
 
     private static final PrintStream origin = System.out;

@@ -18,6 +18,14 @@
 
 package org.magmafoundation.magma.action;
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm)
+ * @date 03.07.2022 - 17:19
+ *
+ * Made with help of Shawizz
+ */
 public interface Version {
 
     void run();
