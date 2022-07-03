@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public class MagmaStart {
         DefaultLibraries.downloadRepoLibs();
         new v_1_18_2().run();
 
-        new MagmaModuleManager(DataParser.launchArgs);
+        MagmaModuleManager magmaModuleManager = new MagmaModuleManager(DataParser.launchArgs);
 
         if(mainArgs.contains("-noserver"))
             System.exit(0); //-noserver -> Do not run the Minecraft server, only let the installation running.
@@ -81,7 +80,8 @@ public class MagmaStart {
                 Map<String, Object> data = yaml.load(stream);
                 Map<String, Object> forge = (Map<String, Object>) data.get("magma");
                 MagmaUpdater updater = new MagmaUpdater();
-                if (Arrays.stream(args).noneMatch(s -> s.equalsIgnoreCase("-dau"))) {
+                if (mainArgs.stream().noneMatch(s -> s.equalsIgnoreCase("-dau"))) {
+                    mainArgs.stream().filter(s -> s.equalsIgnoreCase("-dau")).findFirst().ifPresent(o -> mainArgs.remove(o));
                     System.out.println("Checking for updates...");
                     if (updater.versionChecker() && forge.get("auto-update").equals(true))
                         updater.downloadJar();
@@ -96,11 +96,23 @@ public class MagmaStart {
             forgeArgs.add(arg.split(" ")[1]);
         }
 
-        String[] args_ = Stream.concat(forgeArgs.stream(), Arrays.stream(args)).toArray(String[]::new);
+        String[] args_ = Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new);
 
-        var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
-        var method = cl.getMethod("main", String[].class);
-        method.invoke(null, (Object) args_);
+        try {
+            var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
+            var method = cl.getMethod("main", String[].class);
+            method.invoke(null, (Object) args_);
+        }catch (Exception e){
+            try {
+                magmaModuleManager.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
+                var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
+                var method = cl.getMethod("main", String[].class);
+                method.invoke(null, (Object) args_);
+            }catch (Exception e1){
+                System.out.println("Installation finished, please restart server.");
+                System.exit(0);
+            }
+        }
     }
 
 

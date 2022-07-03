@@ -46,7 +46,6 @@ public class MagmaModuleManager {
 	private static final MethodHandles.Lookup IMPL_LOOKUP = Unsafe.lookup();
 
 	List<Module> loadedModules = new ArrayList<>();
-	private boolean moduleOptionAvailable = false;
 
 	public MagmaModuleManager(List<String> args) {
 		try {
@@ -56,9 +55,9 @@ public class MagmaModuleManager {
 			 */
 			sun.misc.Unsafe unsafe = this.getUnsafe();
 			unsafe.putObject(MagmaModuleManager.class, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), Class.class.getModule());
-			this.moduleOptionAvailable = true;
 
 			this.applyLaunchArgs(args);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			/*
@@ -69,7 +68,6 @@ public class MagmaModuleManager {
 	}
 
 	public void applyLaunchArgs(List<String> args) {
-		this.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
 		//Just read each lines of launch args
 		for(String arg : args) {
 			if(arg.startsWith("-p ")) {
@@ -89,6 +87,7 @@ public class MagmaModuleManager {
 				}
 			}
 		}
+		this.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
 	}
 
 
@@ -99,16 +98,16 @@ public class MagmaModuleManager {
 		return Stream.concat(this.getDefaultModuleLayer().modules().stream(), this.loadedModules.stream()).filter(module -> module.getName().equals(name)).findAny();
 	}
 
-	public boolean addOpens(String moduleName, String packageName, String applyTo) {
-		return this.addModuleOption("addOpens", moduleName, packageName, applyTo);
+	public void addOpens(String moduleName, String packageName, String applyTo) {
+		this.addModuleOption("addOpens", moduleName, packageName, applyTo);
 	}
 
-	public boolean addExports(String moduleName, String packageName, String applyTo) {
-		return this.addModuleOption("addExports", moduleName, packageName, applyTo);
+	public void addExports(String moduleName, String packageName, String applyTo) {
+		this.addModuleOption("addExports", moduleName, packageName, applyTo);
 	}
 
-	public boolean addExportsToAllUnnamed(String moduleName, String packageName) {
-		return this.addModuleOption("addExportsToAllUnnamed", moduleName, packageName, null);
+	public void addExportsToAllUnnamed(String moduleName, String packageName) {
+		this.addModuleOption("addExportsToAllUnnamed", moduleName, packageName, null);
 	}
 
 	/*
@@ -116,11 +115,11 @@ public class MagmaModuleManager {
 
 	This method allows to dynamically add a module option
 	 */
-	private boolean addModuleOption(String methodName, String moduleFrom, String packageName, String moduleTo) {
+	private void addModuleOption(String methodName, String moduleFrom, String packageName, String moduleTo) {
 		try {
 			Optional<Module> moduleFrom_ = findModule(moduleFrom);
 			Optional<Module> moduleTo_ = findModule(moduleTo);
-			if(!moduleFrom_.isPresent()) return false; //The module hasn't been found, we can't add the module option.
+			if(!moduleFrom_.isPresent()) return; //The module hasn't been found, we can't add the module option.
 
 			//The target module has been found
 			if(moduleTo_.isPresent()) {
@@ -130,14 +129,12 @@ public class MagmaModuleManager {
 				Class.forName("jdk.internal.module.Modules").getMethod(methodName, Module.class, String.class).invoke(null, moduleFrom_.get(), packageName);
 			}
 
-			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return false;
 	}
 
-	public static void addToPath(Path path) {
+	private void addToPath(Path path) {
 		try {
 			ClassLoader loader = ClassLoader.getPlatformClassLoader();
 			Field ucpField;
@@ -162,9 +159,9 @@ public class MagmaModuleManager {
 	}
 
     //Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java#L420)
-	public void loadModules(String modulePath) throws Throwable{
+	private void loadModules(String modulePath) throws Throwable{
 		// Find all extra modules
-		ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(OSUtil.getOS() == OSUtil.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(MagmaModuleManager::addToPath).toArray(Path[]::new));
+		ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(OSUtil.getOS() == OSUtil.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(this::addToPath).toArray(Path[]::new));
 		MethodHandle loadModuleMH = IMPL_LOOKUP.findVirtual(Class.forName("jdk.internal.loader.BuiltinClassLoader"), "loadModule", MethodType.methodType(void.class, ModuleReference.class));
 
 		// Resolve modules to a new config
