@@ -1,0 +1,23 @@
+plugins {
+    id 'com.github.ben-manes.versions'
+    id 'org.javamodularity.moduleplugin' version '1.8.3' apply false
+}
+apply plugin: 'java-library'
+apply plugin: 'jacoco'
+apply plugin: 'org.javamodularity.moduleplugin'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.mohistmc.com/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencyUpdates.rejectVersionIf { isNonStable(it.candidate.version) }
+
+dependencies {
+    implementation "com.mohistmc.yaml:Yaml:0.1"
+    implementation 'com.mohistmc:MinecraftMetaJavaApi:1.1'
+    implementation "com.google.code.gson:gson:2.8.7"
+    implementation 'dev.vankka:dependencydownload-runtime:1.2.2-SNAPSHOT'
+    implementation 'dev.vankka:dependencydownload-common:1.2.1'
+}
