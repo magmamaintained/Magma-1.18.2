@@ -1383,7 +1383,7 @@ project(':forge') {
         archiveClassifier = 'server'
         archiveExtension = 'jar'
         archiveBaseName = 'magma'
-        archiveVersion = '1.18.2'
+        archiveVersion = MAGMA_VERSION
         destinationDirectory = file('build/libs')
 
         def CLASS_PATH = Util.getArtifacts(project, project.configurations.installer, false).values().collect { "libraries/${it.downloads.artifact.path}" } +

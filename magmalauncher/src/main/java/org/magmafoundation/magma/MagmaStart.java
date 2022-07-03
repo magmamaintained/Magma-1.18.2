@@ -48,6 +48,7 @@ public class MagmaStart {
     public static List<String> mainArgs = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
+
         mainArgs.addAll(List.of(args));
 
         DataParser.parseVersions();
@@ -55,6 +56,11 @@ public class MagmaStart {
         DataParser.parseLibrariesClassPath();
 
         BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
+
+        if(Float.parseFloat(System.getProperty("java.class.version")) < 61){
+            System.out.println("Your Java version is not supported. Please update to Java 17 or higher.");
+            System.exit(1);
+        }
 
         DefaultLibraries.downloadRepoLibs();
         new v_1_18_2().run();
