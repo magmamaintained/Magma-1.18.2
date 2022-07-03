@@ -23,6 +23,7 @@ import org.magmafoundation.magma.utils.BSLPreInit;
 import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.SystemType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,10 +66,10 @@ public class MagmaStart {
                         s.startsWith("--fml.mcVersion") ||
                         s.startsWith("--fml.forgeGroup") ||
                         s.startsWith("--fml.mcpVersion")).
-                findAny().
-                ifPresent(s -> {
-                    forgeArgs.add(s.split(" ")[0]);
-                    forgeArgs.add(s.split(" ")[1]);
+                toList().
+                forEach(arg -> {
+                    forgeArgs.add(arg.split(" ")[0]);
+                    forgeArgs.add(arg.split(" ")[1]);
                 });
 
         BSLPreInit bslPreInit = new BSLPreInit();
@@ -89,11 +90,14 @@ public class MagmaStart {
         try {
             var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
             var method = cl.getMethod("main", String[].class);
-            method.invoke(null, (Object) Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new));
-        } catch (Exception e) {
-            System.out.println("Installation finished, please restart server.");
+            method.invoke(null, (Object)  Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new));
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
+                 IllegalAccessException e) {
+            e.printStackTrace();
             System.exit(0);
         }
+
+
     }
 
 }
