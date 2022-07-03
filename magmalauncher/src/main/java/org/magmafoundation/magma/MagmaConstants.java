@@ -2,6 +2,7 @@ package org.magmafoundation.magma;
 
 import java.util.Objects;
 
+
 public class MagmaConstants {
     private static final String fullVersion = (MagmaStart.class.getPackage().getImplementationVersion() != null) ? MagmaStart.class.getPackage().getImplementationVersion() : "dev-env";
 

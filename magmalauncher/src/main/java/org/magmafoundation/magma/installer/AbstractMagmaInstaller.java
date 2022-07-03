@@ -1,5 +1,6 @@
 package org.magmafoundation.magma.installer;
 
+import org.magmafoundation.magma.MagmaConstants;
 import org.magmafoundation.magma.MagmaStart;
 import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.MD5;
@@ -48,9 +49,9 @@ public abstract class AbstractMagmaInstaller {
     public File minecraft_server;
 
     protected AbstractMagmaInstaller() {
-        this.forgeVer = AbstractMagmaInstaller.class.getPackage().getImplementationVersion().split("-")[1];
-        this.mcpVer = AbstractMagmaInstaller.class.getPackage().getImplementationVersion().split("-")[3];
-        this.mcVer = AbstractMagmaInstaller.class.getPackage().getImplementationVersion().split("-")[0];
+        this.forgeVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[1];
+        this.mcpVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[3];
+        this.mcVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[0];
 
         this.forgeStart = libPath + "net/minecraftforge/forge/" + mcVer + "-" + forgeVer + "/forge-" + mcVer + "-" + forgeVer;
         this.universalJar = new File(forgeStart + "-universal.jar");
