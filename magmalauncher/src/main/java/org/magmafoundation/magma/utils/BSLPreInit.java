@@ -37,6 +37,8 @@ public class BSLPreInit {
 		} catch (Exception ignored) {}
 	}
 
+
+	//Code from MohistMC ModuleManager applyLaunchArgs() Installer 1.19
 	public void setupStartup(List<String> args) {
 		for(String arg : args) {
 			if(arg.startsWith("-p ")) {
@@ -62,7 +64,7 @@ public class BSLPreInit {
 	}
 
 	public Optional<Module> findModule(String name) {
-		return ModuleLayer.boot().modules().stream().findAny();
+		return ModuleLayer.boot().modules().stream().filter(module -> module.getName().equals(name)).findAny();
 	}
 
 	public void addOpens(String moduleName, String packageName, String applyTo) {
@@ -81,7 +83,7 @@ public class BSLPreInit {
 		try {
 			Optional<Module> moduleFrom_ = findModule(moduleFrom);
 			Optional<Module> moduleTo_ = findModule(moduleTo);
-			if(moduleFrom_.isEmpty()) return; //The module hasn't been found, we can't add the module option.
+			if(!moduleFrom_.isPresent()) return; //The module hasn't been found, we can't add the module option.
 
 			//The target module has been found
 			if(moduleTo_.isPresent()) {
