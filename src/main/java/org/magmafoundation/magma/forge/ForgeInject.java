@@ -5,17 +5,13 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_18_R2.enchantments.CraftEnchantment;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
@@ -26,10 +22,8 @@ import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
 import org.magmafoundation.magma.helpers.EnumJ17Helper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
 import static org.bukkit.Material.normalizeName;
 
 public class ForgeInject {
@@ -39,6 +33,9 @@ public class ForgeInject {
             .put(LevelStem.NETHER, World.Environment.NETHER)
             .put(LevelStem.END, World.Environment.THE_END)
             .build());
+
+    public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new HashMap<>();
+
     public static void init() {
         Magma.LOGGER.warn("Injecting Forge Material into Bukkit");
         addForgeItems();
@@ -188,6 +185,7 @@ public class ForgeInject {
                 String name = normalizeName(resourceLocation.toString());
                 try {
                     Villager.Profession profession = EnumJ17Helper.addEnum0(Villager.Profession.class, name, new Class[0]);
+                    PROFESSION_MAP.put(profession, resourceLocation);
                     Magma.LOGGER.warn("Injecting Forge VillagerProfession into Bukkit: " +  profession.name());
                 } catch (Throwable e) {
                     e.printStackTrace();
