@@ -93,7 +93,8 @@ public class MagmaStart {
             method.invoke(null, (Object)  Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new));
         } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
                  IllegalAccessException e) {
-            e.printStackTrace();
+            System.out.println("[MAGMA] If you freshly installed Magma, just start it again. If not, please report this error to us.");
+            System.out.println("Error: "+e.getMessage());
             System.exit(0);
         }
 
