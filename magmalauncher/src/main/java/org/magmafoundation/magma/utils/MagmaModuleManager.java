@@ -69,6 +69,7 @@ public class MagmaModuleManager {
 	}
 
 	public void applyLaunchArgs(List<String> args) {
+		this.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
 		//Just read each lines of launch args
 		for(String arg : args) {
 			if(arg.startsWith("-p ")) {
@@ -88,8 +89,6 @@ public class MagmaModuleManager {
 				}
 			}
 		}
-
-		this.addExportsToAllUnnamed("cpw.mods.bootstraplauncher", "cpw.mods.bootstraplauncher");
 	}
 
 
