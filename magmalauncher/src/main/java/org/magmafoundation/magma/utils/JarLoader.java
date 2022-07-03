@@ -29,8 +29,9 @@ import java.util.jar.JarFile;
 /**
  * Project: Magma
  *
- * @author Malcolm (M1lc0lm)
+ * @author Malcolm (M1lc0lm) / Hexeption
  * @date 03.07.2022 - 17:19
+ *
  */
 public class JarLoader {
 

@@ -1,28 +1,8 @@
-/*
- * MohistMC
- * Copyright (C) 2018-2022.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
-package org.magmafoundation.magma.action;
-
+package org.magmafoundation.magma.installer;
 
 import org.magmafoundation.magma.MagmaStart;
-import org.magmafoundation.magma.utils.DataParser;
-import org.magmafoundation.magma.utils.JarUtils;
-import org.magmafoundation.magma.utils.MD5Util;
+import org.magmafoundation.magma.utils.JarTool;
+import org.magmafoundation.magma.utils.MD5;
 
 import java.io.*;
 import java.net.URL;
@@ -39,16 +19,15 @@ import java.util.jar.JarFile;
  * @author Malcolm (M1lc0lm)
  * @date 03.07.2022 - 17:19
  *
- * Made with help of Shawizz
+ * Inspired by Shawiiz_z (https://github.com/Shawiizz)
  */
-public abstract class Action {
+public abstract class AbstractMagmaInstaller {
 
-    private static final PrintStream origin = System.out;
-    public String magmaVer;
+    private PrintStream origin = System.out;
     public String forgeVer;
     public String mcpVer;
     public String mcVer;
-    public String libPath = new File(JarUtils.getJarDir(), "libraries").getAbsolutePath()+"/";
+    public String libPath = new File(JarTool.getJarDir(), "libraries").getAbsolutePath() + "/";
 
     public String forgeStart;
     public File universalJar;
@@ -68,18 +47,17 @@ public abstract class Action {
 
     public File minecraft_server;
 
-    protected Action() {
-        this.magmaVer = DataParser.versionMap.get("magma");
-        this.forgeVer = DataParser.versionMap.get("forge");
-        this.mcpVer = DataParser.versionMap.get("mcp");
-        this.mcVer = DataParser.versionMap.get("minecraft");
+    protected AbstractMagmaInstaller() {
+        this.forgeVer = AbstractMagmaInstaller.class.getPackage().getImplementationVersion().split("-")[1];
+        this.mcpVer = AbstractMagmaInstaller.class.getPackage().getImplementationVersion().split("-")[3];
+        this.mcVer = AbstractMagmaInstaller.class.getPackage().getImplementationVersion().split("-")[0];
 
         this.forgeStart = libPath + "net/minecraftforge/forge/" + mcVer + "-" + forgeVer + "/forge-" + mcVer + "-" + forgeVer;
         this.universalJar = new File(forgeStart + "-universal.jar");
         this.serverJar = new File(forgeStart + "-server.jar");
 
-        this.lzma = new File(libPath + "com/mohistmc/installation/data/server.lzma");
-        this.installInfo = new File(libPath + "com/mohistmc/installation/installInfo");
+        this.lzma = new File(libPath + "org/magma/install/data/server.lzma");
+        this.installInfo = new File(libPath + "org/magma/install/installInfo");
 
         this.otherStart = libPath + "net/minecraft/server/" + mcVer + "-" + mcpVer + "/server-" + mcVer + "-" + mcpVer;
 
@@ -91,20 +69,18 @@ public abstract class Action {
         this.mcpZip = new File(mcpStart + ".zip");
         this.mcpTxt = new File(mcpStart + "-mappings.txt");
 
-        this.minecraft_server = new File(libPath + "minecraft_server." +  mcVer + ".jar");
+        this.minecraft_server = new File(libPath + "minecraft_server." + mcVer + ".jar");
     }
 
-    protected void run(String mainClass, List<String> args, List<URL> classPath) throws Exception {
-		System.out.println("EXECUTING CLASS " + mainClass);
-		System.out.println(getParentClassloader()==null);
-		try {
-			Class.forName(mainClass);
-			System.out.println("found class 2");
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-		Class.forName(mainClass, true, new URLClassLoader(classPath.toArray(new URL[0]), getParentClassloader())).getDeclaredMethod("main", String[].class).invoke(null, (Object) args.toArray(new String[0]));
-	}
+    protected void launchService(String mainClass, List<String> args, List<URL> classPath) throws Exception {
+        System.out.println(getParentClassloader() == null);
+        try {
+            Class.forName(mainClass);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        Class.forName(mainClass, true, new URLClassLoader(classPath.toArray(new URL[0]), getParentClassloader())).getDeclaredMethod("main", String[].class).invoke(null, (Object) args.toArray(new String[0]));
+    }
 
     private ClassLoader getParentClassloader() {
         try {
@@ -125,7 +101,7 @@ public abstract class Action {
     THIS IS TO NOT SPAM CONSOLE WHEN IT WILL PRINT A LOT OF THINGS
      */
     protected void mute() throws Exception {
-        File out = new File(libPath + "com/mohistmc/installation/installationLogs.txt");
+        File out = new File(libPath + "org/magmafoundation/installLog/install.log");
         if(!out.exists()) {
             out.getParentFile().mkdirs();
             out.createNewFile();
@@ -139,12 +115,12 @@ public abstract class Action {
 
     protected void copyFileFromJar(File file, String pathInJar) throws Exception {
         InputStream is = MagmaStart.class.getClassLoader().getResourceAsStream(pathInJar);
-        if(!file.exists() || !MD5Util.getMd5(file).equals(MD5Util.getMd5(is)) || file.length() <= 1) {
+        if(!file.exists() || !MD5.getMD5Checksum(file.getName()).equals(MD5.getMD5Checksum(is)) || file.length() <= 1) {
             file.getParentFile().mkdirs();
             file.createNewFile();
             if(is != null) Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             else {
-                System.out.println("[Mohist] The file " + file.getName() + " doesn't exists in the Mohist jar !");
+                System.out.println("The file " + file.getName() + " doesn't exists in the this jar !");
                 System.exit(0);
             }
         }

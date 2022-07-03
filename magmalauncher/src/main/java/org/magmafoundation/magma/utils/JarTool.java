@@ -1,6 +1,6 @@
 /*
- * MohistMC
- * Copyright (C) 2018-2022.
+ * Magma Server
+ * Copyright (C) 2019-2022.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,28 +9,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.magmafoundation.magma.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.magmafoundation.magma.MagmaStart;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Project: Magma
  *
- * @author Malcolm (M1lc0lm)
+ * @author Malcolm (M1lc0lm) / Hexeption / Mgazul
  * @date 03.07.2022 - 17:19
- *
- * Made with help of Shawizz/Mgazul
  */
 public class JarTool {
 
@@ -80,6 +81,18 @@ public class JarTool {
             inputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static List<String> readFileLinesFromJar(String path) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(MagmaStart.class.getClassLoader().getResourceAsStream(path))))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null)
+                lines.add(line);
+            return lines;
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
     }
 }

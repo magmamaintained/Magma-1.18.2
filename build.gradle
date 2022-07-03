@@ -1043,8 +1043,20 @@ project(':forge') {
                     'Specification-Title'   : 'Magma Development Limited',
                     'Specification-Vendor'  : 'Magma Development Limited',
                     'Implementation-Title'  : "Magma",
-                    'Implementation-Version': gradleutils.gitInfo.abbreviatedId,
-                    'Implementation-Vendor' : 'Magma Development Limited'
+                    'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
+                    'Implementation-Vendor' : 'Magma Development Limited',
+            ] as LinkedHashMap,
+            'io/izzel/arclight/': [
+                    'Implementation-Title'  : "Arclight",
+                    'Implementation-Vendor' : 'Arclight Team',
+            ] as LinkedHashMap,
+            'org/bukkit/craftbukkit/v1_18_R2/': [
+                    'Specification-Title'   : MCP_VERSION,
+                    'Specification-Vendor'  : 'SpigotMC',
+                    'Specification-Version':  '1.18.2',
+                    'Implementation-Title'  : 'Spigot',
+                    'Implementation-Version': '7e29f765-296df566-9fb885e8',
+                    'Implementation-Vendor' : 'SpigotMC'
             ] as LinkedHashMap
         ]
     }
@@ -1455,23 +1467,6 @@ project(':forge') {
 
 
         from(project(':magmalauncher').project.sourceSets.main.output){
-        }
-
-        from(rootProject.file('server_files/version.txt')) {
-            filter(ReplaceTokens, tokens: [VERSION: MAGMA_VERSION])
-            rename { 'versions/magma.txt' }
-        }
-        from(rootProject.file('server_files/version.txt')) {
-            filter(ReplaceTokens, tokens: [VERSION: MC_VERSION])
-            rename { 'versions/minecraft.txt' }
-        }
-        from(rootProject.file('server_files/version.txt')) {
-            filter(ReplaceTokens, tokens: [VERSION: FORGE_VERSION])
-            rename { 'versions/forge.txt' }
-        }
-        from(rootProject.file('server_files/version.txt')) {
-            filter(ReplaceTokens, tokens: [VERSION: MCP_VERSION])
-            rename { 'versions/mcp.txt' }
         }
 
         from(rootProject.file('server_files/libraries.txt')) {
