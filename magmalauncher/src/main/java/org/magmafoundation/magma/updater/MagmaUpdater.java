@@ -3,7 +3,7 @@ package org.magmafoundation.magma.updater;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.magmafoundation.magma.MagmaStart;
+import org.magmafoundation.magma.MagmaConstants;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -49,7 +49,7 @@ public class MagmaUpdater {
             String time = new SimpleDateFormat( "H:mm a" ).format( created_at );
 
             newSha = root.get( "tag_name" ).getAsString();
-            currentSha = MagmaStart.class.getPackage().getImplementationVersion().split( "-" )[2];
+            currentSha = MagmaConstants.VERSION;
 
             if (currentSha.equals( newSha )) {
                 System.out.printf( "[Magma] No update found, latest version: (%s) current version: (%s)%n", currentSha, newSha );

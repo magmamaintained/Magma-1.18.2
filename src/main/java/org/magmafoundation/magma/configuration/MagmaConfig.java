@@ -18,15 +18,17 @@
 
 package org.magmafoundation.magma.configuration;
 
+import net.minecraft.server.MinecraftServer;
+import org.apache.commons.io.FileUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.magmafoundation.magma.configuration.value.Value;
+import org.magmafoundation.magma.configuration.value.values.BooleanValue;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.logging.Level;
-import net.minecraft.server.MinecraftServer;
-import org.apache.commons.io.FileUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.magmafoundation.magma.configuration.value.Value;
 
 /**
  * MagmaConfig
@@ -54,7 +56,7 @@ public class MagmaConfig extends ConfigBase {
 
     //=============================Misc SETTINGS==============================
     // public final BooleanValue forgeBukkitPermissionHandlerEnable = new BooleanValue(this, "forge.bukkitPermissionHandler.enable", true, "Let's Bukkit permission plugins handle forge/modded commands");
-    // public final BooleanValue magmaAutoUpdater = new BooleanValue(this, "magma.auto-update", true, "Auto updates the Magma jar");
+     public final BooleanValue magmaAutoUpdater = new BooleanValue(this, "magma.auto-update", true, "Auto updates the Magma jar");
     // public final BooleanValue overrideServerBrand = new BooleanValue(this, "magma.advanced.override-brand", false, "Enables overriding the brand string");
     // public final StringValue serverBrand = new StringValue(this, "magma.advanced.override-brand-name", "Spigot", "Value to use for new brand string");
 
