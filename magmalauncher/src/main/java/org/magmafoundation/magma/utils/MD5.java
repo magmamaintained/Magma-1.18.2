@@ -22,6 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -32,6 +35,22 @@ import java.security.NoSuchAlgorithmException;
  * @date 03.07.2022 - 17:19
  */
 public class MD5 {
+
+	public static String getMd5(File path) {
+		try {
+			return String.format("%032x", new BigInteger(1, MessageDigest.getInstance("MD5").digest(Files.readAllBytes(path.toPath())))).toLowerCase();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static String getMd5(InputStream is) {
+		try {
+			return String.format("%032x", new BigInteger(1, new DigestInputStream(is, MessageDigest.getInstance("MD5")).getMessageDigest().digest())).toLowerCase();
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	// Check MD5
 	public static boolean checkMD5(File file, String md5sum) throws IOException {

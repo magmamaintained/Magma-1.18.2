@@ -6,6 +6,7 @@ import dev.vankka.dependencydownload.path.CleanupPathProvider;
 import dev.vankka.dependencydownload.path.DependencyPathProvider;
 import dev.vankka.dependencydownload.repository.Repository;
 import dev.vankka.dependencydownload.repository.StandardRepository;
+import org.magmafoundation.magma.MagmaConstants;
 import org.magmafoundation.magma.utils.JarLoader;
 import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.MD5;
@@ -32,7 +33,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     private static final List<String> loadedLibsPaths = new ArrayList<>();
 
-    private final String magmaVersion = "";
+    private final String magmaVersion = MagmaConstants.VERSION;
 
     public final File fmlloader = new File(libPath + "net/minecraftforge/fmlloader/" + mcVer + "-" + forgeVer + "/fmlloader-" + mcVer + "-" + forgeVer + ".jar");
     public final File fmlcore = new File(libPath + "net/minecraftforge/fmlcore/" + mcVer + "-" + forgeVer + "/fmlcore-" + mcVer + "-" + forgeVer + ".jar");
@@ -45,10 +46,12 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     public final File mergedMapping = new File(mcpStart + "-mappings-merged.txt");
 
-    public MagmaInstaller() throws Exception {
-        downloadInternalLibraries();
-        new Dependencies(mcVer, mcpVer, minecraft_server);
-        install();
+    public MagmaInstaller() {
+        try {
+            downloadInternalLibraries();
+            new Dependencies(mcVer, mcpVer, minecraft_server);
+            install();
+        } catch (Exception ignored){}
     }
 
     //Inspired by Mohist 1.19 installer
@@ -146,23 +149,23 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         }
 
         String storedServerMD5 = null;
-        String storedMohistMD5 = null;
-        String serverMD5 = MD5.getMD5Checksum(serverJar.getAbsolutePath());
-        String magmaMD5 = MD5.getMD5Checksum(JarTool.getFile().getAbsolutePath());
+        String storedMagmaMD5 = null;
+        String serverMD5 = MD5.getMd5(serverJar);
+        String magmaMD5 = MD5.getMd5(JarTool.getFile());
 
         if (installInfo.exists()) {
             List<String> infoLines = Files.readAllLines(installInfo.toPath());
             if (infoLines.size() > 0)
                 storedServerMD5 = infoLines.get(0);
             if (infoLines.size() > 1)
-                storedMohistMD5 = infoLines.get(1);
+                storedMagmaMD5 = infoLines.get(1);
         }
 
         if (!serverJar.exists()
                 || storedServerMD5 == null
-                || storedMohistMD5 == null
+                || storedMagmaMD5 == null
                 || !storedServerMD5.equals(serverMD5)
-                || !storedMohistMD5.equals(magmaMD5)) {
+                || !storedMagmaMD5.equals(magmaMD5)) {
             System.out.println("Creating forge server jar. This can take 1 minute.");
             mute();
             launchService("net.minecraftforge.binarypatcher.ConsoleTool",
@@ -182,7 +185,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                             libPath + "trove/trove/1.0.2/trove-1.0.2.jar"
                     ))));
             unmute();
-            serverMD5 = MD5.getMD5Checksum(serverJar.getAbsolutePath());
+            serverMD5 = MD5.getMd5(serverJar);
         }
 
         FileWriter fw = new FileWriter(installInfo);
@@ -200,17 +203,17 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         dependencies.put(new File("libraries/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"), new ArrayList<>(Arrays.asList("e8cee80f1719c02ef3076ff42bab0ad9", "https://s01.oss.sonatype.org/content/repositories/snapshots/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar")));
 
         for (File lib : dependencies.keySet()) {
-            if(lib.exists() && Objects.equals(MD5.getMD5Checksum(lib.getAbsolutePath()), dependencies.get(lib).get(0))) {
+            if(lib.exists() && Objects.equals(MD5.getMd5(lib), dependencies.get(lib).get(0))) {
                 System.out.println("Loading library " + lib.getName());
-                JarLoader.loadJar(lib);
+                new JarLoader().loadJar(lib);
                 continue;
             }
             System.out.println("Downloading " + lib.getName() + "...");
             lib.getParentFile().mkdirs();
             try {
                 NetworkUtils.downloadFile(dependencies.get(lib).get(1), lib, dependencies.get(lib).get(0));
-                JarLoader.loadJar(lib);
-                System.out.println("Downloaded and loaded " + lib.getName() + ". md5: " + MD5.getMD5Checksum(lib.getAbsolutePath()));
+                new JarLoader().loadJar(lib);
+                System.out.println("Downloaded and loaded " + lib.getName() + ". md5: " + MD5.getMd5(lib));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -263,7 +266,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             manager.downloadAll(executor, standardRepositories).join();
             manager.loadAll(executor, path -> {
                 try {
-                    JarLoader.loadJar(path.toFile());
+                    new JarLoader().loadJar(path.toFile());
                     loadedLibsPaths.add(path.toFile().getAbsolutePath());
                     System.out.println("Loaded " + path.toFile().getName() + ".");
                 } catch (Exception e) {
