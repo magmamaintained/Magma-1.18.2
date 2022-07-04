@@ -24,7 +24,6 @@ import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.SystemType;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,11 +32,12 @@ import java.util.stream.Stream;
 
 import static org.magmafoundation.magma.MagmaConstants.*;
 
+
 /**
- * org.magmafoundation.magma.MagmaStart
+ * Project: Magma
  *
- * @author Hexeption admin@hexeption.co.uk / Malcolm
- * @since 24/05/2022 - 7:21 pm
+ * @author Malcolm (M1lc0lm) / Hexeption
+ * @date 03.07.2022 - 17:19
  */
 public class MagmaStart {
 
@@ -104,29 +104,6 @@ public class MagmaStart {
         }catch (Exception exception){
             exception.printStackTrace();
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                Class<?> minecraftServer = Class.forName("net.minecraft.server.MinecraftServer");
-                Class<?> gameTestServer = Class.forName("net.minecraft.gametest.framework.GameTestServer");
-
-                if(!minecraftServer.getSuperclass().equals(gameTestServer.getSuperclass())){
-                    Method method = minecraftServer.getMethod("halt", boolean.class);
-                    method.invoke(null, true);
-                    
-                    Method close = minecraftServer.getMethod("close");
-                    close.invoke(null);
-                }
-
-                Class<?> logManager = Class.forName("org.apache.logging.log4j.LogManager");
-                Method method2 = logManager.getMethod("shutdown");
-                method2.invoke(null);
-            } catch (Exception e) {
-                Thread.currentThread().interrupt();
-                e.printStackTrace();
-            }
-        }));
-
 
     }
 

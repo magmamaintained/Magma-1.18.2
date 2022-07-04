@@ -3,6 +3,12 @@ package org.magmafoundation.magma;
 import java.util.Objects;
 
 
+/**
+ * Project: Magma
+ *
+ * @author Malcolm (M1lc0lm) / JustRed23
+ * @date 03.07.2022 - 17:19
+ */
 public class MagmaConstants {
     private static final String fullVersion = (MagmaStart.class.getPackage().getImplementationVersion() != null) ? MagmaStart.class.getPackage().getImplementationVersion() : "dev-env";
 

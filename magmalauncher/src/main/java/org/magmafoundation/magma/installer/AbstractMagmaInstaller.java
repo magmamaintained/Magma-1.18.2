@@ -102,7 +102,7 @@ public abstract class AbstractMagmaInstaller {
     THIS IS TO NOT SPAM CONSOLE WHEN IT WILL PRINT A LOT OF THINGS
      */
     protected void mute() throws Exception {
-        File out = new File(libPath + "org/magmafoundation/installLog/install.log");
+        File out = new File(libPath + "org/magma/installLog/install.log");
         if(!out.exists()) {
             out.getParentFile().mkdirs();
             out.createNewFile();
