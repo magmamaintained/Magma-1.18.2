@@ -220,8 +220,8 @@ def sharedDeps = {
     installer 'org.apache.maven:maven-artifact:3.6.3'
     installer 'net.jodah:typetools:0.8.3'
     installer 'net.minecrell:terminalconsoleappender:1.2.0'
-    installer 'org.jline:jline-reader:3.12.1'   //Dep of TerminaalConsoleeAppender
-    installer 'org.jline:jline-terminal:3.12.1' //Dep of TerminaalConsoleeAppender
+    installer 'org.jline:jline-reader:3.21.0'   //Dep of TerminaalConsoleeAppender
+    installer 'org.jline:jline-terminal:3.21.0' //Dep of TerminaalConsoleeAppender
     installer "org.spongepowered:mixin:${MIXIN_VERSION}"
     installer 'org.openjdk.nashorn:nashorn-core:15.3'
 

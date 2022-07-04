@@ -24,6 +24,7 @@ import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.SystemType;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +98,34 @@ public class MagmaStart {
             System.out.println("Error: "+e.getMessage());
             System.exit(0);
         }
+
+        try {
+            Class.forName("org.jline.terminal.Terminal");
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Class<?> minecraftServer = Class.forName("net.minecraft.server.MinecraftServer");
+                Class<?> gameTestServer = Class.forName("net.minecraft.gametest.framework.GameTestServer");
+
+                if(!minecraftServer.getSuperclass().equals(gameTestServer.getSuperclass())){
+                    Method method = minecraftServer.getMethod("halt", boolean.class);
+                    method.invoke(null, true);
+                    
+                    Method close = minecraftServer.getMethod("close");
+                    close.invoke(null);
+                }
+
+                Class<?> logManager = Class.forName("org.apache.logging.log4j.LogManager");
+                Method method2 = logManager.getMethod("shutdown");
+                method2.invoke(null);
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }
+        }));
 
 
     }
