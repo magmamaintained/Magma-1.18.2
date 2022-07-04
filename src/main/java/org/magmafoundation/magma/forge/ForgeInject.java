@@ -23,8 +23,7 @@ import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
 import org.magmafoundation.magma.helpers.EnumJ17Helper;
 
 import java.util.*;
-
-import static org.bukkit.Material.normalizeName;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ForgeInject {
 
@@ -34,7 +33,8 @@ public class ForgeInject {
             .put(LevelStem.END, World.Environment.THE_END)
             .build());
 
-    public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new HashMap<>();
+    public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new ConcurrentHashMap<>();
+    public static final Map<net.minecraft.world.entity.EntityType<?>, String> ENTITY_TYPES = new ConcurrentHashMap<>();
 
     public static void init() {
         Magma.LOGGER.warn("Injecting Forge Material into Bukkit");
@@ -168,6 +168,7 @@ public class ForgeInject {
                     EntityType bukkitType = EnumJ17Helper.addEnum0(EntityType.class, entityType, new Class[]{String.class, Class.class, Integer.TYPE, Boolean.TYPE}, entityType.toLowerCase(), CraftCustomEntity.class, typeId, false);
                     EntityType.NAME_MAP.put(entityType.toLowerCase(), bukkitType);
                     EntityType.ID_MAP.put((short) typeId, bukkitType);
+                    ENTITY_TYPES.put(entity.getValue(), entityType);
                     Magma.LOGGER.warn("Injecting Forge Entity into Bukkit: " +  entityType);
                 } catch (Throwable e) {
                     e.printStackTrace();
