@@ -204,16 +204,16 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
         for (File lib : dependencies.keySet()) {
             if(lib.exists() && Objects.equals(MD5.getMd5(lib), dependencies.get(lib).get(0))) {
-                System.out.println("Loading library " + lib.getName());
+                //System.out.println("Loading library " + lib.getName());
                 new JarLoader().loadJar(lib);
                 continue;
             }
-            System.out.println("Downloading " + lib.getName() + "...");
+            //System.out.println("Downloading " + lib.getName() + "...");
             lib.getParentFile().mkdirs();
             try {
                 NetworkUtils.downloadFile(dependencies.get(lib).get(1), lib, dependencies.get(lib).get(0));
                 new JarLoader().loadJar(lib);
-                System.out.println("Downloaded and loaded " + lib.getName() + ". md5: " + MD5.getMd5(lib));
+                //System.out.println("Downloaded and loaded " + lib.getName() + ". md5: " + MD5.getMd5(lib));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -268,7 +268,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                 try {
                     new JarLoader().loadJar(path.toFile());
                     loadedLibsPaths.add(path.toFile().getAbsolutePath());
-                    System.out.println("Loaded " + path.toFile().getName() + ".");
+                    //System.out.println("Loaded " + path.toFile().getName() + ".");
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
