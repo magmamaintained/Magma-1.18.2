@@ -127,14 +127,34 @@
     }
  
     private void m_41617_() {
-@@ -147,18 +_,30 @@
+@@ -147,18 +_,47 @@
        this.f_41591_ = this.m_41619_();
     }
  
--   private ItemStack(CompoundTag p_41608_) {
--      this.f_41589_ = Registry.f_122827_.m_7745_(new ResourceLocation(p_41608_.m_128461_("id")));
 +   // CraftBukkit - break into own method
 +   private void load(CompoundTag p_41608_) {
++      this.capNBT = p_41608_.m_128441_("ForgeCaps") ? p_41608_.m_128469_("ForgeCaps") : null;
++      Item rawItem =
++              this.f_41589_ = Registry.f_122827_.m_7745_(new ResourceLocation(p_41608_.m_128461_("id")));
++      this.delegate = rawItem.delegate;
++      this.f_41587_ = p_41608_.m_128445_("Count");
++      if (p_41608_.m_128425_("tag", 10)) {
++         // CraftBukkit start - make defensive copy as this data may be coming from the save thread
++         this.f_41590_ = p_41608_.m_128469_("tag").m_6426_();
++         // CraftBukkit end
++         this.m_41720_().m_142312_(this.f_41590_);
++      }
++      this.forgeInit();
++
++      if (this.m_41720_().isDamageable(this)) {
++         this.m_41721_(this.m_41773_());
++      }
++   }
++
+    private ItemStack(CompoundTag p_41608_) {
+-      this.f_41589_ = Registry.f_122827_.m_7745_(new ResourceLocation(p_41608_.m_128461_("id")));
++      super(ItemStack.class, true);
++      //Magma start - create copy of load method to prevent mixin inject failure
 +      this.capNBT = p_41608_.m_128441_("ForgeCaps") ? p_41608_.m_128469_("ForgeCaps") : null;
 +      Item rawItem =
 +              this.f_41589_ = Registry.f_122827_.m_7745_(new ResourceLocation(p_41608_.m_128461_("id")));
@@ -153,11 +173,8 @@
 +      if (this.m_41720_().isDamageable(this)) {
           this.m_41721_(this.m_41773_());
        }
-+   }
- 
-+   private ItemStack(CompoundTag p_41608_) {
-+      super(ItemStack.class, true);
-+      this.load(p_41608_);
+-
++      //Magma end
 +      // CraftBukkit end
        this.m_41617_();
     }
