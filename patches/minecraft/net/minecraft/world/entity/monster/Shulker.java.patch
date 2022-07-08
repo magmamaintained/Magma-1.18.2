@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
-@@ -53,6 +_,8 @@
+@@ -53,6 +_,9 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
 +import org.bukkit.Location;
++import org.bukkit.event.entity.CreatureSpawnEvent;
 +import org.bukkit.event.entity.EntityTeleportEvent;
  
  public class Shulker extends AbstractGolem implements Enemy {
@@ -32,12 +33,11 @@
                    this.m_19877_();
                    this.m_149788_(direction);
                    this.m_5496_(SoundEvents.f_12418_, 1.0F, 1.0F);
-@@ -421,7 +_,7 @@
+@@ -421,6 +_,7 @@
              }
  
              shulker.m_20219_(vec3);
--            this.f_19853_.m_7967_(shulker);
-+            this.f_19853_.addFreshEntity(shulker, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING); // CraftBukkit - the mysteries of life
++            this.f_19853_.prepareEntity(shulker, CreatureSpawnEvent.SpawnReason.BREEDING); //Magma - add spawn reason
+             this.f_19853_.m_7967_(shulker);
           }
        }
-    }

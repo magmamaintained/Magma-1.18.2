@@ -55,7 +55,7 @@
  import net.minecraft.world.level.entity.EntityTypeTest;
  import net.minecraft.world.level.entity.LevelEntityGetter;
  import net.minecraft.world.level.gameevent.GameEvent;
-@@ -59,845 +_,1170 @@
+@@ -59,845 +_,1179 @@
  import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
  import net.minecraft.world.level.storage.LevelData;
@@ -1243,9 +1243,18 @@
 +        return true;
 +    }
 +
-+    public Explosion m_46511_(@Nullable Entity p_46512_, double p_46513_, double p_46514_, double p_46515_, float p_46516_, Explosion.BlockInteraction p_46517_) {
-+        return this.m_7703_( p_46512_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46513_, p_46514_, p_46515_, p_46516_, false, p_46517_ );
++    //Magma start - fix mixin inject error
++    private boolean explosion_createFire = false;
++    public void prepareExplosion(boolean fire) {
++        explosion_createFire = fire;
 +    }
++
++    public Explosion m_46511_(@Nullable Entity p_46512_, double p_46513_, double p_46514_, double p_46515_, float p_46516_, Explosion.BlockInteraction p_46517_) {
++        boolean temp = explosion_createFire;
++        explosion_createFire = false;
++        return this.m_7703_( p_46512_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46513_, p_46514_, p_46515_, p_46516_, temp, p_46517_ );
++    }
++    //Magma end
 +
 +    public Explosion m_46518_(@Nullable Entity p_46519_, double p_46520_, double p_46521_, double p_46522_, float p_46523_, boolean p_46524_, Explosion.BlockInteraction p_46525_) {
 +        return this.m_7703_( p_46519_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46520_, p_46521_, p_46522_, p_46523_, p_46524_, p_46525_ );
