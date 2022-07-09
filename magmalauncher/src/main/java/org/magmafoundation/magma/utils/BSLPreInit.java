@@ -28,23 +28,10 @@ public class BSLPreInit {
 
     private static final MethodHandles.Lookup IMPL_LOOKUP = Unsafe.lookup();
 
-    public BSLPreInit() {
-        try {
-            Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            sun.misc.Unsafe unsafe = (sun.misc.Unsafe) f.get(null);
-            unsafe.putObject(BSLPreInit.class, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), Class.class.getModule());
-        } catch (Exception ignored) {
-        }
-    }
-
-
-    //Code from MohistMC ModuleManager applyLaunchArgs() Installer 1.19
-    public void setupStartup(List<String> args) {
+    public static void setupStartup(List<String> args) {
         List<String> opens = new ArrayList<>();
         List<String> exports = new ArrayList<>();
         exports.add("cpw.mods.bootstraplauncher/cpw.mods.bootstraplauncher=ALL-UNNAMED");
-        List<String> merges = new ArrayList<>();
 
         for (String arg : args) {
             if(arg.startsWith("-")) {
@@ -58,67 +45,22 @@ public class BSLPreInit {
                 } else if(arg.startsWith("--add-exports ")) {
                     exports.add(arg.substring("--add-exports ".length()).trim());
                 } else if(arg.startsWith("-D")) {
-                    String[] params = arg.split("=");
-                    if(params.length == 2) {
-                        System.setProperty(params[0].replace("-D", ""), params[1]);
-                    }
+                    String[] params = arg.substring(2).split("=", 2);
+                    System.setProperty(params[0], params[1]);
                 }
             }
         }
 
-        var merge = String.join(",", merges);
-        var mergeModules = System.getProperty("mergeModules");
-        if(mergeModules != null) {
-            System.setProperty("mergeModules", mergeModules + ";" + merge);
-        } else {
-            System.setProperty("mergeModules", merge);
-        }
         try {
             addOpens(opens);
             addExports(exports);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Optional<Module> findModule(String name) {
-        return ModuleLayer.boot().modules().stream().filter(module -> module.getName().equals(name)).findAny();
-    }
-
-    public void addOpens(String moduleName, String packageName, String applyTo) {
-        this.addModuleOption("addOpens", moduleName, packageName, applyTo);
-    }
-
-    public void addExports(String moduleName, String packageName, String applyTo) {
-        this.addModuleOption("addExports", moduleName, packageName, applyTo);
-    }
-
-    public void addExportsToAllUnnamed(String moduleName, String packageName) {
-        this.addModuleOption("addExportsToAllUnnamed", moduleName, packageName, null);
-    }
-
-    private void addModuleOption(String methodName, String moduleFrom, String packageName, String moduleTo) {
-        try {
-            Optional<Module> moduleFrom_ = findModule(moduleFrom);
-            Optional<Module> moduleTo_ = findModule(moduleTo);
-            if(!moduleFrom_.isPresent()) return; //The module hasn't been found, we can't add the module option.
-
-            //The target module has been found
-            if(moduleTo_.isPresent()) {
-                Class.forName("jdk.internal.module.Modules").getMethod(methodName, Module.class, String.class, Module.class).invoke(null, moduleFrom_.get(), packageName, moduleTo_.get());
-            } else if(methodName.endsWith("Unnamed")) {
-                //The target module hasn't been found, the only option is to use allUnnamed methods.
-                Class.forName("jdk.internal.module.Modules").getMethod(methodName, Module.class, String.class).invoke(null, moduleFrom_.get(), packageName);
-            }
-
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    //Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java#L420)
-
-    private void addToPath(Path path) {
+    //Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java)
+    public static void addToPath(Path path) {
         try {
             ClassLoader loader = ClassLoader.getPlatformClassLoader();
             Field ucpField;
@@ -142,14 +84,34 @@ public class BSLPreInit {
         }
     }
 
-    public static void addExports(List<String> exports) throws Throwable {
+    public static void addExports(String module, String pkg, String target){
+        if(target == null) target = "ALL-UNNAMED";
+
+        try {
+            addExports(List.of(module + "/" + pkg + "=" + target));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addExports(List<String> exports) throws Throwable {
         MethodHandle implAddExportsMH = IMPL_LOOKUP.findVirtual(Module.class, "implAddExports", MethodType.methodType(void.class, String.class, Module.class));
         MethodHandle implAddExportsToAllUnnamedMH = IMPL_LOOKUP.findVirtual(Module.class, "implAddExportsToAllUnnamed", MethodType.methodType(void.class, String.class));
 
         addExtra(exports, implAddExportsMH, implAddExportsToAllUnnamedMH);
     }
 
-    public static void addOpens(List<String> opens) throws Throwable {
+    public static void addOpens(String module, String pkg, String target){
+        if(target == null) target = "ALL-UNNAMED";
+
+        try {
+            addOpens(List.of(module + "/" + pkg + "=" + target));
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addOpens(List<String> opens) throws Throwable {
         MethodHandle implAddOpensMH = IMPL_LOOKUP.findVirtual(Module.class, "implAddOpens", MethodType.methodType(void.class, String.class, Module.class));
         MethodHandle implAddOpensToAllUnnamedMH = IMPL_LOOKUP.findVirtual(Module.class, "implAddOpensToAllUnnamed", MethodType.methodType(void.class, String.class));
 
@@ -169,19 +131,28 @@ public class BSLPreInit {
         return new ParserData(source[0], source[1], all[1]);
     }
 
-    private static class ParserData {
+    private record ParserData(String module, String packages, String target) {
 
-        final String module;
-        final String packages;
-        final String target;
+        @Override
+            public boolean equals(Object obj) {
+                if(obj == this) return true;
+                if(obj == null || obj.getClass() != this.getClass()) return false;
+                var that = (ParserData) obj;
+                return Objects.equals(this.module, that.module) &&
+                        Objects.equals(this.packages, that.packages) &&
+                        Objects.equals(this.target, that.target);
+            }
 
-        ParserData(String module, String packages, String target) {
-            this.module = module;
-            this.packages = packages;
-            this.target = target;
+        @Override
+            public String toString() {
+                return "ParserData[" +
+                        "module=" + module + ", " +
+                        "packages=" + packages + ", " +
+                        "target=" + target + ']';
+            }
+
+
         }
-
-    }
 
 
     private static void addExtra(List<String> extras, MethodHandle implAddExtraMH, MethodHandle implAddExtraToAllUnnamedMH) {
@@ -192,10 +163,12 @@ public class BSLPreInit {
                     try {
                         if("ALL-UNNAMED".equals(data.target)) {
                             implAddExtraToAllUnnamedMH.invokeWithArguments(m, data.packages);
+                            System.out.println("Added extra to all unnamed modules: " + data);
                         } else {
                             ModuleLayer.boot().findModule(data.target).ifPresent(tm -> {
                                 try {
                                     implAddExtraMH.invokeWithArguments(m, data.packages, tm);
+                                    System.out.println("Added extra: " + data);
                                 } catch (Throwable t) {
                                     throw new RuntimeException(t);
                                 }
@@ -209,9 +182,9 @@ public class BSLPreInit {
         });
     }
 
-    private void loadModules(String modulePath) throws Throwable {
+    private static void loadModules(String modulePath) throws Throwable {
         // Find all extra modules
-        ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(SystemType.getOS() == SystemType.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(this::addToPath).toArray(Path[]::new));
+        ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(SystemType.getOS() == SystemType.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(BSLPreInit::addToPath).toArray(Path[]::new));
         MethodHandle loadModuleMH = IMPL_LOOKUP.findVirtual(Class.forName("jdk.internal.loader.BuiltinClassLoader"), "loadModule", MethodType.methodType(void.class, ModuleReference.class));
 
         // Resolve modules to a new config
