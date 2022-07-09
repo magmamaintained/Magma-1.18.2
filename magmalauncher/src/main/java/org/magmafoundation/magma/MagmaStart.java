@@ -16,6 +16,7 @@ package org.magmafoundation.magma;/*
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.google.common.reflect.ClassPath;
 import org.magmafoundation.magma.betterui.BetterUI;
 import org.magmafoundation.magma.installer.MagmaInstaller;
 import org.magmafoundation.magma.updater.MagmaUpdater;
@@ -23,7 +24,7 @@ import org.magmafoundation.magma.utils.BSLPreInit;
 import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.SystemType;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,17 +48,10 @@ public class MagmaStart {
         mainArgs.addAll(List.of(args));
         BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
 
-        if(Float.parseFloat(System.getProperty("java.class.version")) < 61) {
-            System.out.println("[MAGMA] Your Java version is not supported. Please update to Java 17 or higher.");
-            System.exit(1);
-        }
-
         if(mainArgs.contains("-noserver")) {
             System.out.println("[MAGMA] Argument -noserver detected. Skipping server startup.");
             System.exit(1); //-noserver -> Do not run the Minecraft server, only let the installation running.
         }
-
-        new MagmaInstaller();
 
         List<String> launchArgs = JarTool.readFileLinesFromJar("data/" + (SystemType.getOS().equals(SystemType.OS.WINDOWS) ? "win" : "unix") + "_args.txt");
         List<String> forgeArgs = new ArrayList<>();
@@ -73,8 +67,10 @@ public class MagmaStart {
                     forgeArgs.add(arg.split(" ")[1]);
                 });
 
-        BSLPreInit bslPreInit = new BSLPreInit();
-        bslPreInit.setupStartup(launchArgs);
+        new MagmaInstaller();
+
+        BSLPreInit.setupStartup(launchArgs);
+        BSLPreInit.addExports("cpw.mods.securejarhandler", "cpw.mods.niofs.union", "ALL-UNNAMED");
 
         if(!BetterUI.checkEula(Paths.get("eula.txt")))
             System.exit(0);
@@ -88,22 +84,30 @@ public class MagmaStart {
         else
             MagmaUpdater.checkForUpdates();
 
-        try {
-            var cl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
-            var method = cl.getMethod("main", String[].class);
-            method.invoke(null, (Object)  Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new));
-        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                 IllegalAccessException e) {
-            System.out.println("[MAGMA] If you freshly installed Magma, just start it again. If not, please report this error to us.");
-            System.out.println("Error: "+e.getMessage());
-            System.exit(0);
-        }
 
         try {
-            Class.forName("org.jline.terminal.Terminal");
-        }catch (Exception exception){
-            exception.printStackTrace();
+            Class<?> bsl = Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
+            Method main = bsl.getDeclaredMethod("main", String[].class);
+            String[] invokeArgs = Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new);
+            main.invoke(null, (Object) invokeArgs);
+            //MethodHandle main = Unsafe.lookup().findStatic(bsl, "main", methodType(void.class, String[].class));
+            //main.invokeExact(((String[]) Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new)));
+        } catch (Throwable e) {
+            System.out.println("[MAGMA] If you freshly installed Magma, you just need to restart the server.");
+            System.err.println("[MAGMA] If not report that error to us: "+e);
+            System.exit(1);
         }
+
+        ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClassesRecursive("org.jline").forEach(classInfo -> {
+            try {
+                Thread.currentThread().getContextClassLoader().loadClass(classInfo.getName());
+                System.out.println("[MAGMA] Loaded class: " + classInfo.getName());
+            } catch (ClassNotFoundException e) {
+                System.out.println("[MAGMA] Failed to load class: " + classInfo.getName());
+            }
+        });
+
+        //Thread.currentThread().setContextClassLoader(Thread.currentThread().getContextClassLoader());
 
     }
 

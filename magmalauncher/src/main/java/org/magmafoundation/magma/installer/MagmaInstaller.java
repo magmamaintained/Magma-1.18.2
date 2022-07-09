@@ -7,6 +7,7 @@ import dev.vankka.dependencydownload.path.DependencyPathProvider;
 import dev.vankka.dependencydownload.repository.Repository;
 import dev.vankka.dependencydownload.repository.StandardRepository;
 import org.magmafoundation.magma.MagmaConstants;
+import org.magmafoundation.magma.utils.BSLPreInit;
 import org.magmafoundation.magma.utils.JarLoader;
 import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.MD5;
@@ -188,29 +189,31 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             serverMD5 = MD5.getMd5(serverJar);
         }
 
+
         FileWriter fw = new FileWriter(installInfo);
         fw.write(serverMD5 + "\n");
         fw.write(magmaMD5);
         fw.close();
 
         System.out.println("Finished the install verification process !");
+
     }
 
 
-    public static void downloadInternalLibraries() throws Exception {
+    public static void downloadInternalLibraries() {
         HashMap<File, List<String>> dependencies = new HashMap<>();
         dependencies.put(new File("libraries/dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar"), new ArrayList<>(Arrays.asList("e6b19d4a5e3687432530a0aa9edf6fcc", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar")));
         dependencies.put(new File("libraries/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"), new ArrayList<>(Arrays.asList("e8cee80f1719c02ef3076ff42bab0ad9", "https://s01.oss.sonatype.org/content/repositories/snapshots/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar")));
 
         for (File lib : dependencies.keySet()) {
             if(lib.exists() && Objects.equals(MD5.getMd5(lib), dependencies.get(lib).get(0))) {
-                new JarLoader().loadJar(lib);
+                JarLoader.loadJar(lib);
                 continue;
             }
             lib.getParentFile().mkdirs();
             try {
                 NetworkUtils.downloadFile(dependencies.get(lib).get(1), lib, dependencies.get(lib).get(0));
-                new JarLoader().loadJar(lib);
+                JarLoader.loadJar(lib);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -263,9 +266,9 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             manager.downloadAll(executor, standardRepositories).join();
             manager.loadAll(executor, path -> {
                 try {
-                    new JarLoader().loadJar(path.toFile());
+                    JarLoader.loadJar(path);
+                    BSLPreInit.addToPath(path);
                     loadedLibsPaths.add(path.toFile().getAbsolutePath());
-                    //System.out.println("Loaded " + path.toFile().getName() + ".");
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

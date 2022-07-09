@@ -23,6 +23,7 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.jar.JarFile;
 
 /**
@@ -30,7 +31,6 @@ import java.util.jar.JarFile;
  *
  * @author Malcolm (M1lc0lm) / Hexeption
  * @date 03.07.2022 - 17:19
- *
  */
 public class JarLoader {
 
@@ -47,17 +47,25 @@ public class JarLoader {
         JarLoader.inst = inst;
     }
 
-    public void loadJar(File path) throws Exception {
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-        if (!(cl instanceof URLClassLoader)) {
-            if (inst == null) {
-                System.exit(1);
+    public static void loadJar(File file) {
+        loadJar(file.toPath());
+    }
+
+    public static void loadJar(Path path) {
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if(!(cl instanceof URLClassLoader)) {
+                if(inst == null) {
+                    System.exit(1);
+                }
+                inst.appendToSystemClassLoaderSearch(new JarFile(path.toFile()));
+            } else {
+                Method m = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+                m.setAccessible(true);
+                m.invoke((URLClassLoader) cl, path.toUri().toURL());
             }
-            inst.appendToSystemClassLoaderSearch(new JarFile(path));
-        } else {
-            Method m = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            m.setAccessible(true);
-            m.invoke((URLClassLoader)cl, path.toURI().toURL());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
