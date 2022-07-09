@@ -100,6 +100,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.potion.PotionEffect;
+import org.magmafoundation.magma.helpers.InventoryHelper;
 
 public class CraftEventFactory {
     public static final DamageSource MELTING = CraftDamageSource.copyOf(DamageSource.ON_FIRE);
@@ -1538,11 +1539,11 @@ public class CraftEventFactory {
     public static LootGenerateEvent callLootGenerateEvent(Container inventory, LootTable lootTable, net.minecraft.world.level.storage.loot.LootContext lootInfo, List<ItemStack> loot, boolean plugin) {
         CraftWorld world = lootInfo.getLevel().getWorld();
         Entity entity = lootInfo.getParamOrNull(LootContextParams.THIS_ENTITY);
-        NamespacedKey key = CraftNamespacedKey.fromMinecraft(world.getHandle().getServer().getLootTables().getKey(lootTable));
+        NamespacedKey key = CraftNamespacedKey.fromMinecraft(world.getHandle().getServer().getLootTables().lootTableToKey.get(lootTable));
         CraftLootTable craftLootTable = new CraftLootTable(key, lootTable);
         List<org.bukkit.inventory.ItemStack> bukkitLoot = loot.stream().map(CraftItemStack::asCraftMirror).collect(Collectors.toCollection(ArrayList::new));
 
-        LootGenerateEvent event = new LootGenerateEvent(world, (entity != null ? entity.getBukkitEntity() : null), inventory.getOwner(), craftLootTable, CraftLootTable.convertContext(lootInfo), bukkitLoot, plugin);
+        LootGenerateEvent event = new LootGenerateEvent(world, (entity != null ? entity.getBukkitEntity() : null), InventoryHelper.getHolderOwner(inventory), craftLootTable, CraftLootTable.convertContext(lootInfo), bukkitLoot, plugin);
         Bukkit.getPluginManager().callEvent(event);
         return event;
     }

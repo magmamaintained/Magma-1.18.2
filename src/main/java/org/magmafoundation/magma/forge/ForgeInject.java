@@ -140,7 +140,7 @@ public class ForgeInject {
 
     private static void addForgeBiomes() {
         List<String> map = new ArrayList<>();
-        ForgeRegistries.BLOCKS.getEntries().forEach(entry -> {
+        ForgeRegistries.BIOMES.getEntries().forEach(entry -> {
             String biomeName = Objects.requireNonNull(entry.getValue().getRegistryName()).getNamespace();
             if (!biomeName.equals(NamespacedKey.MINECRAFT) && !map.contains(biomeName)) {
                 map.add(biomeName);
