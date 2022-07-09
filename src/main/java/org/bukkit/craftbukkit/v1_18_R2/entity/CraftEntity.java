@@ -30,7 +30,6 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.EntityEffect;
@@ -57,10 +56,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
-import org.magmafoundation.magma.craftbukkit.entity.CraftCustomAbstractHorse;
-import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
-import org.magmafoundation.magma.craftbukkit.entity.CraftCustomMinecart;
-import org.magmafoundation.magma.craftbukkit.entity.CraftCustomMinecartContainer;
+import org.magmafoundation.magma.craftbukkit.entity.*;
 
 public abstract class CraftEntity implements org.bukkit.entity.Entity {
     private static PermissibleBase perm;
@@ -135,6 +131,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                             return new CraftCat(server, (net.minecraft.world.entity.animal.Cat) entity);
                         } else if (entity instanceof net.minecraft.world.entity.animal.Parrot) {
                             return new CraftParrot(server, (net.minecraft.world.entity.animal.Parrot) entity);
+                        } else {
+                            return new CraftCustomTamable(server, (TamableAnimal) entity);
                         }
                     } else if (entity instanceof net.minecraft.world.entity.animal.Sheep) {
                         return new CraftSheep(server, (net.minecraft.world.entity.animal.Sheep) entity);
