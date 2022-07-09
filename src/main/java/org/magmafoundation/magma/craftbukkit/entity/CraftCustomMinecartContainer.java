@@ -41,7 +41,7 @@ public class CraftCustomMinecartContainer extends CraftMinecartContainer {
 
     @Override
     public String toString() {
-        return "CraftCustomMinecartConatiner{" +
+        return "CraftCustomMinecartContainer{" +
                 "entityType=" + entityType +
                 '}';
     }
