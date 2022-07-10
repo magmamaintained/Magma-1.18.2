@@ -56,6 +56,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     //Inspired by Mohist 1.19 installer
     private void install() throws Exception {
+        int step = 0;
         System.out.println("Checking the installation, please wait.");
         copyFileFromJar(lzma, "data/server.lzma");
         copyFileFromJar(universalJar, "data/forge-" + mcVer + "-" + forgeVer + "-universal.jar");
@@ -76,6 +77,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                     new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", libPath, "--libraries")),
                     stringToUrl(loadedLibsPaths));
             unmute();
+            step++;
             if (!mc_unpacked.exists()) {
                 System.out.println("Extract bundler");
                 mute();
@@ -83,6 +85,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                         new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", mc_unpacked.getAbsolutePath(), "--jar-only")),
                         stringToUrl(loadedLibsPaths));
                 unmute();
+                step++;
             }
         } else {
             System.out.println("Can't run the installation because the minecraft server file doesn't exists !");
@@ -99,6 +102,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                         new ArrayList<>(Arrays.asList("--task", "MCP_DATA", "--input", mcpZip.getAbsolutePath(), "--output", mcpTxt.getAbsolutePath(), "--key", "mappings")),
                         stringToUrl(loadedLibsPaths));
                 unmute();
+                step++;
             }
         } else {
             System.out.println("Can't run the installation because the mcp config file doesn't exists !");
@@ -116,6 +120,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                     new ArrayList<>(Arrays.asList("--task", "DOWNLOAD_MOJMAPS", "--version", mcVer, "--side", "server", "--output", mojmap.getAbsolutePath())),
                     stringToUrl(loadedLibsPaths));
             unmute();
+            step++;
         }
 
         if (!mergedMapping.exists()) {
@@ -125,6 +130,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                     new ArrayList<>(Arrays.asList("--task", "MERGE_MAPPING", "--left", mcpTxt.getAbsolutePath(), "--right", mojmap.getAbsolutePath(), "--output", mergedMapping.getAbsolutePath(), "--classes", "--reverse-right")),
                     stringToUrl(loadedLibsPaths));
             unmute();
+            step++;
         }
 
         if (!slim.exists() || !extra.exists()) {
@@ -137,6 +143,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                     new ArrayList<>(Arrays.asList("--input", mc_unpacked.getAbsolutePath(), "--slim", slim.getAbsolutePath(), "--extra", extra.getAbsolutePath(), "--srg", mergedMapping.getAbsolutePath())),
                     stringToUrl(loadedLibsPaths));
             unmute();
+            step++;
         }
 
         if (!srg.exists()) {
@@ -146,6 +153,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                     new ArrayList<>(Arrays.asList("--input", slim.getAbsolutePath(), "--output", srg.getAbsolutePath(), "--names", mergedMapping.getAbsolutePath(), "--ann-fix", "--ids-fix", "--src-fix", "--record-fix")),
                     stringToUrl(loadedLibsPaths));
             unmute();
+            step++;
         }
 
         String storedServerMD5 = null;
@@ -185,6 +193,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                             libPath + "trove/trove/1.0.2/trove-1.0.2.jar"
                     ))));
             unmute();
+            step++;
             serverMD5 = MD5.getMd5(serverJar);
         }
 
@@ -196,6 +205,10 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
         System.out.println("Finished the install verification process !");
 
+        if(step >= 1) {
+            System.out.println("Installation completed successfully ! You can now launch the server.");
+            System.exit(0);
+        }
     }
 
 

@@ -34,6 +34,7 @@ public class ServerInitHelper {
 
     public static void init(List<String> args) {
         EXPORTS.add("cpw.mods.securejarhandler/cpw.mods.niofs.union=ALL-UNNAMED");
+        EXPORTS.add("cpw.mods.securejarhandler/cpw.mods.jarhandling=ALL-UNNAMED");
 
         args.parallelStream().parallel().forEach(arg -> {
             if(arg.startsWith("-p ")) {
@@ -62,7 +63,7 @@ public class ServerInitHelper {
     //Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java)
 
     public static void addToPath(Path path) {
-        ClassLoader loader = ClassLoader.getPlatformClassLoader();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try {
             Field ucpField;
             try {
@@ -192,7 +193,7 @@ public class ServerInitHelper {
         Configuration config = Configuration.resolveAndBind(finder, List.of(ModuleLayer.boot().configuration()), finder, finder.findAll().stream().peek(mref -> {
             try {
                 // Load all extra modules in system class loader (unnamed modules for now)
-                loadModuleMH.invokeWithArguments(ClassLoader.getSystemClassLoader(), mref);
+                loadModuleMH.invokeWithArguments(Thread.currentThread().getContextClassLoader(), mref);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
@@ -233,7 +234,7 @@ public class ServerInitHelper {
         IMPL_LOOKUP.findSetter(Configuration.class, "nameToModule", Map.class).invokeWithArguments(ModuleLayer.boot().configuration(), new HashMap<>(nameToModuleMap));
 
         // Define all extra modules and add all of the new config "nameToModule" to boot module layer config
-        ((Map<String, Module>) IMPL_LOOKUP.findGetter(ModuleLayer.class, "nameToModule", Map.class).invokeWithArguments(ModuleLayer.boot())).putAll((Map<String, Module>) IMPL_LOOKUP.findStatic(Module.class, "defineModules", MethodType.methodType(Map.class, Configuration.class, Function.class, ModuleLayer.class)).invokeWithArguments(ModuleLayer.boot().configuration(), (Function<String, ClassLoader>) name -> ClassLoader.getSystemClassLoader(), ModuleLayer.boot()));
+        ((Map<String, Module>) IMPL_LOOKUP.findGetter(ModuleLayer.class, "nameToModule", Map.class).invokeWithArguments(ModuleLayer.boot())).putAll((Map<String, Module>) IMPL_LOOKUP.findStatic(Module.class, "defineModules", MethodType.methodType(Map.class, Configuration.class, Function.class, ModuleLayer.class)).invokeWithArguments(ModuleLayer.boot().configuration(), (Function<String, ClassLoader>) name -> Thread.currentThread().getContextClassLoader(), ModuleLayer.boot()));
 
         // Add all of resolved modules
         modulesSet.addAll(oldBootModules);
