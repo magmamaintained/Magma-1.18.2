@@ -7,10 +7,9 @@ import dev.vankka.dependencydownload.path.DependencyPathProvider;
 import dev.vankka.dependencydownload.repository.Repository;
 import dev.vankka.dependencydownload.repository.StandardRepository;
 import org.magmafoundation.magma.MagmaConstants;
-import org.magmafoundation.magma.utils.BSLPreInit;
-import org.magmafoundation.magma.utils.JarLoader;
 import org.magmafoundation.magma.utils.JarTool;
 import org.magmafoundation.magma.utils.MD5;
+import org.magmafoundation.magma.utils.ServerInitHelper;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -207,13 +206,13 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
         for (File lib : dependencies.keySet()) {
             if(lib.exists() && Objects.equals(MD5.getMd5(lib), dependencies.get(lib).get(0))) {
-                JarLoader.loadJar(lib);
+                ServerInitHelper.addToPath(lib.toPath());
                 continue;
             }
             lib.getParentFile().mkdirs();
             try {
                 NetworkUtils.downloadFile(dependencies.get(lib).get(1), lib, dependencies.get(lib).get(0));
-                JarLoader.loadJar(lib);
+                ServerInitHelper.addToPath(lib.toPath());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -264,15 +263,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             standardRepositories.add(new StandardRepository("https://raw.github.com/Hexeption/Magma-Repo/master/"));
 
             manager.downloadAll(executor, standardRepositories).join();
-            manager.loadAll(executor, path -> {
-                try {
-                    JarLoader.loadJar(path);
-                    BSLPreInit.addToPath(path);
-                    loadedLibsPaths.add(path.toFile().getAbsolutePath());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }).join();
+            manager.loadAll(executor, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath())).join();
 
             downloadMcp(mcVersion, mcpVersion);
             downloadMinecraftServer(minecraft_server);
