@@ -69,17 +69,13 @@ public class MagmaStart {
             Arrays.stream(args).filter(s -> s.contains("-dau")).findFirst().ifPresent(o -> mainArgs.remove(o));
         else MagmaUpdater.checkForUpdates();
 
-        try {
-            String[] invokeArgs = Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new);
-            if(BootstrapLauncher.startServer(invokeArgs)) {
-                System.out.println(Thread.currentThread().getContextClassLoader());
+        String[] invokeArgs = Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new);
+        if(BootstrapLauncher.startServer(invokeArgs)) {
+            try {
+                Class.forName("org.jline.terminal.Terminal");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        } catch (Throwable e) {
-            System.out.println("[MAGMA] If you freshly installed Magma, you just need to restart the server.");
-            System.err.println("[MAGMA] If not report that error to us: " + e);
-            e.printStackTrace();
-            System.exit(1);
         }
-
     }
 }
