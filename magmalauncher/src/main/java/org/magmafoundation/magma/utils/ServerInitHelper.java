@@ -2,6 +2,7 @@ package org.magmafoundation.magma.utils;
 
 import io.izzel.arclight.api.Unsafe;
 
+import java.lang.instrument.Instrumentation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -24,45 +25,45 @@ import java.util.stream.Collectors;
  * <p>
  * Inspired and made with Shawiiz_z and Arclight (Izzel)
  */
-public class BSLPreInit {
+public class ServerInitHelper {
 
     private static final MethodHandles.Lookup IMPL_LOOKUP = Unsafe.lookup();
+    private static final List<String> OPENS = new ArrayList<>();
+    private static final List<String> EXPORTS = new ArrayList<>();
+    private static String MODULE_PATH = null;
 
-    public static void setupStartup(List<String> args) {
-        List<String> opens = new ArrayList<>();
-        List<String> exports = new ArrayList<>();
-        exports.add("cpw.mods.bootstraplauncher/cpw.mods.bootstraplauncher=ALL-UNNAMED");
+    public static void init(List<String> args) {
+        EXPORTS.add("cpw.mods.securejarhandler/cpw.mods.niofs.union=ALL-UNNAMED");
 
-        for (String arg : args) {
-            if(arg.startsWith("-")) {
-                if(arg.startsWith("-p ")) {
-                    try {
-                        loadModules(arg.substring(2).trim());
-                    } catch (Throwable ignored) {
-                    }
-                } else if(arg.startsWith("--add-opens ")) {
-                    opens.add(arg.substring("--add-opens ".length()).trim());
-                } else if(arg.startsWith("--add-exports ")) {
-                    exports.add(arg.substring("--add-exports ".length()).trim());
-                } else if(arg.startsWith("-D")) {
-                    String[] params = arg.substring(2).split("=", 2);
-                    System.setProperty(params[0], params[1]);
-                }
+        args.parallelStream().parallel().forEach(arg -> {
+            if(arg.startsWith("-p ")) {
+                MODULE_PATH = arg.substring(2).trim();
+            } else if(arg.startsWith("--add-opens ")) {
+                OPENS.add(arg.substring("--add-opens ".length()).trim());
+            } else if(arg.startsWith("--add-exports ")) {
+                EXPORTS.add(arg.substring("--add-exports ".length()).trim());
+            } else if(arg.startsWith("-D")) {
+                String[] params = arg.substring(2).split("=", 2);
+                System.setProperty(params[0], params[1]);
             }
-        }
+        });
 
         try {
-            addOpens(opens);
-            addExports(exports);
+            loadModules(MODULE_PATH);
+            Thread.sleep(500);
+            addOpens(OPENS);
+            addExports(EXPORTS);
+            Thread.sleep(500);
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
     //Code snipped from (https://github.com/IzzelAliz/Arclight/blob/f98046185ebfc183a242ac5497619dc35d741042/forge-installer/src/main/java/io/izzel/arclight/forgeinstaller/ForgeInstaller.java)
+
     public static void addToPath(Path path) {
+        ClassLoader loader = ClassLoader.getPlatformClassLoader();
         try {
-            ClassLoader loader = ClassLoader.getPlatformClassLoader();
             Field ucpField;
             try {
                 ucpField = loader.getClass().getDeclaredField("ucp");
@@ -84,7 +85,13 @@ public class BSLPreInit {
         }
     }
 
-    public static void addExports(String module, String pkg, String target){
+    public static void agentmain(final String a, final Instrumentation inst) {
+    }
+
+    public static void premain(String agentArgs, Instrumentation inst) {
+    }
+
+    public static void addExports(String module, String pkg, String target) {
         if(target == null) target = "ALL-UNNAMED";
 
         try {
@@ -101,7 +108,7 @@ public class BSLPreInit {
         addExtra(exports, implAddExportsMH, implAddExportsToAllUnnamedMH);
     }
 
-    public static void addOpens(String module, String pkg, String target){
+    public static void addOpens(String module, String pkg, String target) {
         if(target == null) target = "ALL-UNNAMED";
 
         try {
@@ -134,29 +141,23 @@ public class BSLPreInit {
     private record ParserData(String module, String packages, String target) {
 
         @Override
-            public boolean equals(Object obj) {
-                if(obj == this) return true;
-                if(obj == null || obj.getClass() != this.getClass()) return false;
-                var that = (ParserData) obj;
-                return Objects.equals(this.module, that.module) &&
-                        Objects.equals(this.packages, that.packages) &&
-                        Objects.equals(this.target, that.target);
-            }
+        public boolean equals(Object obj) {
+            if(obj == this) return true;
+            if(obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (ParserData) obj;
+            return Objects.equals(this.module, that.module) && Objects.equals(this.packages, that.packages) && Objects.equals(this.target, that.target);
+        }
 
         @Override
-            public String toString() {
-                return "ParserData[" +
-                        "module=" + module + ", " +
-                        "packages=" + packages + ", " +
-                        "target=" + target + ']';
-            }
-
-
+        public String toString() {
+            return "ParserData[" + "module=" + module + ", " + "packages=" + packages + ", " + "target=" + target + ']';
         }
+
+    }
 
 
     private static void addExtra(List<String> extras, MethodHandle implAddExtraMH, MethodHandle implAddExtraToAllUnnamedMH) {
-        extras.forEach(extra -> {
+        extras.parallelStream().parallel().forEach(extra -> {
             ParserData data = parseModuleExtra(extra);
             if(data != null) {
                 ModuleLayer.boot().findModule(data.module).ifPresent(m -> {
@@ -184,7 +185,7 @@ public class BSLPreInit {
 
     private static void loadModules(String modulePath) throws Throwable {
         // Find all extra modules
-        ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(SystemType.getOS() == SystemType.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(BSLPreInit::addToPath).toArray(Path[]::new));
+        ModuleFinder finder = ModuleFinder.of(Arrays.stream(modulePath.split(SystemType.getOS() == SystemType.OS.WINDOWS ? ";" : ":")).map(Paths::get).peek(ServerInitHelper::addToPath).toArray(Path[]::new));
         MethodHandle loadModuleMH = IMPL_LOOKUP.findVirtual(Class.forName("jdk.internal.loader.BuiltinClassLoader"), "loadModule", MethodType.methodType(void.class, ModuleReference.class));
 
         // Resolve modules to a new config

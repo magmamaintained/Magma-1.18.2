@@ -74,27 +74,22 @@ public abstract class AbstractMagmaInstaller {
     }
 
     protected void launchService(String mainClass, List<String> args, List<URL> classPath) throws Exception {
-        System.out.println(getParentClassloader() == null);
         try {
             Class.forName(mainClass);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println("Class not found: " + e.getMessage());
         }
-        Class.forName(mainClass, true, new URLClassLoader(classPath.toArray(new URL[0]), getParentClassloader())).getDeclaredMethod("main", String[].class).invoke(null, (Object) args.toArray(new String[0]));
-    }
-
-    private ClassLoader getParentClassloader() {
-        try {
-            return (ClassLoader) ClassLoader.class.getDeclaredMethod("getPlatformClassLoader").invoke(null);
-        } catch (Exception e) {
-            return null;
-        }
+        URLClassLoader loader = URLClassLoader.newInstance(classPath.toArray(new URL[0]));
+        Class.forName(mainClass, true, loader).getDeclaredMethod("main", String[].class).invoke(null, (Object) args.toArray(new String[0]));
+        loader.clearAssertionStatus();
+        loader.close();
     }
 
     protected List<URL> stringToUrl(List<String> strs) throws Exception {
         List<URL> temp = new ArrayList<>();
-        for (String t : strs)
+        for (String t : strs) {
             temp.add(new File(t).toURI().toURL());
+        }
         return temp;
     }
 

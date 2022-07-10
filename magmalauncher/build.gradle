@@ -15,6 +15,7 @@ dependencyUpdates.rejectVersionIf { isNonStable(it.candidate.version) }
 
 dependencies {
     implementation "org.yaml:snakeyaml:1.30"
+    implementation "cpw.mods:securejarhandler:1.0.5"
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation "com.google.code.gson:gson:2.8.7"
     implementation 'dev.vankka:dependencydownload-runtime:1.2.2-SNAPSHOT'

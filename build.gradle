@@ -11,7 +11,6 @@ buildscript {
     }
 }
 
-
 import net.minecraftforge.forge.tasks.*
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
@@ -1430,8 +1429,8 @@ project(':forge') {
             MANIFESTS.each { pkg, values ->
                 if (pkg == '/') {
                     manifest.attributes(values += [
-                            'Premain-Class': 'org.magmafoundation.magma.utils.JarLoader',
-                            'Launcher-Agent-Class': 'org.magmafoundation.magma.utils.JarLoader',
+                            'Premain-Class': 'org.magmafoundation.magma.utils.ServerInitHelper',
+                            'Launcher-Agent-Class': 'org.magmafoundation.magma.utils.ServerInitHelper',
                             'Main-Class': 'org.magmafoundation.magma.MagmaStart',
                             'Class-Path': CLASS_PATH.toString().replace("[", "").replace("]", "").replace(",", "")
                     ])
