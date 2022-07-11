@@ -94,6 +94,39 @@
           super.m_7334_(p_38373_);
        }
  
+@@ -196,19 +_,19 @@
+ 
+    public Item m_38369_() {
+       switch(this.m_38387_()) {
+-      case OAK:
+-      default:
+-         return Items.f_42453_;
+-      case SPRUCE:
+-         return Items.f_42742_;
+-      case BIRCH:
+-         return Items.f_42743_;
+-      case JUNGLE:
+-         return Items.f_42744_;
+-      case ACACIA:
+-         return Items.f_42745_;
+-      case DARK_OAK:
+-         return Items.f_42746_;
++         case OAK:
++         default:
++            return Items.f_42453_;
++         case SPRUCE:
++            return Items.f_42742_;
++         case BIRCH:
++            return Items.f_42743_;
++         case JUNGLE:
++            return Items.f_42744_;
++         case ACACIA:
++            return Items.f_42745_;
++         case DARK_OAK:
++            return Items.f_42746_;
+       }
+    }
+ 
 @@ -235,6 +_,7 @@
        return this.m_6350_().m_122427_();
     }
@@ -125,6 +158,31 @@
        this.m_38388_();
  
        for(int i = 0; i <= 1; ++i) {
+@@ -358,15 +_,15 @@
+    @Nullable
+    protected SoundEvent m_38370_() {
+       switch(this.m_38392_()) {
+-      case IN_WATER:
+-      case UNDER_WATER:
+-      case UNDER_FLOWING_WATER:
+-         return SoundEvents.f_11707_;
+-      case ON_LAND:
+-         return SoundEvents.f_11706_;
+-      case IN_AIR:
+-      default:
+-         return null;
++         case IN_WATER:
++         case UNDER_WATER:
++         case UNDER_FLOWING_WATER:
++            return SoundEvents.f_11707_;
++         case ON_LAND:
++            return SoundEvents.f_11706_;
++         case IN_AIR:
++         default:
++            return null;
+       }
+    }
+ 
 @@ -475,7 +_,7 @@
                       blockpos$mutableblockpos.m_122178_(l1, k2, i2);
                       BlockState blockstate = this.f_19853_.m_8055_(blockpos$mutableblockpos);
@@ -175,13 +233,13 @@
 +   // Forge: Fix MC-119811 by instantly completing lerp on board
 +   @Override
 +   protected boolean addPassenger(Entity passenger) {
-+      super.addPassenger(passenger);
++      //super.addPassenger(passenger); Magma - moved to return
 +      if (this.m_6109_() && this.f_38267_ > 0) {
 +         this.f_38267_ = 0;
 +         this.m_19890_(this.f_38268_, this.f_38269_, this.f_38270_, (float)this.f_38271_, (float)this.f_38272_);
 +      }
 +
-+      return false; // TODO: 10/05/2022 - Magma
++      return super.addPassenger(passenger); // TODO: 10/05/2022 - Magma // Magma 11/07/2022 - don't set this to false, it breaks boats
     }
  
     public ItemStack m_142340_() {
