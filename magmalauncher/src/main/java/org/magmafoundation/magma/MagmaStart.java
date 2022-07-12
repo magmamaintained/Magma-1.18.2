@@ -47,10 +47,12 @@ public class MagmaStart {
         mainArgs.addAll(List.of(args));
         BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
 
-        if(mainArgs.contains("-noserver")) {
-            System.out.println("[MAGMA] Argument -noserver detected. Skipping server startup.");
-            System.exit(1); //-noserver -> Do not run the Minecraft server, only let the installation running.
-        }
+        //Temporary warning for people using the new server jar
+        System.err.println("WARNING: The new server jar is still under development and will be unstable! If you experience any issues, please report them to the developers.");
+        System.err.println("WARNING: If the server crashes while installing, try removing the libraries folder and launching the server again.");
+        //Temporary warning for people using the new server jar
+
+        if(!BetterUI.checkEula(Paths.get("eula.txt"))) System.exit(0);
 
         List<String> launchArgs = JarTool.readFileLinesFromJar("data/" + (SystemType.getOS().equals(SystemType.OS.WINDOWS) ? "win" : "unix") + "_args.txt");
         List<String> forgeArgs = new ArrayList<>();
@@ -62,8 +64,6 @@ public class MagmaStart {
         new MagmaInstaller();
 
         ServerInitHelper.init(launchArgs);
-
-        if(!BetterUI.checkEula(Paths.get("eula.txt"))) System.exit(0);
 
         if(Arrays.stream(args).anyMatch(s -> s.contains("-dau")))
             Arrays.stream(args).filter(s -> s.contains("-dau")).findFirst().ifPresent(o -> mainArgs.remove(o));

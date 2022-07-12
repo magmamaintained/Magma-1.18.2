@@ -21,4 +21,5 @@ dependencies {
     implementation "com.google.code.gson:gson:2.8.7"
     implementation 'dev.vankka:dependencydownload-runtime:1.2.2-SNAPSHOT'
     implementation 'dev.vankka:dependencydownload-common:1.2.1'
+    implementation 'me.tongfei:progressbar:0.9.3'
 }
