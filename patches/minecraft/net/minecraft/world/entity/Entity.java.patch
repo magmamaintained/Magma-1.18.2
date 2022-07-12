@@ -986,12 +986,42 @@
     }
  
     public boolean m_7306_(Entity p_20356_) {
-@@ -2237,32 +_,78 @@
+@@ -2237,37 +_,81 @@
  
     @Nullable
     public Entity m_5489_(ServerLevel p_20118_) {
+-      if (this.f_19853_ instanceof ServerLevel && !this.m_146910_()) {
+-         this.f_19853_.m_46473_().m_6180_("changeDimension");
+-         this.m_19877_();
+-         this.f_19853_.m_46473_().m_6180_("reposition");
+-         PortalInfo portalinfo = this.m_7937_(p_20118_);
+-         if (portalinfo == null) {
+-            return null;
+-         } else {
+-            this.f_19853_.m_46473_().m_6182_("reloading");
+-            Entity entity = this.m_6095_().m_20615_(p_20118_);
+-            if (entity != null) {
+-               entity.m_20361_(this);
+-               entity.m_7678_(portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, entity.m_146909_());
+-               entity.m_20256_(portalinfo.f_77677_);
+-               p_20118_.m_143334_(entity);
+-               if (p_20118_.m_46472_() == Level.f_46430_) {
+-                  ServerLevel.m_8617_(p_20118_);
+-               }
+-            }
+-
+-            this.m_6089_();
+-            this.f_19853_.m_46473_().m_7238_();
+-            ((ServerLevel)this.f_19853_).m_8886_();
+-            p_20118_.m_8886_();
+-            this.f_19853_.m_46473_().m_7238_();
+-            return entity;
+-         }
+-      } else {
+-         return null;
+-      }
 +      return this.changeDimension(p_20118_, p_20118_.m_8871_());
-+   }
+    }
 +   @Nullable
 +   public Entity changeDimension(ServerLevel p_20118_, net.minecraftforge.common.util.ITeleporter teleporter) {
 +        // CraftBukkit start
@@ -1003,76 +1033,71 @@
 +        return this.teleportTo( p_20118_, blockPos, p_20118_.m_8871_() );
 +    }
 +
++    //Magma start - fix NPE when teleporting to the end with a null blockPos
 +    @Nullable
 +    public Entity teleportTo(ServerLevel p_20118_, BlockPos blockPos, net.minecraftforge.common.util.ITeleporter teleporter) {
-+        // CraftBukkit end
++       // CraftBukkit end
 +       if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_20118_.m_46472_())) return null;
 +       AtomicReference<ServerLevel> serverLevel = new AtomicReference<>( p_20118_ );
-       if (this.f_19853_ instanceof ServerLevel && !this.m_146910_()) {
-          this.f_19853_.m_46473_().m_6180_("changeDimension");
--         this.m_19877_();
-+            //this.unRide();
-+            // CraftBukkit start
-+            if (serverLevel.get() == null) {
-+                return null;
-+            }
-+            // CraftBukkit end
-          this.f_19853_.m_46473_().m_6180_("reposition");
--         PortalInfo portalinfo = this.m_7937_(p_20118_);
-+            PortalInfo info = new PortalInfo( new Vec3( blockPos.m_123341_(), blockPos.m_123342_(), blockPos.m_123343_() ), Vec3.f_82478_, this.f_19858_, this.f_19858_ );
-+            info.setCBPortalEvent( serverLevel.get(), null );
-+            PortalInfo portalinfo = (blockPos == null) ? teleporter.getPortalInfo( this, serverLevel.get(), this::m_7937_ ) : info;
-          if (portalinfo == null) {
-             return null;
-          } else {
-+                //CraftBukkit start
-+                serverLevel.set( portalinfo.world );
-+                if (serverLevel.get() == null) {
-+                    //SPIGOT-6782: Just move the entity if a plugin changed the world to the one the entity is already in
-+                    m_7678_( portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, portalinfo.f_77679_ );
-+                    m_20256_( portalinfo.f_77677_ );
-+                    return this;
++       if (this.f_19853_ instanceof ServerLevel && !this.m_146910_()) {
++          this.f_19853_.m_46473_().m_6180_("changeDimension");
++          //this.unRide();
++          // CraftBukkit start
++          if (serverLevel.get() == null) {
++             return null;
++          }
++          // CraftBukkit end
++          this.f_19853_.m_46473_().m_6180_("reposition");
++          PortalInfo portalinfo = (blockPos == null) ? teleporter.getPortalInfo( this, serverLevel.get(), this::m_7937_ ) :
++                  new PortalInfo( new Vec3( blockPos.m_123341_(), blockPos.m_123342_(), blockPos.m_123343_() ), Vec3.f_82478_, this.f_19858_, this.f_19858_ );
++          portalinfo.setCBPortalEvent(serverLevel.get(), null);
++          //CraftBukkit start
++          serverLevel.set( portalinfo.world );
++          if (serverLevel.get() == null) {
++             //SPIGOT-6782: Just move the entity if a plugin changed the world to the one the entity is already in
++             m_7678_( portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, portalinfo.f_77679_ );
++             m_20256_( portalinfo.f_77677_ );
++             return this;
++          }
++          this.m_19877_();
++          // CraftBukkit end
++
++          Entity transportedEntity = teleporter.placeEntity( this, (ServerLevel) this.f_19853_, serverLevel.get(), this.f_19857_, spawnPortal -> { //Forge: Start vanilla logic
++             this.f_19853_.m_46473_().m_6182_("reloading");
++             Entity entity = this.m_6095_().m_20615_( serverLevel.get() );
++             if (entity != null) {
++                entity.m_20361_(this);
++                entity.m_7678_(portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, entity.m_146909_());
++                entity.m_20256_(portalinfo.f_77677_);
++                serverLevel.get().m_143334_( entity );
++                if (spawnPortal && serverLevel.get().m_46472_() == Level.f_46430_) {
++                   ServerLevel.m_8617_( serverLevel.get() ); //Magma TODO: add argument Entity to makeObsidianPlatform in {@link ServerLevel#makeObsidianPlatform(ServerLevel)}
 +                }
-+                this.m_19877_();
-+                // CraftBukkit end
++                // CraftBukkit start - Forward the CraftEntity to the new entity
++                this.getBukkitEntity().setHandle( entity );
++                entity.bukkitEntity = this.getBukkitEntity();
 +
-+                Entity transportedEntity = teleporter.placeEntity( this, (ServerLevel) this.f_19853_, serverLevel.get(), this.f_19857_, spawnPortal -> { //Forge: Start vanilla logic
-             this.f_19853_.m_46473_().m_6182_("reloading");
--            Entity entity = this.m_6095_().m_20615_(p_20118_);
-+                    Entity entity = this.m_6095_().m_20615_( serverLevel.get() );
-             if (entity != null) {
-                entity.m_20361_(this);
-                entity.m_7678_(portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, entity.m_146909_());
-                entity.m_20256_(portalinfo.f_77677_);
--               p_20118_.m_143334_(entity);
--               if (p_20118_.m_46472_() == Level.f_46430_) {
--                  ServerLevel.m_8617_(p_20118_);
-+                        serverLevel.get().m_143334_( entity );
-+                        if (spawnPortal && serverLevel.get().m_46472_() == Level.f_46430_) {
-+                            ServerLevel.m_8617_( serverLevel.get() ); //Magma TODO: add argument Entity to makeObsidianPlatform in {@link ServerLevel#makeObsidianPlatform(ServerLevel)}
-+                        }
-+                        // CraftBukkit start - Forward the CraftEntity to the new entity
-+                        this.getBukkitEntity().setHandle( entity );
-+                        entity.bukkitEntity = this.getBukkitEntity();
++                if (this instanceof Mob) {
++                   ((Mob) this).m_21455_( true, false ); //Unleash to prevent duping of leads
++                }
++             }
++             return entity;
++          }); //Forge: End vanilla logic
 +
-+                        if (this instanceof Mob) {
-+                            ((Mob) this).m_21455_( true, false ); //Unleash to prevent duping of leads
-                }
-             }
-+            return entity;
-+            }); //Forge: End vanilla logic
++          this.m_6089_();
++          this.f_19853_.m_46473_().m_7238_();
++          ((ServerLevel)this.f_19853_).m_8886_();
++          serverLevel.get().m_8886_();
++          this.f_19853_.m_46473_().m_7238_();
++          return transportedEntity;
++       } else {
++          return null;
++       }
++    }
++    //Magma end
  
-             this.m_6089_();
-             this.f_19853_.m_46473_().m_7238_();
-             ((ServerLevel)this.f_19853_).m_8886_();
--            p_20118_.m_8886_();
-+                serverLevel.get().m_8886_();
-             this.f_19853_.m_46473_().m_7238_();
--            return entity;
-+            return transportedEntity;
-          }
-       } else {
-          return null;
+    protected void m_6089_() {
+       this.m_142467_(Entity.RemovalReason.CHANGED_DIMENSION);
 @@ -2275,17 +_,33 @@
  
     @Nullable
