@@ -10,7 +10,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.jar.JarFile;
 
@@ -28,7 +30,7 @@ public abstract class AbstractMagmaInstaller {
     public String forgeVer;
     public String mcpVer;
     public String mcVer;
-    public String libPath = new File(JarTool.getJarDir(), "libraries").getAbsolutePath() + "/";
+    public String libPath = new File(JarTool.getJarDir(), MagmaConstants.INSTALLER_LIBRARIES_FOLDER).getAbsolutePath() + "/";
 
     public String forgeStart;
     public File universalJar;
@@ -97,7 +99,7 @@ public abstract class AbstractMagmaInstaller {
     THIS IS TO NOT SPAM CONSOLE WHEN IT WILL PRINT A LOT OF THINGS
      */
     protected void mute() throws Exception {
-        File out = new File(libPath + "org/magma/installLog/install.log");
+        File out = new File("logs/installer.log");
         if(!out.exists()) {
             out.getParentFile().mkdirs();
             out.createNewFile();
@@ -116,10 +118,30 @@ public abstract class AbstractMagmaInstaller {
             file.createNewFile();
             if(is != null) Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             else {
-                System.out.println("The file " + file.getName() + " doesn't exists in the this jar !");
+                System.out.println("The file " + file.getName() + " was not found in the jar.");
                 System.exit(0);
             }
         }
+    }
+
+    protected void deleteIfExists(File file) throws IOException {
+        Files.deleteIfExists(file.toPath());
+        File dir = file.getParentFile();
+        if (dir.isDirectory() && dir.list().length == 0)
+            Files.delete(dir.toPath());
+    }
+
+    protected void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) { //some JVMs return null for empty dirs
+            for(File f : files) {
+                if (f.isDirectory())
+                    deleteFolder(f);
+                else
+                    f.delete();
+            }
+        }
+        folder.delete();
     }
 
     protected boolean isCorrupted(File f) {
