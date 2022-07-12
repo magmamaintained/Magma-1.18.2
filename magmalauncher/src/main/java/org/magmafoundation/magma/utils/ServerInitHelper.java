@@ -1,6 +1,7 @@
 package org.magmafoundation.magma.utils;
 
 import io.izzel.arclight.api.Unsafe;
+import org.magmafoundation.magma.common.utils.SystemType;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.invoke.MethodHandle;

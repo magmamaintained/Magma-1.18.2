@@ -16,9 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma.utils;
-
-import org.magmafoundation.magma.MagmaStart;
+package org.magmafoundation.magma.common.utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -85,7 +83,7 @@ public class JarTool {
     }
 
     public static List<String> readFileLinesFromJar(String path) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(MagmaStart.class.getClassLoader().getResourceAsStream(path))))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(JarTool.class.getClassLoader().getResourceAsStream(path))))) {
             List<String> lines = new ArrayList<>();
             String line;
             while ((line = br.readLine()) != null)

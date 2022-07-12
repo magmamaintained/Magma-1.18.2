@@ -1,9 +1,9 @@
 package org.magmafoundation.magma.installer;
 
-import org.magmafoundation.magma.MagmaConstants;
+import org.magmafoundation.magma.common.MagmaConstants;
 import org.magmafoundation.magma.MagmaStart;
-import org.magmafoundation.magma.utils.JarTool;
-import org.magmafoundation.magma.utils.MD5;
+import org.magmafoundation.magma.common.utils.JarTool;
+import org.magmafoundation.magma.common.utils.MD5;
 
 import java.io.*;
 import java.net.URL;

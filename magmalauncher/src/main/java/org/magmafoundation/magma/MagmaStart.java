@@ -20,9 +20,9 @@ import org.magmafoundation.magma.betterui.BetterUI;
 import org.magmafoundation.magma.installer.MagmaInstaller;
 import org.magmafoundation.magma.updater.MagmaUpdater;
 import org.magmafoundation.magma.utils.BootstrapLauncher;
-import org.magmafoundation.magma.utils.JarTool;
+import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.utils.ServerInitHelper;
-import org.magmafoundation.magma.utils.SystemType;
+import org.magmafoundation.magma.common.utils.SystemType;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.magmafoundation.magma.MagmaConstants.*;
+import static org.magmafoundation.magma.common.MagmaConstants.*;
 
 
 /**

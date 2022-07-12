@@ -14,6 +14,7 @@ repositories {
 dependencyUpdates.rejectVersionIf { isNonStable(it.candidate.version) }
 
 dependencies {
+    implementation project(':fmlcore')
     implementation "org.yaml:snakeyaml:1.30"
     implementation "cpw.mods:securejarhandler:1.0.5"
     implementation 'com.google.guava:guava:31.0.1-jre'
