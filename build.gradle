@@ -1045,6 +1045,13 @@ project(':forge') {
                     'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
                     'Implementation-Vendor' : 'Magma Development Limited',
             ] as LinkedHashMap,
+            'org/magmafoundation/magma/common/': [
+                    'Specification-Title'   : 'Magma Development Limited',
+                    'Specification-Vendor'  : 'Magma Development Limited',
+                    'Implementation-Title'  : "Magma",
+                    'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
+                    'Implementation-Vendor' : 'Magma Development Limited',
+            ] as LinkedHashMap,
             'io/izzel/arclight/': [
                     'Implementation-Title'  : "Arclight",
                     'Implementation-Vendor' : 'Arclight Team',
@@ -1466,6 +1473,8 @@ project(':forge') {
 
 
         from(project(':magmalauncher').project.sourceSets.main.output){
+        }
+        from(project(':fmlcore').project.sourceSets.main.output){
         }
 
         from(rootProject.file('server_files/libraries.txt')) {

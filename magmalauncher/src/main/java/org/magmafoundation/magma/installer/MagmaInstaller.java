@@ -6,9 +6,9 @@ import dev.vankka.dependencydownload.path.CleanupPathProvider;
 import dev.vankka.dependencydownload.path.DependencyPathProvider;
 import dev.vankka.dependencydownload.repository.Repository;
 import dev.vankka.dependencydownload.repository.StandardRepository;
-import org.magmafoundation.magma.MagmaConstants;
-import org.magmafoundation.magma.utils.JarTool;
-import org.magmafoundation.magma.utils.MD5;
+import org.magmafoundation.magma.common.MagmaConstants;
+import org.magmafoundation.magma.common.utils.JarTool;
+import org.magmafoundation.magma.common.utils.MD5;
 import org.magmafoundation.magma.utils.ServerInitHelper;
 
 import java.io.File;

@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma.utils;
+package org.magmafoundation.magma.common.utils;
 
 /**
  * Project: Magma
