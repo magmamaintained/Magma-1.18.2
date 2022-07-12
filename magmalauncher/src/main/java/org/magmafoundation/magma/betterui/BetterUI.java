@@ -5,18 +5,12 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Project: Magma
- *
- * @author JustRed23 / Malcolm (M1lc0lm)
- * @date 03.07.2022 - 17:19
- */
 public class BetterUI {
 
     private static boolean enabled = true,  enableBigLogo = true;
 
     private static final String bigLogo =
-                    "    __  ___                           \n" +
+            "    __  ___                           \n" +
                     "   /  |/  /___ _____ _____ ___  ____ _\n" +
                     "  / /|_/ / __ `/ __ `/ __ `__ \\/ __ `/\n" +
                     " / /  / / /_/ / /_/ / / / / / / /_/ / \n" +
@@ -76,6 +70,16 @@ public class BetterUI {
                 }
             }
         } else return true;
+    }
+
+    public static void forceAcceptEULA(Path path_to_eula) throws IOException {
+        File file = path_to_eula.toFile();
+        if (file.exists())
+            file.delete();
+        file.createNewFile();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("eula=true");
+        }
     }
 
     public static void setEnabled(boolean enabled) {

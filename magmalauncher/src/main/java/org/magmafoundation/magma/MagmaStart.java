@@ -23,11 +23,17 @@ import org.magmafoundation.magma.utils.BootstrapLauncher;
 import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.utils.ServerInitHelper;
 import org.magmafoundation.magma.common.utils.SystemType;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.magmafoundation.magma.common.MagmaConstants.*;
@@ -41,10 +47,29 @@ import static org.magmafoundation.magma.common.MagmaConstants.*;
  */
 public class MagmaStart {
 
-    public static List<String> mainArgs = new ArrayList<>();
-
     public static void main(String[] args) throws Exception {
-        mainArgs.addAll(List.of(args));
+        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-noui"))) {
+            BetterUI.setEnabled(false);
+            args = remove(args, "-noui");
+        }
+        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-nologo"))) {
+            BetterUI.setEnableBigLogo(false);
+            args = remove(args, "-nologo");
+        }
+        Path eula = Paths.get("eula.txt");
+        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-accepteula"))) {
+            BetterUI.forceAcceptEULA(eula);
+            args = remove(args, "-accepteula");
+        }
+        boolean enableUpdate = true;
+        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-dau"))) {
+            enableUpdate = false;
+            args = remove(args, "-dau");
+        }
+        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-nojline"))) {
+            args = remove(args, "-nojline"); //For some reason when passing -nojline to the console the whole thing crashes, remove this
+        }
+
         BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
 
         //Temporary warning for people using the new server jar
@@ -52,7 +77,7 @@ public class MagmaStart {
         System.err.println("WARNING: If the server crashes while installing, try removing the libraries folder and launching the server again.");
         //Temporary warning for people using the new server jar
 
-        if(!BetterUI.checkEula(Paths.get("eula.txt"))) System.exit(0);
+        if(!BetterUI.checkEula(eula)) System.exit(0);
 
         List<String> launchArgs = JarTool.readFileLinesFromJar("data/" + (SystemType.getOS().equals(SystemType.OS.WINDOWS) ? "win" : "unix") + "_args.txt");
         List<String> forgeArgs = new ArrayList<>();
@@ -65,11 +90,22 @@ public class MagmaStart {
 
         ServerInitHelper.init(launchArgs);
 
-        if(Arrays.stream(args).anyMatch(s -> s.contains("-dau")))
-            Arrays.stream(args).filter(s -> s.contains("-dau")).findFirst().ifPresent(o -> mainArgs.remove(o));
-        else MagmaUpdater.checkForUpdates();
+        Path path = Paths.get("magma.yml");
+        if (Files.exists(path)) {
+            try (InputStream stream = Files.newInputStream(path)) {
+                Yaml yaml = new Yaml();
+                Map<String, Object> data = yaml.load(stream);
+                Map<String, Object> forge = (Map<String, Object>) data.get("magma");
+                MagmaUpdater updater = new MagmaUpdater();
+                if (enableUpdate) {
+                    System.out.println("Checking for updates...");
+                    if (updater.versionChecker() && forge.get("auto-update").equals(true))
+                        updater.downloadJar();
+                }
+            }
+        }
 
-        String[] invokeArgs = Stream.concat(forgeArgs.stream(), mainArgs.stream()).toArray(String[]::new);
+        String[] invokeArgs = Stream.concat(forgeArgs.stream(), Stream.of(args)).toArray(String[]::new);
         if(BootstrapLauncher.startServer(invokeArgs)) {
             try {
                 Class.forName("org.jline.terminal.Terminal");
@@ -77,5 +113,27 @@ public class MagmaStart {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static String[] remove(String[] array, String element) {
+        if (array.length > 0) {
+            int index = -1;
+            for (int i = 0; i < array.length; i++) {
+                if (array[i].equalsIgnoreCase(element)) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0) {
+                String[] copy = (String[]) Array.newInstance(array.getClass()
+                        .getComponentType(), array.length - 1);
+                if (copy.length > 0) {
+                    System.arraycopy(array, 0, copy, 0, index);
+                    System.arraycopy(array, index + 1, copy, index, copy.length - index);
+                }
+                return copy;
+            }
+        }
+        return array;
     }
 }
