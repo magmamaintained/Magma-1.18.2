@@ -676,12 +676,13 @@
              }
           } else if (this.m_6147_()) {
              if (p_36380_ > 0.0D) {
-@@ -1420,13 +_,13 @@
+@@ -1420,13 +_,14 @@
              if (l > 0) {
                 if (this.m_20142_()) {
                    this.m_36222_(Stats.f_12996_, l);
 -                  this.m_36399_(0.1F * (float)l * 0.01F);
-+                  this.causeFoodExhaustion(f_19853_.spigotConfig.sprintMultiplier * (float)l * 0.01F, EntityExhaustionEvent.ExhaustionReason.SPRINT); // CraftBukkit - EntityExhaustionEvent // Spigot
++                  float exhaustion = 0.1F; //Magma - let mods overwrite this to prevent a mixin inject error
++                  this.causeFoodExhaustion((exhaustion != 0.1F ? exhaustion : f_19853_.spigotConfig.sprintMultiplier) * (float)l * 0.01F, EntityExhaustionEvent.ExhaustionReason.SPRINT); // CraftBukkit - EntityExhaustionEvent // Spigot
                 } else if (this.m_6047_()) {
                    this.m_36222_(Stats.f_12995_, l);
 -                  this.m_36399_(0.0F * (float)l * 0.01F);
