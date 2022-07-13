@@ -349,7 +349,7 @@
              iterator.remove();
           }
  
-@@ -877,17 +_,49 @@
+@@ -877,17 +_,58 @@
        return this.m_147207_(p_21165_, (Entity)null);
     }
  
@@ -358,9 +358,18 @@
 +      return this.addEffect(mobEffectInstance, (Entity) null, cause);
 +   }
 +
-    public boolean m_147207_(MobEffectInstance p_147208_, @Nullable Entity p_147209_) {
-+      return this.addEffect(p_147208_, p_147209_, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.UNKNOWN);
++   //Magma start - move cause to a different constructor
++   private org.bukkit.event.entity.EntityPotionEffectEvent.Cause effectCause = EntityPotionEffectEvent.Cause.UNKNOWN;
++   public void prepare(EntityPotionEffectEvent.Cause cause) {
++      this.effectCause = cause;
 +   }
++
+    public boolean m_147207_(MobEffectInstance p_147208_, @Nullable Entity p_147209_) {
++      EntityPotionEffectEvent.Cause cause = effectCause;
++      effectCause = EntityPotionEffectEvent.Cause.UNKNOWN; //reset
++      return this.addEffect(p_147208_, p_147209_, effectCause);
++   }
++   //Magma end
 +
 +   public boolean addEffect(MobEffectInstance p_147208_, @Nullable Entity p_147209_, EntityPotionEffectEvent.Cause cause) {
 +      org.spigotmc.AsyncCatcher.catchOp("effect add"); // Spigot

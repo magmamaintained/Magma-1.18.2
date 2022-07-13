@@ -20,12 +20,13 @@
        double d0 = p_32918_.m_20185_() - this.m_20185_();
        double d1 = p_32918_.m_20227_(0.3333333333333333D) - abstractarrow.m_20186_();
        double d2 = p_32918_.m_20189_() - this.m_20189_();
-@@ -230,7 +_,7 @@
+@@ -230,7 +_,8 @@
        }
  
        protected void m_8130_() {
 -         Illusioner.this.m_5448_().m_147207_(new MobEffectInstance(MobEffects.f_19610_, 400), Illusioner.this);
-+         Illusioner.this.m_5448_().addEffect(new MobEffectInstance(MobEffects.f_19610_, 400), Illusioner.this, EntityPotionEffectEvent.Cause.ATTACK); // CraftBukkit
++         Illusioner.this.m_5448_().prepare(EntityPotionEffectEvent.Cause.ATTACK); //Magma
++         Illusioner.this.m_5448_().m_147207_(new MobEffectInstance(MobEffects.f_19610_, 400), Illusioner.this); // CraftBukkit
        }
  
        protected SoundEvent m_7030_() {
