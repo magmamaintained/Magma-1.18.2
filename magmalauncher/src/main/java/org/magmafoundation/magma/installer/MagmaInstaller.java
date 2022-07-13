@@ -295,6 +295,8 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2/"));
             standardRepositories.add(new StandardRepository("https://raw.github.com/Hexeption/Magma-Repo/master/"));
 
+            //TODO: Progress bar
+
             manager.downloadAll(executor, standardRepositories).join();
             manager.loadAll(executor, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath())).join();
 
