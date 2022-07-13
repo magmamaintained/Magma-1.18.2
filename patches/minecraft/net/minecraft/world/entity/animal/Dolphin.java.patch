@@ -1,7 +1,10 @@
 --- a/net/minecraft/world/entity/animal/Dolphin.java
 +++ b/net/minecraft/world/entity/animal/Dolphin.java
-@@ -62,6 +_,13 @@
+@@ -60,8 +_,16 @@
+ import net.minecraft.world.level.ServerLevelAccessor;
+ import net.minecraft.world.level.pathfinder.PathComputationType;
  import net.minecraft.world.phys.Vec3;
++import org.bukkit.event.entity.EntityPotionEffectEvent;
  
  public class Dolphin extends WaterAnimal {
 +
@@ -45,21 +48,23 @@
        }
  
        public boolean m_8045_() {
-@@ -445,7 +_,7 @@
+@@ -445,7 +_,8 @@
        }
  
        public void m_8056_() {
 -         this.f_28411_.m_147207_(new MobEffectInstance(MobEffects.f_19593_, 100), this.f_28409_);
-+         this.f_28411_.addEffect(new MobEffectInstance(MobEffects.f_19593_, 100), this.f_28409_, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.DOLPHIN); // CraftBukkit
++         this.f_28411_.prepare(EntityPotionEffectEvent.Cause.DOLPHIN); //Magma
++         this.f_28411_.m_147207_(new MobEffectInstance(MobEffects.f_19593_, 100), this.f_28409_); // CraftBukkit
        }
  
        public void m_8041_() {
-@@ -462,7 +_,7 @@
+@@ -462,7 +_,8 @@
           }
  
           if (this.f_28411_.m_6069_() && this.f_28411_.f_19853_.f_46441_.nextInt(6) == 0) {
 -            this.f_28411_.m_147207_(new MobEffectInstance(MobEffects.f_19593_, 100), this.f_28409_);
-+            this.f_28411_.addEffect(new MobEffectInstance(MobEffects.f_19593_, 100), this.f_28409_, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.DOLPHIN); // CraftBukkit
++            this.f_28411_.prepare(EntityPotionEffectEvent.Cause.DOLPHIN); //Magma
++            this.f_28411_.m_147207_(new MobEffectInstance(MobEffects.f_19593_, 100), this.f_28409_); // CraftBukkit
           }
  
        }
