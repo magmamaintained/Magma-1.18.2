@@ -244,7 +244,7 @@
        }
     }
  
-@@ -456,26 +_,49 @@
+@@ -456,19 +_,36 @@
        this.f_58320_.clear();
     }
  
@@ -274,20 +274,24 @@
        return list;
     }
  
--   private static void m_154998_(ServerLevel p_154999_, Vec3 p_155000_, int p_155001_, float p_155002_) {
-+   private static void createExperience(ServerLevel p_154999_, Vec3 p_155000_, int p_155001_, float p_155002_, BlockPos blockposition, Player entityhuman, ItemStack itemstack, int amount) { // CraftBukkit
++   //Magma start - Fix mixin inject error
++   private static BlockPos createExperience_blockposition;
++   private static Player createExperience_entityhuman;
++   private static ItemStack createExperience_itemstack;
++   private static int createExperience_amount;
+    private static void m_154998_(ServerLevel p_154999_, Vec3 p_155000_, int p_155001_, float p_155002_) {
        int i = Mth.m_14143_((float)p_155001_ * p_155002_);
        float f = Mth.m_14187_((float)p_155001_ * p_155002_);
-       if (f != 0.0F && Math.random() < (double)f) {
+@@ -476,13 +_,96 @@
           ++i;
        }
  
 +      // CraftBukkit start - fire FurnaceExtractEvent / BlockExpEvent
 +      BlockExpEvent event;
-+      if (amount != 0) {
-+         event = new FurnaceExtractEvent((org.bukkit.entity.Player) entityhuman.getBukkitEntity(), CraftBlock.at(p_154999_, blockposition), org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers.getMaterial(itemstack.m_41720_()), amount, i);
++      if (createExperience_amount != 0) {
++         event = new FurnaceExtractEvent((org.bukkit.entity.Player) createExperience_entityhuman.getBukkitEntity(), CraftBlock.at(p_154999_, createExperience_blockposition), org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers.getMaterial(createExperience_itemstack.m_41720_()), createExperience_amount, i);
 +      } else {
-+         event = new BlockExpEvent(CraftBlock.at(p_154999_, blockposition), i);
++         event = new BlockExpEvent(CraftBlock.at(p_154999_, createExperience_blockposition), i);
 +      }
 +      p_154999_.getCraftServer().getPluginManager().callEvent(event);
 +      i = event.getExpToDrop();
@@ -296,7 +300,18 @@
        ExperienceOrb.m_147082_(p_154999_, p_155000_, i);
     }
  
-@@ -485,4 +_,67 @@
++   private static void createExperience(ServerLevel p_154999_, Vec3 p_155000_, int p_155001_, float p_155002_, BlockPos blockposition, Player entityhuman, ItemStack itemstack, int amount) { // CraftBukkit
++      createExperience_blockposition = blockposition;
++      createExperience_entityhuman = entityhuman;
++      createExperience_itemstack = itemstack;
++      createExperience_amount = amount;
++      m_154998_(p_154999_, p_155000_, p_155001_, p_155002_);
++   }
++   //Magma end
++
+    public void m_5809_(StackedContents p_58342_) {
+       for(ItemStack itemstack : this.f_58310_) {
+          p_58342_.m_36491_(itemstack);
        }
  
     }

@@ -16,11 +16,12 @@
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.util.Mth;
  import net.minecraft.world.effect.MobEffectInstance;
-@@ -28,6 +_,7 @@
+@@ -28,6 +_,8 @@
  import net.minecraft.world.item.alchemy.Potions;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.material.PushReaction;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
++import org.bukkit.event.entity.EntityPotionEffectEvent;
  import org.slf4j.Logger;
  
  public class AreaEffectCloud extends Entity {
@@ -65,7 +66,7 @@
     public void m_8119_() {
        super.m_8119_();
        boolean flag = this.m_19747_();
-@@ -237,19 +_,31 @@
+@@ -237,19 +_,32 @@
              } else {
                 List<LivingEntity> list1 = this.f_19853_.m_45976_(LivingEntity.class, this.m_142469_());
                 if (!list1.isEmpty()) {
@@ -94,7 +95,8 @@
                                   mobeffectinstance1.m_19544_().m_19461_(this, this.m_19749_(), livingentity, mobeffectinstance1.m_19564_(), 0.5D);
                                } else {
 -                                 livingentity.m_147207_(new MobEffectInstance(mobeffectinstance1), this);
-+                                 livingentity.addEffect(new MobEffectInstance(mobeffectinstance1), this, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.AREA_EFFECT_CLOUD); // CraftBukkit
++                                 livingentity.prepare(EntityPotionEffectEvent.Cause.AREA_EFFECT_CLOUD); //Magma
++                                 livingentity.m_147207_(new MobEffectInstance(mobeffectinstance1), this); // CraftBukkit
                                }
                             }
  
