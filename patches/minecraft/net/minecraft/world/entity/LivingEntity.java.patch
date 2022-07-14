@@ -451,13 +451,20 @@
        if (mobeffectinstance != null) {
           this.m_7285_(mobeffectinstance);
           return true;
-@@ -963,19 +_,55 @@
+@@ -963,19 +_,63 @@
  
     }
  
++   //Magma start - move reason to a variable
 +   // CraftBukkit start - Delegate so we can handle providing a reason for health being regained
++   private EntityRegainHealthEvent.RegainReason regainReason = EntityRegainHealthEvent.RegainReason.CUSTOM;
++
++   public void setRegainReason(EntityRegainHealthEvent.RegainReason reason) {
++      this.regainReason = reason;
++   }
     public void m_5634_(float p_21116_) {
-+      heal(p_21116_, EntityRegainHealthEvent.RegainReason.CUSTOM);
++      heal(p_21116_, regainReason);
++      this.regainReason = EntityRegainHealthEvent.RegainReason.CUSTOM; //Reset
 +   }
 +
 +   public void heal(float p_21116_, EntityRegainHealthEvent.RegainReason regainReason) {
@@ -479,6 +486,7 @@
        }
  
     }
++   //Magma end
  
     public float m_21223_() {
 +      // CraftBukkit start - Use unscaled health
