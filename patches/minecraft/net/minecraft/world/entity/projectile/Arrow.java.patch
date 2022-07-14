@@ -26,18 +26,20 @@
     public int m_36889_() {
        return this.f_19804_.m_135370_(f_36854_);
     }
-@@ -178,12 +_,12 @@
+@@ -178,12 +_,14 @@
        Entity entity = this.m_150173_();
  
        for(MobEffectInstance mobeffectinstance : this.f_36855_.m_43488_()) {
 -         p_36873_.m_147207_(new MobEffectInstance(mobeffectinstance.m_19544_(), Math.max(mobeffectinstance.m_19557_() / 8, 1), mobeffectinstance.m_19564_(), mobeffectinstance.m_19571_(), mobeffectinstance.m_19572_()), entity);
-+         p_36873_.addEffect(new MobEffectInstance(mobeffectinstance.m_19544_(), Math.max(mobeffectinstance.m_19557_() / 8, 1), mobeffectinstance.m_19564_(), mobeffectinstance.m_19571_(), mobeffectinstance.m_19572_()), entity, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
++         p_36873_.prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW);
++         p_36873_.m_147207_(new MobEffectInstance(mobeffectinstance.m_19544_(), Math.max(mobeffectinstance.m_19557_() / 8, 1), mobeffectinstance.m_19564_(), mobeffectinstance.m_19571_(), mobeffectinstance.m_19572_()), entity); // CraftBukkit
        }
  
        if (!this.f_36852_.isEmpty()) {
           for(MobEffectInstance mobeffectinstance1 : this.f_36852_) {
 -            p_36873_.m_147207_(mobeffectinstance1, entity);
-+            p_36873_.addEffect(mobeffectinstance1, entity, org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); // CraftBukkit
++            p_36873_.prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW);
++            p_36873_.m_147207_(mobeffectinstance1, entity); // CraftBukkit
           }
        }
  

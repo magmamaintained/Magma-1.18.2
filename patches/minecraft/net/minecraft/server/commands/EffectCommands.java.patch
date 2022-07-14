@@ -1,11 +1,12 @@
 --- a/net/minecraft/server/commands/EffectCommands.java
 +++ b/net/minecraft/server/commands/EffectCommands.java
-@@ -61,7 +_,7 @@
+@@ -61,7 +_,8 @@
        for(Entity entity : p_136968_) {
           if (entity instanceof LivingEntity) {
              MobEffectInstance mobeffectinstance = new MobEffectInstance(p_136969_, j, p_136971_, false, p_136972_);
 -            if (((LivingEntity)entity).m_147207_(mobeffectinstance, p_136967_.m_81373_())) {
-+            if (((LivingEntity)entity).addEffect(mobeffectinstance, p_136967_.m_81373_(), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.COMMAND)) { // CraftBukkit
++            ((LivingEntity) entity).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.COMMAND); //Magma
++            if (((LivingEntity)entity).m_147207_(mobeffectinstance, p_136967_.m_81373_())) { // CraftBukkit
                 ++i;
              }
           }
