@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -7,23 +_,31 @@
+@@ -7,23 +_,32 @@
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.network.protocol.game.ClientboundBlockBreakAckPacket;
@@ -26,6 +26,7 @@
  import net.minecraft.world.level.block.state.BlockState;
 +import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
  import net.minecraft.world.phys.BlockHitResult;
++import net.minecraftforge.common.ForgeHooks;
 +import org.bukkit.GameMode;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.event.Event;
@@ -255,11 +256,14 @@
           int i = p_9264_.m_41613_();
           int j = p_9264_.m_41773_();
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.m_41682_(p_9263_, p_9262_, p_9265_);
-@@ -294,10 +_,49 @@
+@@ -294,10 +_,38 @@
        }
     }
  
-+   // CraftBukkit start - whole method
++   //Magma start - rewrote method to be mixin friendly
++   private InteractionResult useItemOn_result = InteractionResult.PASS;
++   private boolean useItemOn_cancelledBlock = false;
++   private PlayerInteractEvent eventCB;
 +   public boolean interactResult = false;
 +   public boolean firedInteract = false;
 +   public BlockPos interactPosition;
@@ -268,40 +272,27 @@
     public InteractionResult m_7179_(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_) {
        BlockPos blockpos = p_9270_.m_82425_();
        BlockState blockstate = p_9267_.m_8055_(blockpos);
-+      InteractionResult interactionresult = InteractionResult.PASS;
-+      boolean cancelledBlock = false;
+-      if (this.f_9247_ == GameType.SPECTATOR) {
 +
-+      net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
-+      if (event.isCanceled()) return event.getCancellationResult();
-       if (this.f_9247_ == GameType.SPECTATOR) {
-+         MenuProvider menuprovider = blockstate.m_60750_(p_9267_, blockpos);
-+         cancelledBlock = !(menuprovider instanceof MenuProvider);
-+      }
-+      if (p_9266_.m_36335_().m_41519_(p_9268_.m_41720_())) {
-+         cancelledBlock = true;
-+      }
-+      PlayerInteractEvent eventCB = CraftEventFactory.callPlayerInteractEvent(p_9266_, Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.m_82434_(), p_9268_, cancelledBlock, p_9269_);
++      net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
++      if (event.isCanceled())
++         return event.getCancellationResult();
++
++      if (this.f_9247_ == GameType.SPECTATOR)
++         useItemOn_cancelledBlock = !(blockstate.m_60750_(p_9267_, blockpos) instanceof MenuProvider);
++
++      if (p_9266_.m_36335_().m_41519_(p_9268_.m_41720_()))
++         useItemOn_cancelledBlock = true;
++
++      eventCB = CraftEventFactory.callPlayerInteractEvent(p_9266_, Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.m_82434_(), p_9268_, useItemOn_cancelledBlock, p_9269_);
 +      firedInteract = true;
 +      interactResult = eventCB.useItemInHand() == Event.Result.DENY;
 +      interactPosition = blockpos.m_7949_();
 +      interactHand = p_9269_;
 +      interactItemStack = p_9268_.m_41777_();
-+      if (eventCB.useInteractedBlock() == Event.Result.DENY) {
-+         // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
-+         if (blockstate.m_60734_() instanceof DoorBlock) {
-+            boolean bottom = blockstate.m_61143_(DoorBlock.f_52730_) == DoubleBlockHalf.LOWER;
-+            p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, bottom ? blockpos.m_7494_() : blockpos.m_7495_()));
-+         } else if (blockstate.m_60734_() instanceof CakeBlock) {
-+            p_9266_.getBukkitEntity().sendHealthUpdate(); // SPIGOT-1341 - reset health for cake
-+         } else if (interactItemStack.m_41720_() instanceof DoubleHighBlockItem) {
-+            // send a correcting update to the client, as it already placed the upper half of the bisected item
-+            p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, blockpos.m_142300_(p_9270_.m_82434_()).m_7494_()));
-+            // send a correcting update to the client for the block above as well, this because of replaceable blocks (such as grass, sea grass etc)
-+            p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, blockpos.m_7494_()));
-+         }
-+         p_9266_.getBukkitEntity().updateInventory(); // SPIGOT-2867
-+         interactionresult = (eventCB.useItemInHand() != Event.Result.ALLOW) ? InteractionResult.SUCCESS : InteractionResult.PASS;
-+      } else if (this.f_9247_ == GameType.SPECTATOR) {
++      if (eventCB.useInteractedBlock() == Event.Result.DENY)
++         bukkit_useItemOn(p_9266_, p_9267_, p_9268_, p_9269_, p_9270_, blockpos, blockstate);
++      else if (this.f_9247_ == GameType.SPECTATOR) {
           MenuProvider menuprovider = blockstate.m_60750_(p_9267_, blockpos);
           if (menuprovider != null) {
              p_9266_.m_5893_(menuprovider);
@@ -320,11 +311,13 @@
           ItemStack itemstack = p_9268_.m_41777_();
 -         if (!flag1) {
 -            InteractionResult interactionresult = blockstate.m_60664_(p_9267_, p_9266_, p_9269_, p_9270_);
+-            if (interactionresult.m_19077_()) {
 +         if (event.getUseBlock() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (event.getUseBlock() != net.minecraftforge.eventbus.api.Event.Result.DENY && !flag1)) {
-+            interactionresult = blockstate.m_60664_(p_9267_, p_9266_, p_9269_, p_9270_);
-             if (interactionresult.m_19077_()) {
++            InteractionResult interactionResult = blockstate.m_60664_(p_9267_, p_9266_, p_9269_, p_9270_);
++            if (interactionResult.m_19077_()) {
                 CriteriaTriggers.f_10562_.m_45482_(p_9266_, blockpos, itemstack);
-                return interactionresult;
+-               return interactionresult;
++               return interactionResult;
              }
           }
  
@@ -335,7 +328,7 @@
              InteractionResult interactionresult1;
              if (this.m_9295_()) {
                 int i = p_9268_.m_41613_();
-@@ -333,10 +_,11 @@
+@@ -333,11 +_,28 @@
              }
  
              return interactionresult1;
@@ -343,9 +336,27 @@
 -            return InteractionResult.PASS;
           }
        }
+-   }
++      return useItemOn_result;
++   }
 +
-+      return interactionresult;
-+      // CraftBukkit end
-    }
++   private void bukkit_useItemOn(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_, BlockPos blockpos, BlockState blockstate) {
++      // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
++      if (blockstate.m_60734_() instanceof DoorBlock) {
++         boolean bottom = blockstate.m_61143_(DoorBlock.f_52730_) == DoubleBlockHalf.LOWER;
++         p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, bottom ? blockpos.m_7494_() : blockpos.m_7495_()));
++      } else if (blockstate.m_60734_() instanceof CakeBlock) {
++         p_9266_.getBukkitEntity().sendHealthUpdate(); // SPIGOT-1341 - reset health for cake
++      } else if (interactItemStack.m_41720_() instanceof DoubleHighBlockItem) {
++         // send a correcting update to the client, as it already placed the upper half of the bisected item
++         p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, blockpos.m_142300_(p_9270_.m_82434_()).m_7494_()));
++         // send a correcting update to the client for the block above as well, this because of replaceable blocks (such as grass, sea grass etc)
++         p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, blockpos.m_7494_()));
++      }
++      p_9266_.getBukkitEntity().updateInventory(); // SPIGOT-2867
++      useItemOn_result = (eventCB.useItemInHand() != Event.Result.ALLOW) ? InteractionResult.SUCCESS : InteractionResult.PASS;
++   }
++   //Magma end
  
     public void m_9260_(ServerLevel p_9261_) {
+       this.f_9244_ = p_9261_;
