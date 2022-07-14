@@ -17,6 +17,15 @@
  
  public class ComposterBlock extends Block implements WorldlyContainerHolder {
     public static final int f_153088_ = 8;
+@@ -159,7 +_,7 @@
+ 
+    public ComposterBlock(BlockBehaviour.Properties p_51919_) {
+       super(p_51919_);
+-      this.m_49959_(this.f_49792_.m_61090_().m_61124_(f_51913_, Integer.valueOf(0)));
++      this.m_49959_(this.f_49792_.m_61090_().m_61124_(f_51913_, 0));
+    }
+ 
+    public static void m_51923_(Level p_51924_, BlockPos p_51925_, boolean p_51926_) {
 @@ -213,17 +_,24 @@
  
           return InteractionResult.m_19078_(p_51950_.f_46443_);
@@ -40,7 +49,7 @@
 +         if (p_51930_ == blockstate || org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(entity, p_51933_, blockstate).isCancelled()) {
 +            return p_51930_;
 +         }
-+         blockstate = addItem(p_51930_, (LevelAccessor) p_51931_, p_51933_, p_51932_, rand);
++         blockstate = addItem(p_51930_, p_51931_, p_51933_, p_51932_, rand);
 +         // CraftBukkit end
           p_51932_.m_41774_(1);
           return blockstate;
@@ -63,12 +72,19 @@
        if (!p_52000_.f_46443_) {
           float f = 0.7F;
           double d0 = (double)(p_52000_.f_46441_.nextFloat() * 0.7F) + (double)0.15F;
-@@ -254,9 +_,15 @@
+@@ -248,19 +_,25 @@
+    }
+ 
+    static BlockState m_52002_(BlockState p_52003_, LevelAccessor p_52004_, BlockPos p_52005_) {
+-      BlockState blockstate = p_52003_.m_61124_(f_51913_, Integer.valueOf(0));
++      BlockState blockstate = p_52003_.m_61124_(f_51913_, 0);
+       p_52004_.m_7731_(p_52005_, blockstate, 3);
+       return blockstate;
     }
  
     static BlockState m_51983_(BlockState p_51984_, LevelAccessor p_51985_, BlockPos p_51986_, ItemStack p_51987_) {
 +      // CraftBukkit start
-+      return addItem(p_51984_, DummyGeneratorAccess.INSTANCE, p_51986_, p_51987_, p_51985_.m_5822_().nextDouble());
++      return addItem(p_51984_, p_51985_, p_51986_, p_51987_, p_51985_.m_5822_().nextDouble()); //Magma - replace dummy level accessor with real one
 +   }
 +
 +   static BlockState addItem(BlockState p_51984_, LevelAccessor p_51985_, BlockPos p_51986_, ItemStack p_51987_, double rand) {
@@ -76,10 +92,15 @@
        int i = p_51984_.m_61143_(f_51913_);
        float f = f_51914_.getFloat(p_51987_.m_41720_());
 -      if ((i != 0 || !(f > 0.0F)) && !(p_51985_.m_5822_().nextDouble() < (double)f)) {
-+      if ((i != 0 || !(f > 0.0F)) && rand >= (double)f) {
++      if ((i != 0 || !(f > 0.0F)) && !(rand < (double)f)) { //Magma - revert to original code
           return p_51984_;
        } else {
           int j = i + 1;
+-         BlockState blockstate = p_51984_.m_61124_(f_51913_, Integer.valueOf(j));
++         BlockState blockstate = p_51984_.m_61124_(f_51913_, j);
+          p_51985_.m_7731_(p_51986_, blockstate, 3);
+          if (j == 7) {
+             p_51985_.m_186460_(p_51986_, p_51984_.m_60734_(), 20);
 @@ -299,13 +_,14 @@
        if (i == 8) {
           return new ComposterBlock.OutputContainer(p_51956_, p_51957_, p_51958_, new ItemStack(Items.f_42499_));
