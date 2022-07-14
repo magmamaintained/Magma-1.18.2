@@ -7,7 +7,7 @@
 
 (How one can reproduce the issue - this is very important)
 
-## What is the current list of mods?
+## What is the current list of mods, and include where to download them?
 
 (mod 1, mod 2, mod 3....  DO NOT PUT FIND FROM CRASH LOG.)
 
