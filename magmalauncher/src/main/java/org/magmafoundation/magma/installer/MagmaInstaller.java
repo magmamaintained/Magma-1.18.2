@@ -12,6 +12,7 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.magmafoundation.magma.common.MagmaConstants;
 import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.common.utils.MD5;
+import org.magmafoundation.magma.utils.LibHelper;
 import org.magmafoundation.magma.utils.ServerInitHelper;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -55,7 +57,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             downloadInternalLibraries();
             new Dependencies(mcVer, mcpVer, minecraft_server);
             install();
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {}
     }
 
     //Inspired by the Mohist 1.19 installer
@@ -295,10 +297,23 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2/"));
             standardRepositories.add(new StandardRepository("https://raw.github.com/Hexeption/Magma-Repo/master/"));
 
-            //TODO: Progress bar
+            List<Dependency> dependencies = manager.getDependencies();
 
-            manager.downloadAll(executor, standardRepositories).join();
-            manager.loadAll(executor, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath())).join();
+            ProgressBarBuilder builder = new ProgressBarBuilder()
+                    .setTaskName("Loading libraries...")
+                    .setStyle(ProgressBarStyle.ASCII)
+                    .setUpdateIntervalMillis(100)
+                    .setInitialMax(dependencies.size());
+
+            //AtomicReference<Throwable> error = new AtomicReference<>(null);
+            ProgressBar.wrap(dependencies.stream(), builder).forEach(dep -> {
+                try {
+                    LibHelper.downloadDependency(manager, dep, standardRepositories);
+                    LibHelper.loadDependency(manager, dep, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath()));
+                } catch (IOException | NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             downloadMcp(mcVersion, mcpVersion);
             downloadMinecraftServer(minecraft_server);

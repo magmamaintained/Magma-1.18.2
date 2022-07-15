@@ -106,13 +106,7 @@ public class MagmaStart {
         }
 
         String[] invokeArgs = Stream.concat(forgeArgs.stream(), Stream.of(args)).toArray(String[]::new);
-        if(BootstrapLauncher.startServer(invokeArgs)) {
-            try {
-                Class.forName("org.jline.terminal.Terminal");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        BootstrapLauncher.startServer(invokeArgs);
     }
 
     private static String[] remove(String[] array, String element) {

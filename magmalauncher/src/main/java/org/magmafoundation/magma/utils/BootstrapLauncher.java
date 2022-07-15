@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 public class BootstrapLauncher {
 
     @SuppressWarnings("unchecked")
-    public static boolean startServer(String[] args) {
+    public static void startServer(String[] args) {
         var legacyClasspath = loadLegacyClassPath();
         System.setProperty("legacyClassPath", String.join(File.pathSeparator, legacyClasspath));
 
@@ -88,10 +88,8 @@ public class BootstrapLauncher {
         var layer = ModuleLayer.defineModules(bootstrapConfiguration, List.of(ModuleLayer.boot()), m -> moduleClassLoader);
         Thread.currentThread().setContextClassLoader(moduleClassLoader);
 
-        System.out.println(Thread.currentThread().getContextClassLoader());
         final var loader = ServiceLoader.load(layer.layer(), Consumer.class);
         ((Consumer<String[]>) loader.stream().findFirst().orElseThrow().get()).accept(args);
-        return true;
     }
 
     private static Map<String, Integer> getMergeFilenameMap() {
