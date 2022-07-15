@@ -166,12 +166,12 @@ public class ServerInitHelper {
                     try {
                         if("ALL-UNNAMED".equals(data.target)) {
                             implAddExtraToAllUnnamedMH.invokeWithArguments(m, data.packages);
-                            System.out.println("Added extra to all unnamed modules: " + data);
+                            //System.out.println("Added extra to all unnamed modules: " + data);
                         } else {
                             ModuleLayer.boot().findModule(data.target).ifPresent(tm -> {
                                 try {
                                     implAddExtraMH.invokeWithArguments(m, data.packages, tm);
-                                    System.out.println("Added extra: " + data);
+                                    //System.out.println("Added extra: " + data);
                                 } catch (Throwable t) {
                                     throw new RuntimeException(t);
                                 }
