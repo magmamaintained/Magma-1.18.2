@@ -5,17 +5,13 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_18_R2.enchantments.CraftEnchantment;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
@@ -26,11 +22,8 @@ import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
 import org.magmafoundation.magma.helpers.EnumJ17Helper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import static org.bukkit.Material.normalizeName;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ForgeInject {
 
@@ -39,6 +32,10 @@ public class ForgeInject {
             .put(LevelStem.NETHER, World.Environment.NETHER)
             .put(LevelStem.END, World.Environment.THE_END)
             .build());
+
+    public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new ConcurrentHashMap<>();
+    public static final Map<net.minecraft.world.entity.EntityType<?>, String> ENTITY_TYPES = new ConcurrentHashMap<>();
+
     public static void init() {
         Magma.LOGGER.warn("Injecting Forge Material into Bukkit");
         addForgeItems();
@@ -143,7 +140,7 @@ public class ForgeInject {
 
     private static void addForgeBiomes() {
         List<String> map = new ArrayList<>();
-        ForgeRegistries.BLOCKS.getEntries().forEach(entry -> {
+        ForgeRegistries.BIOMES.getEntries().forEach(entry -> {
             String biomeName = Objects.requireNonNull(entry.getValue().getRegistryName()).getNamespace();
             if (!biomeName.equals(NamespacedKey.MINECRAFT) && !map.contains(biomeName)) {
                 map.add(biomeName);
@@ -171,6 +168,7 @@ public class ForgeInject {
                     EntityType bukkitType = EnumJ17Helper.addEnum0(EntityType.class, entityType, new Class[]{String.class, Class.class, Integer.TYPE, Boolean.TYPE}, entityType.toLowerCase(), CraftCustomEntity.class, typeId, false);
                     EntityType.NAME_MAP.put(entityType.toLowerCase(), bukkitType);
                     EntityType.ID_MAP.put((short) typeId, bukkitType);
+                    ENTITY_TYPES.put(entity.getValue(), entityType);
                     Magma.LOGGER.warn("Injecting Forge Entity into Bukkit: " +  entityType);
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -188,6 +186,7 @@ public class ForgeInject {
                 String name = normalizeName(resourceLocation.toString());
                 try {
                     Villager.Profession profession = EnumJ17Helper.addEnum0(Villager.Profession.class, name, new Class[0]);
+                    PROFESSION_MAP.put(profession, resourceLocation);
                     Magma.LOGGER.warn("Injecting Forge VillagerProfession into Bukkit: " +  profession.name());
                 } catch (Throwable e) {
                     e.printStackTrace();

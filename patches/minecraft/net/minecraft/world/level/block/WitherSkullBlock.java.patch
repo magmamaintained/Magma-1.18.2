@@ -33,12 +33,13 @@
                    }
                 }
  
-@@ -64,12 +_,21 @@
+@@ -64,12 +_,22 @@
                 witherboss.m_7678_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.55D, (double)blockpos.m_123343_() + 0.5D, blockpattern$blockpatternmatch.m_61233_().m_122434_() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
                 witherboss.f_20883_ = blockpattern$blockpatternmatch.m_61233_().m_122434_() == Direction.Axis.X ? 0.0F : 90.0F;
                 witherboss.m_31506_();
 +               // CraftBukkit start
-+               if (!p_58256_.addFreshEntity(witherboss, CreatureSpawnEvent.SpawnReason.BUILD_WITHER)) {
++               p_58256_.prepareEntity(witherboss, CreatureSpawnEvent.SpawnReason.BUILD_WITHER); //Magma - add spawn reason
++               if (!p_58256_.m_7967_(witherboss)) {
 +                  return;
 +               }
 +               for (BlockPos pos : blockList.getBlocks()) {

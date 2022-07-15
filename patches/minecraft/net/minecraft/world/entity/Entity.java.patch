@@ -71,7 +71,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -103,20 +_,71 @@
+@@ -103,20 +_,78 @@
  import net.minecraft.world.level.material.PushReaction;
  import net.minecraft.world.level.portal.PortalInfo;
  import net.minecraft.world.level.portal.PortalShape;
@@ -135,6 +135,13 @@
 +      }
 +      return bukkitEntity;
 +   }
++
++   //Magma start - make it possible to reset the entity
++   public void resetBukkitEntity() {
++      this.bukkitEntity = null;
++      getBukkitEntity();
++   }
++   //Magma end
 +
 +   @Override
 +   public CommandSender getBukkitSender(CommandSourceStack wrapper) {

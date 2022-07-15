@@ -387,7 +387,7 @@
     public boolean m_7967_(Entity p_8837_) {
 -      return this.m_8872_(p_8837_);
 +      // CraftBukkit start
-+      return this.addFreshEntity(p_8837_, CreatureSpawnEvent.SpawnReason.DEFAULT);
++      return this.addFreshEntity(p_8837_, p_8837_.spawnReason);
 +   }
 +
 +   public boolean addFreshEntity(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
@@ -398,7 +398,7 @@
     public boolean m_8847_(Entity p_8848_) {
 -      return this.m_8872_(p_8848_);
 +      // CraftBukkit start
-+      return this.addWithUUID(p_8848_, CreatureSpawnEvent.SpawnReason.DEFAULT);
++      return this.addWithUUID(p_8848_, p_8848_.spawnReason);
 +   }
 +
 +   public boolean addWithUUID(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
@@ -477,7 +477,7 @@
        Entity entity = this.m_142646_().m_142694_(p_8854_.m_142081_());
        if (entity != null) {
           f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_142081_().toString());
-@@ -775,28 +_,66 @@
+@@ -775,28 +_,67 @@
           this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
@@ -528,8 +528,8 @@
        if (p_8861_.m_142428_().map(Entity::m_142081_).anyMatch(this.f_143244_::m_157550_)) {
           return false;
        } else {
--         this.m_47205_(p_8861_);
-+         this.addFreshEntityWithPassengers(p_8861_, reason); // CraftBukkit
++         this.prepareEntity(p_8861_, reason); //Magma - add spawn reason
+          this.m_47205_(p_8861_);
           return true;
        }
     }

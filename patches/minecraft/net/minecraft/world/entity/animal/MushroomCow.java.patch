@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
-@@ -41,8 +_,12 @@
+@@ -41,8 +_,13 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import org.apache.commons.lang3.tuple.Pair;
 +import org.bukkit.Bukkit;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.event.entity.CreatureSpawnEvent;
 +import org.bukkit.event.entity.EntityDropItemEvent;
 +import org.bukkit.event.entity.EntityTransformEvent;
  
@@ -46,16 +47,16 @@
           Cow cow = EntityType.f_20557_.m_20615_(this.f_19853_);
           cow.m_7678_(this.m_20185_(), this.m_20186_(), this.m_20189_(), this.m_146908_(), this.m_146909_());
           cow.m_21153_(this.m_21223_());
-@@ -164,12 +_,31 @@
+@@ -164,12 +_,32 @@
           }
  
           cow.m_20331_(this.m_20147_());
--         this.f_19853_.m_7967_(cow);
 +         // CraftBukkit start
 +         if (CraftEventFactory.callEntityTransformEvent(this, cow, EntityTransformEvent.TransformReason.SHEARED).isCancelled()) {
 +            return java.util.Collections.emptyList();
 +         }
-+         this.f_19853_.addFreshEntity(cow, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SHEARED);
++         this.f_19853_.prepareEntity(cow, CreatureSpawnEvent.SpawnReason.SHEARED); //Magma - add spawn reason
+          this.f_19853_.m_7967_(cow);
 +         this.m_146870_(); // CraftBukkit - from above
 +         // CraftBukkit end
  

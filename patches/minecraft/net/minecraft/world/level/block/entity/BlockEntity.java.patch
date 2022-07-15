@@ -8,7 +8,7 @@
  import net.minecraft.CrashReportCategory;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Registry;
-@@ -13,9 +_,16 @@
+@@ -13,9 +_,17 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +16,7 @@
 +import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer;
 +import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry;
 +import org.bukkit.inventory.InventoryHolder;
++import org.magmafoundation.magma.helpers.InventoryHelper;
  import org.slf4j.Logger;
 -
 -public abstract class BlockEntity {
@@ -96,7 +97,7 @@
     }
  
     public void m_6339_() {
-@@ -191,9 +_,25 @@
+@@ -191,9 +_,22 @@
        return this.f_58855_;
     }
  
@@ -115,10 +116,7 @@
 +
 +   // CraftBukkit start - add method
 +   public InventoryHolder getOwner() {
-+      if (f_58857_ == null) return null;
-+      org.bukkit.block.BlockState state = f_58857_.getWorld().getBlockAt(f_58858_.m_123341_(), f_58858_.m_123342_(), f_58858_.m_123343_()).getState();
-+      if (state instanceof InventoryHolder) return (InventoryHolder) state;
-+      return null;
++      return InventoryHelper.getHolder(f_58857_, f_58858_);
 +   }
 +   // CraftBukkit end
  }

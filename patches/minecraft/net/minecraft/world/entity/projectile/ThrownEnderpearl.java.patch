@@ -11,7 +11,7 @@
  
  public class ThrownEnderpearl extends ThrowableItemProjectile {
     public ThrownEnderpearl(EntityType<? extends ThrownEnderpearl> p_37491_, Level p_37492_) {
-@@ -47,20 +_,32 @@
+@@ -47,20 +_,33 @@
           if (entity instanceof ServerPlayer) {
              ServerPlayer serverplayer = (ServerPlayer)entity;
              if (serverplayer.f_8906_.m_6198_().m_129536_() && serverplayer.f_19853_ == this.f_19853_ && !serverplayer.m_5803_()) {
@@ -42,7 +42,8 @@
 +                     if (this.f_19796_.nextFloat() < 0.05F && this.f_19853_.m_46469_().m_46207_(GameRules.f_46134_)) {
 +                        Endermite entityendermite = (Endermite) EntityType.f_20567_.m_20615_(this.f_19853_);
 +                        entityendermite.m_7678_(entity.m_20185_(), entity.m_20186_(), entity.m_20189_(), entity.m_146908_(), entity.m_146909_());
-+                        this.f_19853_.addFreshEntity(entityendermite, CreatureSpawnEvent.SpawnReason.ENDER_PEARL);
++                        this.f_19853_.prepareEntity(entityendermite, CreatureSpawnEvent.SpawnReason.ENDER_PEARL); //Magma - add spawn reason
++                        this.f_19853_.m_7967_(entityendermite);
 +                     }
 +                     if (entity.m_20159_()) {
 +                        entity.m_8127_();

@@ -28,6 +28,8 @@ import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.EntityEffect;
@@ -54,8 +56,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
-import org.magmafoundation.magma.craftbukkit.entity.CraftCustomAbstractHorse;
-import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
+import org.magmafoundation.magma.craftbukkit.entity.*;
 
 public abstract class CraftEntity implements org.bukkit.entity.Entity {
     private static PermissibleBase perm;
@@ -130,6 +131,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                             return new CraftCat(server, (net.minecraft.world.entity.animal.Cat) entity);
                         } else if (entity instanceof net.minecraft.world.entity.animal.Parrot) {
                             return new CraftParrot(server, (net.minecraft.world.entity.animal.Parrot) entity);
+                        } else {
+                            return new CraftCustomTamable(server, (TamableAnimal) entity);
                         }
                     } else if (entity instanceof net.minecraft.world.entity.animal.Sheep) {
                         return new CraftSheep(server, (net.minecraft.world.entity.animal.Sheep) entity);
@@ -385,6 +388,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                 return new CraftMinecartRideable(server, (net.minecraft.world.entity.vehicle.Minecart) entity);
             } else if (entity instanceof MinecartCommandBlock) {
                 return new CraftMinecartCommand(server, (MinecartCommandBlock) entity);
+            } else {
+                return new CraftMinecart(server, (AbstractMinecart) entity);
             }
         } else if (entity instanceof net.minecraft.world.entity.decoration.HangingEntity) {
             if (entity instanceof net.minecraft.world.entity.decoration.Painting) {
@@ -414,6 +419,10 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             return new CraftLlamaSpit(server, (net.minecraft.world.entity.projectile.LlamaSpit) entity);
         } else if (entity instanceof Marker) {
             return new CraftMarker(server, (Marker) entity);
+        } else if (entity instanceof AbstractMinecart) {
+            return new CraftCustomMinecart(server, (AbstractMinecart) entity);
+        } else if (entity instanceof AbstractMinecartContainer) {
+            return new CraftCustomMinecartContainer(server, (AbstractMinecartContainer) entity);
         }
         //Magma - instead of throwing an AssertionError we return a custom entity
         return new CraftCustomEntity(server, entity);

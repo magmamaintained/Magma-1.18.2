@@ -1,11 +1,20 @@
 --- a/net/minecraft/server/commands/SummonCommand.java
 +++ b/net/minecraft/server/commands/SummonCommand.java
-@@ -58,7 +_,7 @@
+@@ -21,6 +_,7 @@
+ import net.minecraft.world.entity.SpawnGroupData;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.phys.Vec3;
++import org.bukkit.event.entity.CreatureSpawnEvent;
+ 
+ public class SummonCommand {
+    private static final SimpleCommandExceptionType f_138810_ = new SimpleCommandExceptionType(new TranslatableComponent("commands.summon.failed"));
+@@ -58,7 +_,8 @@
                 ((Mob)entity).m_6518_(p_138821_.m_81372_(), p_138821_.m_81372_().m_6436_(entity.m_142538_()), MobSpawnType.COMMAND, (SpawnGroupData)null, (CompoundTag)null);
              }
  
 -            if (!serverlevel.m_8860_(entity)) {
-+            if (!serverlevel.addFreshEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.COMMAND)) { // CraftBukkit - pass a spawn reason of "COMMAND"
++            serverlevel.prepareEntity(entity, CreatureSpawnEvent.SpawnReason.COMMAND); //Magma - add spawn reason
++            if (!serverlevel.m_7967_(entity)) {
                 throw f_138811_.create();
              } else {
                 p_138821_.m_81354_(new TranslatableComponent("commands.summon.success", entity.m_5446_()), true);
