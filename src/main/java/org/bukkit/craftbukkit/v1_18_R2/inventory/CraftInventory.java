@@ -18,6 +18,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.magmafoundation.magma.helpers.InventoryHelper;
 
 public class CraftInventory implements Inventory {
     protected final Container inventory;
@@ -496,7 +497,7 @@ public class CraftInventory implements Inventory {
 
     @Override
     public InventoryHolder getHolder() {
-        return inventory.getOwner();
+        return InventoryHelper.getHolderOwner(inventory); //Magma - Fix NPE
     }
 
     @Override

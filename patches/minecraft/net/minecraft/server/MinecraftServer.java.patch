@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -10,52 +_,12 @@
+@@ -10,52 +_,13 @@
  import com.mojang.authlib.minecraft.MinecraftSessionService;
  import com.mojang.datafixers.DataFixer;
  import com.mojang.logging.LogUtils;
@@ -55,6 +55,7 @@
 +import jline.console.ConsoleReader;
 +import joptsimple.OptionSet;
 +import net.minecraft.*;
++import net.minecraft.client.Minecraft;
  import net.minecraft.commands.CommandSource;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
@@ -119,7 +120,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2005 @@
+@@ -144,1693 +_,2011 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -149,6 +150,7 @@
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.Metrics;
 +import org.magmafoundation.magma.forge.ForgeInject;
++import org.magmafoundation.magma.helpers.ServerInitHelper;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -469,8 +471,8 @@
 +    private volatile boolean f_195494_;
 +
 +    // CraftBukkit start
-+    public final DataPackConfig datapackconfiguration;
-+    public final DynamicOps<Tag> registryreadops;
++    public DataPackConfig datapackconfiguration;
++    public DynamicOps<Tag> registryreadops;
 +    public CraftServer server;
 +    public OptionSet options;
 +    public org.bukkit.command.ConsoleCommandSender console;
@@ -513,9 +515,17 @@
 +        return s;
 +    }
 +
-+    public MinecraftServer(OptionSet options, DataPackConfig p_129768_, DynamicOps<Tag> registryreadops, Thread p_206546_, LevelStorageSource.LevelStorageAccess p_206547_, PackRepository p_206548_, WorldStem p_206549_, Proxy p_206550_, DataFixer p_206551_, @Nullable MinecraftSessionService p_206552_, @Nullable GameProfileRepository p_206553_, @Nullable GameProfileCache p_206554_, ChunkProgressListenerFactory p_206555_) {
++    public void preInit(OptionSet options, DataPackConfig p_129768_, DynamicOps<Tag> registryreadops) {
++        this.options = options;
++        this.datapackconfiguration = p_129768_;
++        this.registryreadops = registryreadops;
++    }
++
++    public MinecraftServer(Thread p_206546_, LevelStorageSource.LevelStorageAccess p_206547_, PackRepository p_206548_, WorldStem p_206549_, Proxy p_206550_, DataFixer p_206551_, @Nullable MinecraftSessionService p_206552_, @Nullable GameProfileRepository p_206553_, @Nullable GameProfileCache p_206554_, ChunkProgressListenerFactory p_206555_) {
 +        super("Server");
 +        instance = this; // Magma
++        preInit(ServerInitHelper.getOptions(), ServerInitHelper.getDataPackConfig(), ServerInitHelper.getRegistryReadOps());
++
 +        this.f_129746_ = p_206549_.f_206894_();
 +        this.f_129749_ = p_206549_.f_206895_();
 +        this.f_129747_ = p_206550_;
@@ -538,9 +548,6 @@
 +        this.f_129725_ = p_206546_;
 +        this.f_129738_ = Util.m_183991_();
 +        // CraftBukkit start
-+        this.options = options;
-+        this.datapackconfiguration = p_129768_;
-+        this.registryreadops = registryreadops;
 +        this.vanillaCommandDispatcher = p_206549_.f_206893_().f_206847_; // CraftBukkit
 +        // Try to see if we're actually running in a terminal, disable jline if not
 +        if (System.console() == null && System.getProperty("jline.terminal") == null) {

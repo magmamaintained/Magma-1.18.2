@@ -254,16 +254,16 @@
        if (this.m_146910_()) {
           return (T)null;
        } else {
-@@ -1148,7 +_,12 @@
+@@ -1148,7 +_,13 @@
              }
           }
  
--         this.f_19853_.m_7967_(t);
 +         // CraftBukkit start
 +         if (CraftEventFactory.callEntityTransformEvent(this, t, transformReason).isCancelled()) {
 +            return null;
 +         }
-+         this.f_19853_.addFreshEntity(t, spawnReason);
++         this.f_19853_.prepareEntity(t, spawnReason); //Magma - add spawn reason
+          this.f_19853_.m_7967_(t);
 +         // CraftBukkit end
           if (this.m_20159_()) {
              Entity entity = this.m_20202_();

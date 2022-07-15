@@ -24,12 +24,13 @@
           }
  
           SnowGolem snowgolem = EntityType.f_20528_.m_20615_(p_51379_);
-@@ -67,6 +_,16 @@
+@@ -67,6 +_,17 @@
           snowgolem.m_7678_((double)blockpos1.m_123341_() + 0.5D, (double)blockpos1.m_123342_() + 0.05D, (double)blockpos1.m_123343_() + 0.5D, 0.0F, 0.0F);
           p_51379_.m_7967_(snowgolem);
  
 +         // CraftBukkit start
-+         if (!p_51379_.addFreshEntity(snowgolem, CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN)) {
++         p_51379_.prepareEntity(snowgolem, CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
++         if (!p_51379_.m_7967_(snowgolem)) {
 +            return;
 +         }
 +         for (BlockPos pos : blockList.getBlocks()) {
@@ -52,13 +53,14 @@
                 }
              }
  
-@@ -90,7 +_,13 @@
+@@ -90,7 +_,14 @@
              IronGolem irongolem = EntityType.f_20460_.m_20615_(p_51379_);
              irongolem.m_28887_(true);
              irongolem.m_7678_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.05D, (double)blockpos.m_123343_() + 0.5D, 0.0F, 0.0F);
 -            p_51379_.m_7967_(irongolem);
 +            // CraftBukkit start
-+            if (!p_51379_.addFreshEntity(irongolem, CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM)) {
++            p_51379_.prepareEntity(irongolem, CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM); //Magma - add spawn reason
++            if (!p_51379_.m_7967_(irongolem)) {
 +               return;
 +            }
 +            blockList.getBlocks().forEach(pos -> p_51379_.m_46796_(2001, pos, Block.m_49956_(p_51379_.m_8055_(pos))));
