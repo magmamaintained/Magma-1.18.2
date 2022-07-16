@@ -278,21 +278,20 @@ public class Unsafe {
         MethodHandle handle;
         try {
             handle = lookup().findStatic(ClassLoader.class, "defineClass0", MethodType.methodType(Class.class,
-                ClassLoader.class, Class.class, String.class, byte[].class, int.class, int.class, ProtectionDomain.class,
-                boolean.class, int.class, Object.class));
+                    ClassLoader.class, Class.class, String.class, byte[].class, int.class, int.class, ProtectionDomain.class,
+                    boolean.class, int.class, Object.class));
         } catch (Throwable t) {
             try {
                 handle = MethodHandles.dropArguments(
-                    lookup().findVirtual(ClassLoader.class, "defineClassInternal", MethodType.methodType(Class.class,
-                        Class.class, String.class, byte[].class, ProtectionDomain.class, boolean.class, int.class, Object.class)),
-                    4, Arrays.asList(int.class, int.class));
+                        lookup().findVirtual(ClassLoader.class, "defineClassInternal", MethodType.methodType(Class.class,
+                                Class.class, String.class, byte[].class, ProtectionDomain.class, boolean.class, int.class, Object.class)),
+                        4, Arrays.asList(int.class, int.class));
             } catch (Throwable t2) {
                 handle = null;
             }
         }
         H_DEF_CLASS = handle;
     }
-
 
     public static Object allocateInstance(Class<?> aClass) throws InstantiationException {
         return unsafe.allocateInstance(aClass);
