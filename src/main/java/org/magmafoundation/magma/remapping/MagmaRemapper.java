@@ -8,6 +8,8 @@ import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
 import net.md_5.specialsource.provider.ClassLoaderProvider;
 import net.md_5.specialsource.provider.JointProvider;
+import net.md_5.specialsource.transformer.MavenShade;
+import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.remapping.resource.RemapSourceHandler;
 
 import java.io.BufferedReader;
@@ -16,21 +18,20 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class MagmaRemapper {
 
     public static final MagmaRemapper INSTANCE;
     public static final File DUMP;
-    public static final Function<byte[], byte[]> SWITCH_TABLE_FIXER;
 
     static {
         try {
             INSTANCE = new MagmaRemapper();
             DUMP = null;
-            SWITCH_TABLE_FIXER = (Function<byte[], byte[]>) Class.forName("org.magmafoundation.magma.remapping.asm.SwitchTableFixer").getField("INSTANCE").get(null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -47,13 +48,17 @@ public class MagmaRemapper {
         this.toNmsMapping = new JarMapping();
         this.toBukkitMapping = new JarMapping();
         this.inheritanceMap = new InheritanceMap();
+        Map<String, String> relocations = new HashMap<String, String>();
+        relocations.put("net.minecraft.server", "net.minecraft.server." + Magma.getBukkitVersion());
+
+
         this.toNmsMapping.loadMappings(
-            new BufferedReader(new InputStreamReader(MagmaRemapper.class.getResourceAsStream("mappings/nms.srg"))),
-            null, null, false
+            new BufferedReader(new InputStreamReader(MagmaRemapper.class.getClassLoader().getResourceAsStream("mappings/nms.srg"))),
+            new MavenShade(relocations), null, false
         );
         // TODO workaround for https://github.com/md-5/SpecialSource/pull/81
         //  remove on update
-        var content = new String(MagmaRemapper.class.getResourceAsStream("mappings/nms.srg").readAllBytes(), StandardCharsets.UTF_8);
+        var content = new String(MagmaRemapper.class.getClassLoader().getResourceAsStream("mappings/nms.srg").readAllBytes(), StandardCharsets.UTF_8);
         var i = content.indexOf("net/minecraft/server/level/ChunkMap net/minecraft/server/level/ChunkTracker");
         var nextSection = content.substring(i).lines().skip(1).dropWhile(it -> it.startsWith("\t")).findFirst().orElseThrow();
         var nextIndex = content.indexOf(nextSection);
@@ -66,7 +71,7 @@ public class MagmaRemapper {
             null, null, true
         );
         BiMap<String, String> inverseClassMap = HashBiMap.create(toNmsMapping.classes).inverse();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(MagmaRemapper.class.getResourceAsStream("mappings/inheritanceMap.txt")))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(MagmaRemapper.class.getClassLoader().getResourceAsStream("mappings/inheritanceMap.txt")))) {
             inheritanceMap.load(reader, inverseClassMap);
         }
         JointProvider inheritanceProvider = new JointProvider();

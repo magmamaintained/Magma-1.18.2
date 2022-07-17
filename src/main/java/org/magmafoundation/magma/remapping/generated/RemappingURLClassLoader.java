@@ -62,9 +62,7 @@ public class RemappingURLClassLoader extends URLClassLoader implements Remapping
                 }
                 byteSource = () -> {
                     try (InputStream is = connection.getInputStream()) {
-                        byte[] classBytes = ByteStreams.toByteArray(is);
-                        classBytes = MagmaRemapper.SWITCH_TABLE_FIXER.apply(classBytes);
-                        return classBytes;
+                        return ByteStreams.toByteArray(is);
                     }
                 };
             } catch (IOException e) {
