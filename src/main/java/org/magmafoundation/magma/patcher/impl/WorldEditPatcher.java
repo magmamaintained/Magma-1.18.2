@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma.remapping.patcher.impl;
+package org.magmafoundation.magma.patcher.impl;
 
 import org.bukkit.Material;
-import org.magmafoundation.magma.remapping.patcher.Patcher;
+import org.magmafoundation.magma.patcher.Patcher;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;

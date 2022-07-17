@@ -16,11 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma.remapping.patcher;
+package org.magmafoundation.magma.patcher;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.magmafoundation.magma.remapping.patcher.impl.WorldEditPatcher;
+import org.magmafoundation.magma.patcher.impl.WorldEditPatcher;
+import org.reflections.Reflections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +34,28 @@ import java.util.List;
  */
 public class PatcherManager {
 
-    private static final List<Patcher> patcherList;
+    private static List<Patcher> patcherList = new ArrayList<>();
     public static final Logger LOGGER = LogManager.getLogger();
 
-    static {
-        patcherList = new ArrayList<>();
-        patcherList.add(new WorldEditPatcher());
+    public void init() {
+        initPatches();
+        patcherList.forEach(patcher -> LOGGER.info("{} [{}] loaded", patcher.getName(), patcher.getDescription()));
+        LOGGER.info("{} patches loaded!", patcherList.size());
     }
 
+    private void initPatches() {
+        Reflections reflections = new Reflections(Patcher.class.getPackage().getName());
+
+        reflections.getTypesAnnotatedWith(Patcher.PatcherInfo.class).forEach(aClass -> {
+            try {
+                Patcher patcher = (Patcher) aClass.newInstance();
+                patcherList.add(patcher);
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
 
     public static List<Patcher> getPatcherList() {
         return patcherList;

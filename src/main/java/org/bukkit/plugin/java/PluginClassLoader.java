@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 import org.magmafoundation.magma.remapping.MagmaRemapper;
 import org.magmafoundation.magma.remapping.RemappingClassLoader;
-import org.magmafoundation.magma.remapping.patcher.PatcherManager;
+import org.magmafoundation.magma.patcher.PatcherManager;
 import org.magmafoundation.magma.util.JavaPluginLoaderBridge;
 
 import java.io.File;
