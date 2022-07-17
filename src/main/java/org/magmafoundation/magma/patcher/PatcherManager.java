@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class PatcherManager {
 
-    private static List<Patcher> patcherList = new ArrayList<>();
+    private final List<Patcher> patcherList = new ArrayList<>();
     public static final Logger LOGGER = LogManager.getLogger();
 
     public void init() {
@@ -56,15 +56,15 @@ public class PatcherManager {
 
     }
 
-    public static List<Patcher> getPatcherList() {
+    public List<Patcher> getPatcherList() {
         return patcherList;
     }
 
-    public static <T extends Patcher> Patcher getPatchByClass(final Class<T> clazz) {
+    public <T extends Patcher> Patcher getPatchByClass(final Class<T> clazz) {
         return patcherList.stream().filter(patcher -> patcher.getClass().equals(clazz)).findFirst().map(clazz::cast).orElse(null);
     }
 
-    public static Patcher getPatchByName(final String patchName) {
+    public Patcher getPatchByName(final String patchName) {
         return patcherList.stream().filter(patcher -> patcher.getName().toLowerCase().replaceAll(" ", "").equalsIgnoreCase(patchName)).findFirst().orElse(null);
     }
 }
