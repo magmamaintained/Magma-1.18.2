@@ -20,7 +20,6 @@ package org.magmafoundation.magma.patcher;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.magmafoundation.magma.patcher.impl.WorldEditPatcher;
 import org.reflections.Reflections;
 
 import java.util.ArrayList;
