@@ -1,6 +1,12 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -7,23 +_,32 @@
+@@ -1,31 +_,41 @@
+ package net.minecraft.server.level;
+ 
+ import com.mojang.logging.LogUtils;
+-import java.util.Objects;
+-import javax.annotation.Nullable;
+ import net.minecraft.advancements.CriteriaTriggers;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.network.protocol.game.ClientboundBlockBreakAckPacket;
@@ -35,7 +41,12 @@
 +import org.bukkit.event.player.PlayerInteractEvent;
  import org.slf4j.Logger;
  
++import javax.annotation.Nullable;
++import java.util.Objects;
++
  public class ServerPlayerGameMode {
+    private static final Logger f_9246_ = LogUtils.getLogger();
+    protected ServerLevel f_9244_;
 @@ -51,6 +_,13 @@
        if (p_143474_ == this.f_9247_) {
           return false;
@@ -154,7 +165,7 @@
 +               this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
 +               return;
 +            }
-+            
++
 +            if (blockEvent.getInstaBreak()) {
 +               f = 2.0f;
 +            }

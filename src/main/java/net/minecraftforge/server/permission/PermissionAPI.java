@@ -20,6 +20,7 @@ import net.minecraftforge.server.permission.nodes.PermissionDynamicContext;
 import net.minecraftforge.server.permission.nodes.PermissionNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.magmafoundation.magma.craftbukkit.commnd.permission.BukkitPermissionHandler;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -105,6 +106,7 @@ public final class PermissionAPI
         PermissionAPI.activeHandler = null;
 
         PermissionGatherEvent.Handler handlerEvent = new PermissionGatherEvent.Handler();
+        handlerEvent.addPermissionHandler(BukkitPermissionHandler.IDENTIFIER, BukkitPermissionHandler::new);
         MinecraftForge.EVENT_BUS.post(handlerEvent);
         Map<ResourceLocation, IPermissionHandlerFactory> availableHandlers = handlerEvent.getAvailablePermissionHandlerFactories();
 
