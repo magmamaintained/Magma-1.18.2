@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+//Class Made by Arclight (Izzel)
 public class GlobalClassRepo implements ClassRepo {
 
     public static final GlobalClassRepo INSTANCE = new GlobalClassRepo();

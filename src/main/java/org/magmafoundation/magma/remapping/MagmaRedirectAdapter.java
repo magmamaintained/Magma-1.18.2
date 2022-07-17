@@ -32,6 +32,7 @@ import java.security.SecureClassLoader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+//Class Made by Arclight (Izzel)
 public class MagmaRedirectAdapter implements PluginTransformer {
 
     public static final MagmaRedirectAdapter INSTANCE = new MagmaRedirectAdapter();

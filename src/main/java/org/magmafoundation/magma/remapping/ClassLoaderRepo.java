@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 
+//Class Made by Arclight (Izzel)
 public class ClassLoaderRepo implements ClassRepo {
 
     private final ClassLoader classLoader;
