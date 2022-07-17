@@ -8,8 +8,6 @@ import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
 import net.md_5.specialsource.provider.ClassLoaderProvider;
 import net.md_5.specialsource.provider.JointProvider;
-import net.md_5.specialsource.transformer.MavenShade;
-import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.remapping.resource.RemapSourceHandler;
 
 import java.io.BufferedReader;
@@ -18,10 +16,9 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+//Class Made by Arclight (Izzel)
 @SuppressWarnings("unchecked")
 public class MagmaRemapper {
 
@@ -48,13 +45,9 @@ public class MagmaRemapper {
         this.toNmsMapping = new JarMapping();
         this.toBukkitMapping = new JarMapping();
         this.inheritanceMap = new InheritanceMap();
-        Map<String, String> relocations = new HashMap<String, String>();
-        relocations.put("net.minecraft.server", "net.minecraft.server." + Magma.getBukkitVersion());
-
-
         this.toNmsMapping.loadMappings(
             new BufferedReader(new InputStreamReader(MagmaRemapper.class.getClassLoader().getResourceAsStream("mappings/nms.srg"))),
-            new MavenShade(relocations), null, false
+            null, null, false
         );
         // TODO workaround for https://github.com/md-5/SpecialSource/pull/81
         //  remove on update

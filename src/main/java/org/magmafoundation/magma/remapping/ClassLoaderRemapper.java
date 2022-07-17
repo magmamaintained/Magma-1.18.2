@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarFile;
 
+//Class Made by Arclight (Izzel)
 public class ClassLoaderRemapper extends LenientJarRemapper {
 
     private static final Logger LOGGER = LogManager.getLogger("Magma");

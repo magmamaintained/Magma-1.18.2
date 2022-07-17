@@ -155,7 +155,7 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
             }
         }
 
-        throw new ClassNotFoundException(name);
+        return super.loadClass(name, resolve);
     }
 
 

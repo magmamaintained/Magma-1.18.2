@@ -20,6 +20,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Hashtable;
 
+//Class Made by Arclight (Izzel)
 public class RemapSourceHandler extends URLStreamHandler {
 
     @Override

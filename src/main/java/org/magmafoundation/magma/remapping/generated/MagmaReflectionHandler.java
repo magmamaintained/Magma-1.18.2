@@ -29,6 +29,7 @@ import java.security.SecureClassLoader;
 import java.util.Enumeration;
 import java.util.StringJoiner;
 
+//Class Made by Arclight (Izzel)
 @SuppressWarnings("unused")
 public class MagmaReflectionHandler extends ClassLoader {
 
@@ -226,7 +227,7 @@ public class MagmaReflectionHandler extends ClassLoader {
     }
 
     // bukkit -> srg
-    public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader)  throws ClassNotFoundException {
+    public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
         try {
             String replace = remapper.mapType(cl.replace('.', '/')).replace('/', '.');
             return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
@@ -236,8 +237,9 @@ public class MagmaReflectionHandler extends ClassLoader {
                 String replace = cl.substring(0, i).replace('.', '/') + "$" + cl.substring(i + 1);
                 replace = remapper.mapType(replace).replace('/', '.').replace('$', '.');
                 return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
-            } else throw e;
+            };
         }
+        throw new ClassNotFoundException(cl);
     }
 
     // bukkit -> srg

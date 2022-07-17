@@ -26,6 +26,7 @@ import java.util.Set;
 
 import static org.magmafoundation.magma.remapping.MagmaRedirectAdapter.loadInt;
 
+//Class Made by Arclight (Izzel)
 @SuppressWarnings("unused")
 public class MagmaEnumExtender {
 

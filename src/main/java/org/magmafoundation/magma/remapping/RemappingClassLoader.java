@@ -2,6 +2,7 @@ package org.magmafoundation.magma.remapping;
 
 import cpw.mods.modlauncher.TransformingClassLoader;
 
+//Class Made by Arclight (Izzel)
 public interface RemappingClassLoader {
 
     ClassLoaderRemapper getRemapper();

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+//Class Made by Arclight (Izzel)
 public class MagmaInterfaceInvokerGen implements PluginTransformer {
 
     public static final MagmaInterfaceInvokerGen INSTANCE = new MagmaInterfaceInvokerGen();

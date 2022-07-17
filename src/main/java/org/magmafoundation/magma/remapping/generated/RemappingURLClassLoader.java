@@ -17,6 +17,7 @@ import java.security.CodeSource;
 import java.util.concurrent.Callable;
 import java.util.jar.Manifest;
 
+//Class Made by Arclight (Izzel)
 public class RemappingURLClassLoader extends URLClassLoader implements RemappingClassLoader {
 
     static {

@@ -13,6 +13,7 @@ import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Map;
 
+//Class Made by Arclight (Izzel)
 public class ClassLoaderAdapter implements PluginTransformer {
 
     public static final ClassLoaderAdapter INSTANCE = new ClassLoaderAdapter();
