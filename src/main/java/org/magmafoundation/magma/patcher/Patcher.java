@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma.remapping.patcher;
+package org.magmafoundation.magma.patcher;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
