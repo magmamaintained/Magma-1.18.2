@@ -26,6 +26,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -43,12 +44,26 @@ public class WorldEditPatcher extends Patcher {
     public byte[] transform(String className, byte[] basicClass) {
         switch (className) {
             case "com.sk89q.worldedit.bukkit.WorldEditPlugin":
-                System.setProperty("worldedit.bukkit.adapter", "com.sk89q.worldedit.bukkit.adapter.impl.Spigot_v1_18_R2");
+                System.setProperty("worldedit.bukkit.adapter", "com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R2.PaperweightAdapter");
                 return patchWorldEditPlugin(basicClass);
             case "com.sk89q.worldedit.bukkit.BukkitAdapter":
                 return patchBukkitAdapter(basicClass);
-            case "com.sk89q.worldedit.bukkit.adapter.impl.Spigot_v1_18_R2":
+            case "com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R2.PaperweightAdapter":
                 return patchSpigot_v1_18_R2(basicClass);
+            case "com.sk89q.worldedit.bukkit.adapter.Refraction":
+                return patchRefraction(basicClass);
+        }
+        return basicClass;
+    }
+
+    private byte[] patchRefraction(byte[] basicClass) {
+        try {
+            Class<?> clazz = Class.forName("com.sk89q.worldedit.bukkit.adapter.Refraction");
+            Field field = clazz.getDeclaredField("IS_MOJANG_MAPPED");
+            field.setAccessible(true);
+            field.set(null, false);
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
         return basicClass;
     }
