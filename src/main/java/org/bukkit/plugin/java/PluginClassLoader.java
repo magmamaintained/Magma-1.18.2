@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 import org.magmafoundation.magma.remapping.MagmaRemapper;
 import org.magmafoundation.magma.remapping.RemappingClassLoader;
+import org.magmafoundation.magma.remapping.patcher.PatcherManager;
 import org.magmafoundation.magma.util.JavaPluginLoaderBridge;
 
 import java.io.File;
@@ -186,6 +187,13 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
                         try (InputStream is = connection.getInputStream()) {
                             byte[] classBytes = ByteStreams.toByteArray(is);
                             classBytes = loader.server.getUnsafe().processClass(description, path, classBytes);
+
+                            // Magma start - Plugin Patcher
+                            if (PatcherManager.getPatchByName(description.getName()) != null) {
+                                classBytes = PatcherManager.getPatchByName(description.getName()).transform(name.replace("/", "."), classBytes);
+                            }
+                            // Magma end
+
                             return classBytes;
                         }
                     };
