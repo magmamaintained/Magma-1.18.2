@@ -41,7 +41,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,11 +_,13 @@
+@@ -45,859 +_,1199 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -55,7 +55,10 @@
  import net.minecraft.world.level.entity.EntityTypeTest;
  import net.minecraft.world.level.entity.LevelEntityGetter;
  import net.minecraft.world.level.gameevent.GameEvent;
-@@ -59,845 +_,1179 @@
+ import net.minecraft.world.level.levelgen.Heightmap;
++import net.minecraft.world.level.levelgen.WorldGenSettings;
+ import net.minecraft.world.level.lighting.LevelLightEngine;
+ import net.minecraft.world.level.material.FluidState;
  import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
  import net.minecraft.world.level.storage.LevelData;
@@ -319,6 +322,7 @@
 +        environment = env;
 +    }
 +
++
 +    protected Level(WritableLevelData p_204149_, ResourceKey<Level> p_204150_, Holder<DimensionType> p_204151_, Supplier<ProfilerFiller> p_204152_, boolean p_204153_, boolean p_204154_, long p_204155_) {
 +        super( Level.class );
 +        this.spigotConfig = new org.spigotmc.SpigotWorldConfig( ((ServerLevelData) p_204149_).m_5462_() ); // Spigot
@@ -331,9 +335,11 @@
 +        if (generator == null) {
 +            generator = getCraftServer().getGenerator( p_204150_.getRegistryName().m_135827_() );
 +        }
++
 +        if (environment == null) {
-+            environment = ForgeInject.environment.get( getTypeKey() );
++            environment = ForgeInject.environment.getOrDefault(WorldGenSettings.m_190052_(p_204150_), World.Environment.CUSTOM );
 +        }
++
 +        // CraftBukkit end
 +        this.f_46446_ = p_204152_;
 +        this.f_46442_ = p_204149_;
