@@ -9,6 +9,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.SimplePluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.patcher.Patcher;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 import org.magmafoundation.magma.remapping.MagmaRemapper;
 import org.magmafoundation.magma.remapping.RemappingClassLoader;
@@ -48,6 +50,8 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
     private IllegalStateException pluginState;
     private final Set<String> seenIllegalAccess = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private final Patcher patcher; // Magma - Plugin Patcher
+
     static {
         ClassLoader.registerAsParallelCapable();
     }
@@ -65,6 +69,7 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         this.jar = new JarFile(file);
         this.manifest = jar.getManifest();
         this.url = file.toURI().toURL();
+        this.patcher = Magma.getInstance().getPatcherManager().getPatchByName(description.getName());
 
         try {
             Class<?> jarClass;
@@ -189,8 +194,8 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
                             classBytes = loader.server.getUnsafe().processClass(description, path, classBytes);
 
                             // Magma start - Plugin Patcher
-                            if (PatcherManager.getPatchByName(description.getName()) != null) {
-                                classBytes = PatcherManager.getPatchByName(description.getName()).transform(name.replace("/", "."), classBytes);
+                            if (this.patcher != null) {
+                                classBytes = this.patcher.transform(name.replace("/", "."), classBytes);
                             }
                             // Magma end
 
