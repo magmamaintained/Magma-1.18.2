@@ -20,7 +20,7 @@ package org.magmafoundation.magma.patcher;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.reflections.Reflections;
+import org.magmafoundation.magma.patcher.impl.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,17 +43,8 @@ public class PatcherManager {
     }
 
     private void initPatches() {
-        Reflections reflections = new Reflections(Patcher.class.getPackage().getName());
-
-        reflections.getTypesAnnotatedWith(Patcher.PatcherInfo.class).forEach(aClass -> {
-            try {
-                Patcher patcher = (Patcher) aClass.newInstance();
-                patcherList.add(patcher);
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });
-
+        //TODO: find a way to fix Reflections not working with Magma 1.18
+        patcherList.add(new WorldEditPatcher());
     }
 
     public List<Patcher> getPatcherList() {
