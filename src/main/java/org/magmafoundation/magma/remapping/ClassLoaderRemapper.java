@@ -22,6 +22,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.spongepowered.asm.service.MixinService;
 
 import java.io.File;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -35,9 +36,16 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.jar.JarFile;
 
-//Class Made by Arclight (Izzel)
+/**
+ * ClassLoaderAdapter
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName ClassLoaderAdapter
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/ClassLoaderRepo.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public class ClassLoaderRemapper extends LenientJarRemapper {
 
     private static final Logger LOGGER = LogManager.getLogger("Magma");
@@ -278,18 +286,6 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
         return Maps.immutableEntry(owner, mapped);
     }
 
-    private boolean isSecureJar(JarFile jarFile) {
-        return this.secureJarInfo.computeIfAbsent(jarFile.getName(), key ->
-            jarFile.stream().anyMatch(it -> {
-                if (it.isDirectory()) return false;
-                String name = it.getName().toUpperCase(Locale.ROOT);
-                return name.startsWith("META-INF") && (name.endsWith(".DSA") ||
-                    name.endsWith(".RSA") ||
-                    name.endsWith(".EC") ||
-                    name.endsWith(".SF"));
-            }));
-    }
-
     public Product2<byte[], CodeSource> remapClass(String className, Callable<byte[]> byteSource, URLConnection connection) throws ClassNotFoundException {
         try {
                 byte[] bytes = remapClassFile(byteSource.call(), GlobalClassRepo.INSTANCE);
@@ -348,8 +344,8 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
             Class<?> cl = Unsafe.defineClass(name.replace('/', '.'), bytes, 0, bytes.length, getClass().getClassLoader(), getClass().getProtectionDomain());
             Unsafe.ensureClassInitialized(cl);
 
-            Field remapper = cl.getField("remapper");
-            remapper.set(null, this);
+            VarHandle remapper = Unsafe.lookup().findStaticVarHandle(cl, "remapper", ClassLoaderRemapper.class);
+            remapper.set(this);
             return cl;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -399,7 +395,6 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
         private String getSuper(final String typeName) {
             ClassNode node = GlobalClassRepo.INSTANCE.findClass(typeName);
             if (node == null) {
-                LOGGER.warn("Failed to find class {}", typeName);
                 return "java/lang/Object";
             }
             return MagmaRemapper.getNmsMapper().map(node.superName);
@@ -466,7 +461,6 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to dump class " + new ClassReader(bytes).getClassName(), e);
         }
         return bytes;
     }

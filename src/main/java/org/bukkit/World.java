@@ -2697,7 +2697,7 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
         @Deprecated
         @Nullable
         public static Environment getEnvironment(int id) {
-            return lookup.get(id);
+            return lookup.getOrDefault(id, Environment.CUSTOM);
         }
 
         static {

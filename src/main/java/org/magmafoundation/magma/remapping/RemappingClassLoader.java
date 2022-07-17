@@ -2,7 +2,15 @@ package org.magmafoundation.magma.remapping;
 
 import cpw.mods.modlauncher.TransformingClassLoader;
 
-//Class Made by Arclight (Izzel)
+/**
+ * RemappingClassLoader
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName RemappingClassLoader
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/RemappingClassLoader.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public interface RemappingClassLoader {
 
     ClassLoaderRemapper getRemapper();

@@ -17,7 +17,15 @@ import java.security.CodeSource;
 import java.util.concurrent.Callable;
 import java.util.jar.Manifest;
 
-//Class Made by Arclight (Izzel)
+/**
+ * MagmaReflectionHandler
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName ArclightReflectionHandler
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/generated/RemappingURLClassLoader.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public class RemappingURLClassLoader extends URLClassLoader implements RemappingClassLoader {
 
     static {

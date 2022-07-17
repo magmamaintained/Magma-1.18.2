@@ -14,7 +14,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-//Class Made by Arclight (Izzel)
+/**
+ * GlobalClassRepo
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName GlobalClassRepo
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/GlobalClassRepo.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public class GlobalClassRepo implements ClassRepo {
 
     public static final GlobalClassRepo INSTANCE = new GlobalClassRepo();
