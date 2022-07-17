@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 import cpw.mods.modlauncher.EnumerationHelper;
 import io.izzel.tools.product.Product2;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.SimplePluginManager;
@@ -26,6 +25,7 @@ import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -42,7 +42,6 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
     private final JarFile jar;
     private final Manifest manifest;
     private final URL url;
-    private final ClassLoader libraryLoader;
     final JavaPlugin plugin;
     private JavaPlugin pluginInit;
     private IllegalStateException pluginState;
@@ -53,7 +52,6 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
     }
 
     private ClassLoaderRemapper remapper;
-
 
     PluginClassLoader(@NotNull final JavaPluginLoader loader, @Nullable final ClassLoader parent, @NotNull final PluginDescriptionFile description, @NotNull final File dataFolder, @NotNull final File file, @Nullable ClassLoader libraryLoader) throws IOException, InvalidPluginException, MalformedURLException {
         super(new URL[] {file.toURI().toURL()}, parent);
@@ -66,7 +64,6 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         this.jar = new JarFile(file);
         this.manifest = jar.getManifest();
         this.url = file.toURI().toURL();
-        this.libraryLoader = libraryLoader;
 
         try {
             Class<?> jarClass;
@@ -114,6 +111,7 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         tmp[0] = findResources(name);
         return EnumerationHelper.merge(tmp[0], tmp[1]);
     }
+
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         return loadClass0(name, resolve, true, true);
@@ -128,13 +126,6 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
                 return result;
             }
         } catch (ClassNotFoundException ex) {
-        }
-
-        if (checkLibraries && libraryLoader != null) {
-            try {
-                return libraryLoader.loadClass(name);
-            } catch (ClassNotFoundException ex) {
-            }
         }
 
         if (checkGlobal) {
@@ -167,8 +158,13 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         throw new ClassNotFoundException(name);
     }
 
+
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        return findClass(name, true);
+    }
+
+    Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException {
         if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
             throw new ClassNotFoundException(name);
         }
@@ -177,8 +173,9 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         if (result == null) {
             String path = name.replace('.', '/').concat(".class");
             URL url = this.findResource(path);
+            JarEntry entry = jar.getJarEntry(path);
 
-            if (url != null) {
+            if (url != null && entry != null) {
 
                 URLConnection connection;
                 Callable<byte[]> byteSource;
@@ -188,8 +185,7 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
                     byteSource = () -> {
                         try (InputStream is = connection.getInputStream()) {
                             byte[] classBytes = ByteStreams.toByteArray(is);
-                            classBytes = MagmaRemapper.SWITCH_TABLE_FIXER.apply(classBytes);
-                            classBytes = Bukkit.getUnsafe().processClass(description, path, classBytes);
+                            classBytes = loader.server.getUnsafe().processClass(description, path, classBytes);
                             return classBytes;
                         }
                     };

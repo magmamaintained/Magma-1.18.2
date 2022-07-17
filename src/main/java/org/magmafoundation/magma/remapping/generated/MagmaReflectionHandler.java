@@ -2,11 +2,13 @@ package org.magmafoundation.magma.remapping.generated;
 
 import io.izzel.arclight.api.Unsafe;
 import org.magmafoundation.magma.Magma;
-import org.magmafoundation.magma.remapping.MagmaRedirectAdapter;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 import org.magmafoundation.magma.remapping.GlobalClassRepo;
+import org.magmafoundation.magma.remapping.MagmaRedirectAdapter;
 import org.magmafoundation.magma.remapping.RemappingClassLoader;
+import org.magmafoundation.magma.util.ASMUtils;
 import org.magmafoundation.magma.util.Enumerations;
+import org.magmafoundation.magma.util.ReflectionUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 
@@ -220,21 +222,27 @@ public class MagmaReflectionHandler extends ClassLoader {
 
     // bukkit -> srg
     public static Class<?> redirectClassForName(String cl) throws ClassNotFoundException {
-        return redirectClassForName(cl, true, Unsafe.getCallerClass().getClassLoader());
+        return redirectClassForName(cl, true, ReflectionUtils.getCallerClassLoader());
     }
 
     // bukkit -> srg
-    public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
+    public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader)  {
         try {
             String replace = remapper.mapType(cl.replace('.', '/')).replace('/', '.');
-            return Class.forName(replace, initialize, classLoader);
+            return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
         } catch (ClassNotFoundException e) { // nested/inner class
             int i = cl.lastIndexOf('.');
             if (i > 0) {
                 String replace = cl.substring(0, i).replace('.', '/') + "$" + cl.substring(i + 1);
                 replace = remapper.mapType(replace).replace('/', '.').replace('$', '.');
-                return Class.forName(replace, initialize, classLoader);
-            } else throw e;
+                try {
+                    return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
+                } catch (ClassNotFoundException ex) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
     }
 

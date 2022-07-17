@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-import com.google.common.io.ByteStreams;
 import io.izzel.arclight.api.Unsafe;
 import io.izzel.tools.product.Product;
 import io.izzel.tools.product.Product2;
@@ -292,28 +291,6 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
 
     public Product2<byte[], CodeSource> remapClass(String className, Callable<byte[]> byteSource, URLConnection connection) throws ClassNotFoundException {
         try {
-            MagmaClassCache.CacheSegment segment = MagmaClassCache.instance().makeSegment(connection);
-            Optional<byte[]> optional = segment.findByName(className);
-            if (optional.isPresent()) {
-                byte[] bytes = optional.get();
-                ClassWriter cw = new ClassWriter(0);
-                new ClassReader(bytes).accept(new ClassRemapper(cw, generatedHandlerAdapter), 0);
-                URL url;
-                CodeSigner[] signers;
-                if (connection instanceof JarURLConnection) {
-                    url = ((JarURLConnection) connection).getJarFileURL();
-                    if (isSecureJar(((JarURLConnection) connection).getJarFile())) {
-                        ByteStreams.exhaust(connection.getInputStream()); // must read before asking signers
-                        signers = ((JarURLConnection) connection).getJarEntry().getCodeSigners();
-                    } else {
-                        signers = null;
-                    }
-                } else {
-                    url = connection.getURL();
-                    signers = null;
-                }
-                return Product.of(cw.toByteArray(), new CodeSource(url, signers));
-            } else {
                 byte[] bytes = remapClassFile(byteSource.call(), GlobalClassRepo.INSTANCE);
                 URL url;
                 CodeSigner[] signers;
@@ -325,7 +302,6 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
                     signers = null;
                 }
                 return Product.of(bytes, new CodeSource(url, signers));
-            }
         } catch (Exception e) {
             throw new ClassNotFoundException(className, e);
         }
@@ -350,7 +326,6 @@ public class ClassLoaderRemapper extends LenientJarRemapper {
             transformer.handleClass(node, this);
         }
 
-        // 有的插件的编译器奇奇怪怪的，所以在这里要重新计算 frame
         ClassWriter wr = new PluginClassWriter(node.version == Opcodes.V1_5 ? ClassWriter.COMPUTE_MAXS : ClassWriter.COMPUTE_FRAMES);
         node.accept(wr);
 
