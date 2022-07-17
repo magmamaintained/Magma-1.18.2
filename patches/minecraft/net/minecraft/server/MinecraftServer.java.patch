@@ -120,7 +120,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2011 @@
+@@ -144,1693 +_,2015 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -151,6 +151,7 @@
 +import org.magmafoundation.magma.Metrics;
 +import org.magmafoundation.magma.forge.ForgeInject;
 +import org.magmafoundation.magma.helpers.ServerInitHelper;
++import org.magmafoundation.magma.patcher.PatcherManager;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -556,12 +557,15 @@
 +        }
 +
 +        //Magma start - add magma
-+        if(metrics == null){
++            //metrics
 +            metrics = new Metrics();
 +            // metrics.addCustomChart(new Metrics.SimplePie("number_of_mods", () -> String.valueOf(ServerAPI.getModSize()))); // Report how many mods are running // MAGMA TODO: Add Server API
-+        }
 +
-+        this.magma = new Magma();
++            magma = Magma.getInstance();
++
++            //init patcher
++            magma.setPatcherManager(new PatcherManager());
++            magma.getPatcherManager().init();
 +        //Magma end
 +
 +        try {

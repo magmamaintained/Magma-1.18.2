@@ -20,6 +20,7 @@ package org.magmafoundation.magma;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.magmafoundation.magma.patcher.PatcherManager;
 
 import static org.magmafoundation.magma.common.MagmaConstants.*;
 
@@ -30,8 +31,11 @@ import static org.magmafoundation.magma.common.MagmaConstants.*;
  * @since 28/06/2020 - 12:32 am
  */
 public class Magma {
-    private static Magma INSTANCE = new Magma();
+
     public static Logger LOGGER = LogManager.getLogger(Magma.class);
+
+    private static Magma INSTANCE = new Magma();
+    private PatcherManager patcherManager;
 
     public Magma() {
         INSTANCE = this;
@@ -63,5 +67,13 @@ public class Magma {
 
     public static String getNmsPrefix() {
         return NMS_PREFIX;
+    }
+
+    public PatcherManager getPatcherManager() {
+        return patcherManager;
+    }
+
+    public void setPatcherManager(PatcherManager patcherManager) {
+        this.patcherManager = patcherManager;
     }
 }
