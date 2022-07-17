@@ -10,7 +10,15 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 
-//Class Made by Arclight (Izzel)
+/**
+ * ClassLoaderRepo
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName ClassLoaderRepo
+ * @classFrom https://github.com/IzzelAliz/Arclight/tree/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public class ClassLoaderRepo implements ClassRepo {
 
     private final ClassLoader classLoader;

@@ -12,7 +12,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-//Class Made by Arclight (Izzel)
+/**
+ * MagmaInterfaceInvokerGen
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName ArclightInterfaceInvokerGen
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/ArclightInterfaceInvokerGen.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public class MagmaInterfaceInvokerGen implements PluginTransformer {
 
     public static final MagmaInterfaceInvokerGen INSTANCE = new MagmaInterfaceInvokerGen();

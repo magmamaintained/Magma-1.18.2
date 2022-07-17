@@ -12,7 +12,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-//Class Made by Arclight (Izzel)
+/**
+ * PluginInheritanceProvider
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName PluginInheritanceProvider
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/PluginInheritanceProvider.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
 public class PluginInheritanceProvider implements InheritanceProvider {
 
     private static final Map<String, Collection<String>> SHARED_INHERITANCE_MAP = new ConcurrentHashMap<>();

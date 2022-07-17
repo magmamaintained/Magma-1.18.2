@@ -20,7 +20,16 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Hashtable;
 
-//Class Made by Arclight (Izzel)
+/**
+ * RemapSourceHandler
+ *
+ * @author Mainly by IzzelAliz and modified Malcolm
+ * @originalClassName RemapSourceHandler
+ * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-common/src/main/java/io/izzel/arclight/common/mod/util/remapper/resource/RemapSourceHandler.java">Click here to get to github</a>
+ *
+ * This classes is modified by Magma to support the Magma software.
+ */
+
 public class RemapSourceHandler extends URLStreamHandler {
 
     @Override
