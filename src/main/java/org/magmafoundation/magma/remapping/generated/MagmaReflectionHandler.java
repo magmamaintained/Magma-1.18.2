@@ -226,7 +226,7 @@ public class MagmaReflectionHandler extends ClassLoader {
     }
 
     // bukkit -> srg
-    public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader)  {
+    public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader)  throws ClassNotFoundException {
         try {
             String replace = remapper.mapType(cl.replace('.', '/')).replace('/', '.');
             return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
@@ -235,14 +235,8 @@ public class MagmaReflectionHandler extends ClassLoader {
             if (i > 0) {
                 String replace = cl.substring(0, i).replace('.', '/') + "$" + cl.substring(i + 1);
                 replace = remapper.mapType(replace).replace('/', '.').replace('$', '.');
-                try {
-                    return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
-                } catch (ClassNotFoundException ex) {
-                    return null;
-                }
-            } else {
-                return null;
-            }
+                return Class.forName(ASMUtils.toClassName(replace), initialize, classLoader);
+            } else throw e;
         }
     }
 
