@@ -275,7 +275,8 @@ public class MagmaReflectionHandler extends ClassLoader {
     // bukkit -> srg
     public static Object[] handleClassGetMethod(Class<?> cl, String bukkitName, Class<?>... pTypes) {
         Method method = remapper.tryMapMethodToSrg(cl, bukkitName, pTypes);
-        return new Object[]{cl, method == null ? bukkitName : method.getName(), pTypes};
+        String methodName = method == null ? bukkitName : method.getName();
+        return new Object[]{cl, methodName, pTypes};
     }
 
     // bukkit -> srg

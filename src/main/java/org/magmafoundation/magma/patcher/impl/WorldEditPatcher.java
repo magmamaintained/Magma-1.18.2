@@ -43,11 +43,11 @@ public class WorldEditPatcher extends Patcher {
     public byte[] transform(String className, byte[] basicClass) {
         switch (className) {
             case "com.sk89q.worldedit.bukkit.WorldEditPlugin":
-                System.setProperty("worldedit.bukkit.adapter", "com.sk89q.worldedit.bukkit.adapter.impl.Spigot_v1_18_R2");
+                System.setProperty("worldedit.bukkit.adapter", "com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R2.PaperweightAdapter");
                 return patchWorldEditPlugin(basicClass);
             case "com.sk89q.worldedit.bukkit.BukkitAdapter":
                 return patchBukkitAdapter(basicClass);
-            case "com.sk89q.worldedit.bukkit.adapter.impl.Spigot_v1_18_R2":
+            case "com.sk89q.worldedit.bukkit.adapter.impl.v1_18_R2.PaperweightAdapter":
                 return patchSpigot_v1_18_R2(basicClass);
         }
         return basicClass;
