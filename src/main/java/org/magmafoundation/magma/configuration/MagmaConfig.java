@@ -61,6 +61,8 @@ public class MagmaConfig extends ConfigBase {
     // public final StringValue serverBrand = new StringValue(this, "magma.advanced.override-brand-name", "Spigot", "Value to use for new brand string");
 
     // public final StringValue serverBrandType = new StringValue(this, "magma.advanced.server-type", "FML", "Set to FML to show forge icon or BUKKIT to show bukkit icon (FML is default)");
+    //=============================Debug SETTINGS==============================
+    public final BooleanValue debugPrintInjections = new BooleanValue(this, "debug.print-bukkit-injections", false, "Prints Forge Bukkit Injections");
 
     private final String HEADER = "This is the main configuration file for Magma.\n" +
         "\n" +
