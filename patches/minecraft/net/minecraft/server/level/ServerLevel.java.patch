@@ -100,7 +100,7 @@
  import net.minecraft.world.level.biome.Biome;
  import net.minecraft.world.level.block.Block;
  import net.minecraft.world.level.block.Blocks;
-@@ -116,13 +_,9 @@
+@@ -116,17 +_,14 @@
  import net.minecraft.world.level.chunk.LevelChunkSection;
  import net.minecraft.world.level.chunk.storage.EntityStorage;
  import net.minecraft.world.level.dimension.DimensionType;
@@ -116,6 +116,11 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.gameevent.GameEventListenerRegistrar;
  import net.minecraft.world.level.gameevent.vibrations.VibrationPath;
+ import net.minecraft.world.level.levelgen.Heightmap;
++import net.minecraft.world.level.levelgen.WorldGenSettings;
+ import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
+ import net.minecraft.world.level.levelgen.structure.BoundingBox;
+ import net.minecraft.world.level.levelgen.structure.StructureCheck;
 @@ -138,6 +_,7 @@
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
  import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -152,7 +157,7 @@
  public class ServerLevel extends Level implements WorldGenLevel {
     public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
     private static final int f_184049_ = 12000;
-@@ -181,23 +_,40 @@
+@@ -181,23 +_,39 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -172,7 +177,6 @@
 +   public LevelChunk getChunkIfLoaded(int x, int z) {
 +      return this.f_8547_.m_62227_(x, z, false);
 +   }
-+
  
     public ServerLevel(MinecraftServer p_203762_, Executor p_203763_, LevelStorageSource.LevelStorageAccess p_203764_, ServerLevelData p_203765_, ResourceKey<Level> p_203766_, Holder<DimensionType> p_203767_, ChunkProgressListener p_203768_, ChunkGenerator p_203769_, boolean p_203770_, long p_203771_, List<CustomSpawner> p_203772_, boolean p_203773_) {
        super(p_203765_, p_203766_, p_203767_, p_203762_::m_129905_, false, p_203770_, p_203771_);
@@ -626,19 +630,6 @@
        explosion.m_46061_();
        explosion.m_46075_(false);
        if (p_8661_ == Explosion.BlockInteraction.NONE) {
-@@ -934,6 +_,12 @@
-       return this.f_184047_;
-    }
- 
-+   // Magma stub
-+   @Override
-+   public ResourceKey<LevelStem> getTypeKey() {
-+      return null;
-+   }
-+
-    @Nonnull
-    public MinecraftServer m_142572_() {
-       return this.f_8548_;
 @@ -956,12 +_,21 @@
     }
  
