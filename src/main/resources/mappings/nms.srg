@@ -8582,8 +8582,6 @@ net/minecraft/util/ThreadingDetector net/minecraft/util/ThreadingDetector
     org.slf4j.Logger f_199407_ -> a
     java.lang.String f_199408_ -> b
     java.util.concurrent.Semaphore f_199409_ -> c
-    java.util.concurrent.Semaphore f_199409_ -> lock
-    java.util.concurrent.Semaphore lock -> f_199409_
     java.util.concurrent.locks.Lock f_199410_ -> d
     java.lang.Thread f_199411_ -> e
     net.minecraft.ReportedException f_199412_ -> f
@@ -14985,8 +14983,6 @@ net/minecraft/server/level/PlayerChunkMap net/minecraft/server/level/ChunkMap
 	b (I)Lnet/minecraft/world/level/chunk/ChunkStatus; m_203058_
 	b (IIIII)Z m_183828_
 	b (J)Lnet/minecraft/server/level/PlayerChunk; m_140327_
-	getVisibleChunkIfPresent (J)Lnet/minecraft/server/level/PlayerChunk; m_140327_
-	m_140327_ (J)Lnet/minecraft/server/level/PlayerChunk; getVisibleChunkIfPresent
 	b (Lcom/mojang/datafixers/util/Either;)Lcom/mojang/datafixers/util/Either; m_212877_
 	b (Ljava/util/List;)Lnet/minecraft/world/level/chunk/Chunk; m_212883_
 	b (Ljava/util/function/BooleanSupplier;)V m_140353_
@@ -21098,14 +21094,8 @@ net/minecraft/world/level/chunk/ChunkSection net/minecraft/world/level/chunk/Lev
     int f_187994_ -> d
     int f_62968_ -> e
     short f_62969_ -> f
-    short nonEmptyBlockCount -> f_62969_
-    short f_62969_ -> nonEmptyBlockCount
     short f_62970_ -> g
-    short tickingBlockCount -> f_62970_
-    short f_62970_ -> tickingBlockCount
     short f_62971_ -> h
-    short tickingFluidCount -> f_62971_
-    short f_62971_ -> tickingFluidCount
     net.minecraft.world.level.chunk.DataPaletteBlock f_62972_ -> i
     net.minecraft.world.level.chunk.DataPaletteBlock f_187995_ -> j
 	a ()V m_62981_
@@ -29847,12 +29837,8 @@ net/minecraft/world/level/chunk/DataPaletteBlock net/minecraft/world/level/chunk
     net.minecraft.world.level.chunk.DataPaletteExpandable f_63070_ -> b
     net.minecraft.core.Registry f_63071_ -> c
     net.minecraft.world.level.chunk.DataPaletteBlock$c f_188032_ -> d
-    net.minecraft.world.level.chunk.DataPaletteBlock$c data -> f_188032_
-    net.minecraft.world.level.chunk.DataPaletteBlock$c f_188032_ -> data
     net.minecraft.world.level.chunk.DataPaletteBlock$e f_188033_ -> e
     net.minecraft.util.ThreadingDetector f_199441_ -> f
-    net.minecraft.util.ThreadingDetector f_199441_ -> threadingDetector
-    net.minecraft.util.ThreadingDetector threadingDetector -> f_199441_
 	a ()V m_63084_
 	a (I)Ljava/lang/Object; m_63085_
 	a (III)Ljava/lang/Object; m_63087_
@@ -29896,11 +29882,7 @@ net/minecraft/world/level/chunk/DataPaletteBlock$b net/minecraft/world/level/chu
 net/minecraft/world/level/chunk/DataPaletteBlock$c net/minecraft/world/level/chunk/PalettedContainer$Data
     net.minecraft.world.level.chunk.DataPaletteBlock$a f_188100_ -> a
     net.minecraft.util.DataBits f_188101_ -> b
-    net.minecraft.util.DataBits storage -> f_188101_
-    net.minecraft.util.DataBits f_188101_ -> storage
     net.minecraft.world.level.chunk.DataPalette f_188102_ -> c
-    net.minecraft.world.level.chunk.DataPalette palette -> f_188102_
-    net.minecraft.world.level.chunk.DataPalette f_188102_ -> palette
 	a ()I m_188107_
 	a (Lnet/minecraft/network/PacketDataSerializer;)V m_188114_
 	a (Lnet/minecraft/world/level/chunk/DataPalette;Lnet/minecraft/util/DataBits;)V m_188111_
