@@ -41,7 +41,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1199 @@
+@@ -45,859 +_,1202 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -317,7 +317,10 @@
 +        return (CraftServer) Bukkit.getServer();
 +    }
 +
-+    public abstract ResourceKey<LevelStem> getTypeKey();
++    //Magma - remove abstract modifier to fix abstract method error
++    public ResourceKey<LevelStem> getTypeKey() {
++        return WorldGenSettings.m_190052_(typeKey);
++    }
 +
 +    public static void setGeneratorAndEnv(ChunkGenerator gen, World.Environment env) {
 +        generator = gen;
