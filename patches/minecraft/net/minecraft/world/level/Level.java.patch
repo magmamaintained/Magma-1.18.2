@@ -368,7 +368,7 @@
 +        this.f_46420_ = new BiomeManager( this, p_204155_ );
 +        this.f_46424_ = p_204154_;
 +        // CraftBukkit start
-+        m_6857_().world = (ServerLevel) this;
++        m_6857_().world = this; //Magma - fix ClassCastException
 +        // From PlayerList.setPlayerFileData
 +        m_6857_().m_61929_( new BorderChangeListener() {
 +            @Override
