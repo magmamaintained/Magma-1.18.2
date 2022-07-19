@@ -157,7 +157,7 @@
  public class ServerLevel extends Level implements WorldGenLevel {
     public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
     private static final int f_184049_ = 12000;
-@@ -181,23 +_,42 @@
+@@ -181,23 +_,39 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -177,13 +177,10 @@
 +   public LevelChunk getChunkIfLoaded(int x, int z) {
 +      return this.f_8547_.m_62227_(x, z, false);
 +   }
-+
-+   private ResourceKey<Level> toTypeKey;
  
     public ServerLevel(MinecraftServer p_203762_, Executor p_203763_, LevelStorageSource.LevelStorageAccess p_203764_, ServerLevelData p_203765_, ResourceKey<Level> p_203766_, Holder<DimensionType> p_203767_, ChunkProgressListener p_203768_, ChunkGenerator p_203769_, boolean p_203770_, long p_203771_, List<CustomSpawner> p_203772_, boolean p_203773_) {
        super(p_203765_, p_203766_, p_203767_, p_203762_::m_129905_, false, p_203770_, p_203771_);
 +      convertable = p_203764_;
-+      this.toTypeKey = p_203766_;
 +      this.pvpMode = p_203762_.m_129799_();
 +      uuid = WorldUUID.getUUID(p_203764_.f_78271_.toFile());
 +      // CraftBukkit end
@@ -202,7 +199,7 @@
           return p_203762_.m_129783_().m_8895_();
        });
        this.f_8552_ = new PortalForcer(this);
-@@ -223,7 +_,16 @@
+@@ -223,7 +_,15 @@
        }
  
        this.f_143245_ = new SleepStatus();
@@ -211,7 +208,6 @@
 +      // CraftBukkit start
 +      this.world = new CraftWorld((ServerLevel) this, generator, biomeProvider, environment);
 +      m_6857_().world = this;
-+      this.getCraftServer().addWorld(this.world);
 +      // CraftBukkit end
     }
 +
@@ -634,19 +630,6 @@
        explosion.m_46061_();
        explosion.m_46075_(false);
        if (p_8661_ == Explosion.BlockInteraction.NONE) {
-@@ -934,6 +_,12 @@
-       return this.f_184047_;
-    }
- 
-+   // Magma stub
-+   @Override
-+   public ResourceKey<LevelStem> getTypeKey() {
-+      return WorldGenSettings.m_190052_(toTypeKey);
-+   }
-+
-    @Nonnull
-    public MinecraftServer m_142572_() {
-       return this.f_8548_;
 @@ -956,12 +_,21 @@
     }
  
