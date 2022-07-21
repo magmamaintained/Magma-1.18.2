@@ -63,7 +63,7 @@ ext {
     GIT_INFO = gradleutils.gitInfo
     FORGE_VERSION = '40.1.54'
     MAGMA_VERSION = "1.18.2-$FORGE_VERSION-" + versioning.info.commit.substring(0, 8) // Use 8 characters for the commit hash
-    VERSION = "1.18.2-$FORGE_VERSION"
+     VERSION = "1.18.2-$FORGE_VERSION"
 
     SPECIAL_SOURCE = 'net.md-5:SpecialSource:1.10.0'
     BINPATCH_TOOL = 'net.minecraftforge:binarypatcher:1.0.12:fatjar'
