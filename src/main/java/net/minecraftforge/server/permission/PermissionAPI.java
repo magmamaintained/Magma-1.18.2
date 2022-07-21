@@ -20,6 +20,8 @@ import net.minecraftforge.server.permission.nodes.PermissionDynamicContext;
 import net.minecraftforge.server.permission.nodes.PermissionNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.craftbukkit.commnd.permission.BukkitPermissionHandler;
 
 import javax.annotation.Nullable;
@@ -105,8 +107,8 @@ public final class PermissionAPI
 
         PermissionAPI.activeHandler = null;
 
+
         PermissionGatherEvent.Handler handlerEvent = new PermissionGatherEvent.Handler();
-        handlerEvent.addPermissionHandler(BukkitPermissionHandler.IDENTIFIER, BukkitPermissionHandler::new);
         MinecraftForge.EVENT_BUS.post(handlerEvent);
         Map<ResourceLocation, IPermissionHandlerFactory> availableHandlers = handlerEvent.getAvailablePermissionHandlerFactories();
 
@@ -130,6 +132,11 @@ public final class PermissionAPI
                 LOGGER.warn("Identifier for permission handler {} does not match registered one {}", activeHandler.getIdentifier(), selectedPermissionHandler);
 
             LOGGER.info("Successfully initialized permission handler {}", PermissionAPI.activeHandler.getIdentifier());
+
+            if(MagmaConfig.instance.forgeBukkitPermissionHandlerEnable.getValues()){
+                activeHandler = new BukkitPermissionHandler(activeHandler);
+                Magma.LOGGER.info("[MAGMA] Forwarding forge permission[{}] to bukkit", activeHandler.getIdentifier());
+            }
         }
         catch (ResourceLocationException e)
         {

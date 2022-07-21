@@ -5,45 +5,58 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.permission.handler.IPermissionHandler;
 import net.minecraftforge.server.permission.nodes.PermissionDynamicContext;
 import net.minecraftforge.server.permission.nodes.PermissionNode;
+import net.minecraftforge.server.permission.nodes.PermissionTypes;
+import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.util.permissions.DefaultPermissions;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
-/**
- * Project: Magma
- * <p>
- * Author: Malcolm (M1lc0lm)
- * Date: 17.07.2022 - 14:00
- */
-public class BukkitPermissionHandler implements IPermissionHandler {
-    public static final ResourceLocation IDENTIFIER = new ResourceLocation("bukkit", "bukkit_handler");
-    ;
-    private final Set<PermissionNode<?>> registeredNodes = new HashSet<>();
-    private Set<PermissionNode<?>> immutableRegisteredNodes = Collections.unmodifiableSet(this.registeredNodes);
+public final class BukkitPermissionHandler implements IPermissionHandler {
 
-    //TODO: Add finish BukkitPermissionHandler
+    private final IPermissionHandler delegate;
 
-    public BukkitPermissionHandler(Collection<PermissionNode<?>> permissions) {
+    public BukkitPermissionHandler(IPermissionHandler delegate) {
+        Objects.requireNonNull(delegate, "permission handler");
+        this.delegate = delegate;
 
+        delegate.getRegisteredNodes().parallelStream().parallel().forEach(node -> {
+            if (node.getType() == PermissionTypes.BOOLEAN) {
+                DefaultPermissions.registerPermission(new Permission(node.getNodeName(), node.getDescription().getString(), PermissionDefault.FALSE), false);
+            }
+        });
     }
 
     @Override
     public ResourceLocation getIdentifier() {
-        return IDENTIFIER;
+        return new ResourceLocation("magma_permission_handler", "permission");
     }
 
     @Override
     public Set<PermissionNode<?>> getRegisteredNodes() {
-        return immutableRegisteredNodes;
+        return delegate.getRegisteredNodes();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getPermission(ServerPlayer player, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
-        return node.getDefaultResolver().resolve(player, player.getUUID(), context);
+        if (node.getType() == PermissionTypes.BOOLEAN) {
+            return (T) (Object) player.getBukkitEntity().hasPermission(node.getNodeName());
+        } else {
+            return delegate.getPermission(player, node, context);
+        }
     }
 
     @Override
-    public <T> T getOfflinePermission(UUID player, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
-        return node.getDefaultResolver().resolve(null, player, context);
+    public <T> T getOfflinePermission(UUID uuid, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
+        var player = Bukkit.getPlayer(uuid);
+        if (player != null && node.getType() == PermissionTypes.BOOLEAN) {
+            return (T) (Object) player.hasPermission(node.getNodeName());
+        } else {
+            return delegate.getOfflinePermission(uuid, node, context);
+        }
     }
-
 }
