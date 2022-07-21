@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit.v1_18_R2.util;
 
 import net.minecraft.world.entity.MobCategory;
 import org.bukkit.entity.SpawnCategory;
+import org.jetbrains.annotations.Nullable;
 
 public class CraftSpawnCategory {
 
@@ -43,6 +44,7 @@ public class CraftSpawnCategory {
         };
     }
 
+    @Nullable
     public static SpawnCategory toBukkit(MobCategory enumCreatureType) {
         return switch (enumCreatureType) {
             case MONSTER -> SpawnCategory.MONSTER;
@@ -53,10 +55,11 @@ public class CraftSpawnCategory {
             case WATER_AMBIENT -> SpawnCategory.WATER_AMBIENT;
             case UNDERGROUND_WATER_CREATURE -> SpawnCategory.WATER_UNDERGROUND_CREATURE;
             case MISC -> SpawnCategory.MISC;
-            default -> throw new UnsupportedOperationException("Unknown MobCategory " + enumCreatureType + " for SpawnCategory");
+            default -> null; //Magma - return null instead of throwing an exception
         };
     }
 
+    @Nullable
     public static MobCategory toNMS(SpawnCategory spawnCategory) {
         return switch (spawnCategory) {
             case MONSTER -> MobCategory.MONSTER;
@@ -67,7 +70,7 @@ public class CraftSpawnCategory {
             case WATER_AMBIENT -> MobCategory.WATER_AMBIENT;
             case WATER_UNDERGROUND_CREATURE -> MobCategory.UNDERGROUND_WATER_CREATURE;
             case MISC -> MobCategory.MISC;
-            default -> throw new UnsupportedOperationException("Unknown SpawnCategory " + spawnCategory + " for MobCategory");
+            default -> null; //Magma - return null instead of throwing an exception
         };
     }
 
