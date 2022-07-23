@@ -732,7 +732,7 @@
           }
        }
  
-@@ -535,150 +_,195 @@
+@@ -535,150 +_,199 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -980,7 +980,11 @@
 -         Vec3 vec3 = portalinfo.f_77676_.m_82520_(0.0D, -1.0D, 0.0D);
 -         return new PortalInfo(vec3, Vec3.f_82478_, 90.0F, 0.0F);
 +      PortalInfo portalinfo = super.m_7937_( p_8998_ );
-+      p_8998_ = (portalinfo == null) ? p_8998_ : portalinfo.world; //CraftBukkit
++      //Magma start - fix for null world in PortalInfo
++      p_8998_ = (portalinfo == null || portalinfo.world == null) ? p_8998_ : portalinfo.world; //CraftBukkit
++      if (portalinfo != null && portalinfo.world == null)
++         portalinfo.world = p_8998_;
++      //Magma end
 +      if (portalinfo != null && this.f_19853_.m_46472_() == Level.f_46428_ && p_8998_.m_46472_() == Level.f_46429_) {
 +         Vec3 vec3 = portalinfo.f_77676_.m_82520_( 0.0D, 0.0D, 0.0D );
 +         PortalInfo info = new PortalInfo( vec3, Vec3.f_82478_, 90.0F, 0.0F );
