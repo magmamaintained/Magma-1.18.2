@@ -48,6 +48,7 @@ import static org.magmafoundation.magma.common.MagmaConstants.*;
 public class MagmaStart {
 
     public static void main(String[] args) throws Exception {
+        String[] installerArgs = args;
         if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-noui"))) {
             BetterUI.setEnabled(false);
             args = remove(args, "-noui");
@@ -86,7 +87,7 @@ public class MagmaStart {
             forgeArgs.add(arg.split(" ")[1]);
         });
 
-        new MagmaInstaller();
+        new MagmaInstaller(Arrays.stream(installerArgs).toList());
 
         ServerInitHelper.init(launchArgs);
 

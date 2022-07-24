@@ -1,7 +1,7 @@
 package org.magmafoundation.magma.installer;
 
-import org.magmafoundation.magma.common.MagmaConstants;
 import org.magmafoundation.magma.MagmaStart;
+import org.magmafoundation.magma.common.MagmaConstants;
 import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.common.utils.MD5;
 
@@ -10,9 +10,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 
@@ -151,6 +150,51 @@ public abstract class AbstractMagmaInstaller {
             return false;
         } catch (IOException e) {
             return true;
+        }
+    }
+
+    protected void restartServer(List<String> arguments) throws Exception {
+        clearConsole();
+
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final File currentJar = new File(AbstractMagmaInstaller.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+        /* is it a jar file? */
+        if(!currentJar.getName().endsWith(".jar"))
+            return;
+
+        /* Build command: java -jar application.jar */
+        final ArrayList<String> command = new ArrayList<String>();
+        command.add(javaBin);
+        command.add("-jar");
+        command.add(currentJar.getPath());
+        arguments.parallelStream().forEach(command::add);
+
+        final ProcessBuilder builder = new ProcessBuilder(command);
+        System.out.println(Arrays.toString(builder.command().toArray()));
+        builder.inheritIO().start().waitFor();
+        Thread.sleep(2000);
+        System.exit(0);
+    }
+
+    private void clearConsole()
+    {
+        try
+        {
+            final String os = System.getProperty("os.name");
+
+            if (os.contains("Windows"))
+            {
+                Runtime.getRuntime().exec("cls");
+            }
+            else
+            {
+                Runtime.getRuntime().exec("clear");
+            }
+        }
+        catch (final Exception e)
+        {
+            //  Handle any exceptions.
         }
     }
 
