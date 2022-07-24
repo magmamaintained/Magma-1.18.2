@@ -52,7 +52,10 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     public final File mergedMapping = new File(mcpStart + "-mappings-merged.txt");
 
-    public MagmaInstaller() {
+    private List<String> arguments;
+
+    public MagmaInstaller(List<String> arguments) {
+        this.arguments = Objects.requireNonNullElseGet(arguments, ArrayList::new);
         try {
             downloadInternalLibraries();
             new Dependencies(mcVer, mcpVer, minecraft_server);
@@ -221,9 +224,8 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             fw.write(magmaMD5);
             fw.close();
         }
-        System.out.println("The server has been patched successfully, launch the server again to play.");
         TimeUnit.SECONDS.sleep(1);
-        System.exit(0);
+        restartServer(arguments);
     }
 
     private void purge() {
