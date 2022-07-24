@@ -25,7 +25,7 @@ public final class BukkitPermissionHandler implements IPermissionHandler {
 
         delegate.getRegisteredNodes().parallelStream().parallel().forEach(node -> {
             if (node.getType() == PermissionTypes.BOOLEAN) {
-                DefaultPermissions.registerPermission(new Permission(node.getNodeName(), node.getDescription().getString(), PermissionDefault.FALSE), false);
+                DefaultPermissions.registerPermission(new Permission(node.getNodeName(), (node.getDescription() == null ? "Default Description" : node.getDescription().getString()), PermissionDefault.FALSE), false);
             }
         });
     }

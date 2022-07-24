@@ -35,6 +35,20 @@ ext {
             'Implementation-Title':     'FML Loader',
             'Implementation-Version':   '1.0',
             'Implementation-Vendor':    'Forge'
+        ] as LinkedHashMap,
+        'org/magmafoundation/magma/': [
+                'Specification-Title'   : 'Magma Development Limited',
+                'Specification-Vendor'  : 'Magma Development Limited',
+                'Implementation-Title'  : "Magma",
+                'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
+                'Implementation-Vendor' : 'Magma Development Limited',
+        ] as LinkedHashMap,
+        'org/magmafoundation/magma/common/': [
+                'Specification-Title'   : 'Magma Development Limited',
+                'Specification-Vendor'  : 'Magma Development Limited',
+                'Implementation-Title'  : "Magma",
+                'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
+                'Implementation-Vendor' : 'Magma Development Limited',
         ] as LinkedHashMap
     ]
 }
