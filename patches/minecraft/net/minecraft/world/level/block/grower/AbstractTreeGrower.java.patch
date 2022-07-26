@@ -69,7 +69,7 @@
 +      } else if (worldgentreeabstract == TreeFeatures.f_195139_) {
 +         SaplingBlock.treeType = TreeType.AZALEA;
 +      } else {
-+         throw new IllegalArgumentException("Unknown tree generator " + worldgentreeabstract);
++         SaplingBlock.treeType = TreeType.MODDED; //Magma - default to modded
 +      }
 +   }
 +// CraftBukkit end
