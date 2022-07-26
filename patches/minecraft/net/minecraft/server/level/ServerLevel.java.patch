@@ -199,7 +199,7 @@
           return p_203762_.m_129783_().m_8895_();
        });
        this.f_8552_ = new PortalForcer(this);
-@@ -223,7 +_,15 @@
+@@ -223,7 +_,17 @@
        }
  
        this.f_143245_ = new SleepStatus();
@@ -209,6 +209,8 @@
 +      this.world = new CraftWorld((ServerLevel) this, generator, biomeProvider, environment);
 +      m_6857_().world = this;
 +      // CraftBukkit end
++
++      this.getCraftServer().addWorld(this.getWorld()); //Magma - add world to bukkit's world list
     }
 +
 +
