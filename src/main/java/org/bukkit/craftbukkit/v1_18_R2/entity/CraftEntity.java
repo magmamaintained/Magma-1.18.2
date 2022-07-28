@@ -211,6 +211,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                             return new CraftWitherSkeleton(server, (net.minecraft.world.entity.monster.WitherSkeleton) entity);
                         } else if (entity instanceof net.minecraft.world.entity.monster.Skeleton) {
                             return new CraftSkeleton(server, (net.minecraft.world.entity.monster.Skeleton) entity);
+                        } else {
+                            return new CraftCustomAbstractSkeleton(server, (net.minecraft.world.entity.monster.AbstractSkeleton) entity);
                         }
                     } else if (entity instanceof net.minecraft.world.entity.monster.Blaze) {
                         return new CraftBlaze(server, (net.minecraft.world.entity.monster.Blaze) entity);
