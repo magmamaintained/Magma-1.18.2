@@ -274,7 +274,7 @@
 +    // Spigot start
 +    private Stream<StructureSet> possibleStructureSetsSpigot() {
 +        return m_207969_().map( Holder::m_203334_ ).map( (structureset) -> {
-+            if (structureset.f_210004_() instanceof RandomSpreadStructurePlacement randomConfig) {
++            if (structureset.f_210004_() instanceof RandomSpreadStructurePlacement randomConfig && conf != null) {
 +                String name = f_207955_.m_7981_( structureset ).m_135815_();
 +                int seed = randomConfig.f_204976_();
 +

@@ -1076,7 +1076,7 @@
 -            }
 -
 -            this.f_8906_.m_141995_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
-+            serverlevel.set( portalinfo.world );
++            serverlevel.set(portalinfo.world == null ? p_9180_ : portalinfo.world);
 +            Entity e = teleporter.placeEntity( this, serverlevel.get(), p_9180_, this.m_146908_(), spawnPortal -> {//Forge: Start vanilla logic
 +               serverlevel.get().m_46473_().m_6180_( "moving" );
 +               if (serverlevel.get() == null) {
