@@ -1,9 +1,10 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.remapping.repos;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import net.md_5.specialsource.repo.ClassRepo;
+import org.magmafoundation.magma.remapping.handlers.PluginInheritanceProvider;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.service.MixinService;

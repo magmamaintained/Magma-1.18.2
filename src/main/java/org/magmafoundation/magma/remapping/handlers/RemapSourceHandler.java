@@ -1,11 +1,11 @@
-package org.magmafoundation.magma.remapping.resource;
+package org.magmafoundation.magma.remapping.handlers;
 
 import com.google.common.io.ByteStreams;
 import cpw.mods.modlauncher.ClassTransformer;
 import cpw.mods.modlauncher.TransformingClassLoader;
 import io.izzel.arclight.api.Unsafe;
 import org.magmafoundation.magma.remapping.MagmaRemapper;
-import org.magmafoundation.magma.remapping.GlobalClassRepo;
+import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
 import org.objectweb.asm.ClassReader;
 
 import java.io.ByteArrayInputStream;

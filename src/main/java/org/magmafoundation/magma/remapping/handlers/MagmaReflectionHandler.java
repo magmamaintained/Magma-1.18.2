@@ -1,11 +1,11 @@
-package org.magmafoundation.magma.remapping.generated;
+package org.magmafoundation.magma.remapping.handlers;
 
 import io.izzel.arclight.api.Unsafe;
 import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
-import org.magmafoundation.magma.remapping.GlobalClassRepo;
-import org.magmafoundation.magma.remapping.MagmaRedirectAdapter;
-import org.magmafoundation.magma.remapping.RemappingClassLoader;
+import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
+import org.magmafoundation.magma.remapping.adapters.MagmaRedirectAdapter;
+import org.magmafoundation.magma.remapping.loaders.RemappingClassLoader;
 import org.magmafoundation.magma.util.ASMUtils;
 import org.magmafoundation.magma.util.Enumerations;
 import org.magmafoundation.magma.util.ReflectionUtils;

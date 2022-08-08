@@ -1,4 +1,4 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.remapping.repos;
 
 import net.md_5.specialsource.repo.ClassRepo;
 import org.objectweb.asm.ClassReader;

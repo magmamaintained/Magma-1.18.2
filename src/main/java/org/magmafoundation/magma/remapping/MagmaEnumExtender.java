@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.magmafoundation.magma.remapping.MagmaRedirectAdapter.loadInt;
+import static org.magmafoundation.magma.remapping.adapters.MagmaRedirectAdapter.loadInt;
 
 /**
  * MagmaEnumExtender

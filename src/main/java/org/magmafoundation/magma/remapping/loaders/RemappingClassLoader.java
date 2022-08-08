@@ -1,6 +1,7 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.remapping.loaders;
 
 import cpw.mods.modlauncher.TransformingClassLoader;
+import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 
 /**
  * RemappingClassLoader

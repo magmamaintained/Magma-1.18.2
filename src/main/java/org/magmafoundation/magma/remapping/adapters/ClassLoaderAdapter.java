@@ -1,10 +1,14 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.remapping.adapters;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.magmafoundation.magma.Magma;
-import org.magmafoundation.magma.remapping.generated.RemappingURLClassLoader;
+import org.magmafoundation.magma.remapping.*;
+import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
+import org.magmafoundation.magma.remapping.loaders.RemappingClassLoader;
+import org.magmafoundation.magma.remapping.loaders.RemappingURLClassLoader;
+import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;

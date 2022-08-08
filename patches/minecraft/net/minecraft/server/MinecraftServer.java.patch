@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -10,52 +_,13 @@
+@@ -10,52 +_,12 @@
  import com.mojang.authlib.minecraft.MinecraftSessionService;
  import com.mojang.datafixers.DataFixer;
  import com.mojang.logging.LogUtils;
@@ -55,7 +55,6 @@
 +import jline.console.ConsoleReader;
 +import joptsimple.OptionSet;
 +import net.minecraft.*;
-+import net.minecraft.client.Minecraft;
  import net.minecraft.commands.CommandSource;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
@@ -120,7 +119,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2015 @@
+@@ -144,1693 +_,2016 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -149,6 +148,7 @@
 +import org.bukkit.event.server.ServerLoadEvent;
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.Metrics;
++import org.magmafoundation.magma.api.ServerAPI;
 +import org.magmafoundation.magma.forge.ForgeInject;
 +import org.magmafoundation.magma.helpers.ServerInitHelper;
 +import org.magmafoundation.magma.patcher.PatcherManager;
@@ -559,7 +559,7 @@
 +        //Magma start - add magma
 +            //metrics
 +            metrics = new Metrics();
-+            // metrics.addCustomChart(new Metrics.SimplePie("number_of_mods", () -> String.valueOf(ServerAPI.getModSize()))); // Report how many mods are running // MAGMA TODO: Add Server API
++            metrics.addCustomChart(new Metrics.SimplePie("number_of_mods", () -> String.valueOf(ServerAPI.getModSize()))); // Report how many mods are running // MAGMA TODO: Add Server API
 +
 +            magma = Magma.getInstance();
 +
