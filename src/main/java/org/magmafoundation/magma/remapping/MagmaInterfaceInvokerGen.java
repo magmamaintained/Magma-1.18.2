@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import net.md_5.specialsource.provider.InheritanceProvider;
 import net.md_5.specialsource.repo.ClassRepo;
 import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;

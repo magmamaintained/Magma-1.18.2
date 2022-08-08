@@ -20,7 +20,6 @@ import net.minecraftforge.server.permission.nodes.PermissionDynamicContext;
 import net.minecraftforge.server.permission.nodes.PermissionNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
 import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.craftbukkit.commnd.permission.BukkitPermissionHandler;
@@ -137,7 +136,6 @@ public final class PermissionAPI
             if(MagmaConfig.instance.forgeBukkitPermissionHandlerEnable.getValues()){
                 activeHandler = new BukkitPermissionHandler(activeHandler);
                 Magma.LOGGER.info("[MAGMA] Forwarding forge permission[{}] to bukkit", activeHandler.getIdentifier());
-                Bukkit.getPluginManager().getPermissions().parallelStream().parallel().forEach(System.out::println);
             }
         }
         catch (ResourceLocationException e)

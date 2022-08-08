@@ -1,4 +1,4 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.remapping.adapters;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -11,7 +11,10 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.magmafoundation.magma.Magma;
-import org.magmafoundation.magma.remapping.generated.MagmaReflectionHandler;
+import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
+import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
+import org.magmafoundation.magma.remapping.PluginTransformer;
+import org.magmafoundation.magma.remapping.handlers.MagmaReflectionHandler;
 import org.magmafoundation.magma.util.ArrayUtil;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Handle;
@@ -410,7 +413,7 @@ public class MagmaRedirectAdapter implements PluginTransformer {
         };
     }
 
-    static AbstractInsnNode loadInt(int i) {
+    public static AbstractInsnNode loadInt(int i) {
         if (i >= -1 && i < 6) {
             return new InsnNode(Opcodes.ICONST_0 + i);
         } else if (i >= -128 && i < 128) {

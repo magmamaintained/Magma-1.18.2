@@ -1,9 +1,8 @@
-package org.magmafoundation.magma.remapping.generated;
+package org.magmafoundation.magma.remapping.loaders;
 
 import com.google.common.io.ByteStreams;
-import org.magmafoundation.magma.remapping.MagmaRemapper;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
-import org.magmafoundation.magma.remapping.RemappingClassLoader;
+import org.magmafoundation.magma.remapping.MagmaRemapper;
 import io.izzel.tools.product.Product2;
 
 import java.io.IOException;

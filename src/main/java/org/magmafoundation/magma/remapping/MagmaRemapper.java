@@ -8,7 +8,10 @@ import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
 import net.md_5.specialsource.provider.ClassLoaderProvider;
 import net.md_5.specialsource.provider.JointProvider;
-import org.magmafoundation.magma.remapping.resource.RemapSourceHandler;
+import org.magmafoundation.magma.remapping.adapters.ClassLoaderAdapter;
+import org.magmafoundation.magma.remapping.adapters.MagmaRedirectAdapter;
+import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
+import org.magmafoundation.magma.remapping.handlers.RemapSourceHandler;
 
 import java.io.BufferedReader;
 import java.io.File;

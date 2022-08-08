@@ -13,8 +13,7 @@ import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.patcher.Patcher;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 import org.magmafoundation.magma.remapping.MagmaRemapper;
-import org.magmafoundation.magma.remapping.RemappingClassLoader;
-import org.magmafoundation.magma.patcher.PatcherManager;
+import org.magmafoundation.magma.remapping.loaders.RemappingClassLoader;
 import org.magmafoundation.magma.util.JavaPluginLoaderBridge;
 
 import java.io.File;

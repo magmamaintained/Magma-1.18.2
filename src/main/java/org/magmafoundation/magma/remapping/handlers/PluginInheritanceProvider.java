@@ -1,8 +1,9 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.remapping.handlers;
 
 import com.google.common.collect.ImmutableSet;
 import net.md_5.specialsource.provider.InheritanceProvider;
 import net.md_5.specialsource.repo.ClassRepo;
+import org.magmafoundation.magma.remapping.MagmaRemapper;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.Collection;
@@ -63,7 +64,7 @@ public class PluginInheritanceProvider implements InheritanceProvider {
         return parents;
     }
 
-    static class Remapping extends PluginInheritanceProvider {
+    public static class Remapping extends PluginInheritanceProvider {
 
         private final PluginInheritanceProvider provider;
 
