@@ -84,5 +84,9 @@ public enum TreeType {
     /**
      * Tree with large roots which grows above lush caves
      */
-    AZALEA
+    AZALEA,
+    /**
+     * Forge custom trees
+     */
+    MODDED
 }
