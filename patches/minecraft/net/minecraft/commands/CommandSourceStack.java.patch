@@ -45,8 +45,7 @@
  
     public boolean m_6761_(int p_81370_) {
 +      // CraftBukkit start
-+      CommandNode currentCommand = this.currentCommand;
-+      if (currentCommand != null) {
++      if (this.currentCommand != null) {
 +         return hasPermission(p_81370_, org.bukkit.craftbukkit.v1_18_R2.command.VanillaCommandWrapper.getPermission(currentCommand));
 +      }
 +      // CraftBukkit end
@@ -56,6 +55,7 @@
 +   // CraftBukkit start
 +   public boolean hasPermission(int i, String bukkitPermission) {
 +      // World is null when loading functions
++      System.out.println("CommandSourceStack1.hasPermission: " + getBukkitSender().hasPermission(bukkitPermission));
 +      return ((m_81372_() == null || !m_81372_().getCraftServer().ignoreVanillaPermissions) && this.f_81291_ >= i) || getBukkitSender().hasPermission(bukkitPermission);
 +   }
 +   // CraftBukkit end

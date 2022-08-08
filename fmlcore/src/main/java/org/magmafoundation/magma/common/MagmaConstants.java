@@ -1,8 +1,16 @@
 package org.magmafoundation.magma.common;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MagmaConstants {
+
+    public static Map<String, Integer> mods = new ConcurrentHashMap<>();
+    public static Set<String> modList = new HashSet<>();
+
     private static final String fullVersion = (MagmaConstants.class.getPackage().getImplementationVersion() != null) ? MagmaConstants.class.getPackage().getImplementationVersion() : "dev-env";
 
     public static final String NAME = "Magma";
