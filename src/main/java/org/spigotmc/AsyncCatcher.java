@@ -5,13 +5,13 @@ import net.minecraft.server.MinecraftServer;
 public class AsyncCatcher
 {
 
-    public static boolean enabled = false;
+    public static boolean enabled = true;
 
     public static void catchOp(String reason)
     {
-        if ( enabled && Thread.currentThread() != MinecraftServer.getServer().serverThread )
+        if ( enabled && Thread.currentThread() != MinecraftServer.getServer().serverThread)
         {
-            throw new IllegalStateException( "Asynchronous " + reason + "!" );
+            //throw new IllegalStateException( "Asynchronous " + reason + "!" ); //Magma doesn't support this
         }
     }
 }

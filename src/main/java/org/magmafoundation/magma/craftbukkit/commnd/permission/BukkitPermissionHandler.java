@@ -23,11 +23,7 @@ public final class BukkitPermissionHandler implements IPermissionHandler {
         Objects.requireNonNull(delegate, "permission handler");
         this.delegate = delegate;
 
-        delegate.getRegisteredNodes().parallelStream().parallel().forEach(node -> {
-            if (node.getType() == PermissionTypes.BOOLEAN) {
-                DefaultPermissions.registerPermission(new Permission(node.getNodeName(), (node.getDescription() == null ? "Default Description" : node.getDescription().getString()), PermissionDefault.FALSE), false);
-            }
-        });
+        delegate.getRegisteredNodes().parallelStream().parallel().forEach(node -> DefaultPermissions.registerPermission(new Permission(node.getNodeName(), (node.getDescription() == null ? "Default Description" : node.getDescription().getString()), PermissionDefault.FALSE), false));
     }
 
     @Override
@@ -43,7 +39,7 @@ public final class BukkitPermissionHandler implements IPermissionHandler {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getPermission(ServerPlayer player, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
-        if (node.getType() == PermissionTypes.BOOLEAN) {
+        if(node.getType() == PermissionTypes.BOOLEAN) {
             return (T) (Object) player.getBukkitEntity().hasPermission(node.getNodeName());
         } else {
             return delegate.getPermission(player, node, context);
@@ -53,7 +49,7 @@ public final class BukkitPermissionHandler implements IPermissionHandler {
     @Override
     public <T> T getOfflinePermission(UUID uuid, PermissionNode<T> node, PermissionDynamicContext<?>... context) {
         var player = Bukkit.getPlayer(uuid);
-        if (player != null && node.getType() == PermissionTypes.BOOLEAN) {
+        if(player != null && node.getType() == PermissionTypes.BOOLEAN) {
             return (T) (Object) player.hasPermission(node.getNodeName());
         } else {
             return delegate.getOfflinePermission(uuid, node, context);
