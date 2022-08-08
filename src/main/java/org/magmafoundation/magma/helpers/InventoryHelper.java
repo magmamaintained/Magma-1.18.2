@@ -44,7 +44,7 @@ public class InventoryHelper {
             // Magma start - add forge inventory support
         } else if (state instanceof CraftBlockEntityState craftBlockEntityState) {
             BlockEntity tileEntity = craftBlockEntityState.getTileEntity();
-            if (tileEntity instanceof Inventory) {
+            if (tileEntity instanceof Container) {
                 return new CraftCustomInventory((Container) tileEntity);
             }
         }
