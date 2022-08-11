@@ -1577,6 +1577,7 @@ project(':forge') {
         publications {
             mavenJava(MavenPublication) {
                 artifact installerJar
+                artifact magmaJar
 
                 pom {
                     name = 'Magma'
