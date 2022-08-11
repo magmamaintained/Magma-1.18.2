@@ -1,35 +1,41 @@
 package org.bukkit.plugin.java;
 
 import com.google.common.io.ByteStreams;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.CodeSigner;
-import java.security.CodeSource;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
-import java.util.logging.Level;
+import cpw.mods.modlauncher.EnumerationHelper;
+import io.izzel.tools.product.Product2;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.SimplePluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.patcher.Patcher;
+import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
+import org.magmafoundation.magma.remapping.MagmaRemapper;
+import org.magmafoundation.magma.remapping.loaders.RemappingClassLoader;
+import org.magmafoundation.magma.util.JavaPluginLoaderBridge;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLConnection;
+import java.security.CodeSource;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
 
 /**
  * A ClassLoader for plugins, to allow shared classes across multiple plugins
  */
-final class PluginClassLoader extends URLClassLoader {
+final class PluginClassLoader extends URLClassLoader implements RemappingClassLoader {
     private final JavaPluginLoader loader;
     private final Map<String, Class<?>> classes = new ConcurrentHashMap<String, Class<?>>();
     private final PluginDescriptionFile description;
@@ -38,15 +44,18 @@ final class PluginClassLoader extends URLClassLoader {
     private final JarFile jar;
     private final Manifest manifest;
     private final URL url;
-    private final ClassLoader libraryLoader;
     final JavaPlugin plugin;
     private JavaPlugin pluginInit;
     private IllegalStateException pluginState;
     private final Set<String> seenIllegalAccess = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private final Patcher patcher; // Magma - Plugin Patcher
+
     static {
         ClassLoader.registerAsParallelCapable();
     }
+
+    private ClassLoaderRemapper remapper;
 
     PluginClassLoader(@NotNull final JavaPluginLoader loader, @Nullable final ClassLoader parent, @NotNull final PluginDescriptionFile description, @NotNull final File dataFolder, @NotNull final File file, @Nullable ClassLoader libraryLoader) throws IOException, InvalidPluginException, MalformedURLException {
         super(new URL[] {file.toURI().toURL()}, parent);
@@ -59,7 +68,7 @@ final class PluginClassLoader extends URLClassLoader {
         this.jar = new JarFile(file);
         this.manifest = jar.getManifest();
         this.url = file.toURI().toURL();
-        this.libraryLoader = libraryLoader;
+        this.patcher = Magma.getInstance().getPatcherManager().getPatchByName(description.getName());
 
         try {
             Class<?> jarClass;
@@ -86,12 +95,26 @@ final class PluginClassLoader extends URLClassLoader {
 
     @Override
     public URL getResource(String name) {
-        return findResource(name);
+        Objects.requireNonNull(name);
+        URL url = findResource(name);
+        if (url == null) {
+            if (getParent() != null) {
+                url = getParent().getResource(name);
+            }
+        }
+        return url;
     }
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        return findResources(name);
+        Objects.requireNonNull(name);
+        @SuppressWarnings("unchecked")
+        Enumeration<URL>[] tmp = (Enumeration<URL>[]) new Enumeration<?>[2];
+        if (getParent()!= null) {
+            tmp[1] = getParent().getResources(name);
+        }
+        tmp[0] = findResources(name);
+        return EnumerationHelper.merge(tmp[0], tmp[1]);
     }
 
     @Override
@@ -108,13 +131,6 @@ final class PluginClassLoader extends URLClassLoader {
                 return result;
             }
         } catch (ClassNotFoundException ex) {
-        }
-
-        if (checkLibraries && libraryLoader != null) {
-            try {
-                return libraryLoader.loadClass(name);
-            } catch (ClassNotFoundException ex) {
-            }
         }
 
         if (checkGlobal) {
@@ -144,11 +160,16 @@ final class PluginClassLoader extends URLClassLoader {
             }
         }
 
-        throw new ClassNotFoundException(name);
+        return super.loadClass(name, resolve);
     }
 
+
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        return findClass(name, true);
+    }
+
+    Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException {
         if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
             throw new ClassNotFoundException(name);
         }
@@ -156,18 +177,35 @@ final class PluginClassLoader extends URLClassLoader {
 
         if (result == null) {
             String path = name.replace('.', '/').concat(".class");
+            URL url = this.findResource(path);
             JarEntry entry = jar.getJarEntry(path);
 
-            if (entry != null) {
-                byte[] classBytes;
+            if (url != null && entry != null) {
 
-                try (InputStream is = jar.getInputStream(entry)) {
-                    classBytes = ByteStreams.toByteArray(is);
-                } catch (IOException ex) {
-                    throw new ClassNotFoundException(name, ex);
+                URLConnection connection;
+                Callable<byte[]> byteSource;
+                try {
+                    connection = url.openConnection();
+                    connection.connect();
+                    byteSource = () -> {
+                        try (InputStream is = connection.getInputStream()) {
+                            byte[] classBytes = ByteStreams.toByteArray(is);
+                            classBytes = loader.server.getUnsafe().processClass(description, path, classBytes);
+
+                            // Magma start - Plugin Patcher
+                            if (this.patcher != null) {
+                                classBytes = this.patcher.transform(name.replace("/", "."), classBytes);
+                            }
+                            // Magma end
+
+                            return classBytes;
+                        }
+                    };
+                } catch (IOException e) {
+                    throw new ClassNotFoundException(name, e);
                 }
 
-                classBytes = loader.server.getUnsafe().processClass(description, path, classBytes);
+                Product2<byte[], CodeSource> classBytes = this.getRemapper().remapClass(name, byteSource, connection);
 
                 int dot = name.lastIndexOf('.');
                 if (dot != -1) {
@@ -175,7 +213,7 @@ final class PluginClassLoader extends URLClassLoader {
                     if (getPackage(pkgName) == null) {
                         try {
                             if (manifest != null) {
-                                definePackage(pkgName, manifest, url);
+                                definePackage(pkgName, manifest, this.url);
                             } else {
                                 definePackage(pkgName, null, null, null, null, null, null, null);
                             }
@@ -187,17 +225,14 @@ final class PluginClassLoader extends URLClassLoader {
                     }
                 }
 
-                CodeSigner[] signers = entry.getCodeSigners();
-                CodeSource source = new CodeSource(url, signers);
-
-                result = defineClass(name, classBytes, 0, classBytes.length, source);
+                result = defineClass(name, classBytes._1, 0, classBytes._1.length, classBytes._2);
             }
 
             if (result == null) {
                 result = super.findClass(name);
             }
 
-            loader.setClass(name, result);
+            ((JavaPluginLoaderBridge) (Object) loader).bridge$setClass(name, result);
             classes.put(name, result);
         }
 
@@ -230,4 +265,14 @@ final class PluginClassLoader extends URLClassLoader {
 
         javaPlugin.init(loader, loader.server, description, dataFolder, file, this);
     }
+
+    @Override
+    public ClassLoaderRemapper getRemapper() {
+        if (remapper == null) {
+            remapper = MagmaRemapper.createClassLoaderRemapper(this);
+        }
+        return remapper;
+    }
+
+
 }

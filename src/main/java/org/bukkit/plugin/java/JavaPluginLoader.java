@@ -1,23 +1,5 @@
 package org.bukkit.plugin.java;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Server;
 import org.bukkit.Warning;
@@ -30,31 +12,45 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.plugin.AuthorNagException;
-import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.InvalidDescriptionException;
-import org.bukkit.plugin.InvalidPluginException;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
-import org.bukkit.plugin.RegisteredListener;
-import org.bukkit.plugin.SimplePluginManager;
-import org.bukkit.plugin.TimedRegisteredListener;
-import org.bukkit.plugin.UnknownDependencyException;
+import org.bukkit.plugin.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spigotmc.CustomTimingsHandler; // Spigot
+import org.magmafoundation.magma.util.JavaPluginLoaderBridge;
+import org.objectweb.asm.*;
+import org.spigotmc.CustomTimingsHandler;
 import org.yaml.snakeyaml.error.YAMLException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.net.URLClassLoader;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Java plugin loader, allowing plugins in the form of .jar
  */
-public final class JavaPluginLoader implements PluginLoader {
+public final class JavaPluginLoader implements PluginLoader, JavaPluginLoaderBridge {
     final Server server;
     private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("\\.jar$")};
+    private final Map<String, Class<?>> classes = new ConcurrentHashMap<String, Class<?>>();
+
     private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
-//    private final LibraryLoader libraryLoader;
+
     public static final CustomTimingsHandler pluginParentTimer = new CustomTimingsHandler("** Plugins"); // Spigot
+    private static final String HIDDEN_FORM =
+            Float.parseFloat(System.getProperty("java.class.version")) < 57
+                    ? "Ljava/lang/invoke/LambdaForm$Hidden;"
+                    : "Ljdk/internal/vm/annotation/Hidden;";
 
     /**
      * This class was not meant to be constructed explicitly
@@ -66,14 +62,6 @@ public final class JavaPluginLoader implements PluginLoader {
         Validate.notNull(instance, "Server cannot be null");
         server = instance;
 
-//        LibraryLoader libraryLoader = null;
-//        try {
-//            libraryLoader = new LibraryLoader(server.getLogger());
-//        } catch (NoClassDefFoundError ex) {
-//            // Provided depends were not added back
-//            server.getLogger().warning("Could not initialize LibraryLoader (missing dependencies?)");
-//        }
-//        this.libraryLoader = libraryLoader;
     }
 
     @Override
@@ -201,6 +189,25 @@ public final class JavaPluginLoader implements PluginLoader {
     }
 
     @Nullable
+    Class<?> getClassByName(final String name) {
+        Class<?> cachedClass = classes.get(name);
+
+        if (cachedClass != null) {
+            return cachedClass;
+        } else {
+            for (PluginClassLoader loader : loaders) {
+                try {
+                    cachedClass = loader.findClass(name, false);
+                } catch (ClassNotFoundException cnfe) {}
+                if (cachedClass != null) {
+                    return cachedClass;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
     Class<?> getClassByName(final String name, boolean resolve, PluginDescriptionFile description) {
         for (PluginClassLoader loader : loaders) {
             try {
@@ -212,16 +219,31 @@ public final class JavaPluginLoader implements PluginLoader {
     }
 
     void setClass(@NotNull final String name, @NotNull final Class<?> clazz) {
-        if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
-            Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
-            ConfigurationSerialization.registerClass(serializable);
+        if (!classes.containsKey(name)) {
+            classes.put(name, clazz);
+
+            if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
+                Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
+                ConfigurationSerialization.registerClass(serializable);
+            }
         }
     }
 
-    private void removeClass(@NotNull Class<?> clazz) {
-        if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
-            Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
-            ConfigurationSerialization.unregisterClass(serializable);
+    private void removeClass(@NotNull Class<?> clazz){
+        removeClass(clazz.getName());
+    }
+
+    private void removeClass(@NotNull String name) {
+        Class<?> clazz = classes.remove(name);
+
+        try {
+            if ((clazz != null) && (ConfigurationSerializable.class.isAssignableFrom(clazz))) {
+                Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
+                ConfigurationSerialization.unregisterClass(serializable);
+            }
+        } catch (NullPointerException ex) {
+            // Boggle!
+            // (Native methods throwing NPEs is not fun when you can't stop it before-hand)
         }
     }
 
@@ -237,13 +259,9 @@ public final class JavaPluginLoader implements PluginLoader {
         try {
             Method[] publicMethods = listener.getClass().getMethods();
             Method[] privateMethods = listener.getClass().getDeclaredMethods();
-            methods = new HashSet<Method>(publicMethods.length + privateMethods.length, 1.0f);
-            for (Method method : publicMethods) {
-                methods.add(method);
-            }
-            for (Method method : privateMethods) {
-                methods.add(method);
-            }
+            methods = new HashSet<>(publicMethods.length + privateMethods.length, 1.0f);
+            methods.addAll(Arrays.asList(publicMethods));
+            methods.addAll(Arrays.asList(privateMethods));
         } catch (NoClassDefFoundError e) {
             plugin.getLogger().severe("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for " + listener.getClass() + " because " + e.getMessage() + " does not exist.");
             return ret;
@@ -313,6 +331,7 @@ public final class JavaPluginLoader implements PluginLoader {
                     }
                 }
             };
+
             if (false) { // Spigot - RL handles useTimings check now
                 eventSet.add(new TimedRegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
             } else {
@@ -320,6 +339,95 @@ public final class JavaPluginLoader implements PluginLoader {
             }
         }
         return ret;
+    }
+
+
+    private void createConstructor(ClassVisitor cv) {
+        MethodVisitor mv = cv.visitMethod(
+                Opcodes.ACC_PRIVATE,
+                "<init>",
+                "()V",
+                null, null);
+        mv.visitCode();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(Object.class), "<init>", "()V", false);
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+    }
+
+    private void createImpl(Method method, Class<? extends Event> eventClass, ClassVisitor cv) {
+        String ownerType = Type.getInternalName(method.getDeclaringClass());
+        MethodVisitor mv = cv.visitMethod(
+                Opcodes.ACC_PUBLIC,
+                "execute",
+                Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Listener.class), Type.getType(Event.class)),
+                null, null
+        );
+        mv.visitAnnotation(HIDDEN_FORM, true);
+
+        Label label0 = new Label();
+        Label label1 = new Label();
+        Label label2 = new Label();
+        mv.visitTryCatchBlock(label0, label1, label2, "java/lang/Throwable");
+        Label label3 = new Label();
+        Label label4 = new Label();
+        // try {
+        mv.visitTryCatchBlock(label3, label4, label2, "java/lang/Throwable");
+        //   if (!(event instanceof TYPE))
+        mv.visitLabel(label0);
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitTypeInsn(Opcodes.INSTANCEOF, Type.getInternalName(eventClass));
+        mv.visitJumpInsn(Opcodes.IFNE, label3);
+        //      return;
+        mv.visitLabel(label1);
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitLabel(label3);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //   ((TYPE) listener).<method>(event);
+        //   TYPE.<method>(event);
+        int invokeCode;
+        if (Modifier.isStatic(method.getModifiers())) {
+            invokeCode = Opcodes.INVOKESTATIC;
+        } else if (method.getDeclaringClass().isInterface()) {
+            invokeCode = Opcodes.INVOKEINTERFACE;
+        } else {
+            invokeCode = Opcodes.INVOKEVIRTUAL;
+        }
+        if (invokeCode != Opcodes.INVOKESTATIC) {
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, ownerType);
+        }
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(eventClass));
+        mv.visitMethodInsn(invokeCode, ownerType, method.getName(), Type.getMethodDescriptor(method), invokeCode == Opcodes.INVOKEINTERFACE);
+        int retSize = Type.getType(method.getReturnType()).getSize();
+        if (retSize > 0) {
+            mv.visitInsn(Opcodes.POP + retSize - 1);
+        }
+        mv.visitLabel(label4);
+        // } catch (Throwable t) {
+        Label label5 = new Label();
+        mv.visitJumpInsn(Opcodes.GOTO, label5);
+        mv.visitLabel(label2);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[]{"java/lang/Throwable"});
+        mv.visitVarInsn(Opcodes.ASTORE, 3);
+        // throw new EventException(t);
+        Label label6 = new Label();
+        mv.visitLabel(label6);
+        mv.visitTypeInsn(Opcodes.NEW, "org/bukkit/event/EventException");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitVarInsn(Opcodes.ALOAD, 3);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/bukkit/event/EventException", "<init>", "(Ljava/lang/Throwable;)V", false);
+        mv.visitInsn(Opcodes.ATHROW);
+        mv.visitLabel(label5);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        mv.visitInsn(Opcodes.RETURN);
+        // }
+        Label label7 = new Label();
+        mv.visitLabel(label7);
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
     }
 
     @Override
@@ -386,5 +494,17 @@ public final class JavaPluginLoader implements PluginLoader {
                 }
             }
         }
+    }
+
+    @Override
+    public List<URLClassLoader> bridge$getLoaders() {
+        List<URLClassLoader> classLoaders = new ArrayList<>();
+        loaders.parallelStream().parallel().forEach(classLoaders::add);
+        return classLoaders;
+    }
+
+    @Override
+    public void bridge$setClass(String name, Class<?> clazz) {
+        setClass(name, clazz);
     }
 }

@@ -1,0 +1,25 @@
+plugins {
+    id 'com.github.ben-manes.versions'
+    id 'org.javamodularity.moduleplugin' version '1.8.3' apply false
+}
+apply plugin: 'java-library'
+apply plugin: 'jacoco'
+apply plugin: 'org.javamodularity.moduleplugin'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencyUpdates.rejectVersionIf { isNonStable(it.candidate.version) }
+
+dependencies {
+    implementation project(':fmlcore')
+    implementation "org.yaml:snakeyaml:1.30"
+    implementation "cpw.mods:securejarhandler:1.0.5"
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation "com.google.code.gson:gson:2.8.7"
+    implementation 'dev.vankka:dependencydownload-runtime:1.2.2-SNAPSHOT'
+    implementation 'dev.vankka:dependencydownload-common:1.2.1'
+    implementation 'me.tongfei:progressbar:0.9.3'
+}
