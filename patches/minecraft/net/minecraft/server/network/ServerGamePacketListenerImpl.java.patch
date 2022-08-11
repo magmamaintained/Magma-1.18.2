@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2484 @@
+@@ -118,1340 +_,2486 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -149,6 +149,7 @@
 +import org.bukkit.Bukkit;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
++import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 +import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
@@ -3897,6 +3898,7 @@
 +    }
 +
 +    public void teleport(Location dest) {
++        this.f_9743_.m_143425_(((CraftWorld)dest.getWorld()).getHandle());
 +        internalTeleport( dest.getX(), dest.getY(), dest.getZ(), dest.getYaw(), dest.getPitch(), Collections.emptySet(), true );
 +    }
 +

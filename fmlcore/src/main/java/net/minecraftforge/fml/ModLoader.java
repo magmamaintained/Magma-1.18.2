@@ -18,13 +18,9 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.language.IModLanguageProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.magmafoundation.magma.common.MagmaConstants;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -159,6 +155,8 @@ public class ModLoader
         }
         modList.setLoadedMods(modContainers);
         this.modList = modList;
+        MagmaConstants.mods.put("mods", modList.size());
+        modList.getMods().forEach(modInfo -> MagmaConstants.modList.add(modInfo.getModId()));
         statusConsumer.ifPresent(c->c.accept("Dispatching gathering events"));
         stateManager.getStates(ModLoadingPhase.GATHER).forEach(mls->dispatchAndHandleError(mls, syncExecutor, parallelExecutor, periodicTask));
         statusConsumer.ifPresent(c->c.accept("Gathering phase complete"));

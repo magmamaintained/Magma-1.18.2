@@ -10,7 +10,6 @@ import net.minecrell.terminalconsole.TerminalConsoleAppender;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 
 public final class TerminalHandler
@@ -61,7 +60,7 @@ public final class TerminalHandler
                 }
             }
         }
-        catch (UserInterruptException e)
+        catch (Exception e)
         {
             server.halt(true);
         }

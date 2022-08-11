@@ -7,7 +7,7 @@
  import com.google.common.collect.Maps;
  import com.mojang.brigadier.CommandDispatcher;
  import com.mojang.brigadier.ParseResults;
-@@ -12,101 +_,31 @@
+@@ -12,101 +_,32 @@
  import com.mojang.brigadier.tree.CommandNode;
  import com.mojang.brigadier.tree.RootCommandNode;
  import com.mojang.logging.LogUtils;
@@ -108,6 +108,7 @@
  import net.minecraft.util.profiling.jfr.JvmProfiler;
 +import org.bukkit.event.player.PlayerCommandSendEvent;
 +import org.bukkit.event.server.ServerCommandEvent;
++import org.magmafoundation.magma.commands.MagmaCommandNode;
 +import org.magmafoundation.magma.craftbukkit.commnd.CraftBukkitCommandHelper;
  import org.slf4j.Logger;
  
@@ -237,7 +238,7 @@
                 });
                 if (j > 10) {
                    mutablecomponent1.m_130946_("...");
-@@ -273,15 +_,45 @@
+@@ -273,16 +_,46 @@
     }
  
     public void m_82095_(ServerPlayer p_82096_) {
@@ -280,7 +281,9 @@
  
     private void m_82112_(CommandNode<CommandSourceStack> p_82113_, CommandNode<SharedSuggestionProvider> p_82114_, CommandSourceStack p_82115_, Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> p_82116_) {
        for(CommandNode<CommandSourceStack> commandnode : p_82113_.getChildren()) {
+-         if (commandnode.canUse(p_82115_)) {
 +         if ( !org.spigotmc.SpigotConfig.sendNamespaced && commandnode.getName().contains( ":" ) ) continue; // Spigot
-          if (commandnode.canUse(p_82115_)) {
++         if (MagmaCommandNode.canUse(commandnode, p_82115_)) {
              ArgumentBuilder<SharedSuggestionProvider, ?> argumentbuilder = (ArgumentBuilder)commandnode.createBuilder();
              argumentbuilder.requires((p_82126_) -> {
+                return true;

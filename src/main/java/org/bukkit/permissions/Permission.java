@@ -1,16 +1,13 @@
 package org.bukkit.permissions;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Represents a unique permission that may be attached to a {@link
@@ -350,5 +347,15 @@ public class Permission {
         }
 
         return children;
+    }
+
+    @Override
+    public String toString() {
+        return "Permission{" +
+                "name='" + name + '\'' +
+                ", children=" + children +
+                ", defaultValue=" + defaultValue +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

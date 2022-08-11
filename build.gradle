@@ -7,9 +7,9 @@ buildscript {
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:[5.1.26,)'
         classpath "gradle.plugin.net.nemerosa:versioning:2.14.0"
+        classpath "dev.vankka:gradle-plugin:1.2.1"
     }
 }
-
 
 import net.minecraftforge.forge.tasks.*
 import net.minecraftforge.gradle.common.tasks.ApplyBinPatches
@@ -54,7 +54,7 @@ ext {
     COREMODS_VERSION = '5.0.1'
     EVENTBUS_VERSION = '5.0.3'
     MODLAUNCHER_VERSION = '9.1.3'
-    SECUREJARHANDLER_VERSION = '1.0.3'
+    SECUREJARHANDLER_VERSION = '1.0.5'
     BOOTSTRAPLAUNCHER_VERSION = '1.0.0'
     ASM_VERSION = '9.2'
     INSTALLER_VERSION = '2.1.+'
@@ -62,8 +62,8 @@ ext {
 
     GIT_INFO = gradleutils.gitInfo
     FORGE_VERSION = '40.1.54'
-    MAGMA_VERISON = "1.18.2-$FORGE_VERSION-" + versioning.info.commit.substring(0, 8) // Use 8 characters for the commit hash
-    VERSION = "1.18.2-$FORGE_VERSION"
+    MAGMA_VERSION = "1.18.2-$FORGE_VERSION-" + versioning.info.commit.substring(0, 8) // Use 8 characters for the commit hash
+     VERSION = "1.18.2-$FORGE_VERSION"
 
     SPECIAL_SOURCE = 'net.md-5:SpecialSource:1.10.0'
     BINPATCH_TOOL = 'net.minecraftforge:binarypatcher:1.0.12:fatjar'
@@ -71,6 +71,8 @@ ext {
     JAR_SPLITTER = 'net.minecraftforge:jarsplitter:1.1.4'
     FART = 'net.minecraftforge:ForgeAutoRenamingTool:0.1.22:all'
     MIN_TAG_FOR_CHANGELOG = "39.0"
+
+    BIN_PATCHER = BINPATCH_TOOL.substring(0, BINPATCH_TOOL.length() - 1 - BINPATCH_TOOL.split(':')[3].length())
 }
 
 println('Version: ' + VERSION +
@@ -78,7 +80,7 @@ println('Version: ' + VERSION +
         ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ')' +
         ' Arch: ' + System.getProperty('os.arch'))
 
-println('Forge Version: ' + MAGMA_VERISON)
+println('Forge Version: ' + MAGMA_VERSION)
 
 def extraTxts = [
     rootProject.file('CREDITS.txt'),
@@ -134,9 +136,11 @@ subprojects {
             name = 'forge'
             url = 'https://maven.minecraftforge.net/'
         }
+        maven { url 'https://hub.spigotmc.org/nexus/content/groups/public/' }
         maven {
              url = "https://raw.github.com/Hexeption/Magma-Repo/master/"
         }
+        maven { url 'https://maven.izzel.io/releases' }
     }
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -216,8 +220,8 @@ def sharedDeps = {
     installer 'org.apache.maven:maven-artifact:3.6.3'
     installer 'net.jodah:typetools:0.8.3'
     installer 'net.minecrell:terminalconsoleappender:1.2.0'
-    installer 'org.jline:jline-reader:3.12.+'   //Dep of TerminaalConsoleeAppender
-    installer 'org.jline:jline-terminal:3.12.+' //Dep of TerminaalConsoleeAppender
+    installer 'org.jline:jline-reader:3.21.0'   //Dep of TerminalConsoleAppender
+    installer 'org.jline:jline-terminal:3.21.0' //Dep of TerminalConsoleAppender
     installer "org.spongepowered:mixin:${MIXIN_VERSION}"
     installer 'org.openjdk.nashorn:nashorn-core:15.3'
 
@@ -247,6 +251,14 @@ def sharedDeps = {
     installer 'com.google.guava:guava:31.0.1-jre'
     installer 'com.google.code.gson:gson:2.8.8'
     installer 'org.magma:magma-common:2.6'
+    installer 'io.izzel:tools:1.3.0'
+
+
+    autolibraries BIN_PATCHER
+    autolibraries SPECIAL_SOURCE
+    autolibraries INSTALLER_TOOLS
+    autolibraries JAR_SPLITTER
+    autolibraries FART
 }
 
 def sharedFmlonlyForge = { Project prj ->
@@ -514,6 +526,9 @@ project(':fmlonly') {
             transitive = false
         }
         api.extendsFrom(installer)
+        autolibraries
+        autolibraries.extendsFrom(installer)
+        autolibraries.extendsFrom(moduleonly)
     }
 
     // TODO: Better coordination between project dependencies and the installer.
@@ -799,6 +814,7 @@ project(':forge') {
     apply plugin: 'java-library'
     apply plugin: 'net.minecraftforge.gradle.patcher'
     apply plugin: 'org.cadixdev.licenser'
+    apply plugin: 'dev.vankka.dependencydownload.plugin'
 
     sourceSets {
         main {
@@ -851,6 +867,9 @@ project(':forge') {
         }
         moduleonly
         api.extendsFrom(installer)
+        autolibraries
+        autolibraries.extendsFrom(installer)
+        autolibraries.extendsFrom(moduleonly)
     }
 
     dependencies {
@@ -1026,8 +1045,27 @@ project(':forge') {
                     'Specification-Title'   : 'Magma Development Limited',
                     'Specification-Vendor'  : 'Magma Development Limited',
                     'Implementation-Title'  : "Magma",
-                    'Implementation-Version': gradleutils.gitInfo.abbreviatedId,
-                    'Implementation-Vendor' : 'Magma Development Limited'
+                    'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
+                    'Implementation-Vendor' : 'Magma Development Limited',
+            ] as LinkedHashMap,
+            'org/magmafoundation/magma/common/': [
+                    'Specification-Title'   : 'Magma Development Limited',
+                    'Specification-Vendor'  : 'Magma Development Limited',
+                    'Implementation-Title'  : "Magma",
+                    'Implementation-Version': MAGMA_VERSION + "-" + MCP_VERSION,
+                    'Implementation-Vendor' : 'Magma Development Limited',
+            ] as LinkedHashMap,
+            'io/izzel/arclight/': [
+                    'Implementation-Title'  : "Arclight",
+                    'Implementation-Vendor' : 'Arclight Team',
+            ] as LinkedHashMap,
+            'org/bukkit/craftbukkit/v1_18_R2/': [
+                    'Specification-Title'   : MCP_VERSION,
+                    'Specification-Vendor'  : 'SpigotMC',
+                    'Specification-Version':  '1.18.2',
+                    'Implementation-Title'  : 'Spigot',
+                    'Implementation-Version': '7e29f765-296df566-9fb885e8',
+                    'Implementation-Vendor' : 'SpigotMC'
             ] as LinkedHashMap
         ]
     }
@@ -1353,6 +1391,120 @@ project(':forge') {
         }
     }
 
+    task generateMagmaLibraries(type: dev.vankka.dependencydownload.task.GenerateDependencyDownloadResourceTask) {
+        var conf = configurations.autolibraries
+        configuration = conf
+        file = "data/magma_libraries.txt"
+        // Not necessary to include in the resource
+        includeShadowJarRelocations = false
+    }
+
+
+    task magmaJar(type: Jar, dependsOn: [downloadServerRaw, genServerBinPatches, 'signUniversalJar']) {
+        archiveClassifier = 'server'
+        archiveExtension = 'jar'
+        archiveBaseName = 'magma'
+        archiveVersion = MAGMA_VERSION
+        destinationDirectory = file('build/libs')
+
+        def CLASS_PATH = Util.getArtifacts(project, project.configurations.installer, false).values().collect { "libraries/${it.downloads.artifact.path}" } +
+                [
+                        'libraries/' + Util.getMavenPath(rootProject.tasks.findByPath(':fmlloader:jar')),
+                        "libraries/net/minecraft/server/${MC_VERSION}-${MCP_VERSION}/server-${MC_VERSION}-${MCP_VERSION}-extra.jar",
+                        "libraries/cpw/mods/bootstraplauncher/1.0.0/bootstraplauncher-1.0.0.jar",
+                        "libraries/net/minecraftforge/installertools/1.3.0/installertools-1.3.0.jar"
+                ]
+        def claimed = CLASS_PATH.collect { it.rsplit('/', 2)[0] }.toSet() // Allow us to override versions
+        if (rootProject.downloadServerRaw.dest.exists()) {
+            try (def zip = new java.util.zip.ZipFile(rootProject.downloadServerRaw.dest)) {
+                CLASS_PATH += zip.getInputStream(zip.getEntry('META-INF/classpath-joined')).text.split(';')
+                        .findAll { it.startsWith('libraries/') && !claimed.contains(it.rsplit('/', 2)[0]) }
+            }
+        } else {
+            println("Can't read server")
+        }
+        def MODULE_PATH = Util.getArtifacts(project, project.configurations.moduleonly, false).values().collect { "libraries/${it.downloads.artifact.path}" }
+        def tokens = [
+                TASK         : project.name.equals('forge') ? 'forgeserver' : 'fmlserver',
+                MAVEN_PATH   : project.ext.MAVEN_PATH.toString(),
+                FORGE_VERSION: FORGE_VERSION,
+                MC_VERSION   : MC_VERSION,
+                MCP_VERSION  : MCP_VERSION,
+                FORGE_GROUP  : project.group,
+                IGNORE_LIST  : Util.getArtifacts(project, project.configurations.moduleonly, false).values().collect { it.downloads.artifact.path.rsplit('/', 1)[1] }.join(','),
+                MODULES      : 'ALL-MODULE-PATH'
+        ]
+
+        doFirst {
+            MANIFESTS.each { pkg, values ->
+                if (pkg == '/') {
+                    manifest.attributes(values += [
+                            'Premain-Class': 'org.magmafoundation.magma.utils.ServerInitHelper',
+                            'Launcher-Agent-Class': 'org.magmafoundation.magma.utils.ServerInitHelper',
+                            'Main-Class': 'org.magmafoundation.magma.MagmaStart',
+                            'Class-Path': CLASS_PATH.toString().replace("[", "").replace("]", "").replace(",", "")
+                    ])
+                } else {
+                    manifest.attributes(values, pkg)
+                }
+            }
+        }
+
+
+        from(genServerBinPatches.output) {
+            rename { 'data/server.lzma' }
+        }
+        from(universalJar) {
+            rename { 'data/forge-' + MC_VERSION + '-' + FORGE_VERSION + '-universal.jar' }
+        }
+        from(project(':fmlloader').tasks.jar.outputs) {
+            rename { 'data/fmlloader-' + MC_VERSION + '-' + FORGE_VERSION + '.jar' }
+        }
+
+        from(project(':fmlcore').tasks.jar.outputs) {
+            rename { 'data/fmlcore-' + MC_VERSION + '-' + FORGE_VERSION + '.jar' }
+        }
+        from(project(':javafmllanguage').tasks.jar.outputs) {
+            rename { 'data/javafmllanguage-' + MC_VERSION + '-' + FORGE_VERSION + '.jar' }
+        }
+        from(project(':mclanguage').tasks.jar.outputs) {
+            rename { 'data/mclanguage-' + MC_VERSION + '-' + FORGE_VERSION + '.jar' }
+        }
+        from(project(':lowcodelanguage').tasks.jar.outputs) {
+            rename { 'data/lowcodelanguage-' + MC_VERSION + '-' + FORGE_VERSION + '.jar' }
+        }
+
+
+        from(project(':magmalauncher').project.sourceSets.main.output){
+        }
+        from(project(':fmlcore').project.sourceSets.main.output){
+        }
+
+        from(rootProject.file('server_files/libraries.txt')) {
+            filter(ReplaceTokens, tokens: [CLASS_PATH: CLASS_PATH.join(';')])
+            rename { 'data/libraries.txt' }
+        }
+
+        /* from(rootProject.file('server_files/lang/message.properties')) {
+             rename { 'lang/message.properties' }
+         }*/
+
+        from(generateMagmaLibraries)
+        from(rootProject.file('server_files/args.txt')) {
+            filter(ReplaceTokens, tokens: tokens + [MODULE_PATH: MODULE_PATH.join(';'), CLASS_PATH: CLASS_PATH.join(';')])
+            rename { 'data/win_args.txt' }
+        }
+
+        from(rootProject.file('server_files/args.txt')) {
+            filter(ReplaceTokens, tokens: tokens + [MODULE_PATH: MODULE_PATH.join(':'), CLASS_PATH: CLASS_PATH.join(':')])
+            rename { 'data/unix_args.txt' }
+        }
+
+        from(rootProject.file('server_files/user_jvm_args.txt')) {
+            rename { 'data/user_jvm_args.txt' }
+        }
+    }
+
     universalJar {
         from extraTxts
 
@@ -1384,38 +1536,6 @@ project(':forge') {
         }
         from(genServerBinPatches.output) {
             rename { 'data/server.lzma' }
-        }
-    }
-
-    task makeMdk(type: Zip) {
-        archiveBaseName = project.name
-        archiveClassifier = 'mdk'
-        archiveVersion = project.version
-        destinationDirectory = file('build/libs')
-
-        from rootProject.file('gradlew')
-        from rootProject.file('gradlew.bat')
-        from extraTxts
-        from(rootProject.file('gradle/')){
-            into('gradle/')
-        }
-        from(rootProject.file('mdk/')){
-            rootProject.file('mdk/gitignore.txt').eachLine{
-                if (!it.trim().isEmpty() && !it.trim().startsWith('#'))
-                    exclude it
-            }
-            filter(ReplaceTokens, tokens: [
-                FORGE_VERSION: project.version,
-                FORGE_GROUP: project.group,
-                FORGE_NAME: project.name,
-                MC_VERSION: MC_VERSION,
-                MAPPING_CHANNEL: MAPPING_CHANNEL,
-                MAPPING_VERSION: MAPPING_VERSION,
-                FORGE_SPEC_VERSION: SPEC_VERSION.split("\\.")[0],
-                MC_NEXT_VERSION: "1."+((MC_VERSION.split("[\\.-]")[1] as int)+1)
-            ])
-            rename 'gitignore\\.txt', '.gitignore'
-            rename 'gitattributes\\.txt', '.gitattributes'
         }
     }
 
@@ -1464,7 +1584,7 @@ project(':forge') {
                     artifactId = 'Magma'
                     description = 'Minecraft Forge Hybrid server implementing the Spigot/Bukkit API (Cauldron for 1.18)'
                     url = 'https://git.magmafoundation.org/magmafoundation/Magma-1-18-x'
-                    version = MAGMA_VERISON
+                    version = MAGMA_VERSION
 
                     scm {
                         url = 'https://git.magmafoundation.org/magmafoundation/Magma-1-18-x'
