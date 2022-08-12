@@ -21,6 +21,7 @@ package org.magmafoundation.magma.configuration;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.magmafoundation.magma.commands.ModsCommand;
 import org.magmafoundation.magma.configuration.value.Value;
 import org.magmafoundation.magma.configuration.value.values.BooleanValue;
 
@@ -121,7 +122,7 @@ public class MagmaConfig extends ConfigBase {
 
     @Override
     protected void addCommands() {
-        //commands.put("magma", new MagmaCommand("magma"));
+        commands.put("mods", new ModsCommand("mods"));
     }
 
     @Override
