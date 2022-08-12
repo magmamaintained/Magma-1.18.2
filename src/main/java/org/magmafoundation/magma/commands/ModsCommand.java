@@ -52,7 +52,7 @@ public class ModsCommand extends BukkitCommand {
             }
 
             modList.append(ChatColor.GREEN + mod.getDisplayName());
-            modList.append(ChatColor.WHITE + "(" + mod.getModId() + "v." + mod.getVersion() + ")");
+            modList.append(ChatColor.WHITE + " (" + mod.getModId() + " v." + mod.getVersion() + ")");
         }
 
         return "(" + mods.size() + "): " + modList.toString();
