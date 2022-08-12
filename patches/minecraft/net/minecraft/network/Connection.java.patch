@@ -102,12 +102,13 @@
           this.f_129471_ = p_129508_;
        }
  
-@@ -289,7 +_,9 @@
+@@ -289,7 +_,10 @@
     }
  
     public static Connection m_178300_(InetSocketAddress p_178301_, boolean p_178302_) {
-+      if (p_178301_.getAddress() instanceof java.net.Inet6Address) System.setProperty("java.net.preferIPv4Stack", "false");
++      net.minecraftforge.network.DualStackUtils.checkIPv6(p_178301_.getAddress());
        final Connection connection = new Connection(PacketFlow.CLIENTBOUND);
++      net.minecraftforge.network.DualStackUtils.checkIPv6(p_178301_.getAddress());
 +      connection.activationHandler = net.minecraftforge.network.NetworkHooks::registerClientLoginChannel;
        Class<? extends SocketChannel> oclass;
        LazyLoadedValue<? extends EventLoopGroup> lazyloadedvalue;
