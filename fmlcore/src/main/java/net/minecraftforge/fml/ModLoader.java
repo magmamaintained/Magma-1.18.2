@@ -157,6 +157,7 @@ public class ModLoader
         this.modList = modList;
         MagmaConstants.mods.put("mods", modList.size());
         modList.getMods().forEach(modInfo -> MagmaConstants.modList.add(modInfo.getModId()));
+        modList.getMods().forEach(modInfo -> MagmaConstants.modInfoList.add(modInfo));
         statusConsumer.ifPresent(c->c.accept("Dispatching gathering events"));
         stateManager.getStates(ModLoadingPhase.GATHER).forEach(mls->dispatchAndHandleError(mls, syncExecutor, parallelExecutor, periodicTask));
         statusConsumer.ifPresent(c->c.accept("Gathering phase complete"));
