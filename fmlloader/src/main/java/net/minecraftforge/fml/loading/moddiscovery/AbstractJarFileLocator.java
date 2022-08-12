@@ -43,7 +43,8 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractJarFileLocator extends AbstractModLocator {
+public abstract class AbstractJarFileLocator extends AbstractModLocator
+{
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
@@ -58,14 +59,4 @@ public abstract class AbstractJarFileLocator extends AbstractModLocator {
         LOGGER.debug(LogMarkers.SCAN,"Scan finished: {}", file);
     }
 
-    @Override
-    public List<IModFile> scanMods() {
-        return scanCandidates()
-                .map(this::createMod)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-    }
-
-    public abstract Stream<Path> scanCandidates();
 }

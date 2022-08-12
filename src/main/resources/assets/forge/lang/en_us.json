@@ -66,6 +66,8 @@
   "fml.modloading.failedtoloadforge": "Failed to load Forge",
   "fml.modloading.missingdependency": "Mod \u00a7e{4}\u00a7r requires \u00a76{3}\u00a7r \u00a7o{5,vr}\u00a7r\n\u00a77Currently, \u00a76{3}\u00a7r\u00a77 is \u00a7o{6,i18n,fml.messages.artifactversion.ornotinstalled}",
   "fml.modloading.missingdependency.optional": "Mod \u00a7e{4}\u00a7r only supports \u00a73{3}\u00a7r \u00a7o{5,vr}\u00a7r\n\u00a77Currently, \u00a73{3}\u00a7r\u00a77 is \u00a7o{6}",
+  "fml.dependencyloading.conflictingdependencies": "Some mods have requested conflicting versions of: \u00a76{3}\u00a7r. Requested by: \u00a7e{4}\u00a7r.",
+  "fml.dependencyloading.mismatchedcontaineddependencies": "Some mods have agreed upon an acceptable version range for : \u00a76{3}\u00a7r, but no jar was provided which matched the range. Requested by: \u00a7e{4}\u00a7r.",
   "fml.modloading.cycle": "Detected a mod dependency cycle: {0}",
   "fml.modloading.failedtoprocesswork":"{0,modinfo,name} ({0,modinfo,id}) encountered an error processing deferred work\n\u00a77{2,exc,msg}",
   "fml.modloading.brokenfile": "File {2} is not a valid mod file",
@@ -185,6 +187,13 @@
 
   "forge.configgui.disableVersionCheck.tooltip": "Set to true to disable Forge version check mechanics. Forge queries a small json file on our server for version information. For more details see the ForgeVersion class in our github.",
   "forge.configgui.disableVersionCheck": "Disable Forge Version Check",
+
+  "forge.configgui.cachePackAccess.tooltip": "Set this to true to cache resource listings in resource and data packs",
+  "forge.configgui.cachePackAccess": "Cache Pack Access",
+  "forge.configgui.indexVanillaPackCachesOnThread.tooltip": "Set this to true to index vanilla resource and data packs on thread",
+  "forge.configgui.indexVanillaPackCachesOnThread": "Index vanilla resource packs on thread",
+  "forge.configgui.indexModPackCachesOnThread.tooltip": "Set this to true to index mod resource and data packs on thread",
+  "forge.configgui.indexModPackCachesOnThread": "Index mod resource packs on thread",
 
   "forge.controlsgui.shift": "SHIFT + %s",
   "forge.controlsgui.control": "CTRL + %s",
