@@ -71,7 +71,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -103,20 +_,78 @@
+@@ -103,20 +_,83 @@
  import net.minecraft.world.level.material.PushReaction;
  import net.minecraft.world.level.portal.PortalInfo;
  import net.minecraft.world.level.portal.PortalShape;
@@ -138,8 +138,13 @@
 +
 +   //Magma start - make it possible to reset the entity
 +   public void resetBukkitEntity() {
++      CraftEntity temp = getBukkitEntity();
++
 +      this.bukkitEntity = null;
 +      getBukkitEntity();
++
++      if (bukkitEntity instanceof CraftPlayer player)
++         player.setFirstPlayed(((CraftPlayer) temp).getFirstPlayed());
 +   }
 +   //Magma end
 +
