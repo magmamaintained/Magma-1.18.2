@@ -15,6 +15,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.magmafoundation.magma.common.MagmaConstants;
+import org.magmafoundation.magma.configuration.MagmaConfig;
 
 public class ModsCommand extends BukkitCommand {
 
@@ -52,7 +53,8 @@ public class ModsCommand extends BukkitCommand {
             }
 
             modList.append(ChatColor.GREEN + mod.getDisplayName());
-            modList.append(ChatColor.WHITE + " (" + mod.getModId() + " v." + mod.getVersion() + ")");
+            if (MagmaConfig.instance.modCommandPrintIDs.getValues())
+                modList.append(ChatColor.WHITE + " (" + mod.getModId() + " v." + mod.getVersion() + ")");
         }
 
         return "(" + mods.size() + "): " + modList.toString();
