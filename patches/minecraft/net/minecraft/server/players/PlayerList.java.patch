@@ -370,7 +370,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,82 +_,158 @@
+@@ -332,82 +_,171 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -545,11 +545,23 @@
        }
  
 -      ServerLevel serverlevel1 = serverlevel != null && optional.isPresent() ? serverlevel : this.f_11195_.m_129783_();
--      ServerPlayer serverplayer = new ServerPlayer(this.f_11195_, serverlevel1, p_11237_.m_36316_());
 +      ServerLevel serverlevel1 = serverlevel != null && optional.isPresent() ? serverlevel : this.server.overworld();
 +      ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel1, p_11237_.getGameProfile());
 +       // */
-+      ServerPlayer serverplayer = p_11237_;
++
++
++      //Magma start - fix capabilities
++      Optional<Vec3> tmp;
++      if (worldserver != null && blockpos != null) {
++         tmp = Player.m_36130_(worldserver, blockpos, f, flag, p_11238_);
++      } else {
++         tmp = Optional.empty();
++      }
++      ServerLevel serverlevel1 = worldserver != null && tmp.isPresent() ? worldserver : this.f_11195_.m_129783_();
+       ServerPlayer serverplayer = new ServerPlayer(this.f_11195_, serverlevel1, p_11237_.m_36316_());
++      p_11237_.resetBukkitEntity();
++      //Magma end
++
 +      org.bukkit.World fromWorld = p_11237_.getBukkitEntity().getWorld();
 +      p_11237_.f_8944_ = false;
 +      // CraftBukkit end
@@ -557,7 +569,7 @@
        serverplayer.f_8906_ = p_11237_.f_8906_;
        serverplayer.m_9015_(p_11237_, p_11238_);
        serverplayer.m_20234_(p_11237_.m_142049_());
-@@ -418,46 +_,115 @@
+@@ -418,46 +_,117 @@
        }
  
        boolean flag2 = false;
@@ -639,6 +651,8 @@
 -      serverplayer.f_8906_.m_141995_(new ClientboundRespawnPacket(serverplayer.f_19853_.m_204156_(), serverplayer.f_19853_.m_46472_(), BiomeManager.m_47877_(serverplayer.m_183503_().m_7328_()), serverplayer.f_8941_.m_9290_(), serverplayer.f_8941_.m_9293_(), serverplayer.m_183503_().m_46659_(), serverplayer.m_183503_().m_8584_(), p_11238_));
 -      serverplayer.f_8906_.m_9774_(serverplayer.m_20185_(), serverplayer.m_20186_(), serverplayer.m_20189_(), serverplayer.m_146908_(), serverplayer.m_146909_());
 -      serverplayer.f_8906_.m_141995_(new ClientboundSetDefaultSpawnPositionPacket(serverlevel1.m_8900_(), serverlevel1.m_8901_()));
++      serverplayer.resetBukkitEntity();
++
 +      // CraftBukkit start
 +      LevelData leveldata = worldserver1.m_6106_();
 +      serverplayer.f_8906_.m_141995_(new ClientboundRespawnPacket(worldserver1.m_204156_(), worldserver1.m_46472_(), BiomeManager.m_47877_(worldserver1.m_7328_()), serverplayer.f_8941_.m_9290_(), serverplayer.f_8941_.m_9293_(), worldserver1.m_46659_(), worldserver1.m_8584_(), flag));
@@ -659,14 +673,13 @@
 -      serverlevel1.m_8845_(serverplayer);
 -      this.f_11196_.add(serverplayer);
 -      this.f_11197_.put(serverplayer.m_142081_(), serverplayer);
--      serverplayer.m_143429_();
 +      if (!p_11237_.f_8906_.isDisconnected()) {
 +         worldserver1.m_8845_(serverplayer);
 +         this.f_11196_.add(serverplayer);
 +         this.playersByName.put(serverplayer.m_6302_().toLowerCase(java.util.Locale.ROOT), serverplayer); // Spigot
 +         this.f_11197_.put(serverplayer.m_142081_(), serverplayer);
 +      }
-+      // serverplayer.initInventoryMenu();
+       serverplayer.m_143429_();
        serverplayer.m_21153_(serverplayer.m_21223_());
 +      net.minecraftforge.event.ForgeEventFactory.firePlayerRespawnEvent(serverplayer, p_11238_);
        if (flag2) {
