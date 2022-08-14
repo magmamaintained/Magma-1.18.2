@@ -45,6 +45,8 @@ public class SystemType {
 				os = OS.MAC;
 			} else if (operSys.contains("sunos")) {
 				os = OS.SOLARIS;
+			} else {
+				os = OS.LINUX; //Default to linux. There are so many flavors that it just is impossible to tell.
 			}
 		}
 		return os;
