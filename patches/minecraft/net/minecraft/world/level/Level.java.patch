@@ -41,7 +41,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1202 @@
+@@ -45,859 +_,1203 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -948,6 +948,7 @@
 +                    }
 +
 +                    this.m_6559_( p_46605_, blockstate, blockstate1 );
++                    p_46606_.onBlockStateChange(this, p_46605_, blockstate);
 +                }
 +            }
 +        }
