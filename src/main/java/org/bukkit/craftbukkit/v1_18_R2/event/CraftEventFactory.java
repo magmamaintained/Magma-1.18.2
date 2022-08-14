@@ -100,6 +100,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.potion.PotionEffect;
+import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
 import org.magmafoundation.magma.helpers.InventoryHelper;
 
 public class CraftEventFactory {
@@ -548,7 +549,13 @@ public class CraftEventFactory {
      * CreatureSpawnEvent
      */
     public static CreatureSpawnEvent callCreatureSpawnEvent(LivingEntity entityliving, SpawnReason spawnReason) {
-        org.bukkit.entity.LivingEntity entity = (org.bukkit.entity.LivingEntity) entityliving.getBukkitEntity();
+        //Magma start - fix ClassCastException
+        CraftEntity bukkitEntity = entityliving.getBukkitEntity();
+        org.bukkit.entity.LivingEntity entity;
+        if (bukkitEntity instanceof CraftCustomEntity craftCustomEntity)
+            entity = craftCustomEntity.asLivingEntity();
+        else entity = (org.bukkit.entity.LivingEntity) bukkitEntity;
+        //Magma end
         CraftServer craftServer = (CraftServer) entity.getServer();
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(entity, spawnReason);

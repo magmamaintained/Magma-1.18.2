@@ -45,9 +45,12 @@
  public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
     private static final float f_178299_ = 0.75F;
     private static final Logger f_129465_ = LogUtils.getLogger();
-@@ -77,6 +_,11 @@
+@@ -75,8 +_,13 @@
+    });
+    private final PacketFlow f_129466_;
     private final Queue<Connection.PacketHolder> f_129467_ = Queues.newConcurrentLinkedQueue();
-    private Channel f_129468_;
+-   private Channel f_129468_;
++   public Channel f_129468_; //Magma - private -> public
     public SocketAddress f_129469_;
 +   // Spigot Start
 +   public java.util.UUID spoofedUUID;
