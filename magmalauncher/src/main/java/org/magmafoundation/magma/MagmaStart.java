@@ -47,6 +47,8 @@ import static org.magmafoundation.magma.common.MagmaConstants.*;
  */
 public class MagmaStart {
 
+    public static boolean postInstall = false;
+
     public static void main(String[] args) throws Exception {
         String[] installerArgs = args;
         if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-noui"))) {
@@ -56,6 +58,10 @@ public class MagmaStart {
         if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-nologo"))) {
             BetterUI.setEnableBigLogo(false);
             args = remove(args, "-nologo");
+        }
+        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-postinstall"))) {
+            postInstall = true;
+            args = remove(args, "-postinstall");
         }
         Path eula = Paths.get("eula.txt");
         if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-accepteula"))) {
@@ -71,12 +77,14 @@ public class MagmaStart {
             args = remove(args, "-nojline"); //For some reason when passing -nojline to the console the whole thing crashes, remove this
         }
 
-        BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
+        if (!postInstall) {
+            BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
 
-        //Temporary warning for people using the new server jar
-        System.err.println("WARNING: The new server jar is still under development and will be unstable! If you experience any issues, please report them to the developers.");
-        System.err.println("WARNING: If the server crashes while installing, try removing the libraries folder and launching the server again.");
-        //Temporary warning for people using the new server jar
+            //Temporary warning for people using the new server jar
+            System.err.println("WARNING: The new server jar is still under development and will be unstable! If you experience any issues, please report them to the developers.");
+            System.err.println("WARNING: If the server crashes while installing, try removing the libraries folder and launching the server again.");
+            //Temporary warning for people using the new server jar
+        }
 
         if(!BetterUI.checkEula(eula)) System.exit(0);
 
@@ -92,7 +100,7 @@ public class MagmaStart {
         ServerInitHelper.init(launchArgs);
 
         Path path = Paths.get("magma.yml");
-        if (Files.exists(path)) {
+        if (Files.exists(path) && !postInstall) {
             try (InputStream stream = Files.newInputStream(path)) {
                 Yaml yaml = new Yaml();
                 Map<String, Object> data = yaml.load(stream);
