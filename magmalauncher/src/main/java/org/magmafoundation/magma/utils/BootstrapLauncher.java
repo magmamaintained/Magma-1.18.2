@@ -21,6 +21,8 @@ package org.magmafoundation.magma.utils;
 import cpw.mods.cl.JarModuleFinder;
 import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.jarhandling.SecureJar;
+import org.magmafoundation.magma.common.MagmaConstants;
+import org.magmafoundation.magma.common.utils.JarTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +39,8 @@ public class BootstrapLauncher {
     @SuppressWarnings("unchecked")
     public static void startServer(String[] args) {
         var legacyClasspath = loadLegacyClassPath();
+        legacyClasspath.replaceAll(s -> s.startsWith("libraries/") ? s.replace("libraries/", JarTool.getJarDir() + File.separator + MagmaConstants.INSTALLER_LIBRARIES_FOLDER + File.separator) : s);
+
         System.setProperty("legacyClassPath", String.join(File.pathSeparator, legacyClasspath));
 
         var ignoreList = System.getProperty("ignoreList", "asm,securejarhandler");
