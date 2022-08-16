@@ -47,35 +47,28 @@ import static org.magmafoundation.magma.common.MagmaConstants.*;
  */
 public class MagmaStart {
 
+    private static String[] args;
     public static boolean postInstall = false;
 
     public static void main(String[] args) throws Exception {
-        String[] installerArgs = args;
-        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-noui"))) {
+        MagmaStart.args = args;
+
+        if (containsArg("-noui"))
             BetterUI.setEnabled(false);
-            args = remove(args, "-noui");
-        }
-        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-nologo"))) {
+
+        if (containsArg("-nologo"))
             BetterUI.setEnableBigLogo(false);
-            args = remove(args, "-nologo");
-        }
-        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-postinstall"))) {
+
+        if (containsArg("-postinstall"))
             postInstall = true;
-            args = remove(args, "-postinstall");
-        }
+
         Path eula = Paths.get("eula.txt");
-        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-accepteula"))) {
+        if (containsArg("-accepteula"))
             BetterUI.forceAcceptEULA(eula);
-            args = remove(args, "-accepteula");
-        }
-        boolean enableUpdate = true;
-        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-dau"))) {
-            enableUpdate = false;
-            args = remove(args, "-dau");
-        }
-        if (Arrays.stream(args).anyMatch(s -> s.equalsIgnoreCase("-nojline"))) {
-            args = remove(args, "-nojline"); //For some reason when passing -nojline to the console the whole thing crashes, remove this
-        }
+
+        boolean enableUpdate = !containsArg("-dau");
+
+        containsArg("-nojline"); //For some reason when passing -nojline to the console the whole thing crashes, remove this
 
         if (!postInstall) {
             BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
@@ -95,7 +88,7 @@ public class MagmaStart {
             forgeArgs.add(arg.split(" ")[1]);
         });
 
-        new MagmaInstaller(Arrays.stream(installerArgs).toList());
+        new MagmaInstaller(Arrays.stream(args).toList());
 
         ServerInitHelper.init(launchArgs);
 
@@ -114,8 +107,16 @@ public class MagmaStart {
             }
         }
 
-        String[] invokeArgs = Stream.concat(forgeArgs.stream(), Stream.of(args)).toArray(String[]::new);
+        String[] invokeArgs = Stream.concat(forgeArgs.stream(), Stream.of(MagmaStart.args)).toArray(String[]::new);
         BootstrapLauncher.startServer(invokeArgs);
+    }
+
+    private static boolean containsArg(String arg) {
+        if (Arrays.stream(MagmaStart.args).anyMatch(s -> s.equalsIgnoreCase(arg))) {
+            MagmaStart.args = remove(MagmaStart.args, arg);
+            return true;
+        }
+        return false;
     }
 
     private static String[] remove(String[] array, String element) {
