@@ -576,7 +576,7 @@
           this.m_6915_();
           this.f_36096_ = this.f_36095_;
        }
-@@ -413,24 +_,24 @@
+@@ -413,44 +_,46 @@
        Entity entity = this.m_8954_();
        if (entity != this) {
           if (entity.m_6084_()) {
@@ -608,9 +608,13 @@
     }
  
     public void m_9240_() {
-@@ -439,18 +_,18 @@
+       try {
+-         if (!this.m_5833_() || !this.m_146899_()) {
++         //Magma start - spigot calls doTick() once more after the player disconnects, ticking the player after disconnecting is not a good idea
++         if (!m_9232_() && (!this.m_5833_() || !this.m_146899_())) {
              super.m_8119_();
           }
++         //Magma end
  
 -         for(int i = 0; i < this.m_150109_().m_6643_(); ++i) {
 -            ItemStack itemstack = this.m_150109_().m_8020_(i);
