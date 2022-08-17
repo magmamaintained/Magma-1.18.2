@@ -1,8 +1,11 @@
 package org.magmafoundation.magma.utils;
 
 import io.izzel.arclight.api.Unsafe;
+import org.magmafoundation.magma.common.MagmaConstants;
+import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.common.utils.SystemType;
 
+import java.io.File;
 import java.lang.instrument.Instrumentation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -37,18 +40,45 @@ public class ServerInitHelper {
         EXPORTS.add("cpw.mods.securejarhandler/cpw.mods.niofs.union=ALL-UNNAMED");
         EXPORTS.add("cpw.mods.securejarhandler/cpw.mods.jarhandling=ALL-UNNAMED");
 
+        String libsPath = JarTool.getJarDir() + File.separator + MagmaConstants.INSTALLER_LIBRARIES_FOLDER + File.separator;
+        StringBuilder modulePath = new StringBuilder();
+
         args.parallelStream().parallel().forEach(arg -> {
             if(arg.startsWith("-p ")) {
                 MODULE_PATH = arg.substring(2).trim();
+                String[] split = MODULE_PATH.split(File.pathSeparator);
+
+                for(String s : split) {
+                    if (s.startsWith("libraries/")) {
+                        modulePath.append(libsPath).append(s.substring("libraries/".length() - 1)).append(File.pathSeparator);
+                    }
+                }
             } else if(arg.startsWith("--add-opens ")) {
                 OPENS.add(arg.substring("--add-opens ".length()).trim());
             } else if(arg.startsWith("--add-exports ")) {
                 EXPORTS.add(arg.substring("--add-exports ".length()).trim());
             } else if(arg.startsWith("-D")) {
                 String[] params = arg.substring(2).split("=", 2);
-                System.setProperty(params[0], params[1]);
+
+                if (params[0].equals("legacyClassPath")) {
+                    String[] split = params[1].split(File.pathSeparator);
+
+                    StringBuilder tmp = new StringBuilder();
+
+                    for (String s : split) {
+                        if (s.startsWith("libraries/")) {
+                            tmp.append(libsPath).append(s.substring("libraries/".length() - 1)).append(File.pathSeparator);
+                        }
+                    }
+
+                    System.setProperty(params[0], tmp.toString());
+                } else if (params[0].equals("libraryDirectory")) {
+                    System.setProperty(params[0], libsPath);
+                } else System.setProperty(params[0], params[1]);
             }
         });
+
+        MODULE_PATH = modulePath.toString();
 
         try {
             loadModules(MODULE_PATH);

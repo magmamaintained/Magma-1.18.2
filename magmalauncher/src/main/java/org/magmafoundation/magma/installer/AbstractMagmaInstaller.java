@@ -154,7 +154,7 @@ public abstract class AbstractMagmaInstaller {
     }
 
     protected void restartServer(List<String> arguments) throws Exception {
-        clearConsole();
+        //clearConsole(); //Does not work atm
 
         final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
         final File currentJar = new File(AbstractMagmaInstaller.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -169,9 +169,10 @@ public abstract class AbstractMagmaInstaller {
         command.add("-jar");
         command.add(currentJar.getPath());
         arguments.parallelStream().forEach(command::add);
+        command.add("-postinstall");
 
         final ProcessBuilder builder = new ProcessBuilder(command);
-        System.out.println(Arrays.toString(builder.command().toArray()));
+        //System.out.println(Arrays.toString(builder.command().toArray()));
         builder.inheritIO().start().waitFor();
         Thread.sleep(2000);
         System.exit(0);
