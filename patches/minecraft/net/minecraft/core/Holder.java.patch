@@ -25,7 +25,7 @@
 +
 +   @Override
 +   default Stream<TagKey<T>> getTagKeys() {
-+      return this.getTagKeys();
++      return this.m_203616_();
 +   }
 +
 +
