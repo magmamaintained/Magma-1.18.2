@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2488 @@
+@@ -118,1340 +_,2482 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -276,9 +276,8 @@
 +    private long f_9747_;
 +    private boolean f_9748_;
 +    private long f_9749_;
-+    //Magma start - multithreaded fields
-+    public volatile int f_9750_;
-+    private final AtomicIntegerFieldUpdater<ServerGamePacketListenerImpl> chatSpamTickCountUpdater = AtomicIntegerFieldUpdater.newUpdater(ServerGamePacketListenerImpl.class, "f_9750_");
++    //Magma start - remove craftbukkit multithreading
++    public int f_9750_;
 +    //Magma end
 +    private int f_9751_;
 +    private double f_9753_;
@@ -510,15 +509,9 @@
 +        }
 +
 +        this.f_9745_.m_129905_().m_7238_();
-+        // CraftBukkit start
-+        for (int spam; (spam = this.chatSpamTickCountUpdater.get(this)) > 0 && !chatSpamTickCountUpdater.compareAndSet( this, spam, spam - 1 ); )
-+            ;
-+        /* Use thread-safe field access instead
-+      if (this.chatSpamTickCount > 0) {
-+         --this.chatSpamTickCount;
-+  }
-+         */
-+        //Craftbukkit end
++        if (this.f_9750_ > 0) {
++            --this.f_9750_;
++        }
 +
 +        if (this.f_9751_ > 0) {
 +            --this.f_9751_;
@@ -841,7 +834,8 @@
 +    public void m_7741_(ServerboundCommandSuggestionPacket p_9847_) {
 +        PacketUtils.m_131359_( p_9847_, this, this.f_9743_.m_183503_() );
 +        // CraftBukkit start
-+        if (chatSpamTickCountUpdater.addAndGet(this, 1) > 500 && !this.f_9745_.m_6846_().m_11303_(this.f_9743_.m_36316_())) {
++        this.f_9750_ += 1;
++        if (f_9750_ > 500 && !this.f_9745_.m_6846_().m_11303_(this.f_9743_.m_36316_())) {
 +            this.m_9942_(new TranslatableComponent("disconnect.spam", new Object[0]));
 +            return;
 +        }
@@ -2986,9 +2980,9 @@
 +            }
 +            // Spigot end
 +
-+            // CraftBukkit start - replaced with thread safe throttle
-+            // this.chatSpamTickCount += 20;
-+            if (chatSpamTickCountUpdater.addAndGet( this, 20 ) > 200 && !this.f_9745_.m_6846_().m_11303_( this.f_9743_.m_36316_() )) {
++            // CraftBukkit start - replaced with thread safe throttle //Magma - let's not
++            this.f_9750_ += 20;
++            if (f_9750_ > 200 && !this.f_9745_.m_6846_().m_11303_( this.f_9743_.m_36316_() )) {
 +                if (!isSync) {
 +                    Waitable waitable = new Waitable() {
 +                        @Override
