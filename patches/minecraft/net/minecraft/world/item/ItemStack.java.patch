@@ -324,13 +324,13 @@
 +               }
 +               // Special case juke boxes as they update their tile entity. Copied from ItemRecord.
 +               // PAIL: checkme on updates.
-+               if (this.f_41589_ instanceof RecordItem) {
++               if (item instanceof RecordItem) {
 +                  ((JukeboxBlock) Blocks.f_50131_).m_54269_(world, blockpos, world.m_8055_(blockpos), this);
 +                  world.m_5898_((Player) null, 1010, blockpos, Item.m_41393_(this.f_41589_));
 +                  this.m_41774_(1);
 +                  player.m_36220_(Stats.f_12965_);
 +               }
-+               if (this.f_41589_ == Items.f_42679_) { // Special case skulls to allow wither spawns to be cancelled
++               if (item == Items.f_42679_) { // Special case skulls to allow wither spawns to be cancelled
 +                  BlockPos bp = blockpos;
 +                  if (!world.m_8055_(blockpos).m_60767_().m_76336_()) {
 +                     if (!world.m_8055_(blockpos).m_60767_().m_76333_()) {
@@ -347,7 +347,7 @@
 +                  }
 +               }
 +               // SPIGOT-4678
-+               if (this.f_41589_ instanceof SignItem && SignItem.openSign != null) {
++               if (item instanceof SignItem && SignItem.openSign != null) {
 +                  try {
 +                     player.m_7739_((SignBlockEntity) world.m_7702_(SignItem.openSign));
 +                  } finally {
@@ -355,7 +355,7 @@
 +                  }
 +               }
 +               // SPIGOT-1288 - play sound stripped from ItemBlock
-+               if (this.f_41589_ instanceof BlockItem) {
++               if (item instanceof BlockItem) {
 +                  SoundType soundeffecttype = ((BlockItem) this.f_41589_).m_40614_().m_49962_(null);
 +                  world.m_5594_(player, blockpos, soundeffecttype.m_56777_(), SoundSource.BLOCKS, (soundeffecttype.m_56773_() + 1.0F) / 2.0F, soundeffecttype.m_56774_() * 0.8F);
 +               }
