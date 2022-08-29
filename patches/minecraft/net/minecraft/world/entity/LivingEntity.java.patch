@@ -917,7 +917,7 @@
                 }
              }
           }
-@@ -1514,24 +_,150 @@
+@@ -1514,24 +_,148 @@
     }
  
     protected void m_6475_(DamageSource p_21240_, float p_21241_) {
@@ -927,10 +927,8 @@
 +   // CraftBukkit start
 +   protected boolean damageEntity0(final DamageSource p_21240_, float p_21241_) { // void -> boolean, add final
        if (!this.m_6673_(p_21240_)) {
-+         p_21241_ = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
-+         if (p_21241_ <= 0) return false;
-          p_21241_ = this.m_21161_(p_21240_, p_21241_);
-          p_21241_ = this.m_6515_(p_21240_, p_21241_);
+-         p_21241_ = this.m_21161_(p_21240_, p_21241_);
+-         p_21241_ = this.m_6515_(p_21240_, p_21241_);
 -         float f2 = Math.max(p_21241_ - this.m_6103_(), 0.0F);
 -         this.m_7911_(this.m_6103_() - (p_21241_ - f2));
 -         float f = p_21241_ - f2;
@@ -939,6 +937,8 @@
 -         }
 -
 -         if (f2 != 0.0F) {
++         p_21241_ = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
++         if (p_21241_ <= 0) return false;
 +         final boolean human = this instanceof Player;
 +         float originalDamage = p_21241_;
 +         Function<Double, Double> hardHat = f -> {
