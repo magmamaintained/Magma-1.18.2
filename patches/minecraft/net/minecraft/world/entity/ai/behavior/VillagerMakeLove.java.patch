@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
 +++ b/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
-@@ -106,11 +_,15 @@
+@@ -106,11 +_,16 @@
        if (villager == null) {
           return Optional.empty();
        } else {
@@ -16,6 +16,7 @@
 +         // CraftBukkit end
 +         p_24657_.m_146762_(6000);
 +         p_24658_.m_146762_(6000);
++         p_24656_.m_47205_(villager); //Magma - fix villager breeding
           p_24656_.m_7605_(villager, (byte)12);
           return Optional.of(villager);
        }
