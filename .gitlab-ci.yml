@@ -9,7 +9,7 @@ stages:
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
-  - apt-get update && apt-get -y install xargs
+  - microdnf install xargs
 
 cache:
   paths:
