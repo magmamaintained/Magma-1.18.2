@@ -9,6 +9,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.command.VanillaCommandWrapper;
 import org.bukkit.help.*;
+import org.magmafoundation.magma.permission.ForgeCommandWrapper;
 
 /**
  * Standard implementation of {@link HelpMap} for CraftBukkit servers.
@@ -186,6 +187,9 @@ public class SimpleHelpMap implements HelpMap {
     private String getCommandPluginName(Command command) {
         if (command instanceof VanillaCommandWrapper) {
             return "Minecraft";
+        }
+        if (command instanceof ForgeCommandWrapper) {
+            return "Forge";
         }
         if (command instanceof BukkitCommand) {
             return "Bukkit";
