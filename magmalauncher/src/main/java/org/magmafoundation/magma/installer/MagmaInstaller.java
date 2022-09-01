@@ -101,6 +101,15 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                 launchService("net.minecraftforge.installertools.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", libPath, "--libraries")),
                         stringToUrl(loadedLibsPaths));
+
+                //Delete brigadier, we have our own implementation
+                File brigadierDir = new File(libPath + "com/mojang/brigadier");
+                if (brigadierDir.exists()) {
+                    Files.walk(brigadierDir.toPath())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                    brigadierDir.delete();
+                }
                 unmute();
                 pb.step();
                 if (!mc_unpacked.exists()) {

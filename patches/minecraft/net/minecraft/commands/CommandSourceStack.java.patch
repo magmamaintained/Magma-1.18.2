@@ -15,11 +15,14 @@
  import net.minecraft.ChatFormatting;
  import net.minecraft.Util;
  import net.minecraft.commands.arguments.EntityAnchorArgument;
-@@ -35,7 +_,15 @@
+@@ -34,8 +_,17 @@
+ import net.minecraft.world.level.dimension.DimensionType;
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
- 
+-
 -public class CommandSourceStack implements SharedSuggestionProvider {
++import org.bukkit.craftbukkit.v1_18_R2.command.VanillaCommandWrapper;
++
 +import javax.annotation.Nullable;
 +import java.util.Collection;
 +import java.util.Objects;
@@ -40,13 +43,14 @@
  
     public CommandSourceStack(CommandSource p_81302_, Vec3 p_81303_, Vec2 p_81304_, ServerLevel p_81305_, int p_81306_, String p_81307_, Component p_81308_, MinecraftServer p_81309_, @Nullable Entity p_81310_) {
        this(p_81302_, p_81303_, p_81304_, p_81305_, p_81306_, p_81307_, p_81308_, p_81309_, p_81310_, false, (p_81361_, p_81362_, p_81363_) -> {
-@@ -148,9 +_,21 @@
+@@ -148,9 +_,22 @@
     }
  
     public boolean m_6761_(int p_81370_) {
 +      // CraftBukkit start
-+      if (this.currentCommand != null) {
-+         return hasPermission(p_81370_, org.bukkit.craftbukkit.v1_18_R2.command.VanillaCommandWrapper.getPermission(currentCommand));
++      CommandNode currentCommand = this.currentCommand;
++      if (currentCommand != null && !currentCommand.isForgeCommand()) { //Magma - skip if forge command
++         return hasPermission(p_81370_, VanillaCommandWrapper.getPermission(currentCommand));
 +      }
 +      // CraftBukkit end
        return this.f_81291_ >= p_81370_;
