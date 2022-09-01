@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.configuration.MagmaConfig;
-import org.magmafoundation.magma.craftbukkit.commnd.permission.BukkitPermissionHandler;
+import org.magmafoundation.magma.permission.MagmaPermissionHandler;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -134,8 +134,8 @@ public final class PermissionAPI
             LOGGER.info("Successfully initialized permission handler {}", PermissionAPI.activeHandler.getIdentifier());
 
             if(MagmaConfig.instance.forgeBukkitPermissionHandlerEnable.getValues()){
-                activeHandler = new BukkitPermissionHandler(activeHandler);
-                Magma.LOGGER.info("[MAGMA] Forwarding forge permission[{}] to bukkit", activeHandler.getIdentifier());
+                activeHandler = new MagmaPermissionHandler(activeHandler);
+                Magma.LOGGER.info("Forwarding forge permission[{}] to bukkit", activeHandler.getIdentifier());
             }
         }
         catch (ResourceLocationException e)

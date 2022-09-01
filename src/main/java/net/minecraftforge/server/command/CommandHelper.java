@@ -14,7 +14,6 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import org.magmafoundation.magma.commands.MagmaCommandNode;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -48,7 +47,7 @@ public final class CommandHelper
         sourceToResult.put(sourceNode, resultNode);
         for (CommandNode<S> child : sourceNode.getChildren())
         {
-            if (MagmaCommandNode.canUse(child, canUse))
+            if (child.canUse(canUse))
             {
                 resultNode.addChild(toResult(child, sourceToResult, canUse, execute, sourceToResultSuggestion));
             }
