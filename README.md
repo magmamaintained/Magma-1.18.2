@@ -1,7 +1,7 @@
 <div align="center">
 <img src="https://i.imgur.com/zTCTCWG.png" alt="Magma logo" align="middle"></img>
 
-[![](https://img.shields.io/badge/Minecraft%20Forge-1.18.2%20--%2040.1.73%20--%20dbf1c8f1-orange.svg)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.18.2.html)
+[![](https://img.shields.io/badge/Minecraft%20Forge-1.18.2%20--%2040.1.74%20--%20d4db9bc6-orange.svg)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.18.2.html)
 [![](https://img.shields.io/badge/Bukkit-1.18%20r2-blue)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse)
 [![](https://img.shields.io/badge/CraftBukkit-Build%20b02801aa-orange)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse?at=refs%2Fheads%2Fversion%2F1.16.5)
 [![](https://img.shields.io/badge/Spigot-Build%20b0819150-yellow)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
@@ -36,12 +36,11 @@ Magma for Minecraft 1.12 and above can be found in their own repositories.
 
 ### Installation
 
-1. Download the recommended builds from the [**Releases** section](https://git.magmafoundation.org/magmafoundation/Magma-1-18-x/-/releases) (**Download** the one that ends in installer) 
+1. Download the recommended builds from the [**Releases** section](https://git.magmafoundation.org/magmafoundation/Magma-1-18-x/-/releases) (**Download** the one that ends in server) 
    1. Or Download the latest jar from [Magma Site](https://magmafoundation.org/)
-2. Make a new directory(folder) for the server
+2. Make a new directory (folder) for the server
 3. Move the jar that you downloaded into the new directory
-4. Run the jar with your command prompt or terminal, going to your directory and entering `java -jar Magma-[version]-installer.jar --installServer`. Change [version] to your Magma version number.
-5. This will generate another jar `forge-[version].jar` run this as normal `java -jar forge-[version].jar`
+4. Run the jar with your command prompt or terminal, going to your directory and entering `java -jar Magma-[version]-sever.jar`. Change [version] to your Magma version number.
 
 ### Building the sources
 
@@ -50,7 +49,7 @@ Magma for Minecraft 1.12 and above can be found in their own repositories.
         - `git clone http://git.magmafoundation.org/magmafoundation/Magma-1-18-x.git`
 - Building
     - First you want to run the build command
-        - `./gradlew setup installerJar`
+        - `./gradlew setup magmaJar`
     - Now go and get a drink this may take some time
     - Navigate to `projects/magma/build/libs` directory of the compiled source code
     - Copy the Jar to a new server directory (see Installation)
