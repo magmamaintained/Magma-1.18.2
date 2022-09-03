@@ -22,10 +22,11 @@
  import net.minecraft.world.item.crafting.Recipe;
  import net.minecraft.world.item.enchantment.EnchantmentHelper;
  import net.minecraft.world.item.trading.MerchantOffers;
-@@ -110,8 +_,17 @@
+@@ -110,8 +_,18 @@
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Scoreboard;
  import net.minecraft.world.scores.Team;
++import net.minecraftforge.common.ForgeMod;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftVector;
@@ -74,12 +75,19 @@
  
     public Player(Level p_36114_, BlockPos p_36115_, float p_36116_, GameProfile p_36117_) {
        super(EntityType.f_20532_, p_36114_);
-@@ -187,7 +_,7 @@
+@@ -187,7 +_,14 @@
     }
  
     public static AttributeSupplier.Builder m_36340_() {
 -      return LivingEntity.m_21183_().m_22268_(Attributes.f_22281_, 1.0D).m_22268_(Attributes.f_22279_, (double)0.1F).m_22266_(Attributes.f_22283_).m_22266_(Attributes.f_22286_);
-+       return LivingEntity.m_21183_().m_22268_(Attributes.f_22281_, 1.0D).m_22268_(Attributes.f_22279_, (double) 0.1F).m_22266_(Attributes.f_22283_).m_22266_(Attributes.f_22286_).m_22266_(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get()).m_22266_(Attributes.f_22282_);
++      return LivingEntity.m_21183_()
++              .m_22268_(Attributes.f_22281_, 1.0D)
++              .m_22268_(Attributes.f_22279_, (double) 0.1F)
++              .m_22266_(Attributes.f_22283_)
++              .m_22266_(Attributes.f_22286_)
++              .m_22266_(ForgeMod.REACH_DISTANCE.get())
++              .m_22266_(Attributes.f_22282_)
++              .m_22266_(ForgeMod.ATTACK_RANGE.get()); //Magma - add missing ATTACK_RANGE attribute
     }
  
     protected void m_8097_() {
