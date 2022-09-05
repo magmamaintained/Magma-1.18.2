@@ -107,7 +107,7 @@
 +   // CraftBukkit start
 +   @Override
 +   public boolean m_6326_() {
-+      return true;
++      return false;
 +   }
 +   // CraftBukkit end
  }
