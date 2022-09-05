@@ -115,6 +115,25 @@
     @Nullable
     private CompoundTag f_41590_;
     private boolean f_41591_;
+@@ -119,6 +_,18 @@
+       return this.m_41720_().m_142422_(this);
+    }
+ 
++   //Magma start - forge caps
++   public CompoundTag getForgeCaps() {
++      return this.serializeCaps();
++   }
++
++   public void setForgeCaps(CompoundTag nbt) {
++      this.capNBT = nbt;
++      if (nbt != null)
++         this.deserializeCaps(nbt);
++   }
++   //Magma end
++
+    public ItemStack(ItemLike p_41599_) {
+       this(p_41599_, 1);
+    }
 @@ -132,14 +_,29 @@
        p_41606_.ifPresent(this::m_41751_);
     }
