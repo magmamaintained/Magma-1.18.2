@@ -195,7 +195,7 @@
           }
  
        }
-@@ -217,45 +_,181 @@
+@@ -217,45 +_,183 @@
        if (this.m_9280_(p_9287_)) {
           this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9287_, this.f_9244_.m_8055_(p_9287_), p_9288_, true, p_9289_));
        } else {
@@ -286,6 +286,8 @@
           if (block instanceof GameMasterBlock && !this.f_9245_.m_36337_()) {
 -            this.f_9244_.m_7260_(p_9281_, blockstate, blockstate, 3);
 +            this.f_9244_.m_7260_(p_9281_, blockState, blockState, 3);
++            return false;
++         } else if (f_9245_.m_21205_().onBlockStartBreak(p_9281_, f_9245_)) { //Magma - add missing if statement
              return false;
           } else if (this.f_9245_.m_36187_(this.f_9244_, p_9281_, this.f_9247_)) {
              return false;
