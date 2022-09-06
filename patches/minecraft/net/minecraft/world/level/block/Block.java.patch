@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
+@@ -40,6 +_,8 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.TooltipFlag;
+ import net.minecraft.world.item.context.BlockPlaceContext;
++import net.minecraft.world.item.enchantment.EnchantmentHelper;
++import net.minecraft.world.item.enchantment.Enchantments;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.Explosion;
+ import net.minecraft.world.level.GameRules;
 @@ -62,10 +_,11 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.slf4j.Logger;
@@ -197,9 +206,9 @@
        return this.f_204296_;
     }
 +
-+   // CraftBukkit start
++   // CraftBukkit start //Magma - default to forge if not overridden
 +   public int getExpDrop(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, ItemStack itemstack) {
-+      return 0;
++      return this.getExpDrop(blockState, serverLevel, blockPos, EnchantmentHelper.m_44843_(Enchantments.f_44987_, itemstack), EnchantmentHelper.m_44843_(Enchantments.f_44985_, itemstack));
 +   }
 +   // CraftBukkit end
 +
