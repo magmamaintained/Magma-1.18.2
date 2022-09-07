@@ -1,12 +1,13 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
-@@ -4,20 +_,16 @@
+@@ -4,20 +_,17 @@
  import com.mojang.serialization.Codec;
  import com.mojang.serialization.DataResult;
  import com.mojang.serialization.Dynamic;
 +import net.minecraft.CrashReport;
 +import net.minecraft.CrashReportCategory;
 +import net.minecraft.ReportedException;
++import org.magmafoundation.magma.Magma;
 +
 +import javax.annotation.Nullable;
  import java.io.DataInput;
@@ -35,11 +36,68 @@
                 Tag tag = CompoundTag.m_128413_(TagTypes.m_129397_(b0), s, p_128485_, p_128486_ + 1, p_128487_);
                 if (map.put(s, tag) != null) {
                    p_128487_.m_6800_(288L);
+@@ -56,36 +_,36 @@
+             if ((b0 = p_197446_.readByte()) != 0) {
+                TagType<?> tagtype = TagTypes.m_129397_(b0);
+                switch(p_197447_.m_196214_(tagtype)) {
+-               case HALT:
+-                  return StreamTagVisitor.ValueResult.HALT;
+-               case BREAK:
+-                  StringTag.m_197563_(p_197446_);
+-                  tagtype.m_196159_(p_197446_);
+-                  break;
+-               case SKIP:
+-                  StringTag.m_197563_(p_197446_);
+-                  tagtype.m_196159_(p_197446_);
+-                  continue;
+-               default:
+-                  String s = p_197446_.readUTF();
+-                  switch(p_197447_.m_196425_(tagtype, s)) {
+                   case HALT:
+                      return StreamTagVisitor.ValueResult.HALT;
+                   case BREAK:
++                     StringTag.m_197563_(p_197446_);
+                      tagtype.m_196159_(p_197446_);
+                      break;
+                   case SKIP:
++                     StringTag.m_197563_(p_197446_);
+                      tagtype.m_196159_(p_197446_);
+                      continue;
+                   default:
+-                     switch(tagtype.m_196511_(p_197446_, p_197447_)) {
+-                     case HALT:
+-                        return StreamTagVisitor.ValueResult.HALT;
+-                     case BREAK:
+-                     default:
+-                        continue;
++                     String s = p_197446_.readUTF();
++                     switch(p_197447_.m_196425_(tagtype, s)) {
++                        case HALT:
++                           return StreamTagVisitor.ValueResult.HALT;
++                        case BREAK:
++                           tagtype.m_196159_(p_197446_);
++                           break;
++                        case SKIP:
++                           tagtype.m_196159_(p_197446_);
++                           continue;
++                        default:
++                           switch(tagtype.m_196511_(p_197446_, p_197447_)) {
++                              case HALT:
++                                 return StreamTagVisitor.ValueResult.HALT;
++                              case BREAK:
++                              default:
++                                 continue;
++                           }
+                      }
+-                  }
+                }
+             }
+ 
 @@ -154,6 +_,7 @@
  
     @Nullable
     public Tag m_128365_(String p_128366_, Tag p_128367_) {
-+      //if (p_128367_ == null) throw new IllegalArgumentException("Invalid null NBT value with key " + p_128366_); //Magma - allow null nbt
++      if (p_128367_ == null) Magma.LOGGER.warn("Tried to set key " + p_128366_ + " to null. This warning can be ignored if you know what you're doing."); // Magma - allow null nbt
        return this.f_128329_.put(p_128366_, p_128367_);
     }
  
@@ -57,3 +115,50 @@
     }
  
     static Tag m_128413_(TagType<?> p_128414_, String p_128415_, DataInput p_128416_, int p_128417_, NbtAccounter p_128418_) {
+@@ -497,15 +_,6 @@
+          TagType<?> tagtype = tag.m_6458_();
+          StreamTagVisitor.EntryResult streamtagvisitor$entryresult = p_197442_.m_196214_(tagtype);
+          switch(streamtagvisitor$entryresult) {
+-         case HALT:
+-            return StreamTagVisitor.ValueResult.HALT;
+-         case BREAK:
+-            return p_197442_.m_196527_();
+-         case SKIP:
+-            break;
+-         default:
+-            streamtagvisitor$entryresult = p_197442_.m_196425_(tagtype, entry.getKey());
+-            switch(streamtagvisitor$entryresult) {
+             case HALT:
+                return StreamTagVisitor.ValueResult.HALT;
+             case BREAK:
+@@ -513,14 +_,23 @@
+             case SKIP:
+                break;
+             default:
+-               StreamTagVisitor.ValueResult streamtagvisitor$valueresult = tag.m_196533_(p_197442_);
+-               switch(streamtagvisitor$valueresult) {
+-               case HALT:
+-                  return StreamTagVisitor.ValueResult.HALT;
+-               case BREAK:
+-                  return p_197442_.m_196527_();
++               streamtagvisitor$entryresult = p_197442_.m_196425_(tagtype, entry.getKey());
++               switch(streamtagvisitor$entryresult) {
++                  case HALT:
++                     return StreamTagVisitor.ValueResult.HALT;
++                  case BREAK:
++                     return p_197442_.m_196527_();
++                  case SKIP:
++                     break;
++                  default:
++                     StreamTagVisitor.ValueResult streamtagvisitor$valueresult = tag.m_196533_(p_197442_);
++                     switch(streamtagvisitor$valueresult) {
++                        case HALT:
++                           return StreamTagVisitor.ValueResult.HALT;
++                        case BREAK:
++                           return p_197442_.m_196527_();
++                     }
+                }
+-            }
+          }
+       }
+ 
