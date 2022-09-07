@@ -36,22 +36,18 @@
              if (p_155111_.f_58649_.size() <= 1) {
                 beaconblockentity$beaconbeamsection = new BeaconBlockEntity.BeaconBeamSection(afloat);
                 p_155111_.f_58649_.add(beaconblockentity$beaconbeamsection);
-@@ -209,30 +_,66 @@
+@@ -209,6 +_,54 @@
        super.m_7651_();
     }
  
--   private static void m_155097_(Level p_155098_, BlockPos p_155099_, int p_155100_, @Nullable MobEffect p_155101_, @Nullable MobEffect p_155102_) {
--      if (!p_155098_.f_46443_ && p_155101_ != null) {
--         double d0 = (double)(p_155100_ * 10 + 10);
--         int i = 0;
 +   // CraftBukkit start - split into components
 +   private static byte getAmplification(int p_155100_, @Nullable MobEffect p_155101_, @Nullable MobEffect p_155102_) {
 +      {
 +         byte i = 0;
-          if (p_155100_ >= 4 && p_155101_ == p_155102_) {
-             i = 1;
-          }
- 
++         if (p_155100_ >= 4 && p_155101_ == p_155102_) {
++            i = 1;
++         }
++
 +         return i;
 +      }
 +   }
@@ -59,11 +55,7 @@
 +   private static int getLevel(int p_155100_) {
 +      {
 +
-          int j = (9 + p_155100_ * 2) * 20;
--         AABB aabb = (new AABB(p_155099_)).m_82400_(d0).m_82363_(0.0D, (double)p_155098_.m_141928_(), 0.0D);
--         List<Player> list = p_155098_.m_45976_(Player.class, aabb);
--
--         for(Player player : list) {
++         int j = (9 + p_155100_ * 2) * 20;
 +         return j;
 +      }
 +   }
@@ -80,17 +72,8 @@
 +   private static void applyEffect(List<Player> list, MobEffect p_155101_, int j, int i) {
 +      {
 +         for (Player player : list) {
-             player.m_7292_(new MobEffectInstance(p_155101_, j, i, true, true));
-          }
--
--         if (p_155100_ >= 4 && p_155101_ != p_155102_ && p_155102_ != null) {
--            for(Player player1 : list) {
--               player1.m_7292_(new MobEffectInstance(p_155102_, j, 0, true, true));
--            }
--         }
--
--      }
--   }
++            player.m_7292_(new MobEffectInstance(p_155101_, j, i, true, true));
++         }
 +      }
 +   }
 +
@@ -104,19 +87,16 @@
 +      return false;
 +   }
 +
-+   private static void m_155097_(Level p_155098_, BlockPos p_155099_, int p_155100_, @Nullable MobEffect p_155101_, @Nullable MobEffect p_155102_) {
-+      if (!p_155098_.f_46443_ && p_155101_ != null) {
-+         double d0 = (double) (p_155100_ * 10 + 10);
-+         byte b0 = getAmplification(p_155100_, p_155101_, p_155102_);
-+         int j = getLevel(p_155100_);
-+         List list = getHumansInRange(p_155098_, p_155099_, p_155100_);
-+         applyEffect(list, p_155101_, j, b0);
-+         if (hasSecondaryEffect(p_155100_, p_155101_, p_155102_)) {
-+            applyEffect(list, p_155102_, j, 0);
-+         }
-+      }
-+   }
++   //Magma start - revert to original to fix mixin inject, nothing really changed here apart from being moved to a different constructor
+    private static void m_155097_(Level p_155098_, BlockPos p_155099_, int p_155100_, @Nullable MobEffect p_155101_, @Nullable MobEffect p_155102_) {
+       if (!p_155098_.f_46443_ && p_155101_ != null) {
+          double d0 = (double)(p_155100_ * 10 + 10);
+@@ -233,6 +_,8 @@
+ 
+       }
+    }
 +   // CraftBukkit end
++   //Magma end
  
     public static void m_155103_(Level p_155104_, BlockPos p_155105_, SoundEvent p_155106_) {
        p_155104_.m_5594_((Player)null, p_155105_, p_155106_, SoundSource.BLOCKS, 1.0F, 1.0F);
