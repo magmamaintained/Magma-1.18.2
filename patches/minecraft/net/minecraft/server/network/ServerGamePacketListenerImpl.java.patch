@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2482 @@
+@@ -118,1340 +_,2483 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -804,7 +804,8 @@
 +            }
 +
 +            this.f_9766_ = null;
-+            this.f_9743_.m_183503_().m_7726_().m_8385_(this.f_9743_); // CraftBukkit
++            if (this.f_9743_.valid) //Magma
++                this.f_9743_.m_183503_().m_7726_().m_8385_(this.f_9743_); // CraftBukkit
 +        }
 +
 +    }
