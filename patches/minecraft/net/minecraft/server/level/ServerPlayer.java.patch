@@ -736,7 +736,7 @@
           }
        }
  
-@@ -535,150 +_,199 @@
+@@ -535,59 +_,105 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -749,86 +749,97 @@
 +      } );
     }
  
++   //Magma start - add Arclight death patch and modify it a little
     public void m_6667_(DamageSource p_9035_) {
--      boolean flag = this.f_19853_.m_46469_().m_46207_(GameRules.f_46142_);
++      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_))
++         return;
+       boolean flag = this.f_19853_.m_46469_().m_46207_(GameRules.f_46142_);
 -      if (flag) {
 -         Component component = this.m_21231_().m_19293_();
 -         this.f_8906_.m_9831_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), component), (p_9142_) -> {
-+      if (net.minecraftforge.common.ForgeHooks.onLivingDeath( this, p_9035_ )) return;
-+      boolean flag = this.f_19853_.m_46469_().m_46207_( GameRules.f_46142_ );
-+      if (this.m_146910_()) return; // CraftBukkit
-+      List<org.bukkit.inventory.ItemStack> loot = new ArrayList<>( this.m_150109_().m_6643_() );
-+      boolean keepInventory = this.f_19853_.m_46469_().m_46207_( GameRules.f_46133_ ) || this.m_5833_();
-+
-+      if (!keepInventory) {
-+         this.m_150109_().getContents().parallelStream().forEach( item -> {
-+            if (!item.m_41619_() && !EnchantmentHelper.m_44924_( item )) {
-+               loot.add( CraftItemStack.asCraftMirror( item ) );
-+            }
-+         } );
+-            if (!p_9142_.isSuccess()) {
++      if (this.m_146910_()) {
++         return;
 +      }
-+
-+      //SPIGOT-5071: manually add player loot tables (SPIGOT-5195 - ignores keepInventory rule)
-+      this.m_7625_( p_9035_, this.f_20889_ > 0 );
-+      this.drops.parallelStream().forEach( loot::add );
-+      this.drops.clear();
++      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_) || this.m_5833_();
++      Inventory copyInv;
++      if (keepInventory) {
++         copyInv = this.m_150109_();
++      } else {
++         copyInv = new Inventory(this);
++         copyInv.m_36006_(this.m_150109_());
++      }
++      this.setPlayerDeath(true);
++      this.m_6668_(p_9035_);
++      this.setPlayerDeath(false);
 +
 +      Component defaultMessage = this.m_21231_().m_19293_();
-+
 +      String deathmessage = defaultMessage.getString();
-+      keepLevel = keepInventory;
-+      PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent( this, loot, deathmessage, keepInventory );
-+
-+      //SPIGOT-943 - only call if they have an inventory open
-+      if (this.f_36096_ != this.f_36095_) this.m_6915_();
-+
++      List<org.bukkit.inventory.ItemStack> loot = new ArrayList<>();
++      Collection<ItemEntity> drops = this.captureDrops(null);
++      if (drops != null) {
++         for (ItemEntity entity : drops) {
++            CraftItemStack craftItemStack = CraftItemStack.asCraftMirror(entity.m_32055_());
++            loot.add(craftItemStack);
++         }
++      }
++      this.keepLevel = keepInventory;
++      if (!keepInventory) {
++         this.m_150109_().m_36006_(copyInv);
++      }
++      PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage, keepInventory);
++      if (this.f_36096_ != this.f_36095_) {
++         this.m_6915_();
++      }
 +      String deathMessage = event.getDeathMessage();
-+
 +      if (deathMessage != null && deathMessage.length() > 0 && flag) {
-+         Component component;
-+         if (deathMessage.equals( deathmessage )) component = this.m_21231_().m_19293_();
-+         else component = CraftChatMessage.fromStringOrNull( deathMessage );
-+
-+         this.f_8906_.m_9831_( new ClientboundPlayerCombatKillPacket( this.m_21231_(), component ), (p_9142_) -> {
-             if (!p_9142_.isSuccess()) {
++         Component itextcomponent;
++         if (deathMessage.equals(deathmessage)) {
++            itextcomponent = this.m_21231_().m_19293_();
++         } else {
++            itextcomponent = CraftChatMessage.fromStringOrNull(deathMessage);
++         }
++         this.f_8906_.m_9831_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), itextcomponent), (future) -> {
++            if (!future.isSuccess()) {
                 int i = 256;
 -               String s = component.m_130668_(256);
 -               Component component1 = new TranslatableComponent("death.attack.message_too_long", (new TextComponent(s)).m_130940_(ChatFormatting.YELLOW));
 -               Component component2 = (new TranslatableComponent("death.attack.even_more_magic", this.m_5446_())).m_130938_((p_143420_) -> {
 -                  return p_143420_.m_131144_(new HoverEvent(HoverEvent.Action.f_130831_, component1));
--               });
++               String s = itextcomponent.m_130668_(256);
++               Component itextcomponent1 = new TranslatableComponent("death.attack.message_too_long", (new TextComponent(s)).m_130940_(ChatFormatting.YELLOW));
++               Component itextcomponent2 = (new TranslatableComponent("death.attack.even_more_magic", this.m_5446_())).m_130938_((p_212357_1_) -> {
++                  return p_212357_1_.m_131144_(new HoverEvent(HoverEvent.Action.f_130831_, itextcomponent1));
+                });
 -               this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), component2));
-+               String s = component.m_130668_( 256 );
-+               Component component1 = new TranslatableComponent( "death.attack.message_too_long", (new TextComponent( s )).m_130940_( ChatFormatting.YELLOW ) );
-+               Component component2 = (new TranslatableComponent( "death.attack.even_more_magic", this.m_5446_() )).m_130938_( (p_143420_) -> {
-+                  return p_143420_.m_131144_( new HoverEvent( HoverEvent.Action.f_130831_, component1 ) );
-+               } );
-+               this.f_8906_.m_141995_( new ClientboundPlayerCombatKillPacket( this.m_21231_(), component2 ) );
++               this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), itextcomponent2));
              }
  
--         });
-+         } );
-          Team team = this.m_5647_();
-          if (team != null && team.m_7468_() != Team.Visibility.ALWAYS) {
-             if (team.m_7468_() == Team.Visibility.HIDE_FOR_OTHER_TEAMS) {
+          });
+-         Team team = this.m_5647_();
+-         if (team != null && team.m_7468_() != Team.Visibility.ALWAYS) {
+-            if (team.m_7468_() == Team.Visibility.HIDE_FOR_OTHER_TEAMS) {
 -               this.f_8924_.m_6846_().m_11249_(this, component);
-+               this.f_8924_.m_6846_().m_11249_( this, component );
-             } else if (team.m_7468_() == Team.Visibility.HIDE_FOR_OWN_TEAM) {
+-            } else if (team.m_7468_() == Team.Visibility.HIDE_FOR_OWN_TEAM) {
 -               this.f_8924_.m_6846_().m_11278_(this, component);
-+               this.f_8924_.m_6846_().m_11278_( this, component );
++         Team scoreboardteambase = this.m_5647_();
++         if (scoreboardteambase != null && scoreboardteambase.m_7468_() != Team.Visibility.ALWAYS) {
++            if (scoreboardteambase.m_7468_() == Team.Visibility.HIDE_FOR_OTHER_TEAMS) {
++               this.f_8924_.m_6846_().m_11249_(this, itextcomponent);
++            } else if (scoreboardteambase.m_7468_() == Team.Visibility.HIDE_FOR_OWN_TEAM) {
++               this.f_8924_.m_6846_().m_11278_(this, itextcomponent);
              }
           } else {
 -            this.f_8924_.m_6846_().m_11264_(component, ChatType.SYSTEM, Util.f_137441_);
-+            this.f_8924_.m_6846_().m_11264_( component, ChatType.SYSTEM, Util.f_137441_ );
++            this.f_8924_.m_6846_().m_11264_(itextcomponent, ChatType.SYSTEM, Util.f_137441_);
           }
        } else {
--         this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
-+         this.f_8906_.m_141995_( new ClientboundPlayerCombatKillPacket( this.m_21231_(), TextComponent.f_131282_ ) );
+          this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
        }
- 
+-
        this.m_36328_();
--      if (this.f_19853_.m_46469_().m_46207_(GameRules.f_46126_)) {
-+      if (this.f_19853_.m_46469_().m_46207_( GameRules.f_46126_ )) {
++
+       if (this.f_19853_.m_46469_().m_46207_(GameRules.f_46126_)) {
           this.m_9215_();
        }
  
@@ -837,40 +848,38 @@
 -      }
 -
 -      this.m_36329_().m_83427_(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
-+      // SPIGOT-5478 must be called manually now
-+      this.m_21226_();
-+      // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
-+      if (!event.getKeepInventory()) this.m_150109_().m_6211_();
-+      this.m_9213_( this ); //Remove spectator target
-+
-+      //CraftBukkit - Get our scores instead
-+      this.f_19853_.getCraftServer().getScoreboardManager().getScoreboardScores( ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_ );
-+
-       LivingEntity livingentity = this.m_21232_();
-       if (livingentity != null) {
+-      LivingEntity livingentity = this.m_21232_();
+-      if (livingentity != null) {
 -         this.m_36246_(Stats.f_12987_.m_12902_(livingentity.m_6095_()));
 -         livingentity.m_5993_(this, this.f_20897_, p_9035_);
 -         this.m_21268_(livingentity);
-+         this.m_36246_( Stats.f_12987_.m_12902_( livingentity.m_6095_() ) );
-+         livingentity.m_5993_( this, this.f_20897_, p_9035_ );
-+         this.m_21268_( livingentity );
-       }
- 
+-      }
+-
 -      this.f_19853_.m_7605_(this, (byte)3);
--      this.m_36220_(Stats.f_12935_);
--      this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12991_));
--      this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12992_));
-+      this.f_19853_.m_7605_( this, (byte) 3 );
-+      this.m_36220_( Stats.f_12935_ );
-+      this.m_7166_( Stats.f_12988_.m_12902_( Stats.f_12991_ ) );
-+      this.m_7166_( Stats.f_12988_.m_12902_( Stats.f_12992_ ) );
-       this.m_20095_();
--      this.m_146917_(0);
--      this.m_146868_(false);
-+      this.m_146917_( 0 );
-+      this.m_146868_( false );
++      this.m_21226_();
++
++      if (!event.getKeepInventory()) {
++         this.m_150109_().m_6211_();
++      }
++      this.m_9213_(this);
++      this.f_19853_.getCraftServer().getScoreboardManager().getScoreboardScores(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
++
++      LivingEntity entityliving = this.m_21232_();
++      if (entityliving != null) {
++         this.m_36246_(Stats.f_12987_.m_12902_(entityliving.m_6095_()));
++         entityliving.m_5993_(this, this.f_20897_, p_9035_);
++         this.m_21268_(entityliving);
++      }
++
++      this.f_19853_.m_7605_(this, (byte) 3);
+       this.m_36220_(Stats.f_12935_);
+       this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12991_));
+       this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12992_));
+@@ -596,89 +_,102 @@
+       this.m_146868_(false);
        this.m_21231_().m_19296_();
     }
++   //Magma end
  
     private void m_9215_() {
 -      AABB aabb = (new AABB(this.m_142538_())).m_82377_(32.0D, 10.0D, 32.0D);

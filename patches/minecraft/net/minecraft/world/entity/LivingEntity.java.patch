@@ -745,8 +745,16 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1288,30 +_,52 @@
+@@ -1286,32 +_,64 @@
+       }
+    }
  
++   //Magma start - add extra player death logic
++   private boolean playerDeath = false;
++   protected void setPlayerDeath(boolean playerDeath) {
++      this.playerDeath = playerDeath;
++   }
++
     protected void m_6668_(DamageSource p_21192_) {
        Entity entity = p_21192_.m_7639_();
 -      int i;
@@ -766,12 +774,15 @@
           this.m_7625_(p_21192_, flag);
           this.m_7472_(p_21192_, i, flag);
        }
-+      // CraftBukkit start - Call death event
-+      CraftEventFactory.callEntityDeathEvent(this, this.drops);
-+      this.drops = new ArrayList<>();
-+      // CraftBukkit end
  
 -      this.m_5907_();
++      if (!playerDeath) { //Magma - skip this event when a player dies
++         // CraftBukkit start - Call death event
++         CraftEventFactory.callEntityDeathEvent(this, this.drops);
++         this.drops = new ArrayList<>();
++         // CraftBukkit end
++      }
++
 +      // this.dropEquipment();// CraftBukkit - moved up
        this.m_21226_();
 +
@@ -779,6 +790,7 @@
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0))
 +         drops.forEach(e -> f_19853_.m_7967_(e));
     }
++   //Magma end
  
     protected void m_5907_() {
     }
