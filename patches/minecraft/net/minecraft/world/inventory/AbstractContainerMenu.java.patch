@@ -10,7 +10,7 @@
  import com.google.common.base.Suppliers;
  import com.google.common.collect.HashBasedTable;
  import com.google.common.collect.Lists;
-@@ -8,17 +_,13 @@
+@@ -8,17 +_,14 @@
  import com.mojang.logging.LogUtils;
  import it.unimi.dsi.fastutil.ints.IntArrayList;
  import it.unimi.dsi.fastutil.ints.IntList;
@@ -26,6 +26,7 @@
  import net.minecraft.core.NonNullList;
  import net.minecraft.core.Registry;
 +import net.minecraft.network.chat.Component;
++import net.minecraft.network.chat.TextComponent;
 +import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
  import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.util.Mth;
@@ -44,7 +45,7 @@
  import org.slf4j.Logger;
  
  public abstract class AbstractContainerMenu {
-@@ -59,6 +_,49 @@
+@@ -59,6 +_,48 @@
     private ContainerSynchronizer f_150397_;
     private boolean f_150398_;
  
@@ -81,8 +82,7 @@
 +   private Component title;
 +
 +   public final Component getTitle() {
-+      Preconditions.checkState(this.title != null, "Title not set");
-+      return this.title;
++      return this.title == null ? TextComponent.f_131282_ : this.title; //Magma - allow null titles
 +   }
 +
 +   public final void setTitle(Component title) {
