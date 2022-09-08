@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.v1_18_R2.entity.CraftMinecartCommand;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
+import org.magmafoundation.magma.configuration.MagmaConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,21 @@ public class ForgeCommandWrapper extends Command {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!forgeCommand.getRequirement().test(getListener(sender))) return true;
+        if (!MagmaConfig.instance.forgeCommandsIgnoreBukkitPerms.getValues()) {
+            //If we detect that the CraftPlayer permissible was injected into (ex. LuckPerms), we will use their permissions
+            //instead of the Forge permissions defined in 'Commands.literal(...).requires(s -> s.hasPermission(..))'.
+            //This will cause a problem though, as the Forge permissions will not be checked.
+            //So you will have to manually set the Forge permissions by allowing ex. "forge.command.coolmodcommand" in LuckPerms.
+            boolean permissibleInjected = false;
+            if (sender instanceof CraftPlayer player)
+                permissibleInjected = player.isPermissibleInjected();
+
+            if ((permissibleInjected && !testPermission(sender)) ||
+                    (!permissibleInjected && !forgeCommand.getRequirement().test(getListener(sender))))
+                return true;
+        } else {
+            if (!forgeCommand.getRequirement().test(getListener(sender))) return true;
+        }
 
         CommandSourceStack icommandlistener = getListener(sender);
         dispatcher.setForge(true);

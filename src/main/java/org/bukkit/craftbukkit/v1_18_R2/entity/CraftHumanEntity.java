@@ -45,7 +45,7 @@ import org.bukkit.plugin.Plugin;
 public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private CraftInventoryPlayer inventory;
     private final CraftInventory enderChest;
-    protected final PermissibleBase perm = new PermissibleBase(this);
+    protected PermissibleBase perm = new PermissibleBase(this); //Magma - remove final modifier
     private boolean op;
     private GameMode mode;
 
@@ -208,6 +208,20 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         this.op = value;
         perm.recalculatePermissions();
     }
+
+    //Magma start - permissions
+    public PermissibleBase getPerm() {
+        return perm;
+    }
+
+    public void setPerm(PermissibleBase perm) {
+        this.perm = perm;
+    }
+
+    public boolean isPermissibleInjected() {
+        return !perm.getClass().getSimpleName().equals("PermissibleBase");
+    }
+    //Magma end
 
     @Override
     public Set<PermissionAttachmentInfo> getEffectivePermissions() {

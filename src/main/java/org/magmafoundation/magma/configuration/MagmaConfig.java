@@ -42,6 +42,7 @@ public class MagmaConfig extends ConfigBase {
     public static MagmaConfig instance = new MagmaConfig();
 
     public final BooleanValue forgeBukkitPermissionHandlerEnable = new BooleanValue(this, "forge.bukkitPermissionHandler.enable", true, "Let's Bukkit permission plugins handle forge/modded commands");
+    public final BooleanValue forgeCommandsIgnoreBukkitPerms = new BooleanValue(this, "forge.commandsIgnoreBukkitPerms", true, "If true, forge/modded commands will ignore Bukkit permission plugins and use Forge permissions instead, disable this to control forge commands with permission plugins like LuckPerms");
     public final BooleanValue magmaAutoUpdater = new BooleanValue(this, "magma.auto-update", true, "Auto updates the Magma jar");
 
     public final BooleanValue modCommandPrintIDs = new BooleanValue(this, "magma.command.mods.print-ids", true, "Adds the mod id + version to the end of the mod name");
