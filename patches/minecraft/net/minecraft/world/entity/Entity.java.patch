@@ -71,7 +71,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -103,20 +_,87 @@
+@@ -103,20 +_,91 @@
  import net.minecraft.world.level.material.PushReaction;
  import net.minecraft.world.level.portal.PortalInfo;
  import net.minecraft.world.level.portal.PortalShape;
@@ -95,6 +95,7 @@
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 +import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
++import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftPortalEvent;
@@ -145,6 +146,9 @@
 +
 +      if (bukkitEntity instanceof CraftPlayer player)
 +         player.setFirstPlayed(((CraftPlayer) temp).getFirstPlayed());
++
++      if (bukkitEntity instanceof CraftHumanEntity human) //Keep perms on reset
++         human.setPerm(((CraftHumanEntity) temp).getPerm());
 +   }
 +
 +   public void setBukkitEntity(CraftEntity bukkitEntity) {
