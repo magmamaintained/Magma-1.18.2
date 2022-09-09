@@ -28,7 +28,7 @@ public final class CraftItemFactory implements ItemFactory {
 
     @Override
     public boolean isApplicable(ItemMeta meta, ItemStack itemstack) {
-        if (itemstack == null) {
+        if(itemstack == null) {
             return false;
         }
         return isApplicable(meta, itemstack.getType());
@@ -37,10 +37,10 @@ public final class CraftItemFactory implements ItemFactory {
     @Override
     public boolean isApplicable(ItemMeta meta, Material type) {
         type = CraftLegacy.fromLegacy(type); // This may be called from legacy item stacks, try to get the right material
-        if (type == null || meta == null) {
+        if(type == null || meta == null) {
             return false;
         }
-        if (!(meta instanceof CraftMetaItem)) {
+        if(!(meta instanceof CraftMetaItem)) {
             throw new IllegalArgumentException("Meta of " + meta.getClass().toString() + " not created by " + CraftItemFactory.class.getName());
         }
 
@@ -55,6 +55,8 @@ public final class CraftItemFactory implements ItemFactory {
 
     private ItemMeta getItemMeta(Material material, CraftMetaItem meta) {
         material = CraftLegacy.fromLegacy(material); // This may be called from legacy item stacks, try to get the right material
+
+        if(material == null) return null;
         switch (material) {
             case AIR:
                 return null;
@@ -289,19 +291,19 @@ public final class CraftItemFactory implements ItemFactory {
 
     @Override
     public boolean equals(ItemMeta meta1, ItemMeta meta2) {
-        if (meta1 == meta2) {
+        if(meta1 == meta2) {
             return true;
         }
-        if (meta1 != null && !(meta1 instanceof CraftMetaItem)) {
+        if(meta1 != null && !(meta1 instanceof CraftMetaItem)) {
             throw new IllegalArgumentException("First meta of " + meta1.getClass().getName() + " does not belong to " + CraftItemFactory.class.getName());
         }
-        if (meta2 != null && !(meta2 instanceof CraftMetaItem)) {
+        if(meta2 != null && !(meta2 instanceof CraftMetaItem)) {
             throw new IllegalArgumentException("Second meta " + meta2.getClass().getName() + " does not belong to " + CraftItemFactory.class.getName());
         }
-        if (meta1 == null) {
+        if(meta1 == null) {
             return ((CraftMetaItem) meta2).isEmpty();
         }
-        if (meta2 == null) {
+        if(meta2 == null) {
             return ((CraftMetaItem) meta1).isEmpty();
         }
 
@@ -334,7 +336,7 @@ public final class CraftItemFactory implements ItemFactory {
     @Override
     public ItemMeta asMetaFor(ItemMeta meta, Material material) {
         Validate.notNull(material, "Material cannot be null");
-        if (!(meta instanceof CraftMetaItem)) {
+        if(!(meta instanceof CraftMetaItem)) {
             throw new IllegalArgumentException("Meta of " + (meta != null ? meta.getClass().toString() : "null") + " not created by " + CraftItemFactory.class.getName());
         }
         return getItemMeta(material, (CraftMetaItem) meta);
@@ -354,7 +356,7 @@ public final class CraftItemFactory implements ItemFactory {
             net.minecraft.world.item.ItemStack nmsItemStack = new net.minecraft.world.item.ItemStack(item);
 
             CompoundTag nbt = arg.getNbt();
-            if (nbt != null) {
+            if(nbt != null) {
                 nmsItemStack.setTag(nbt);
             }
 
