@@ -44,7 +44,7 @@
        });
 -      this.m_130006_();
 +      if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this)) return false;
-+      this.loadLevel(f_129744_.m_78277_()); // Magma
++      this.m_130006_(); // Magma
        ServerLevel serverlevel = this.m_129783_();
        serverlevel.m_8733_(this.f_177588_, 0.0F);
        int i = 20000000;
