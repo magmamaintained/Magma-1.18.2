@@ -3,6 +3,8 @@ image: openjdk:17-jdk
 stages:
   - setup
   - build
+  - publish
+  - release
 
 before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
@@ -25,13 +27,32 @@ setup:
 build:
   stage: build
   script:
-    - chmod +x gradlew && ./gradlew magmaJar
+    - chmod +x gradlew && ./gradlew installerJar
     - echo "VERSION=$(./gradlew -q | grep 'Forge Version:' | awk '{print $3}')" >> variables.env
   artifacts:
     reports:
       dotenv: variables.env
     paths:
-      - projects/magma/build/libs/*server*.jar
+      - projects/magma/build/libs/*installer*.jar
+  except:
+    - tags
+
+publish:
+  stage: publish
+  script:
+    - chmod +x gradlew && ./gradlew publish
+  only:
+    - "1.18.x"
+  except:
+    - tags
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - release-cli --server-url https://git.magmafoundation.org --job-token=$CI_JOB_TOKEN create --name "Magma $VERSION" --description "Magma Release" --tag-name "$CI_COMMIT_SHORT_SHA" --ref "$CI_COMMIT_SHORT_SHA" --assets-link "{\"url\":\"https://git.magmafoundation.org/api/v4/projects/5/packages/maven/org/magmafoundation/Magma/$VERSION/Magma-$VERSION-installer.jar\",\"name\":\"Magma-$VERSION-installer.jar\"}" --assets-link "{\"url\":\"https://git.magmafoundation.org/api/v4/projects/5/packages/maven/org/magmafoundation/Magma/$VERSION/Magma-$VERSION-server.jar\",\"name\":\"Magma-$VERSION-server.jar\"}"
+  only:
+    - "1.18.x"
   except:
     - tags
 
