@@ -1,5 +1,71 @@
 --- a/net/minecraft/commands/synchronization/ArgumentTypes.java
 +++ b/net/minecraft/commands/synchronization/ArgumentTypes.java
+@@ -11,47 +_,10 @@
+ import com.mojang.brigadier.tree.LiteralCommandNode;
+ import com.mojang.brigadier.tree.RootCommandNode;
+ import com.mojang.logging.LogUtils;
+-import java.util.Collection;
+-import java.util.Map;
+-import java.util.Set;
+-import javax.annotation.Nullable;
+-import net.minecraft.SharedConstants;
+-import net.minecraft.commands.arguments.AngleArgument;
+-import net.minecraft.commands.arguments.ColorArgument;
+-import net.minecraft.commands.arguments.ComponentArgument;
+-import net.minecraft.commands.arguments.CompoundTagArgument;
+-import net.minecraft.commands.arguments.DimensionArgument;
+-import net.minecraft.commands.arguments.EntityAnchorArgument;
+-import net.minecraft.commands.arguments.EntityArgument;
+-import net.minecraft.commands.arguments.EntitySummonArgument;
+-import net.minecraft.commands.arguments.GameProfileArgument;
+-import net.minecraft.commands.arguments.ItemEnchantmentArgument;
+-import net.minecraft.commands.arguments.MessageArgument;
+-import net.minecraft.commands.arguments.MobEffectArgument;
+-import net.minecraft.commands.arguments.NbtPathArgument;
+-import net.minecraft.commands.arguments.NbtTagArgument;
+-import net.minecraft.commands.arguments.ObjectiveArgument;
+-import net.minecraft.commands.arguments.ObjectiveCriteriaArgument;
+-import net.minecraft.commands.arguments.OperationArgument;
+-import net.minecraft.commands.arguments.ParticleArgument;
+-import net.minecraft.commands.arguments.RangeArgument;
+-import net.minecraft.commands.arguments.ResourceKeyArgument;
+-import net.minecraft.commands.arguments.ResourceLocationArgument;
+-import net.minecraft.commands.arguments.ResourceOrTagLocationArgument;
+-import net.minecraft.commands.arguments.ScoreHolderArgument;
+-import net.minecraft.commands.arguments.ScoreboardSlotArgument;
+-import net.minecraft.commands.arguments.SlotArgument;
+-import net.minecraft.commands.arguments.TeamArgument;
+-import net.minecraft.commands.arguments.TimeArgument;
+-import net.minecraft.commands.arguments.UuidArgument;
++import net.minecraft.commands.arguments.*;
+ import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
+ import net.minecraft.commands.arguments.blocks.BlockStateArgument;
+-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
+-import net.minecraft.commands.arguments.coordinates.RotationArgument;
+-import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
+-import net.minecraft.commands.arguments.coordinates.Vec2Argument;
+-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
++import net.minecraft.commands.arguments.coordinates.*;
+ import net.minecraft.commands.arguments.item.FunctionArgument;
+ import net.minecraft.commands.arguments.item.ItemArgument;
+ import net.minecraft.commands.arguments.item.ItemPredicateArgument;
+@@ -62,9 +_,14 @@
+ import net.minecraft.resources.ResourceLocation;
+ import org.slf4j.Logger;
+ 
++import javax.annotation.Nullable;
++import java.util.Collection;
++import java.util.Map;
++import java.util.Set;
++
+ public class ArgumentTypes {
+    private static final Logger f_121582_ = LogUtils.getLogger();
+-   private static final Map<Class<?>, ArgumentTypes.Entry<?>> f_121583_ = Maps.newHashMap();
++   public static final Map<Class<?>, ArgumentTypes.Entry<?>> f_121583_ = Maps.newHashMap();
+    private static final Map<ResourceLocation, ArgumentTypes.Entry<?>> f_121584_ = Maps.newHashMap();
+ 
+    public static <T extends ArgumentType<?>> void m_121601_(String p_121602_, Class<T> p_121603_, ArgumentSerializer<T> p_121604_) {
 @@ -122,7 +_,7 @@
        m_121601_("uuid", UuidArgument.class, new EmptyArgumentSerializer<>(UuidArgument::m_113850_));
        m_121601_("resource", m_211031_(ResourceKeyArgument.class), new ResourceKeyArgument.Serializer());
@@ -9,6 +75,15 @@
           m_121601_("test_argument", TestFunctionArgument.class, new EmptyArgumentSerializer<>(TestFunctionArgument::m_128088_));
           m_121601_("test_class", TestClassNameArgument.class, new EmptyArgumentSerializer<>(TestClassNameArgument::m_127917_));
        }
+@@ -254,7 +_,7 @@
+       }
+    }
+ 
+-   static class Entry<T extends ArgumentType<?>> {
++   public static class Entry<T extends ArgumentType<?>> {
+       public final ArgumentSerializer<T> f_121619_;
+       public final ResourceLocation f_121620_;
+ 
 @@ -262,5 +_,9 @@
           this.f_121619_ = p_211034_;
           this.f_121620_ = p_211035_;
