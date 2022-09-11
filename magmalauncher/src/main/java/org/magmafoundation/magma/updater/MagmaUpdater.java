@@ -3,6 +3,7 @@ package org.magmafoundation.magma.updater;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.magmafoundation.magma.MagmaStart;
 import org.magmafoundation.magma.common.MagmaConstants;
 import org.yaml.snakeyaml.Yaml;
 
@@ -49,7 +50,7 @@ public class MagmaUpdater {
             String time = new SimpleDateFormat("H:mm a").format(created_at);
 
             newSha = root.get("tag_name").getAsString();
-            currentSha = MagmaConstants.VERSION;
+            currentSha = MagmaConstants.VERSION.split("-")[1];
 
             if(currentSha.equals(newSha)) {
                 System.out.printf("[Magma] No update found, latest version: (%s) current version: (%s)%n", currentSha, newSha);
@@ -82,18 +83,22 @@ public class MagmaUpdater {
             return;
         }
         System.out.println("[Magma] Download Complete! Please restart the server.");
+        System.exit(0);
     }
 
     public static void checkForUpdates() throws IOException {
         Path path = Paths.get("magma.yml");
-        if(Files.exists(path)) {
+        if(Files.exists(path) && !MagmaStart.postInstall) {
             try (InputStream stream = Files.newInputStream(path)) {
                 Yaml yaml = new Yaml();
                 Map<String, Object> data = yaml.load(stream);
                 Map<String, Object> forge = (Map<String, Object>) data.get("magma");
+                if (!forge.get("auto-update").equals(true) || MagmaConstants.VERSION.equals("dev-env"))
+                    return;
+
                 MagmaUpdater updater = new MagmaUpdater();
                 System.out.println("Checking for updates...");
-                if(updater.versionChecker() && forge.get("auto-update").equals(true))
+                if(updater.versionChecker())
                     updater.downloadJar();
             }
         }
