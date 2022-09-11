@@ -23,17 +23,13 @@ import org.magmafoundation.magma.utils.BootstrapLauncher;
 import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.utils.ServerInitHelper;
 import org.magmafoundation.magma.common.utils.SystemType;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
 import java.lang.reflect.Array;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.magmafoundation.magma.common.MagmaConstants.*;
@@ -92,20 +88,8 @@ public class MagmaStart {
 
         ServerInitHelper.init(launchArgs);
 
-        Path path = Paths.get("magma.yml");
-        if (Files.exists(path) && !postInstall) {
-            try (InputStream stream = Files.newInputStream(path)) {
-                Yaml yaml = new Yaml();
-                Map<String, Object> data = yaml.load(stream);
-                Map<String, Object> forge = (Map<String, Object>) data.get("magma");
-                MagmaUpdater updater = new MagmaUpdater();
-                if (enableUpdate) {
-                    System.out.println("Checking for updates...");
-                    if (updater.versionChecker() && forge.get("auto-update").equals(true))
-                        updater.downloadJar();
-                }
-            }
-        }
+        if (enableUpdate)
+            MagmaUpdater.checkForUpdates();
 
         String[] invokeArgs = Stream.concat(forgeArgs.stream(), Stream.of(MagmaStart.args)).toArray(String[]::new);
         BootstrapLauncher.startServer(invokeArgs);
