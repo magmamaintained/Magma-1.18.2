@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.thread.ProcessorMailbox;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
@@ -43,7 +44,7 @@ import java.util.function.Predicate;
 
 public class CraftChunk implements Chunk {
     private WeakReference<net.minecraft.world.level.chunk.LevelChunk> weakChunk;
-    private final ServerLevel worldServer;
+    private final Level worldServer;
     private final int x;
     private final int z;
     private static final PalettedContainer<net.minecraft.world.level.block.state.BlockState> emptyBlockIDs = new PalettedContainer<>(net.minecraft.world.level.block.Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
@@ -52,7 +53,7 @@ public class CraftChunk implements Chunk {
     public CraftChunk(net.minecraft.world.level.chunk.LevelChunk chunk) {
         this.weakChunk = new WeakReference<net.minecraft.world.level.chunk.LevelChunk>(chunk);
 
-        worldServer = (ServerLevel) getHandle().level;
+        worldServer = getHandle().level;
         x = getHandle().getPos().x;
         z = getHandle().getPos().z;
     }

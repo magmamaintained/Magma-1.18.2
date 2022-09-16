@@ -1,7 +1,9 @@
 package org.spigotmc;
 
+import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.magmafoundation.magma.helpers.SpigotConfigHelper;
 
 import java.util.List;
 
@@ -12,10 +14,19 @@ public class SpigotWorldConfig
     private final YamlConfiguration config;
     private boolean verbose;
 
+    public boolean dummy = false; //Magma
+    private boolean alreadyRegistered = false; //Magma
+
     public SpigotWorldConfig(String worldName)
     {
         this.worldName = worldName;
         this.config = SpigotConfig.config;
+
+        if (Strings.isBlank(worldName))
+            dummy = true; //Magma
+
+        alreadyRegistered = SpigotConfigHelper.isAlreadyRegistered(worldName); //Magma
+
         init();
     }
 
@@ -29,7 +40,7 @@ public class SpigotWorldConfig
 
     private void log(String s)
     {
-        if ( verbose )
+        if ( verbose && !dummy && !alreadyRegistered ) //Magma
         {
             Bukkit.getLogger().info( s );
         }
