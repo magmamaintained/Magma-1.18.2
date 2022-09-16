@@ -9,7 +9,7 @@
  
  public class CarvedPumpkinBlock extends HorizontalDirectionalBlock implements Wearable {
     public static final DirectionProperty f_51367_ = HorizontalDirectionalBlock.f_54117_;
-@@ -55,11 +_,12 @@
+@@ -55,17 +_,28 @@
  
     private void m_51378_(Level p_51379_, BlockPos p_51380_) {
        BlockPattern.BlockPatternMatch blockpattern$blockpatternmatch = this.m_51393_().m_61184_(p_51379_, p_51380_);
@@ -24,10 +24,10 @@
           }
  
           SnowGolem snowgolem = EntityType.f_20528_.m_20615_(p_51379_);
-@@ -67,6 +_,17 @@
+          BlockPos blockpos1 = blockpattern$blockpatternmatch.m_61229_(0, 2, 0).m_61176_();
           snowgolem.m_7678_((double)blockpos1.m_123341_() + 0.5D, (double)blockpos1.m_123342_() + 0.05D, (double)blockpos1.m_123343_() + 0.5D, 0.0F, 0.0F);
-          p_51379_.m_7967_(snowgolem);
- 
+-         p_51379_.m_7967_(snowgolem);
++
 +         // CraftBukkit start
 +         p_51379_.prepareEntity(snowgolem, CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
 +         if (!p_51379_.m_7967_(snowgolem)) {
@@ -38,10 +38,9 @@
 +         }
 +         blockList.updateList();
 +         // CraftBukkit end
-+
+ 
           for(ServerPlayer serverplayer : p_51379_.m_45976_(ServerPlayer.class, snowgolem.m_142469_().m_82400_(5.0D))) {
              CriteriaTriggers.f_10580_.m_68256_(serverplayer, snowgolem);
-          }
 @@ -81,8 +_,8 @@
              for(int j = 0; j < this.m_51397_().m_61203_(); ++j) {
                 for(int k = 0; k < this.m_51397_().m_61202_(); ++k) {
