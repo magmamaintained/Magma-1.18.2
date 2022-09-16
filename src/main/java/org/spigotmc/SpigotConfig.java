@@ -102,6 +102,9 @@ public class SpigotConfig
             }
         }
 
+        if (instance instanceof SpigotWorldConfig worldConfig)
+            if (worldConfig.dummy) return; //Magma - Don't save dummy configs
+
         try
         {
             config.save( CONFIG_FILE );
