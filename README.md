@@ -40,7 +40,7 @@ Magma for Minecraft 1.12 and above can be found in their own repositories.
    1. Or Download the latest jar from [Magma Site](https://magmafoundation.org/)
 2. Make a new directory (folder) for the server
 3. Move the jar that you downloaded into the new directory
-4. Run the jar with your command prompt or terminal, going to your directory and entering `java -jar Magma-[version]-sever.jar`. Change [version] to your Magma version number.
+4. Run the jar with your command prompt or terminal, going to your directory and entering `java -jar Magma-[version]-server.jar`. Change [version] to your Magma version number.
 
 ### Building the sources
 
