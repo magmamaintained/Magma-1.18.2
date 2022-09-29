@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -1,31 +_,46 @@
+@@ -1,31 +_,47 @@
  package net.minecraft.server.level;
  
  import com.mojang.logging.LogUtils;
@@ -48,6 +48,7 @@
 +import javax.annotation.Nullable;
 +import java.util.ArrayList;
 +import java.util.Objects;
++import java.util.Optional;
 +
  public class ServerPlayerGameMode {
     private static final Logger f_9246_ = LogUtils.getLogger();
@@ -195,7 +196,7 @@
           }
  
        }
-@@ -217,45 +_,183 @@
+@@ -217,45 +_,153 @@
        if (this.m_9280_(p_9287_)) {
           this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9287_, this.f_9244_.m_8055_(p_9287_), p_9288_, true, p_9289_));
        } else {
@@ -205,72 +206,20 @@
  
     }
  
++   //Magma start - fix mixin inject
++   private @Nullable org.bukkit.block.Block destroyBlock_bblock;
++   private @Nullable Optional<BlockBreakEvent> destroyBlock_event;
++   private @Nullable org.bukkit.block.BlockState destroyBlock_state;
     public boolean m_9280_(BlockPos p_9281_) {
 -      BlockState blockstate = this.f_9244_.m_8055_(p_9281_);
 -      if (!this.f_9245_.m_21205_().m_41720_().m_6777_(blockstate, this.f_9244_, p_9281_, this.f_9245_)) {
 +      BlockState blockState = this.f_9244_.m_8055_(p_9281_);
 +      // CraftBukkit start - fire BlockBreakEvent
-+      org.bukkit.block.Block bblock = CraftBlock.at(f_9244_, p_9281_);
-+      BlockBreakEvent event = null;
++      destroyBlock_bblock = CraftBlock.at(f_9244_, p_9281_);
++      destroyBlock_event = isSwordNoBreak(p_9281_, blockState, destroyBlock_bblock);
 +
-+      if (this.f_9245_ instanceof ServerPlayer) {
-+         // Sword + Creative mode pre-cancel
-+         boolean isSwordNoBreak = !this.f_9245_.m_21205_().m_41720_().m_6777_(blockState, this.f_9244_, p_9281_, this.f_9245_);
-+
-+         // Tell client the block is gone immediately then process events
-+         // Don't tell the client if its a creative sword break because its not broken!
-+         if (f_9244_.m_7702_(p_9281_) == null && !isSwordNoBreak) {
-+            ClientboundBlockUpdatePacket packet = new ClientboundBlockUpdatePacket(p_9281_, Blocks.f_50016_.m_49966_());
-+            this.f_9245_.f_8906_.m_141995_(packet);
-+         }
-+
-+         event = new BlockBreakEvent(bblock, this.f_9245_.getBukkitEntity());
-+
-+         //Magma start
-+         int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(f_9244_, f_9247_, f_9245_, p_9281_);
-+
-+         if (exp == -1) {
-+            return false;
-+         }
-+
-+         if(this.f_9245_.m_7500_() && ((Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("SWORD") || ((Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("TRIDENT")){
-+            event.setCancelled(true);
-+            isSwordNoBreak = true;
-+         }
-+         //Magma end
-+
-+         // Calculate default block experience
-+         BlockState nmsData = this.f_9244_.m_8055_(p_9281_);
-+         Block nmsBlock = nmsData.m_60734_();
-+
-+         ItemStack itemstack = this.f_9245_.m_6844_(EquipmentSlot.MAINHAND);
-+
-+         if (nmsBlock != null && !event.isCancelled() && !this.m_9295_() && this.f_9245_.m_36298_(nmsBlock.m_49966_())) {
-+            event.setExpToDrop(nmsBlock.getExpDrop(nmsData, this.f_9244_, p_9281_, itemstack));
-+         }
-+
-+         this.f_9244_.getCraftServer().getPluginManager().callEvent(event);
-+
-+         if (event.isCancelled()) {
-+            if (isSwordNoBreak) {
-+               return false;
-+            }
-+            // Let the client know the block still exists
-+            this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9281_));
-+
-+            // Brute force all possible updates
-+            for (Direction dir : Direction.values()) {
-+               this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(f_9244_, p_9281_.m_142300_(dir)));
-+            }
-+
-+            // Update any tile entity data for this block
-+            BlockEntity tileentity = this.f_9244_.m_7702_(p_9281_);
-+            if (tileentity != null) {
-+               this.f_9245_.f_8906_.m_141995_(tileentity.m_183216_());
-+            }
-+            return false;
-+         }
-+      }
++      if (destroyBlock_event.isEmpty())
++         return false;
 +      // CraftBukkit end
 +
 +      if (false && !this.f_9245_.m_21205_().m_41720_().m_6777_(blockState, this.f_9244_, p_9281_, this.f_9245_)) { // CraftBukkit - false
@@ -294,7 +243,7 @@
           } else {
 -            block.m_5707_(this.f_9244_, p_9281_, blockstate, this.f_9245_);
 +            // CraftBukkit start
-+            org.bukkit.block.BlockState state = bblock.getState();
++            destroyBlock_state = destroyBlock_bblock.getState();
 +            f_9244_.captureDrops = new ArrayList<>();
 +            // CraftBukkit end
 +            block.m_5707_(this.f_9244_, p_9281_, blockState, this.f_9245_);
@@ -313,75 +262,101 @@
                 ItemStack itemstack1 = itemstack.m_41777_();
 -               boolean flag1 = this.f_9245_.m_36298_(blockstate);
 -               itemstack.m_41686_(this.f_9244_, blockstate, p_9281_, this.f_9245_);
+-               if (flag && flag1) {
+-                  block.m_6240_(this.f_9244_, this.f_9245_, p_9281_, blockstate, blockentity, itemstack1);
 +               boolean flag1 = this.f_9245_.m_36298_(blockState);
 +
 +               itemstack.m_41686_(this.f_9244_, blockState, p_9281_, this.f_9245_);
-+               if (flag && flag1 && event.isDropItems()) { // CraftBukkit - Check if block should drop items
++               if (flag && flag1 && destroyBlock_event.get().isDropItems()) { // CraftBukkit - Check if block should drop items
 +                  block.m_6240_(this.f_9244_, this.f_9245_, p_9281_, blockState, tileentity, itemstack1);
-+               }
-+
+                }
+ 
+-               return true;
+-            }
+-         }
+-      }
 +               // return true; // CraftBukkit
 +            }
 +            // CraftBukkit start
-+            if (event.isDropItems()) {
-+               CraftEventFactory.handleBlockDropItemEvent(bblock, state, this.f_9245_, f_9244_.captureDrops);
++            if (destroyBlock_event.get().isDropItems()) {
++               CraftEventFactory.handleBlockDropItemEvent(destroyBlock_bblock, destroyBlock_state, this.f_9245_, f_9244_.captureDrops);
 +            }
 +            f_9244_.captureDrops = null;
 +
 +            // Drop event experience
-+            if (flag && event != null) {
-+               blockState.m_60734_().m_49805_(this.f_9244_, p_9281_, event.getExpToDrop());
++            if (flag && destroyBlock_event != null) {
++               blockState.m_60734_().m_49805_(this.f_9244_, p_9281_, destroyBlock_event.get().getExpToDrop());
 +            }
 +
 +            return true;
 +            // CraftBukkit end
 +         }
 +      }
-+
-+
-+
-+
-+      /*BlockState blockstate = this.level.getBlockState(p_9281_);
-+      int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(level, gameModeForPlayer, player, p_9281_);
-+      if (exp == -1) {
-+         return false;
-+      } else {
-+         BlockEntity blockentity = this.level.getBlockEntity(p_9281_);
-+         Block block = blockstate.getBlock();
-+         if (block instanceof GameMasterBlock && !this.player.canUseGameMasterBlocks()) {
-+            this.level.sendBlockUpdated(p_9281_, blockstate, blockstate, 3);
-+            return false;
-+         } else if (player.getMainHandItem().onBlockStartBreak(p_9281_, player)) {
-+            return false;
-+         } else if (this.player.blockActionRestricted(this.level, p_9281_, this.gameModeForPlayer)) {
-+            return false;
-+         } else {
-+            if (this.isCreative()) {
-+               removeBlock(p_9281_, false);
-+               return true;
-+            } else {
-+               ItemStack itemstack = this.player.getMainHandItem();
-+               ItemStack itemstack1 = itemstack.copy();
-+               boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
-+               itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
-+               if (itemstack.isEmpty() && !itemstack1.isEmpty())
-+                  net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
-+               boolean flag = removeBlock(p_9281_, flag1);
-+
-                if (flag && flag1) {
--                  block.m_6240_(this.f_9244_, this.f_9245_, p_9281_, blockstate, blockentity, itemstack1);
-+                  block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
-                }
- 
-+               if (flag && exp > 0)
-+                  blockstate.getBlock().popExperience(level, p_9281_, exp);
-+
-                return true;
-             }
-          }
--      }
-+      }*/
 +   }
++
++   private Optional<BlockBreakEvent> isSwordNoBreak(BlockPos p_9281_, BlockState blockState, org.bukkit.block.Block bblock) {
++      BlockBreakEvent event = null;
++      if (this.f_9245_ instanceof ServerPlayer) {
++         // Sword + Creative mode pre-cancel
++         boolean isSwordNoBreak = !this.f_9245_.m_21205_().m_41720_().m_6777_(blockState, this.f_9244_, p_9281_, this.f_9245_);
++
++         // Tell client the block is gone immediately then process events
++         // Don't tell the client if its a creative sword break because its not broken!
++         if (f_9244_.m_7702_(p_9281_) == null && !isSwordNoBreak) {
++            ClientboundBlockUpdatePacket packet = new ClientboundBlockUpdatePacket(p_9281_, Blocks.f_50016_.m_49966_());
++            this.f_9245_.f_8906_.m_141995_(packet);
++         }
++
++         event = new BlockBreakEvent(bblock, this.f_9245_.getBukkitEntity());
++
++         //Magma start
++         int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(f_9244_, f_9247_, f_9245_, p_9281_);
++
++         if (exp == -1) {
++            return Optional.empty();
++         }
++
++         if(this.f_9245_.m_7500_() && ((Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("SWORD") || ((Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("TRIDENT")){
++            event.setCancelled(true);
++            isSwordNoBreak = true;
++         }
++         //Magma end
++
++         // Calculate default block experience
++         BlockState nmsData = this.f_9244_.m_8055_(p_9281_);
++         Block nmsBlock = nmsData.m_60734_();
++
++         ItemStack itemstack = this.f_9245_.m_6844_(EquipmentSlot.MAINHAND);
++
++         if (nmsBlock != null && !event.isCancelled() && !this.m_9295_() && this.f_9245_.m_36298_(nmsBlock.m_49966_())) {
++            event.setExpToDrop(nmsBlock.getExpDrop(nmsData, this.f_9244_, p_9281_, itemstack));
++         }
++
++         this.f_9244_.getCraftServer().getPluginManager().callEvent(event);
++
++         if (event.isCancelled()) {
++            if (isSwordNoBreak) {
++               return Optional.empty();
++            }
++            // Let the client know the block still exists
++            this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9281_));
++
++            // Brute force all possible updates
++            for (Direction dir : Direction.values()) {
++               this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(f_9244_, p_9281_.m_142300_(dir)));
++            }
++
++            // Update any tile entity data for this block
++            BlockEntity tileentity = this.f_9244_.m_7702_(p_9281_);
++            if (tileentity != null) {
++               this.f_9245_.f_8906_.m_141995_(tileentity.m_183216_());
++            }
++            return Optional.empty();
++         }
++      }
++      return Optional.of(event);
++   }
++   //Magma end
 +
 +   private boolean removeBlock(BlockPos p_180235_1_, boolean canHarvest) {
 +      BlockState state = this.f_9244_.m_8055_(p_180235_1_);
