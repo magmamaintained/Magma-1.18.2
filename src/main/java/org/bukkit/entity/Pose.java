@@ -37,5 +37,9 @@ public enum Pose {
     /**
      * Entity is dead.
      */
-    DYING;
+    DYING, //Magma - add modded poses
+    /**
+     * Pose is likely coming from a mod.
+     */
+    MODDED;
 }
