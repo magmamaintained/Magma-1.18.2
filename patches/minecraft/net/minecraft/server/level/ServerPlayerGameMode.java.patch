@@ -242,12 +242,13 @@
              return false;
           } else {
 -            block.m_5707_(this.f_9244_, p_9281_, blockstate, this.f_9245_);
+-            boolean flag = this.f_9244_.m_7471_(p_9281_, false);
 +            // CraftBukkit start
 +            destroyBlock_state = destroyBlock_bblock.getState();
 +            f_9244_.captureDrops = new ArrayList<>();
 +            // CraftBukkit end
 +            block.m_5707_(this.f_9244_, p_9281_, blockState, this.f_9245_);
-             boolean flag = this.f_9244_.m_7471_(p_9281_, false);
++            boolean flag = removeBlock(p_9281_, false);
 +
              if (flag) {
 -               block.m_6786_(this.f_9244_, p_9281_, blockstate);
