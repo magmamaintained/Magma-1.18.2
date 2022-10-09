@@ -1,5 +1,52 @@
 --- a/net/minecraft/world/inventory/ItemCombinerMenu.java
 +++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
+@@ -7,6 +_,7 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.block.state.BlockState;
++import org.bukkit.Location;
+ 
+ public abstract class ItemCombinerMenu extends AbstractContainerMenu {
+    public static final int f_150595_ = 0;
+@@ -16,13 +_,8 @@
+    private static final int f_150598_ = 30;
+    private static final int f_150599_ = 30;
+    private static final int f_150600_ = 39;
+-   protected final ResultContainer f_39768_ = new ResultContainer();
+-   protected final Container f_39769_ = new SimpleContainer(2) {
+-      public void m_6596_() {
+-         super.m_6596_();
+-         ItemCombinerMenu.this.m_6199_(this);
+-      }
+-   };
++   protected final ResultContainer f_39768_;
++   protected final Container f_39769_;
+    protected final ContainerLevelAccess f_39770_;
+    protected final Player f_39771_;
+ 
+@@ -34,6 +_,22 @@
+ 
+    public ItemCombinerMenu(@Nullable MenuType<?> p_39773_, int p_39774_, Inventory p_39775_, ContainerLevelAccess p_39776_) {
+       super(p_39773_, p_39774_);
++      //Magma start - add location
++      this.f_39768_ = new ResultContainer();
++      this.f_39769_ = new SimpleContainer(2) {
++         public void m_6596_() {
++            super.m_6596_();
++            ItemCombinerMenu.this.m_6199_(this);
++         }
++
++         // CraftBukkit start
++         @Override
++         public Location getLocation() {
++            return p_39776_.getLocation();
++         }
++         // CraftBukkit end
++      };
++      //Magma end
+       this.f_39770_ = p_39776_;
+       this.f_39771_ = p_39775_.f_35978_;
+       this.m_38897_(new Slot(this.f_39769_, 0, 27, 47));
 @@ -82,6 +_,7 @@
     }
  
