@@ -10,31 +10,25 @@
  
  public class LoomMenu extends AbstractContainerMenu {
     private static final int f_150612_ = 4;
-@@ -38,13 +_,43 @@
-          LoomMenu.this.m_6199_(this);
-          LoomMenu.this.f_39847_.run();
-       }
-+
-+      // CraftBukkit start
-+      @Override
-+      public Location getLocation() {
-+         return f_39853_.getLocation();
-+      }
-+      // CraftBukkit end
-    };
-    private final Container f_39854_ = new SimpleContainer(1) {
-       public void m_6596_() {
-          super.m_6596_();
-          LoomMenu.this.f_39847_.run();
-       }
-+
-+      // CraftBukkit start
-+      @Override
-+      public Location getLocation() {
-+         return f_39854_.getLocation();
-+      }
-+      // CraftBukkit end
-    };
+@@ -32,19 +_,24 @@
+    private final Slot f_39850_;
+    private final Slot f_39851_;
+    long f_39852_;
+-   private final Container f_39853_ = new SimpleContainer(3) {
+-      public void m_6596_() {
+-         super.m_6596_();
+-         LoomMenu.this.m_6199_(this);
+-         LoomMenu.this.f_39847_.run();
+-      }
+-   };
+-   private final Container f_39854_ = new SimpleContainer(1) {
+-      public void m_6596_() {
+-         super.m_6596_();
+-         LoomMenu.this.f_39847_.run();
+-      }
+-   };
++   private final Container f_39853_;
++   private final Container f_39854_;
 +
 +   // CraftBukkit start
 +   private CraftInventoryView bukkitEntity = null;
@@ -54,6 +48,42 @@
  
     public LoomMenu(int p_39856_, Inventory p_39857_) {
        this(p_39856_, p_39857_, ContainerLevelAccess.f_39287_);
+@@ -52,6 +_,35 @@
+ 
+    public LoomMenu(int p_39859_, Inventory p_39860_, final ContainerLevelAccess p_39861_) {
+       super(MenuType.f_39974_, p_39859_);
++      //Magma start - add location
++      this.f_39853_ = new SimpleContainer(3) {
++         public void m_6596_() {
++            super.m_6596_();
++            LoomMenu.this.m_6199_(this);
++            LoomMenu.this.f_39847_.run();
++         }
++
++         // CraftBukkit start
++         @Override
++         public Location getLocation() {
++            return p_39861_.getLocation();
++         }
++         // CraftBukkit end
++      };
++      this.f_39854_ = new SimpleContainer(1) {
++         public void m_6596_() {
++            super.m_6596_();
++            LoomMenu.this.f_39847_.run();
++         }
++
++         // CraftBukkit start
++         @Override
++         public Location getLocation() {
++            return p_39861_.getLocation();
++         }
++         // CraftBukkit end
++      };
++      //Magma end
+       this.f_39845_ = p_39861_;
+       this.f_39848_ = this.m_38897_(new Slot(this.f_39853_, 0, 13, 26) {
+          public boolean m_5857_(ItemStack p_39918_) {
 @@ -103,6 +_,7 @@
        }
  
