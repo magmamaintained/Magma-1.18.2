@@ -1,16 +1,28 @@
 --- a/net/minecraft/world/inventory/GrindstoneMenu.java
 +++ b/net/minecraft/world/inventory/GrindstoneMenu.java
-@@ -17,6 +_,8 @@
+@@ -17,6 +_,9 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.Blocks;
  import net.minecraft.world.phys.Vec3;
++import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryGrindstone;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
  
  public class GrindstoneMenu extends AbstractContainerMenu {
     public static final int f_150565_ = 35;
-@@ -36,6 +_,22 @@
-    };
+@@ -27,21 +_,48 @@
+    private static final int f_150570_ = 30;
+    private static final int f_150571_ = 30;
+    private static final int f_150572_ = 39;
+-   private final Container f_39559_ = new ResultContainer();
+-   final Container f_39560_ = new SimpleContainer(2) {
+-      public void m_6596_() {
+-         super.m_6596_();
+-         GrindstoneMenu.this.m_6199_(this);
+-      }
+-   };
++   private final Container f_39559_;
++   final Container f_39560_;
     private final ContainerLevelAccess f_39561_;
  
 +   // CraftBukkit start
@@ -32,6 +44,28 @@
     public GrindstoneMenu(int p_39563_, Inventory p_39564_) {
        this(p_39563_, p_39564_, ContainerLevelAccess.f_39287_);
     }
+ 
+    public GrindstoneMenu(int p_39566_, Inventory p_39567_, final ContainerLevelAccess p_39568_) {
+       super(MenuType.f_39971_, p_39566_);
++      //Magma start - add location
++      this.f_39559_ = new ResultContainer();
++      this.f_39560_ = new SimpleContainer(2) {
++         public void m_6596_() {
++            super.m_6596_();
++            GrindstoneMenu.this.m_6199_(this);
++         }
++
++         // CraftBukkit start
++         @Override
++         public Location getLocation() {
++            return p_39568_.getLocation();
++         }
++         // CraftBukkit end
++      };
++      //Magma end
+       this.f_39561_ = p_39568_;
+       this.m_38897_(new Slot(this.f_39560_, 0, 49, 19) {
+          public boolean m_5857_(ItemStack p_39607_) {
 @@ -108,6 +_,7 @@
           this.m_38897_(new Slot(p_39567_, k, 8 + k * 18, 142));
        }

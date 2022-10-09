@@ -10,31 +10,24 @@
  
  public class CartographyTableMenu extends AbstractContainerMenu {
     public static final int f_150501_ = 0;
-@@ -27,13 +_,43 @@
-          CartographyTableMenu.this.m_6199_(this);
-          super.m_6596_();
-       }
-+
-+      // CraftBukkit start
-+      @Override
-+      public Location getLocation() {
-+         return f_39135_.getLocation();
-+      }
-+      // CraftBukkit end
-    };
-    private final ResultContainer f_39138_ = new ResultContainer() {
-       public void m_6596_() {
-          CartographyTableMenu.this.m_6199_(this);
-          super.m_6596_();
-       }
-+
-+      // CraftBukkit start
-+      @Override
-+      public Location getLocation() {
-+         return f_39135_.getLocation();
-+      }
-+      // CraftBukkit end
-    };
+@@ -22,18 +_,24 @@
+    private static final int f_150507_ = 39;
+    private final ContainerLevelAccess f_39136_;
+    long f_39137_;
+-   public final Container f_39135_ = new SimpleContainer(2) {
+-      public void m_6596_() {
+-         CartographyTableMenu.this.m_6199_(this);
+-         super.m_6596_();
+-      }
+-   };
+-   private final ResultContainer f_39138_ = new ResultContainer() {
+-      public void m_6596_() {
+-         CartographyTableMenu.this.m_6199_(this);
+-         super.m_6596_();
+-      }
+-   };
++   public final Container f_39135_;
++   private final ResultContainer f_39138_;
 +
 +   // CraftBukkit start
 +   private CraftInventoryView bukkitEntity = null;
@@ -54,6 +47,41 @@
  
     public CartographyTableMenu(int p_39140_, Inventory p_39141_) {
        this(p_39140_, p_39141_, ContainerLevelAccess.f_39287_);
+@@ -41,6 +_,34 @@
+ 
+    public CartographyTableMenu(int p_39143_, Inventory p_39144_, final ContainerLevelAccess p_39145_) {
+       super(MenuType.f_39979_, p_39143_);
++      //Magma start - add location
++      this.f_39135_ = new SimpleContainer(2) {
++         public void m_6596_() {
++            CartographyTableMenu.this.m_6199_(this);
++            super.m_6596_();
++         }
++
++         // CraftBukkit start
++         @Override
++         public Location getLocation() {
++            return p_39145_.getLocation();
++         }
++         // CraftBukkit end
++      };
++      this.f_39138_ = new ResultContainer() {
++         public void m_6596_() {
++            CartographyTableMenu.this.m_6199_(this);
++            super.m_6596_();
++         }
++
++         // CraftBukkit start
++         @Override
++         public Location getLocation() {
++            return p_39145_.getLocation();
++         }
++         // CraftBukkit end
++      };
++      //Magma end
+       this.f_39136_ = p_39145_;
+       this.m_38897_(new Slot(this.f_39135_, 0, 15, 15) {
+          public boolean m_5857_(ItemStack p_39194_) {
 @@ -83,9 +_,11 @@
           this.m_38897_(new Slot(p_39144_, k, 8 + k * 18, 142));
        }
