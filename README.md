@@ -19,11 +19,12 @@ We hope to eliminate all issues with craftbukkit forge servers. In the end, we e
 
 ## 🌐 BungeeCord/Velocity
 
-Magma 1.18 is **not** compatible with [Velocity](https://velocitypowered.com/downloads) or any [BungeeCord](https://github.com/SpigotMC/BungeeCord) fork.
+Magma 1.18 is **not** compatible with **vanilla** BungeeCord or any of its forks. This is **caused by Forge** and not a fault of Magma. We cannot fix this ourselves without modifying the client.
+You might be able to use the Waterfall fork called [Lightfall](https://github.com/ArclightPowered/lightfall), but it also requires a clientside-mod in order to work and is not officially supported.
 
-This is **caused by Forge** and not a fault of Magma. We cannot fix this ourselves without modifying the client.
+You can use **our [Velocity fork](https://git.magmafoundation.org/magmafoundation/Velocity)** with our [clientside mod](https://git.magmafoundation.org/magmafoundation/Forge-Client-Reset-Packet/-/tree/1.18). Every player needs to install this mod in order to join the server!
 
-You might be able to use the Waterfall fork called [Lightfall](https://github.com/ArclightPowered/lightfall), but it requires a clientside-mod in order to work.
+Magma 1.18 is **not** compatible with **vanilla** [Velocity](https://velocitypowered.com/downloads/). This is **caused by Forge** and not a fault of Magma. We cannot fix this ourselves without modifying the client and the proxy.
 
 ## 🧪 Magma for 1.12+/1.16+
 
