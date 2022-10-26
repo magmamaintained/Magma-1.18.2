@@ -736,7 +736,7 @@
           }
        }
  
-@@ -535,59 +_,105 @@
+@@ -535,36 +_,58 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -749,47 +749,26 @@
 +      } );
     }
  
-+   //Magma start - add Arclight death patch and modify it a little
++   //Magma start - rewrite
     public void m_6667_(DamageSource p_9035_) {
-+      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_))
-+         return;
++      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_)) return;
        boolean flag = this.f_19853_.m_46469_().m_46207_(GameRules.f_46142_);
 -      if (flag) {
 -         Component component = this.m_21231_().m_19293_();
 -         this.f_8906_.m_9831_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), component), (p_9142_) -> {
 -            if (!p_9142_.isSuccess()) {
-+      if (this.m_146910_()) {
++      // CraftBukkit start - fire PlayerDeathEvent
++      if (this.f_20890_) {
 +         return;
 +      }
-+      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_) || this.m_5833_();
-+      Inventory copyInv;
-+      if (keepInventory) {
-+         copyInv = this.m_150109_();
-+      } else {
-+         copyInv = new Inventory(this);
-+         copyInv.m_36006_(this.m_150109_());
-+      }
-+      this.setPlayerDeath(true);
-+      this.m_6668_(p_9035_);
-+      this.setPlayerDeath(false);
++      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_);
 +
 +      Component defaultMessage = this.m_21231_().m_19293_();
 +      String deathmessage = defaultMessage.getString();
-+      List<org.bukkit.inventory.ItemStack> loot = new ArrayList<>();
-+      Collection<ItemEntity> drops = this.captureDrops(null);
-+      if (drops != null) {
-+         for (ItemEntity entity : drops) {
-+            CraftItemStack craftItemStack = CraftItemStack.asCraftMirror(entity.m_32055_());
-+            loot.add(craftItemStack);
-+         }
-+      }
-+      this.keepLevel = keepInventory;
-+      if (!keepInventory) {
-+         this.m_150109_().m_36006_(copyInv);
-+      }
-+      PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage, keepInventory);
++      org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, this.drops, deathmessage, keepInventory);
++      // SPIGOT-943 - only call if they have an inventory open
 +      if (this.f_36096_ != this.f_36095_) {
-+         this.m_6915_();
++         this.m_9230_();
 +      }
 +      String deathMessage = event.getDeathMessage();
 +      if (deathMessage != null && deathMessage.length() > 0 && flag) {
@@ -835,48 +814,40 @@
           }
        } else {
           this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
-       }
--
-       this.m_36328_();
-+
-       if (this.f_19853_.m_46469_().m_46207_(GameRules.f_46126_)) {
+@@ -575,11 +_,24 @@
           this.m_9215_();
        }
  
 -      if (!this.m_5833_()) {
--         this.m_6668_(p_9035_);
--      }
--
++      if(!this.m_5833_()){
+          this.m_6668_(p_9035_);
+       }
+ 
 -      this.m_36329_().m_83427_(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
--      LivingEntity livingentity = this.m_21232_();
--      if (livingentity != null) {
--         this.m_36246_(Stats.f_12987_.m_12902_(livingentity.m_6095_()));
--         livingentity.m_5993_(this, this.f_20897_, p_9035_);
--         this.m_21268_(livingentity);
--      }
--
--      this.f_19853_.m_7605_(this, (byte)3);
++      // SPIGOT-5478 must be called manually now
 +      this.m_21226_();
-+
++      // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
 +      if (!event.getKeepInventory()) {
 +         this.m_150109_().m_6211_();
 +      }
-+      this.m_9213_(this);
++
++      //      this.getWorldScoreboard().forAllObjectives(ScoreCriteria.DEATH_COUNT, this.getScoreboardName(), Score::incrementScore);
++      this.m_9213_(this); // Remove spectated target
++      // CraftBukkit end
++
++      // CraftBukkit - Get our scores instead
 +      this.f_19853_.getCraftServer().getScoreboardManager().getScoreboardScores(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
 +
-+      LivingEntity entityliving = this.m_21232_();
-+      if (entityliving != null) {
-+         this.m_36246_(Stats.f_12987_.m_12902_(entityliving.m_6095_()));
-+         entityliving.m_5993_(this, this.f_20897_, p_9035_);
-+         this.m_21268_(entityliving);
-+      }
-+
-+      this.f_19853_.m_7605_(this, (byte) 3);
-       this.m_36220_(Stats.f_12935_);
+       LivingEntity livingentity = this.m_21232_();
+       if (livingentity != null) {
+          this.m_36246_(Stats.f_12987_.m_12902_(livingentity.m_6095_()));
+@@ -592,93 +_,105 @@
        this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12991_));
        this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12992_));
-@@ -596,89 +_,102 @@
-       this.m_146868_(false);
+       this.m_20095_();
+-      this.m_146917_(0);
+-      this.m_146868_(false);
++      this.m_20115_(0, false);
        this.m_21231_().m_19296_();
     }
 +   //Magma end
