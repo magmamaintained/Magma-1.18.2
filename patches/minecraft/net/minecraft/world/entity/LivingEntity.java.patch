@@ -745,16 +745,11 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,64 @@
+@@ -1286,32 +_,58 @@
        }
     }
  
-+   //Magma start - add extra player death logic
-+   private boolean playerDeath = false;
-+   protected void setPlayerDeath(boolean playerDeath) {
-+      this.playerDeath = playerDeath;
-+   }
-+
++   //Magma start - rewrite
     protected void m_6668_(DamageSource p_21192_) {
        Entity entity = p_21192_.m_7639_();
 -      int i;
@@ -768,27 +763,20 @@
 +      this.captureDrops(new java.util.ArrayList<>());
  
        boolean flag = this.f_20889_ > 0;
-+
 +      this.m_5907_(); // CraftBukkit - from below
        if (this.m_6125_() && this.f_19853_.m_46469_().m_46207_(GameRules.f_46135_)) {
           this.m_7625_(p_21192_, flag);
           this.m_7472_(p_21192_, i, flag);
        }
++      Collection<ItemEntity> drops = captureDrops(null);
++      this.expToDrop = this.getExpReward();
++      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
++         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
++         CraftEventFactory.callEntityDeathEvent(this, this.drops);
  
 -      this.m_5907_();
-+      if (!playerDeath) { //Magma - skip this event when a player dies
-+         // CraftBukkit start - Call death event
-+         CraftEventFactory.callEntityDeathEvent(this, this.drops);
-+         this.drops = new ArrayList<>();
-+         // CraftBukkit end
+-      this.m_21226_();
 +      }
-+
-+      // this.dropEquipment();// CraftBukkit - moved up
-       this.m_21226_();
-+
-+      Collection<ItemEntity> drops = captureDrops(null);
-+      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0))
-+         drops.forEach(e -> f_19853_.m_7967_(e));
     }
 +   //Magma end
  
@@ -810,10 +798,17 @@
 +   }
 +
 +   // CraftBukkit end
-+   protected void m_21226_() {
++   public void m_21226_() { //Magma - protected -> public
 +      // CraftBukkit start - Update getExpReward() above if the removed if() changes!
 +      if (true) {
-+         ExperienceOrb.m_147082_((ServerLevel) this.f_19853_, this.m_20182_(), this.expToDrop);
++         int i = this.expToDrop;
++
++         i = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.f_20888_, i);
++         while(i > 0) {
++            int j = ExperienceOrb.m_20782_(i);
++            i -= j;
++            this.f_19853_.m_7967_(new ExperienceOrb(this.f_19853_, this.m_20185_(), this.m_20186_(), this.m_20189_(), j));
++         }
 +         this.expToDrop = 0;
 +      }
 +      // CraftBukkit end
