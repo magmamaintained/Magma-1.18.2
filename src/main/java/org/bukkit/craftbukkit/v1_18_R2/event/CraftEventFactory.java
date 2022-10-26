@@ -700,6 +700,8 @@ public class CraftEventFactory {
             world.dropItem(entity.getLocation(), stack);
         }
 
+        victim.dropExperience();
+
         return event;
     }
 
