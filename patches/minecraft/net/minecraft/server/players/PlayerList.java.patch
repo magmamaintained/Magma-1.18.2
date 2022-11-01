@@ -380,7 +380,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,134 +_,395 @@
+@@ -332,134 +_,376 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -426,28 +426,12 @@
 +   public ServerPlayer canPlayerLogin(ServerLoginPacketListenerImpl serverLoginPacketListener, GameProfile p_11258_, String hostname) {
 +      TranslatableComponent chatmessage;
 +
-+      // Moved from processLogin
-+      UUID uuid = Player.m_36198_(p_11258_);
-+      List<ServerPlayer> list = Lists.newArrayList();
-+
-+
-+      for (ServerPlayer value : this.f_11196_) {
-+         if (value.m_142081_().equals(uuid)) {
-+            list.add(value);
-+         }
-+      }
-+
-+      for (ServerPlayer serverPlayer : list) {
-+         m_6765_(serverPlayer); // CraftBukkit - Force the player's inventory to be saved
-+         serverPlayer.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login", new Object[0]));
-+      }
-+
 +      // Instead of kicking then returning, we need to store the kick reason
 +      // in the event, check with plugins to see if it's ok, and THEN kick
 +      // depending on the outcome.
 +      SocketAddress socketaddress = serverLoginPacketListener.f_10013_.m_129523_();
 +
-+      ServerPlayer entity = new ServerPlayer(this.f_11195_, this.f_11195_.m_129880_(Level.f_46428_), p_11258_);
++      ServerPlayer entity = m_11300_(p_11258_); //Magma
 +      org.bukkit.entity.Player player = entity.getBukkitEntity();
 +      PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress(), ((java.net.InetSocketAddress) serverLoginPacketListener.f_10013_.getRawAddress()).getAddress());
 +
@@ -482,6 +466,8 @@
        } else {
 -         return this.f_11196_.size() >= this.f_11193_ && !this.m_5765_(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
 -      }
+-   }
+-
 +         // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
 +         if (this.f_11196_.size() >= this.f_11193_ && !this.m_5765_(p_11258_)) {
 +            event.disallow(PlayerLoginEvent.Result.KICK_FULL, org.spigotmc.SpigotConfig.serverFullMessage); // Spigot
@@ -494,48 +480,45 @@
 +         return null;
 +      }
 +      return entity;
-    }
- 
--   public ServerPlayer m_11300_(GameProfile p_11301_) {
--      UUID uuid = Player.m_36198_(p_11301_);
-+   public ServerPlayer getPlayerForLogin(GameProfile p_11301_, ServerPlayer player) { // CraftBukkit - added ServerPlayer
-+       /* CraftBukkit startMoved up
-+      UUID uuid = Player.createPlayerUUID(p_11301_);
++   }
++
++   public ServerPlayer getPlayerForLogin(GameProfile profile, ServerPlayer player) {
++      return player; //Magma - return player... this function is basically here to prevent a mixin inject error
++   }
++
++   //Magma start - revert to original
+    public ServerPlayer m_11300_(GameProfile p_11301_) {
+       UUID uuid = Player.m_36198_(p_11301_);
        List<ServerPlayer> list = Lists.newArrayList();
  
 -      for(int i = 0; i < this.f_11196_.size(); ++i) {
 -         ServerPlayer serverplayer = this.f_11196_.get(i);
 -         if (serverplayer.m_142081_().equals(uuid)) {
-+      for(int i = 0; i < this.players.size(); ++i) {
-+         ServerPlayer serverplayer = this.players.get(i);
-+         if (serverplayer.getUUID().equals(uuid)) {
-             list.add(serverplayer);
+-            list.add(serverplayer);
++      for (ServerPlayer value : this.f_11196_) {
++         if (value.m_142081_().equals(uuid)) {
++            list.add(value);
           }
        }
  
 -      ServerPlayer serverplayer2 = this.f_11197_.get(p_11301_.getId());
-+      ServerPlayer serverplayer2 = this.playersByUUID.get(p_11301_.getId());
-       if (serverplayer2 != null && !list.contains(serverplayer2)) {
-          list.add(serverplayer2);
-       }
- 
-       for(ServerPlayer serverplayer1 : list) {
--         serverplayer1.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
+-      if (serverplayer2 != null && !list.contains(serverplayer2)) {
+-         list.add(serverplayer2);
 -      }
 -
--      return new ServerPlayer(this.f_11195_, this.f_11195_.m_129783_(), p_11301_);
--   }
+-      for(ServerPlayer serverplayer1 : list) {
+-         serverplayer1.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
++      for (ServerPlayer serverPlayer : list) {
++         m_6765_(serverPlayer); // CraftBukkit - Force the player's inventory to be saved
++         serverPlayer.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login", new Object[0]));
+       }
+ 
+       return new ServerPlayer(this.f_11195_, this.f_11195_.m_129783_(), p_11301_);
+    }
 -
 -   public ServerPlayer m_11236_(ServerPlayer p_11237_, boolean p_11238_) {
 -      this.f_11196_.remove(p_11237_);
-+         serverplayer1.connection.disconnect(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
-+      }
-+
-+      return new ServerPlayer(this.server, this.server.overworld(), p_11301_);
-+        */
-+      return player;
-+      // CraftBukkit end
-+   }
++   //Magma end
 +
 +   //Magma - implementation based on Arclight but modified for our own needs
 +   public ServerPlayer respawn(ServerPlayer playerIn, ServerLevel worldIn, boolean conqueredEnd, Location location, boolean avoidSuffocation) {
