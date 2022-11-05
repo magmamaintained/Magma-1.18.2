@@ -322,6 +322,9 @@ public final class CraftItemStack extends ItemStack {
 
     public static ItemMeta getItemMeta(net.minecraft.world.item.ItemStack item) {
         //Magma start
+        if (item == net.minecraft.world.item.ItemStack.EMPTY) {
+            return null;
+        }
         if (!hasItemMeta(item)) {
             ItemMeta meta = CraftItemFactory.instance().getItemMeta(getType(item));
             ((CraftMetaItem) meta).setForgeCaps(item.getForgeCaps());
