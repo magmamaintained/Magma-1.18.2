@@ -145,19 +145,17 @@
  
     }
  
-@@ -585,7 +_,15 @@
+@@ -584,6 +_,13 @@
+    public boolean m_6162_() {
        return this.m_31666_();
     }
- 
++
 +   // CraftBukkit start
 +   @Override
 +   protected boolean m_6149_() {
 +      return true; // MC-157395, SPIGOT-5193 even baby (small) armor stands should drop
 +   }
 +   // CraftBukkit end
-+
-    public void m_6074_() {
-+      org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityDeathEvent(this, drops); // CraftBukkit - call event
-       this.m_142687_(Entity.RemovalReason.KILLED);
-    }
  
+    public void m_6074_() {
+       this.m_142687_(Entity.RemovalReason.KILLED);
