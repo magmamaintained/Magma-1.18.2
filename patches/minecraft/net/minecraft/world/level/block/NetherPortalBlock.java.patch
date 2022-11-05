@@ -18,7 +18,7 @@
  
  public class NetherPortalBlock extends Block {
     public static final EnumProperty<Direction.Axis> f_54904_ = BlockStateProperties.f_61364_;
-@@ -49,13 +_,14 @@
+@@ -49,12 +_,13 @@
     }
  
     public void m_7455_(BlockState p_54937_, ServerLevel p_54938_, BlockPos p_54939_, Random p_54940_) {
@@ -29,12 +29,10 @@
           }
  
           if (p_54938_.m_8055_(p_54939_).m_60643_(p_54938_, p_54939_, EntityType.f_20531_)) {
--            Entity entity = EntityType.f_20531_.m_20600_(p_54938_, (CompoundTag)null, (Component)null, (Player)null, p_54939_.m_7494_(), MobSpawnType.STRUCTURE, false, false);
-+            // CraftBukkit - set spawn reason to NETHER_PORTAL
-+            Entity entity = EntityType.f_20531_.spawn(p_54938_, (CompoundTag)null, (Component)null, (Player)null, p_54939_.m_7494_(), MobSpawnType.STRUCTURE, false, false, CreatureSpawnEvent.SpawnReason.NETHER_PORTAL);
++            EntityType.f_20531_.prepareSpawn(CreatureSpawnEvent.SpawnReason.NETHER_PORTAL); //Magma - spawn reason
+             Entity entity = EntityType.f_20531_.m_20600_(p_54938_, (CompoundTag)null, (Component)null, (Player)null, p_54939_.m_7494_(), MobSpawnType.STRUCTURE, false, false);
              if (entity != null) {
                 entity.m_20091_();
-             }
 @@ -73,6 +_,10 @@
  
     public void m_7892_(BlockState p_54915_, Level p_54916_, BlockPos p_54917_, Entity p_54918_) {
