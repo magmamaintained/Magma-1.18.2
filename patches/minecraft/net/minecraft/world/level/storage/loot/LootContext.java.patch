@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
+@@ -21,6 +_,7 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
++import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+ 
 @@ -107,17 +_,47 @@
        return this.f_78909_;
     }
@@ -57,15 +65,34 @@
              throw new IllegalArgumentException("Parameters not allowed in this parameter set: " + set);
           } else {
              Set<LootContextParam<?>> set1 = Sets.difference(p_78976_.m_81394_(), this.f_78956_.keySet());
-@@ -203,7 +_,7 @@
+@@ -203,12 +_,26 @@
                 }
  
                 MinecraftServer minecraftserver = this.f_78955_.m_142572_();
 -               return new LootContext(random, this.f_78959_, this.f_78955_, minecraftserver.m_129898_()::m_79217_, minecraftserver.m_129899_()::m_79252_, this.f_78956_, this.f_78957_);
-+               return new LootContext(random, this.f_78959_, this.f_78955_, minecraftserver.m_129898_()::m_79217_, minecraftserver.m_129899_()::m_79252_, this.f_78956_, this.f_78957_, this.queriedLootTableId);
++               //Magma start - check if params are empty, prevents crash with bukkit loot generate event and forge mods
++               LootContext context = new LootContext(random, this.f_78959_, this.f_78955_, minecraftserver.m_129898_()::m_79217_, minecraftserver.m_129899_()::m_79252_, this.f_78956_, this.f_78957_, this.queriedLootTableId);
++               if (p_78976_ == LootContextParamSets.f_81410_ || (p_78976_.m_81394_().isEmpty() && p_78976_.m_81398_().isEmpty()))
++                  context.setEmptyParams();
++               return context;
              }
           }
        }
+    }
+ 
++   private boolean emptyParams = false;
++   private void setEmptyParams() {
++      emptyParams = true;
++   }
++
++   public boolean isEmptyParams() {
++      return emptyParams;
++   }
++   //Magma end
++
+    @FunctionalInterface
+    public interface DynamicDrop {
+       void m_78987_(LootContext p_78988_, Consumer<ItemStack> p_78989_);
 @@ -230,6 +_,11 @@
  
        public LootContextParam<? extends Entity> m_79003_() {
