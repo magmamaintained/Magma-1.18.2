@@ -98,19 +98,26 @@
     public boolean m_142073_(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_) {
        if (!(this.f_40687_ instanceof FlowingFluid)) {
           return false;
-@@ -107,6 +_,22 @@
+@@ -107,6 +_,29 @@
           Material material = blockstate.m_60767_();
           boolean flag = blockstate.m_60722_(this.f_40687_);
           boolean flag1 = blockstate.m_60795_() || flag || block instanceof LiquidBlockContainer && ((LiquidBlockContainer)block).m_6044_(p_150717_, p_150718_, blockstate, this.f_40687_);
 +
 +         // CraftBukkit start
 +         if (flag1 && p_150716_ != null) {
-+            PlayerBucketEmptyEvent event = CraftEventFactory.callPlayerBucketEmptyEvent((ServerLevel) p_150717_, p_150716_, p_150718_, emptyContents_clicked, emptyContents_direction, emptyContents_itemstack);
++            //Magma start - ClassCastException with Create
++            PlayerBucketEmptyEvent event = null;
++            try {
++               ServerLevel serverLevel = (ServerLevel) p_150717_;
++               event = CraftEventFactory.callPlayerBucketEmptyEvent(serverLevel, p_150716_, p_150718_, emptyContents_clicked, emptyContents_direction, emptyContents_itemstack);
++            } catch (ClassCastException ignored) {}
++            //Magma end
++
 +            //Magma - set these back to null after use
 +            this.emptyContents_direction = null;
 +            this.emptyContents_clicked = null;
 +            this.emptyContents_itemstack = null;
-+            if (event.isCancelled()) {
++            if (event != null && event.isCancelled()) { //Magma - null check
 +               ((ServerPlayer) p_150716_).f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_150717_, p_150718_)); // SPIGOT-4238: needed when looking through entity
 +               ((ServerPlayer) p_150716_).getBukkitEntity().updateInventory(); // SPIGOT-4541
 +               return false;
