@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomAbstractHorse;
+import org.magmafoundation.magma.craftbukkit.entity.CraftCustomChestedHorse;
 
 public enum EntityType implements Keyed {
 
@@ -290,7 +291,11 @@ public enum EntityType implements Keyed {
     /**
      * A custom forge entity.
      */
-    HORSE_MODDED("horse_modded", CraftCustomAbstractHorse.class, -1, false);
+    HORSE_MODDED("horse_modded", CraftCustomAbstractHorse.class, -1, false),
+    /**
+     * A custom chested forge entity.
+     */
+    CHESTED_HORSE_MODDED("chested_horse_modded", CraftCustomChestedHorse.class, -1, false);
 
     private final String name;
     private final Class<? extends Entity> clazz;
