@@ -104,10 +104,11 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.material.Fluid;
-@@ -115,14 +_,27 @@
+@@ -115,14 +_,28 @@
  import net.minecraft.world.phys.HitResult;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
++import net.minecraftforge.common.ForgeHooks;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.attribute.CraftAttributeMap;
@@ -560,7 +561,7 @@
              if (!p_21016_.m_19360_()) {
                 Entity entity = p_21016_.m_7640_();
                 if (entity instanceof LivingEntity) {
-@@ -1014,30 +_,49 @@
+@@ -1014,30 +_,61 @@
  
              flag = true;
           }
@@ -575,23 +576,35 @@
              }
  
 -            this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
-+            // CraftBukkit start
-+            if (!this.damageEntity0(p_21016_, p_21017_ - this.f_20898_)) {
-+               return false;
++            //Magma start - calculate player hurt damage in their class
++            if (this instanceof Player) {
++               this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
++            } else {
++               // CraftBukkit start
++               if (!this.damageEntity0(p_21016_, p_21017_ - this.f_20898_))
++                  return false;
++               // CraftBukkit end
 +            }
-+            // CraftBukkit end
++            //Magma end
              this.f_20898_ = p_21017_;
              flag1 = false;
           } else {
-+            // CraftBukkit start
-+            if (!this.damageEntity0(p_21016_, f)) {
-+               return false;
++            //Magma start - calculate player hurt damage in their class
++            if (this instanceof Player) {
++               this.m_6475_(p_21016_, f);
++            } else {
++               // CraftBukkit start
++               if (!this.damageEntity0(p_21016_, f))
++                  return false;
++               // CraftBukkit end
 +            }
++            //Magma end
++
++            // CraftBukkit start
              this.f_20898_ = p_21017_;
 -            this.f_19802_ = 20;
 -            this.m_6475_(p_21016_, p_21017_);
 +            this.f_19802_ = this.f_20926_; // CraftBukkit - restore use of maxNoDamageTicks
-+            // CraftBukkit end
              this.f_20917_ = 10;
              this.f_20916_ = this.f_20917_;
           }
@@ -924,11 +937,11 @@
                 }
              }
           }
-@@ -1514,24 +_,148 @@
+@@ -1514,24 +_,157 @@
     }
  
     protected void m_6475_(DamageSource p_21240_, float p_21241_) {
-+
++      damageEntity0(p_21240_, p_21241_);
 +   }
 +
 +   // CraftBukkit start
@@ -944,10 +957,17 @@
 -         }
 -
 -         if (f2 != 0.0F) {
-+         p_21241_ = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
-+         if (p_21241_ <= 0) return false;
++         // Check if entity is a "human" aka player
 +         final boolean human = this instanceof Player;
-+         float originalDamage = p_21241_;
++         final float originalDamage = p_21241_;
++         // Cauldron start - apply forge damage hook
++         p_21241_ = ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
++         // If the damage is negative return true
++         if (p_21241_ < 0) return true;
++         // Thermos detect null damage
++         final boolean nulldmg = p_21241_ == 0;
++         // Cauldron end
++
 +         Function<Double, Double> hardHat = f -> {
 +            if (p_21240_.m_146705_() && !LivingEntity.this.m_6844_(EquipmentSlot.HEAD).m_41619_()) {
 +               return -(f - (f * 0.75F));
@@ -993,6 +1013,8 @@
 +         }
 +
 +         p_21241_ = (float) event.getFinalDamage();
++
++         if (nulldmg) return true; // Preclude any stupidity with null head items
 +
 +         // Resistance
 +         if (event.getDamage(EntityDamageEvent.DamageModifier.RESISTANCE) < 0) {
