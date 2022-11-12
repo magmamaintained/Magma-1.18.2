@@ -3,6 +3,7 @@ package org.magmafoundation.magma.forge;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
+import org.bukkit.craftbukkit.v1_18_R2.CraftStatistic;
 import org.bukkit.craftbukkit.v1_18_R2.enchantments.CraftEnchantment;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
@@ -36,6 +38,7 @@ public class ForgeInject {
 
     public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new ConcurrentHashMap<>();
     public static final Map<net.minecraft.world.entity.EntityType<?>, String> ENTITY_TYPES = new ConcurrentHashMap<>();
+    public static final Map<CraftStatistic, ResourceLocation> STATISTICS_MAP = new ConcurrentHashMap<>();
 
     public static void init() {
         debug("Injecting Forge Material into Bukkit");
@@ -52,6 +55,8 @@ public class ForgeInject {
         addForgeEntities();
         debug("Injecting Forge VillagerProfessions into Bukkit");
         addForgeVillagerProfessions();
+        debug("Injecting Forge statistics into bukkit");
+        addForgeStatistics();
 
         debug("Injecting Forge into Bukkit: DONE");
     }
@@ -218,6 +223,26 @@ public class ForgeInject {
                 i++;
             }
         }
+    }
+
+    public static void addForgeStatistics() {
+        Registry.CUSTOM_STAT.entrySet().forEach(entry -> {
+            ResourceLocation resourceLocation = entry.getKey().location();
+            assert resourceLocation != null;
+            if (!resourceLocation.getNamespace().equals(NamespacedKey.MINECRAFT)) {
+                String name = normalizeName(resourceLocation.toString());
+                try {
+                    Statistic statistic = EnumJ17Helper.addEnum0(Statistic.class, name, new Class[0]);
+                    CraftStatistic craftstatistic = EnumJ17Helper.addEnum0(CraftStatistic.class, name, new Class[] {ResourceLocation.class}, resourceLocation);
+                    STATISTICS_MAP.put(craftstatistic, resourceLocation);
+                    debug("Injected Forge Statistic into Bukkit: " +  statistic.name());
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        CraftStatistic.rebuild();
+        debug("Injecting Forge Statistic into Bukkit: DONE");
     }
 
     private static String normalizeName(String name) {
