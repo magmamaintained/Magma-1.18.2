@@ -65,15 +65,16 @@
     private final Node[] f_31077_ = new Node[24];
     private final int[] f_31078_ = new int[24];
     private final BinaryHeap f_31079_ = new BinaryHeap();
-+   private Explosion explosionSource = new Explosion(null, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource()
++   private Explosion explosionSource;
  
     public EnderDragon(EntityType<? extends EnderDragon> p_31096_, Level p_31097_) {
        super(EntityType.f_20565_, p_31097_);
-@@ -107,6 +_,14 @@
+@@ -107,6 +_,15 @@
        }
  
        this.f_31074_ = new EnderDragonPhaseManager(this);
 +      this.m_20234_(f_19843_.getAndAdd(this.f_31089_.length + 1) + 1); // Forge: Fix MC-158205: Make sure part ids are successors of parent mob id
++      this.explosionSource = new Explosion(p_31097_, this, null, null, Double.NaN, Double.NaN, Double.NaN, Float.NaN, true, Explosion.BlockInteraction.DESTROY); // CraftBukkit - reusable source for CraftTNTPrimed.getSource() //Magma - moved to constructor and added level
 +   }
 +
 +   @Override
