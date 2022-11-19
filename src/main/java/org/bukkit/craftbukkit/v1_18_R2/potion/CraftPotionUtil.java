@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionType;
 
 public class CraftPotionUtil {
 
-    private static final BiMap<PotionType, String> regular = ImmutableBiMap.<PotionType, String>builder()
+    public static BiMap<PotionType, String> regular = ImmutableBiMap.<PotionType, String>builder() //Magma - make public and not final
             .put(PotionType.UNCRAFTABLE, "empty")
             .put(PotionType.WATER, "water")
             .put(PotionType.MUNDANE, "mundane")
@@ -73,7 +73,7 @@ public class CraftPotionUtil {
         }
         Preconditions.checkNotNull(type, "Unknown potion type from data " + data);
 
-        return "minecraft:" + type;
+        return type.indexOf(':') != -1 ? type : "minecraft:" + type; //Magma - forge potions
     }
 
     public static PotionData toBukkit(String type) {
