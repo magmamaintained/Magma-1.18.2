@@ -9,35 +9,26 @@ public class PotionEffectTypeWrapper extends PotionEffectType {
         super(id, NamespacedKey.minecraft(name));
     }
 
-    @Override
     public double getDurationModifier() {
-        return getType().getDurationModifier();
+        return this.getType().getDurationModifier();
     }
 
     @NotNull
-    @Override
     public String getName() {
-        return getType().getName();
+        return this.getType().getName();
     }
 
-    /**
-     * Get the potion type bound to this wrapper.
-     *
-     * @return The potion effect type
-     */
     @NotNull
     public PotionEffectType getType() {
-        return PotionEffectType.getById(getId());
+        return PotionEffectType.getById(this.getId());
     }
 
-    @Override
     public boolean isInstant() {
-        return getType().isInstant();
+        return this.getType().isInstant();
     }
 
     @NotNull
-    @Override
     public Color getColor() {
-        return getType().getColor();
+        return this.getType().getColor();
     }
 }

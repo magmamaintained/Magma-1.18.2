@@ -68,6 +68,10 @@ public class ForgeInject {
             Magma.LOGGER.debug(message);
     }
 
+    private static void error(String message) {
+        Magma.LOGGER.error(message);
+    }
+
 
     private static void addForgeItems() {
         ForgeRegistries.ITEMS.getEntries().forEach(entry -> {
@@ -88,13 +92,11 @@ public class ForgeInject {
                     CraftMagicNumbers.MATERIAL_ITEM.put(material, item);
                     debug("Injecting Forge Material into Bukkit: " +  material.name());
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    error("Could not inject item into Bukkit: " + materialName + ". " + e.getMessage());
                 }
             }
         });
-
         debug("Injecting Forge Material into Bukkit: DONE");
-
     }
 
 
@@ -117,7 +119,7 @@ public class ForgeInject {
                     CraftMagicNumbers.MATERIAL_BLOCK.put(material, block);
                     debug("Injecting Forge Blocks into Bukkit: " +  material.name());
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    error("Could not inject block into Bukkit: " + materialName + ". " + e.getMessage());
                 }
             }
         });
@@ -138,16 +140,18 @@ public class ForgeInject {
     }
 
     private static void addForgePotions() {
+        PotionEffectType.startAcceptingRegistrations();
         ForgeRegistries.MOB_EFFECTS.getEntries().forEach(entry -> {
             PotionEffectType pet = new CraftPotionEffectType(entry.getValue());
 
-            if (PotionEffectType.byId[pet.getId()] == null || !PotionEffectType.byName.containsKey(pet.getName().toLowerCase(java.util.Locale.ENGLISH)) || !PotionEffectType.byKey.containsKey(pet.getKey())) {
-                PotionEffectType.byId[pet.getId()] = pet;
-                PotionEffectType.byName.put(pet.getName().toLowerCase(java.util.Locale.ENGLISH), pet);
-                PotionEffectType.byKey.put(pet.getKey(), pet);
+            try {
+                PotionEffectType.registerPotionEffectType(pet);
                 debug("Injecting Forge Potion into Bukkit: " +  pet.getName());
+            } catch (IllegalStateException e) {
+                error("Could not inject potion effect into Bukkit: " + pet.getName() + ". " + e.getMessage());
             }
         });
+        PotionEffectType.stopAcceptingRegistrations();
         debug("Injecting Forge Potion into Bukkit: DONE");
     }
 
@@ -161,7 +165,7 @@ public class ForgeInject {
                     Biome biome = EnumJ17Helper.addEnum0(Biome.class, biomeName, new Class[0]);
                     debug("Injecting Forge Biome into Bukkit: " +  biome.name());
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    error("Could not inject biome into Bukkit: " + biomeName + ". " + e.getMessage());
                 }
             }
         });
@@ -184,7 +188,7 @@ public class ForgeInject {
                     ENTITY_TYPES.put(entity.getValue(), entityType);
                     debug("Injecting Forge Entity into Bukkit: " +  entityType);
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    error("Could not inject entity into Bukkit: " + entityType + ". " + e.getMessage());
                 }
             }
         });
@@ -202,7 +206,7 @@ public class ForgeInject {
                     PROFESSION_MAP.put(profession, resourceLocation);
                     debug("Injecting Forge VillagerProfession into Bukkit: " +  profession.name());
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    error("Could not inject villager profession into Bukkit: " + name + ". " + e.getMessage());
                 }
             }
         });
@@ -237,7 +241,7 @@ public class ForgeInject {
                     STATISTICS_MAP.put(craftstatistic, resourceLocation);
                     debug("Injected Forge Statistic into Bukkit: " +  statistic.name());
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    error("Could not inject statistic into Bukkit: " + name + ". " + e.getMessage());
                 }
             }
         });

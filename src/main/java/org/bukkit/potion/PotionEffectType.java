@@ -2,8 +2,10 @@ package org.bukkit.potion;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang3.Validate;
+
+import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -182,178 +184,104 @@ public abstract class PotionEffectType implements Keyed {
 
     private final int id;
     private final NamespacedKey key;
+    public static final PotionEffectType[] byId = new PotionEffectType[33];
+    public static final Map<String, PotionEffectType> byName = new HashMap<>();
+    public static final Map<NamespacedKey, PotionEffectType> byKey = new HashMap<>();
+    private static boolean acceptingNew = true;
 
     protected PotionEffectType(int id, @NotNull NamespacedKey key) {
         this.id = id;
         this.key = key;
     }
 
-    /**
-     * Creates a PotionEffect from this PotionEffectType, applying duration
-     * modifiers and checks.
-     *
-     * @param duration time in ticks
-     * @param amplifier the effect's amplifier
-     * @return a resulting potion effect
-     * @see PotionBrewer#createEffect(PotionEffectType, int, int)
-     */
     @NotNull
     public PotionEffect createEffect(int duration, int amplifier) {
-        return new PotionEffect(this, isInstant() ? 1 : (int) (duration * getDurationModifier()), amplifier);
+        return new PotionEffect(this, this.isInstant() ? 1 : (int)((double)duration * this.getDurationModifier()), amplifier);
     }
 
-    /**
-     * Returns the duration modifier applied to effects of this type.
-     *
-     * @return duration modifier
-     * @deprecated unused, always 1.0
-     */
+    /** @deprecated */
     @Deprecated
     public abstract double getDurationModifier();
 
-    /**
-     * Returns the unique ID of this type.
-     *
-     * @return Unique ID
-     * @deprecated Magic value
-     */
+    /** @deprecated */
     @Deprecated
     public int getId() {
-        return id;
+        return this.id;
     }
 
     @NotNull
-    @Override
     public NamespacedKey getKey() {
-       return key;
+        return this.key;
     }
 
-    /**
-     * Returns the name of this effect type.
-     *
-     * @return The name of this effect type
-     */
     @NotNull
     public abstract String getName();
 
-    /**
-     * Returns whether the effect of this type happens once, immediately.
-     *
-     * @return whether this type is normally instant
-     */
     public abstract boolean isInstant();
 
-    /**
-     * Returns the color of this effect type.
-     *
-     * @return the color
-     */
     @NotNull
     public abstract Color getColor();
 
-    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
-        }
-        if (!(obj instanceof PotionEffectType)) {
+        } else if (!(obj instanceof PotionEffectType)) {
             return false;
+        } else {
+            PotionEffectType other = (PotionEffectType)obj;
+            return this.id == other.id;
         }
-        final PotionEffectType other = (PotionEffectType) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
     }
 
-    @Override
     public int hashCode() {
-        return id;
+        return this.id;
     }
 
-    @Override
     public String toString() {
-        return "PotionEffectType[" + id + ", " + getName() + "]";
+        return "PotionEffectType[" + this.id + ", " + this.getName() + "]";
     }
 
-    public static final PotionEffectType[] byId = new PotionEffectType[1250];
-    public static final Map<String, PotionEffectType> byName = new HashMap<String, PotionEffectType>();
-    public static final Map<NamespacedKey, PotionEffectType> byKey = new HashMap<NamespacedKey, PotionEffectType>();
-    // will break on updates.
-    private static boolean acceptingNew = true;
-
-    /**
-     * Gets the PotionEffectType at the specified key
-     *
-     * @param key key to fetch
-     * @return Resulting PotionEffectType, or null if not found
-     */
     @Contract("null -> null")
     @Nullable
     public static PotionEffectType getByKey(@Nullable NamespacedKey key) {
         return byKey.get(key);
     }
 
-    /**
-     * Gets the effect type specified by the unique id.
-     *
-     * @param id Unique ID to fetch
-     * @return Resulting type, or null if not found.
-     * @deprecated Magic value
-     */
+    /** @deprecated */
     @Deprecated
     @Nullable
     public static PotionEffectType getById(int id) {
-        if (id >= byId.length || id < 0)
-            return null;
-        return byId[id];
+        return id < byId.length && id >= 0 ? byId[id] : null;
     }
 
-    /**
-     * Gets the effect type specified by the given name.
-     *
-     * @param name Name of PotionEffectType to fetch
-     * @return Resulting PotionEffectType, or null if not found.
-     */
     @Nullable
     public static PotionEffectType getByName(@NotNull String name) {
         Validate.notNull(name, "name cannot be null");
-        return byName.get(name.toLowerCase(java.util.Locale.ENGLISH));
+        return byName.get(name.toLowerCase(Locale.ENGLISH));
     }
 
-    /**
-     * Registers an effect type with the given object.
-     * <p>
-     * Generally not to be used from within a plugin.
-     *
-     * @param type PotionType to register
-     */
     public static void registerPotionEffectType(@NotNull PotionEffectType type) {
-        if (byId[type.id] != null || byName.containsKey(type.getName().toLowerCase(java.util.Locale.ENGLISH)) || byKey.containsKey(type.key)) {
+        if (byId[type.id] == null && !byName.containsKey(type.getName().toLowerCase(Locale.ENGLISH)) && !byKey.containsKey(type.key)) {
+            if (!acceptingNew) {
+                throw new IllegalStateException("No longer accepting new potion effect types");
+            } else {
+                byId[type.id] = type;
+                byName.put(type.getName().toLowerCase(Locale.ENGLISH), type);
+                byKey.put(type.key, type);
+            }
+        } else {
             throw new IllegalArgumentException("Cannot set already-set type");
-        } else if (!acceptingNew) {
-            throw new IllegalStateException(
-                    "No longer accepting new potion effect types (can only be done by the server implementation)");
         }
-
-        byId[type.id] = type;
-        byName.put(type.getName().toLowerCase(java.util.Locale.ENGLISH), type);
-        byKey.put(type.key, type);
     }
 
-    /**
-     * Stops accepting any effect type registrations.
-     */
+    public static void startAcceptingRegistrations() {
+        acceptingNew = true;
+    }
+
     public static void stopAcceptingRegistrations() {
         acceptingNew = false;
     }
 
-    /**
-     * Returns an array of all the registered {@link PotionEffectType}s.
-     * This array is not necessarily in any particular order.
-     *
-     * @return Array of types.
-     */
     @NotNull
     public static PotionEffectType[] values() {
         return Arrays.copyOfRange(byId, 1, byId.length);
