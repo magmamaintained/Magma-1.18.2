@@ -184,7 +184,7 @@ public abstract class PotionEffectType implements Keyed {
 
     private final int id;
     private final NamespacedKey key;
-    public static final PotionEffectType[] byId = new PotionEffectType[33];
+    public static final PotionEffectType[] byId = new PotionEffectType[1250];
     public static final Map<String, PotionEffectType> byName = new HashMap<>();
     public static final Map<NamespacedKey, PotionEffectType> byKey = new HashMap<>();
     private static boolean acceptingNew = true;
