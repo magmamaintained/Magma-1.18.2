@@ -6,7 +6,12 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -15,11 +20,13 @@ import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_18_R2.CraftStatistic;
 import org.bukkit.craftbukkit.v1_18_R2.enchantments.CraftEnchantment;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionEffectType;
+import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionUtil;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
@@ -38,7 +45,6 @@ public class ForgeInject {
 
     public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new ConcurrentHashMap<>();
     public static final Map<net.minecraft.world.entity.EntityType<?>, String> ENTITY_TYPES = new ConcurrentHashMap<>();
-    public static final Map<CraftStatistic, ResourceLocation> STATISTICS_MAP = new ConcurrentHashMap<>();
 
     public static void init() {
         debug("Injecting Forge Material into Bukkit");
@@ -146,12 +152,38 @@ public class ForgeInject {
 
             try {
                 PotionEffectType.registerPotionEffectType(pet);
-                debug("Injecting Forge Potion into Bukkit: " +  pet.getName());
+                debug("Registering Forge Potion into Bukkit: " +  pet.getName());
             } catch (IllegalStateException e) {
-                error("Could not inject potion effect into Bukkit: " + pet.getName() + ". " + e.getMessage());
+                error("Could not register potion effect into Bukkit: " + pet.getName() + ". " + e.getMessage());
             }
         });
         PotionEffectType.stopAcceptingRegistrations();
+        //Stage 1 complete - now to add the types to bukkit
+
+        BiMap<PotionType, String> newRegular = HashBiMap.create(CraftPotionUtil.regular);
+        ForgeRegistries.POTIONS.getEntries().forEach(entry -> {
+            ResourceLocation resourceLocation = entry.getValue().getRegistryName();
+            assert resourceLocation != null;
+            if (!resourceLocation.getNamespace().equals(NamespacedKey.MINECRAFT)) {
+                // inject potion materials into Bukkit for FML
+                String materialName = normalizeName(entry.getKey().toString());
+                Potion potion = entry.getValue();
+                MobEffectInstance effect = potion.getEffects().isEmpty() ? null : potion.getEffects().get(0);
+                PotionEffectType type = effect == null ? null : PotionEffectType.getById(MobEffect.getId(effect.getEffect()));
+                try {
+                    PotionType potionType = EnumJ17Helper.addEnum0(PotionType.class, materialName,
+                            new Class[]{PotionEffectType.class, boolean.class, boolean.class},
+                            type, false, false
+                    );
+                    newRegular.put(potionType, potion.getRegistryName().toString());
+                    debug("Injecting Forge Potion into Bukkit: " +  potionType.name());
+                } catch (Throwable e) {
+                    error("Could not inject potion into Bukkit: " + materialName + ". " + e.getMessage());
+                }
+            }
+        });
+        CraftPotionUtil.regular = newRegular;
+
         debug("Injecting Forge Potion into Bukkit: DONE");
     }
 
@@ -237,8 +269,7 @@ public class ForgeInject {
                 String name = normalizeName(resourceLocation.toString());
                 try {
                     Statistic statistic = EnumJ17Helper.addEnum0(Statistic.class, name, new Class[0]);
-                    CraftStatistic craftstatistic = EnumJ17Helper.addEnum0(CraftStatistic.class, name, new Class[] {ResourceLocation.class}, resourceLocation);
-                    STATISTICS_MAP.put(craftstatistic, resourceLocation);
+                    EnumJ17Helper.addEnum0(CraftStatistic.class, name, new Class[] {ResourceLocation.class}, resourceLocation);
                     debug("Injected Forge Statistic into Bukkit: " +  statistic.name());
                 } catch (Throwable e) {
                     error("Could not inject statistic into Bukkit: " + name + ". " + e.getMessage());
