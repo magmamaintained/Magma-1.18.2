@@ -165,7 +165,6 @@ public class ForgeInject {
             ResourceLocation resourceLocation = entry.getValue().getRegistryName();
             assert resourceLocation != null;
             if (!resourceLocation.getNamespace().equals(NamespacedKey.MINECRAFT)) {
-                // inject potion materials into Bukkit for FML
                 String materialName = normalizeName(entry.getKey().toString());
                 Potion potion = entry.getValue();
                 MobEffectInstance effect = potion.getEffects().isEmpty() ? null : potion.getEffects().get(0);
