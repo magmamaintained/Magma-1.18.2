@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/food/FoodData.java
 +++ b/net/minecraft/world/food/FoodData.java
-@@ -1,12 +_,17 @@
+@@ -1,12 +_,18 @@
  package net.minecraft.world.food;
  
  import net.minecraft.nbt.CompoundTag;
@@ -15,29 +15,32 @@
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.event.entity.EntityExhaustionEvent;
 +import org.bukkit.event.entity.EntityRegainHealthEvent;
++import org.jetbrains.annotations.Nullable;
  
  public class FoodData {
     public int f_38696_ = 20;
-@@ -15,19 +_,48 @@
+@@ -15,19 +_,57 @@
     private int f_38699_;
     private int f_38700_ = 20;
  
--   public FoodData() {
--      this.f_38697_ = 5.0F;
 +   // CraftBukkit start
-+   private Player entityhuman;
++   private @Nullable Player entityhuman; //Magma - add @Nullable
 +   public int saturatedRegenRate = 10;
 +   public int unsaturatedRegenRate = 80;
 +   public int starvationRate = 80;
 +   // CraftBukkit end
 +
-+   public FoodData() { throw new AssertionError("Whoopsie, we missed the bukkit."); } // CraftBukkit start - throw an error
+    public FoodData() {
+-      this.f_38697_ = 5.0F;
+-   }
++      this(null); //Magma - instead of throwing an error we just set it to null
++   }
 +
 +   // CraftBukkit start - added Player constructor
 +   public FoodData(Player player) {
 +       this.entityhuman = player;
 +       this.f_38697_ = 5.0F;
-    }
++   }
 +   // CraftBukkit end
  
     public void m_38707_(int p_38708_, float p_38709_) {
@@ -57,6 +60,13 @@
 -         this.m_38707_(foodproperties.m_38744_(), foodproperties.m_38745_());
 +         FoodProperties foodproperties = p_38714_.getFoodProperties(entity);
 +
++         //Magma start - null check
++         if (entityhuman == null) {
++            this.m_38707_(foodproperties.m_38744_(), foodproperties.m_38745_());
++            return;
++         }
++         //Magma end
++
 +         // CraftBukkit start
 +         int oldFoodLevel = f_38696_;
 +         org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(entityhuman, foodproperties.m_38744_() + oldFoodLevel, p_38714_);
@@ -71,20 +81,25 @@
        }
  
     }
-@@ -41,28 +_,41 @@
+@@ -41,28 +_,46 @@
              this.f_38697_ = Math.max(this.f_38697_ - 1.0F, 0.0F);
           } else if (difficulty != Difficulty.PEACEFUL) {
              this.f_38696_ = Math.max(this.f_38696_ - 1, 0);
 +
-+            // CraftBukkit start
-+            org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(entityhuman, Math.max(this.f_38696_ - 1, 0));
++            //Magma start - null check
++            if (entityhuman != null) {
 +
-+            if (!event.isCancelled()) {
-+               this.f_38696_ = event.getFoodLevel();
++               // CraftBukkit start
++               org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(entityhuman, Math.max(this.f_38696_ - 1, 0));
++
++               if (!event.isCancelled()) {
++                  this.f_38696_ = event.getFoodLevel();
++               }
++
++               ((ServerPlayer) entityhuman).f_8906_.m_141995_(new ClientboundSetHealthPacket(((ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), this.f_38696_, this.f_38697_));
++               // CraftBukkit end
 +            }
-+
-+            ((ServerPlayer) entityhuman).f_8906_.m_141995_(new ClientboundSetHealthPacket(((ServerPlayer)entityhuman).getBukkitEntity().getScaledHealth(), this.f_38696_, this.f_38697_));
-+            // CraftBukkit end
++            //Magma end
 +
           }
        }
@@ -105,12 +120,11 @@
        } else if (flag && this.f_38696_ >= 18 && p_38711_.m_36325_()) {
           ++this.f_38699_;
 -         if (this.f_38699_ >= 80) {
--            p_38711_.m_5634_(1.0F);
--            this.m_38703_(6.0F);
 +         if (this.f_38699_ >= this.unsaturatedRegenRate) { // CraftBukkit - add unsaturatedRegenRate
 +            p_38711_.setRegainReason(EntityRegainHealthEvent.RegainReason.SATIATED); // Magma - fix mixin inject
-+            p_38711_.m_5634_(1.0F); // CraftBukkit - add RegainReason
-+            p_38711_.causeFoodExhaustion(entityhuman.f_19853_.spigotConfig.regenExhaustion, EntityExhaustionEvent.ExhaustionReason.REGEN); // CraftBukkit - add RegainReason // Spigot - Change to use configurable value
+             p_38711_.m_5634_(1.0F);
+-            this.m_38703_(6.0F);
++            p_38711_.causeFoodExhaustion(entityhuman == null ? 6.0F : entityhuman.f_19853_.spigotConfig.regenExhaustion, EntityExhaustionEvent.ExhaustionReason.REGEN); // CraftBukkit - add RegainReason // Spigot - Change to use configurable value //Magma - add null check
              this.f_38699_ = 0;
           }
        } else if (this.f_38696_ <= 0) {
