@@ -161,14 +161,23 @@
              }
           }
        } else {
-@@ -310,17 +_,44 @@
+@@ -310,17 +_,48 @@
        }
     }
  
 -   private static boolean m_155026_(@Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
--      if (p_155027_ != null && m_155005_(p_155027_, p_155028_, p_155029_)) {
-+   private boolean burn(Level level, BlockPos blockposition, @Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
-+      if (p_155027_ != null && this.m_155005_(p_155027_, p_155028_, p_155029_)) {
++   //Magma start - mixin inject
++   private @Nullable Level burn_level;
++   private @Nullable BlockPos burn_pos;
++   private boolean m_155026_(@Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
++      Level level = burn_level;
++      BlockPos blockposition = burn_pos;
++
++      //reset
++      burn_level = null;
++      burn_pos = null;
++
+       if (p_155027_ != null && m_155005_(p_155027_, p_155028_, p_155029_)) {
           ItemStack itemstack = p_155028_.get(0);
 -         ItemStack itemstack1 = p_155027_.m_8043_();
 +         ItemStack itemstack1 = ((Recipe<WorldlyContainer>) p_155027_).m_5874_(this);
@@ -183,15 +192,17 @@
 +         // CraftBukkit start - fire FurnaceSmeltEvent
 +         CraftItemStack source = CraftItemStack.asCraftMirror(itemstack);
 +         org.bukkit.inventory.ItemStack result = CraftItemStack.asBukkitCopy(itemstack1);
++         if (level != null && blockposition != null) { //Do not fire event if level or blockpos are null
++            FurnaceSmeltEvent furnaceSmeltEvent = new FurnaceSmeltEvent(CraftBlock.at(level, blockposition), source, result);
++            level.getCraftServer().getPluginManager().callEvent(furnaceSmeltEvent);
 +
-+         FurnaceSmeltEvent furnaceSmeltEvent = new FurnaceSmeltEvent(CraftBlock.at(level, blockposition), source, result);
-+         level.getCraftServer().getPluginManager().callEvent(furnaceSmeltEvent);
++            if (furnaceSmeltEvent.isCancelled()) {
++               return false;
++            }
 +
-+         if (furnaceSmeltEvent.isCancelled()) {
-+            return false;
++            result = furnaceSmeltEvent.getResult();
 +         }
 +
-+         result = furnaceSmeltEvent.getResult();
 +         itemstack1 = CraftItemStack.asNMSCopy(result);
 +
 +         if (!itemstack1.m_41619_()) {
@@ -203,19 +214,23 @@
 +               return false;
 +            }
 +         }
-+
-+          /*
-+         if (itemstack2.isEmpty()) {
-+            p_155028_.set(2, itemstack1.copy());
-+         } else if (itemstack2.is(itemstack1.getItem())) {
-+            itemstack2.grow(itemstack1.getCount());
-+         }
-+          */
 +         // CraftBukkit end
           if (itemstack.m_150930_(Blocks.f_50057_.m_5456_()) && !p_155028_.get(1).m_41619_() && p_155028_.get(1).m_150930_(Items.f_42446_)) {
              p_155028_.set(1, new ItemStack(Items.f_42447_));
           }
-@@ -337,16 +_,16 @@
+@@ -332,21 +_,28 @@
+       }
+    }
+ 
++   private boolean burn(Level level, BlockPos blockposition, @Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
++      burn_level = level;
++      burn_pos = blockposition;
++      return m_155026_(p_155027_, p_155028_, p_155029_);
++   }
++   //Magma end
++
+    protected int m_7743_(ItemStack p_58343_) {
+       if (p_58343_.m_41619_()) {
           return 0;
        } else {
           Item item = p_58343_.m_41720_();
