@@ -121,7 +121,7 @@
 -   private final Map<UUID, PlayerAdvancements> f_11203_ = Maps.newHashMap();
 +   // CraftBukkit start
 +   // private final Map<UUID, ServerStatsCounter> stats = Maps.newHashMap();
-+   // private final Map<UUID, PlayerAdvancements> advancements = Maps.newHashMap();
++   private final Map<UUID, PlayerAdvancements> f_11203_ = Maps.newHashMap(); //Magma - use this
 +   // CraftBukkit end
     public final PlayerDataStorage f_11204_;
     private boolean f_11205_;
@@ -337,7 +337,7 @@
        } else {
           compoundtag1 = this.f_11204_.m_78435_(p_11225_);
        }
-@@ -300,22 +_,39 @@
+@@ -300,8 +_,10 @@
     }
  
     protected void m_6765_(ServerPlayer p_11277_) {
@@ -349,12 +349,7 @@
        if (serverstatscounter != null) {
           serverstatscounter.m_12818_();
        }
- 
--      PlayerAdvancements playeradvancements = this.f_11203_.get(p_11277_.m_142081_());
-+      PlayerAdvancements playeradvancements = p_11277_.m_8960_(); // CraftBukkit
-       if (playeradvancements != null) {
-          playeradvancements.m_135991_();
-       }
+@@ -313,9 +_,24 @@
  
     }
  
@@ -397,7 +392,7 @@
 -      this.m_11268_(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, p_11287_));
 +         // CraftBukkit start
 +         // this.stats.remove(uuid);
-+         // this.advancements.remove(uuid);
++         this.f_11203_.remove(uuid); //Magma
 +         // CraftBukkit end
 +      }
 +
@@ -1044,18 +1039,8 @@
        }
  
        return serverstatscounter;
-@@ -751,14 +_,16 @@
- 
-    public PlayerAdvancements m_11296_(ServerPlayer p_11297_) {
-       UUID uuid = p_11297_.m_142081_();
--      PlayerAdvancements playeradvancements = this.f_11203_.get(uuid);
-+      PlayerAdvancements playeradvancements = p_11297_.m_8960_(); // CraftBukkit
-       if (playeradvancements == null) {
-          File file1 = this.f_11195_.m_129843_(LevelResource.f_78174_).toFile();
-          File file2 = new File(file1, uuid + ".json");
-          playeradvancements = new PlayerAdvancements(this.f_11195_.m_129933_(), this, this.f_11195_.m_129889_(), file2, p_11297_);
--         this.f_11203_.put(uuid, playeradvancements);
-+         // this.advancements.put(uuid, playeradvancements); // CraftBukkit
+@@ -759,6 +_,8 @@
+          this.f_11203_.put(uuid, playeradvancements);
        }
  
 +      // Forge: don't overwrite active player with a fake one.
@@ -1072,18 +1057,13 @@
     }
  
     @Nullable
-@@ -801,10 +_,19 @@
+@@ -801,10 +_,14 @@
     }
  
     public void m_11315_() {
 -      for(PlayerAdvancements playeradvancements : this.f_11203_.values()) {
 -         playeradvancements.m_135981_(this.f_11195_.m_129889_());
 +      // CraftBukkit start
-+      /*
-+      for(PlayerAdvancements playeradvancements : this.advancements.values()) {
-+         playeradvancements.reload(this.server.getAdvancements());
-+      }*/
-+
 +      for (ServerPlayer player : f_11196_) {
 +         player.m_8960_().m_135981_(this.f_11195_.m_129889_());
 +         player.m_8960_().m_135992_(player); // CraftBukkit - trigger immediate flush of advancements
