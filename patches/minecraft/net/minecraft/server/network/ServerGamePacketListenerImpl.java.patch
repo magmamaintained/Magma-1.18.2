@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2487 @@
+@@ -118,1340 +_,2486 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -168,6 +168,7 @@
 +import org.bukkit.inventory.CraftingInventory;
 +import org.bukkit.inventory.InventoryView;
 +import org.bukkit.inventory.SmithingInventory;
++import org.magmafoundation.magma.helpers.InventoryViewHelper;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -3307,13 +3308,11 @@
 +                        return;
 +                    }
 +
++                    // Magma start - capture container owner
++                    InventoryViewHelper.captureContainerOwner(this.f_9743_);
 +                    InventoryView inventory = this.f_9743_.f_36096_.getBukkitView();
-+                    //Magma start - Forge Inventory View
-+                    if (inventory == null) {
-+                        inventory = new CraftInventoryView(this.f_9743_.getBukkitEntity(), Bukkit.createInventory(this.f_9743_.getBukkitEntity(), InventoryType.CHEST), this.f_9743_.f_36096_);
-+                        this.f_9743_.f_36096_.setBukkitView(inventory);
-+                    }
-+                    //Magma end
++                    InventoryViewHelper.resetContainerOwner();
++                    // Magma end
 +                    InventoryType.SlotType type = inventory.getSlotType( p_9856_.m_133962_() );
 +
 +                    InventoryClickEvent event;
