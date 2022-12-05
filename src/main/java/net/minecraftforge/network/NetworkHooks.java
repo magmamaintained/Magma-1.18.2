@@ -29,6 +29,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.Connection;
@@ -41,6 +42,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.config.ConfigTracker;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
+import org.magmafoundation.magma.helpers.InventoryViewHelper;
 
 import javax.annotation.Nullable;
 
@@ -202,6 +205,17 @@ public class NetworkHooks
             throw new IllegalArgumentException("Invalid PacketBuffer for openGui, found "+ output.readableBytes()+ " bytes");
         }
         AbstractContainerMenu c = containerSupplier.createMenu(openContainerId, player.getInventory(), player);
+        // Magma start
+        InventoryViewHelper.captureContainerOwner(player);
+        c = CraftEventFactory.callInventoryOpenEvent(player, c);
+        InventoryViewHelper.resetContainerOwner();
+        if (c == null) {
+            if (containerSupplier instanceof Container container) {
+                container.stopOpen(player);
+            }
+            return;
+        }
+        // Magma end
         MenuType<?> type = c.getType();
         PlayMessages.OpenContainer msg = new PlayMessages.OpenContainer(type, openContainerId, containerSupplier.getDisplayName(), output);
         NetworkConstants.playChannel.sendTo(msg, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);

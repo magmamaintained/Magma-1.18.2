@@ -31,7 +31,7 @@
  import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.util.Mth;
  import net.minecraft.world.Container;
-@@ -28,6 +_,13 @@
+@@ -28,6 +_,14 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.block.Block;
  import net.minecraft.world.level.block.entity.BlockEntity;
@@ -42,10 +42,11 @@
 +import org.bukkit.event.inventory.InventoryDragEvent;
 +import org.bukkit.event.inventory.InventoryType;
 +import org.bukkit.inventory.InventoryView;
++import org.magmafoundation.magma.helpers.InventoryViewHelper;
  import org.slf4j.Logger;
  
  public abstract class AbstractContainerMenu {
-@@ -59,6 +_,48 @@
+@@ -59,6 +_,46 @@
     private ContainerSynchronizer f_150397_;
     private boolean f_150398_;
  
@@ -56,12 +57,10 @@
 +
 +   //Magma - this should not be abstract
 +   public InventoryView getBukkitView(){
-+      return bukkitView;
-+   }
-+
-+   //Magma - allow setting the bukkit view
-+   public void setBukkitView(InventoryView inventoryView) {
-+      bukkitView = inventoryView;
++       if (bukkitView == null) {
++           bukkitView = InventoryViewHelper.createInvView((AbstractContainerMenu) (Object) this);
++       }
++       return bukkitView;
 +   }
 +
 +   //Magma - catch npe if source or destination is null

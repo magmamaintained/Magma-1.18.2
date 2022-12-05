@@ -41,6 +41,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.magmafoundation.magma.helpers.InventoryViewHelper;
 
 public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     private CraftInventoryPlayer inventory;
@@ -259,7 +260,14 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public InventoryView getOpenInventory() {
-        return getHandle().containerMenu.getBukkitView();
+        // magma start - capture container owner
+        try {
+            InventoryViewHelper.captureContainerOwner(this.getHandle());
+            return getHandle().containerMenu.getBukkitView();
+        } finally {
+            InventoryViewHelper.resetContainerOwner();
+        }
+        // magma end
     }
 
     @Override
