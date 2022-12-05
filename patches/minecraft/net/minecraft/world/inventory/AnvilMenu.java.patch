@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -14,6 +_,10 @@
+@@ -14,6 +_,11 @@
  import net.minecraft.world.level.block.AnvilBlock;
  import net.minecraft.world.level.block.state.BlockState;
  import org.apache.commons.lang3.StringUtils;
@@ -8,16 +8,17 @@
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventory;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryAnvil;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
++import org.magmafoundation.magma.helpers.AnvilHelper;
  import org.slf4j.Logger;
  
  public class AnvilMenu extends ItemCombinerMenu {
-@@ -31,6 +_,22 @@
+@@ -31,6 +_,25 @@
     private static final int f_150466_ = 1;
     private static final int f_150467_ = 1;
  
 +   // CraftBukkit start
 +   public static final int DEFAULT_DENIED_COST = -1;
-+   public int maximumRepairCost = 40;
++   //public int maximumRepairCost = 40; //Magma - in favor of AnvilHelper
 +   private CraftInventoryView bukkitEntity;
 +   @Override
 +   public CraftInventoryView getBukkitView() {
@@ -30,6 +31,9 @@
 +      return bukkitEntity;
 +   }
 +   // CraftBukkit end
++
++   //Magma start
++   public AnvilHelper anvilHelper = new AnvilHelper();
 +
     public AnvilMenu(int p_39005_, Inventory p_39006_) {
        this(p_39005_, p_39006_, ContainerLevelAccess.f_39287_);
@@ -117,7 +121,7 @@
                    return;
                 }
              }
-@@ -218,14 +_,15 @@
+@@ -218,14 +_,21 @@
              i += k;
              itemstack1.m_41714_(new TextComponent(this.f_39001_));
           }
@@ -130,8 +134,14 @@
  
 -         if (k == i && k > 0 && this.f_39002_.m_6501_() >= 40) {
 -            this.f_39002_.m_6422_(39);
-+         if (k == i && k > 0 && this.f_39002_.m_6501_() >= maximumRepairCost) { // CraftBukkit
-+            this.f_39002_.m_6422_(maximumRepairCost - 1); // CraftBukkit
++         if (anvilHelper.isDefaultValue()) {
++            if (k == i && k > 0 && this.f_39002_.m_6501_() >= 40) {
++               this.f_39002_.m_6422_(39);
++            }
++         } else {
++            if (k == i && k > 0 && this.f_39002_.m_6501_() >= anvilHelper.getMaxRepairCost()) { // Craftbukkit
++               this.f_39002_.m_6422_(anvilHelper.getMaxRepairCost() - 1); // Craftbukkit
++            }
           }
  
           if (this.f_39002_.m_6501_() >= 40 && !this.f_39771_.m_150110_().f_35937_) {
