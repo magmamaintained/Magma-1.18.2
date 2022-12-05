@@ -86,6 +86,7 @@ public class MagmaRemapper {
         this.transformerList.add(MagmaInterfaceInvokerGen.INSTANCE);
         this.transformerList.add(MagmaRedirectAdapter.INSTANCE);
         this.transformerList.add(ClassLoaderAdapter.INSTANCE);
+        this.transformerList.add(SwitchTableFixer.INSTANCE);
         toBukkitMapping.setFallbackInheritanceProvider(GlobalClassRepo.inheritanceProvider());
         this.toBukkitRemapper = new LenientJarRemapper(toBukkitMapping);
         this.toNmsRemapper = new LenientJarRemapper(toNmsMapping);
