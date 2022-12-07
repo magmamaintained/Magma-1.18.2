@@ -18,11 +18,8 @@
  import net.minecraft.core.NonNullList;
  import net.minecraft.core.Registry;
  import net.minecraft.resources.ResourceLocation;
-@@ -35,11 +_,20 @@
-    private static final Gson f_44005_ = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-    private static final Logger f_44006_ = LogUtils.getLogger();
+@@ -37,9 +_,17 @@
     public Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> f_44007_ = ImmutableMap.of();
-+   public Map<RecipeType<?>, Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>> recipesCB = ImmutableMap.of(); // CraftBukkit
     private Map<ResourceLocation, Recipe<?>> f_199900_ = ImmutableMap.of();
     private boolean f_44008_;
 +   private final net.minecraftforge.common.crafting.conditions.ICondition.IContext context; //Forge: add context
@@ -68,20 +65,45 @@
              map.computeIfAbsent(recipe.m_6671_(), (p_44075_) -> {
                 return ImmutableMap.builder();
              }).put(resourcelocation, recipe);
-@@ -68,14 +_,32 @@
+@@ -61,21 +_,54 @@
+          }
+       }
+ 
+-      this.f_44007_ = map.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (p_44033_) -> {
+-         return p_44033_.getValue().build();
++      this.f_44007_ = map1.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (p_44033_) -> {
++         return p_44033_.getValue(); // CraftBukkit
+       }));
+-      this.f_199900_ = builder.build();
++      this.f_199900_ = Maps.newHashMap(builder.build()); // CraftBukkit
        f_44006_.info("Loaded {} recipes", (int)map.size());
     }
  
 +   // CraftBukkit start - Magma Start
-+   public void addRecipe(Recipe<?> irecipe) {
++   public void addRecipe(Recipe<?> recipe) {
 +      org.spigotmc.AsyncCatcher.catchOp("Recipe Add"); // Spigot
-+      Map<ResourceLocation, Recipe<?>> mapMC = this.f_44007_.get(irecipe.m_6671_());
-+      Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>> mapCB = this.recipesCB.get(irecipe.m_6671_());
-+      if (mapMC.containsKey(irecipe.m_6423_()) || mapCB.containsKey(irecipe.m_6423_())) {
-+         throw new IllegalStateException("Duplicate recipe ignored with ID " + irecipe.m_6423_());
++      if (this.f_44007_ instanceof ImmutableMap) {
++          this.f_44007_ = new HashMap<>(f_44007_);
++      }
++      if (this.f_199900_ instanceof ImmutableMap) {
++          this.f_199900_ = new HashMap<>(f_199900_);
++      }
++      Map<ResourceLocation, Recipe<?>> original = this.f_44007_.get(recipe.m_6671_());
++      Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>> map;
++      if (!(original instanceof Object2ObjectLinkedOpenHashMap)) {
++          Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>> hashMap = new Object2ObjectLinkedOpenHashMap<>();
++          hashMap.putAll(original);
++          this.f_44007_.put(recipe.m_6671_(), hashMap);
++          map = hashMap;
 +      } else {
-+         this.f_44007_.put(irecipe.m_6671_(), ImmutableMap.<ResourceLocation, Recipe<?>>builder().putAll(mapMC).put(irecipe.m_6423_(), irecipe).build());
-+         mapCB.putAndMoveToFirst(irecipe.m_6423_(), irecipe); // CraftBukkit - SPIGOT-4638: last recipe gets priority
++          map = ((Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>) original);
++      }
++
++      if (this.f_199900_.containsKey(recipe.m_6423_()) || map.containsKey(recipe.m_6423_())) {
++          throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.m_6423_());
++      } else {
++          map.putAndMoveToFirst(recipe.m_6423_(), recipe);
++          this.f_199900_.put(recipe.m_6423_(), recipe);
 +      }
 +   }
 +   // CraftBukkit end - Magma End
@@ -121,7 +143,7 @@
     }
  
     public void m_44024_(Iterable<Recipe<?>> p_44025_) {
-@@ -152,4 +_,23 @@
+@@ -152,4 +_,21 @@
        this.f_44007_ = ImmutableMap.copyOf(map);
        this.f_199900_ = builder.build();
     }
@@ -136,10 +158,8 @@
 +
 +   public void clearRecipes() {
 +      this.f_44007_ = Maps.newHashMap();
-+      this.recipesCB = Maps.newHashMap();
 +      for (RecipeType<?> recipeType : Registry.f_122864_) {
-+         this.f_44007_.put(recipeType, Collections.emptyMap());
-+         this.recipesCB.put(recipeType, new Object2ObjectLinkedOpenHashMap<>());
++         this.f_44007_.put(recipeType, new Object2ObjectLinkedOpenHashMap<>());
 +      }
 +      this.f_199900_ = Maps.newHashMap();
 +   }
