@@ -120,7 +120,7 @@
  import net.minecraft.world.level.block.HorizontalDirectionalBlock;
  import net.minecraft.world.level.block.NetherPortalBlock;
  import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -132,10 +_,29 @@
+@@ -132,10 +_,30 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Score;
@@ -141,6 +141,7 @@
 +import org.bukkit.event.entity.PlayerDeathEvent;
 +import org.bukkit.event.player.*;
 +import org.bukkit.inventory.MainHand;
++import org.magmafoundation.magma.helpers.InventoryViewHelper;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -1450,7 +1451,7 @@
        }
  
     }
-@@ -921,83 +_,129 @@
+@@ -921,83 +_,132 @@
     public void m_8972_(double p_8973_, boolean p_8974_) {
        if (!this.m_146899_()) {
           BlockPos blockpos = this.m_20097_();
@@ -1501,7 +1502,10 @@
 +         if (abstractcontainermenu != null) {
 +            abstractcontainermenu.setTitle( p_9033_.m_5446_() );
 +            boolean cancelled = false;
++            // magma start - capture container owner
++            InventoryViewHelper.captureContainerOwner(this);
 +            abstractcontainermenu = CraftEventFactory.callInventoryOpenEvent( this, abstractcontainermenu, cancelled );
++            InventoryViewHelper.resetContainerOwner();
 +            if (abstractcontainermenu == null && !cancelled) { // Let pre-cancelled events fall through
 +               // SPIGOT-5263 - close chest if cancelled
 +               if (p_9033_ instanceof Container) {
