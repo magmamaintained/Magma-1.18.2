@@ -31,7 +31,7 @@ Magma 1.18 is **not** compatible with **vanilla** [Velocity](https://velocitypow
 Magma for Minecraft 1.12 and above can be found in their own repositories.
 
 - Click [here](https://git.magmafoundation.org/magmafoundation/Magma) to visit the 1.12 repository.
-- Click [here](https://git.magmafoundation.org/magmafoundation/Magma-1-16-x) to visit the 1.16 repository.
+- Click [here](https://git.magmafoundation.org/magmafoundation/Magma-1-16-x) to visit the 1.16 repository. (1.16 is End Of Life and not actively maintained anymore)
 
 ## 🪣 Deployment
 
