@@ -24312,8 +24312,6 @@ net/minecraft/server/level/ChunkProviderServer net/minecraft/server/level/Server
     java.lang.Thread f_8330_ -> e
     net.minecraft.server.level.LightEngineThreaded f_8331_ -> f
     net.minecraft.server.level.ChunkProviderServer$b f_8332_ -> g
-    net.minecraft.server.level.ChunkProviderServer$b mainThreadProcessor -> f_8332_
-    net.minecraft.server.level.ChunkProviderServer$b f_8332_ -> mainThreadProcessor
     net.minecraft.world.level.storage.WorldPersistentData f_8333_ -> h
     long f_8334_ -> i
     boolean f_8335_ -> j
@@ -24358,7 +24356,6 @@ net/minecraft/server/level/ChunkProviderServer net/minecraft/server/level/Server
 	c ()Lnet/minecraft/world/level/World; m_7653_
 	c (II)Lnet/minecraft/world/level/IBlockAccess; m_6196_
 	c (IILnet/minecraft/world/level/chunk/ChunkStatus;Z)Ljava/util/concurrent/CompletableFuture; m_8456_
-	getChunkFutureMainThread (IILnet/minecraft/world/level/chunk/ChunkStatus;Z)Ljava/util/concurrent/CompletableFuture; m_8456_
 	c (IILnet/minecraft/world/level/chunk/ChunkStatus;Z)Ljava/util/concurrent/CompletableFuture; getChunkFutureMainThread
 	d ()Z m_8466_
 	d (IILnet/minecraft/world/level/chunk/ChunkStatus;Z)Ljava/util/concurrent/CompletableFuture; m_8467_
