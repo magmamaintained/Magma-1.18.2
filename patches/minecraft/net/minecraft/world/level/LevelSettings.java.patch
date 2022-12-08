@@ -1,12 +1,14 @@
 --- a/net/minecraft/world/level/LevelSettings.java
 +++ b/net/minecraft/world/level/LevelSettings.java
-@@ -11,8 +_,9 @@
+@@ -11,8 +_,12 @@
     private final boolean f_46906_;
     private final GameRules f_46907_;
     private final DataPackConfig f_46908_;
 +   private final com.mojang.serialization.Lifecycle lifecycle;
  
--   public LevelSettings(String p_46910_, GameType p_46911_, boolean p_46912_, Difficulty p_46913_, boolean p_46914_, GameRules p_46915_, DataPackConfig p_46916_) {
+    public LevelSettings(String p_46910_, GameType p_46911_, boolean p_46912_, Difficulty p_46913_, boolean p_46914_, GameRules p_46915_, DataPackConfig p_46916_) {
++       this(p_46910_, p_46911_, p_46912_, p_46913_, p_46914_, p_46915_, p_46916_, com.mojang.serialization.Lifecycle.stable());
++   }
 +   public LevelSettings(String p_46910_, GameType p_46911_, boolean p_46912_, Difficulty p_46913_, boolean p_46914_, GameRules p_46915_, DataPackConfig p_46916_, com.mojang.serialization.Lifecycle lifecycle) {
        this.f_46902_ = p_46910_;
        this.f_46903_ = p_46911_;
