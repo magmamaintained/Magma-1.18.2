@@ -201,13 +201,15 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
 
     static final class SimpleRegistry<T extends Enum<T> & Keyed> implements Registry<T> {
 
-        private final Map<NamespacedKey, T> map;
+        private Map<NamespacedKey, T> map;
+        public Runnable reloader; // Magma
 
         protected SimpleRegistry(@NotNull Class<T> type) {
             this(type, Predicates.<T>alwaysTrue());
         }
 
         protected SimpleRegistry(@NotNull Class<T> type, @NotNull Predicate<T> predicate) {
+            reloader = () -> { // Magma
             ImmutableMap.Builder<NamespacedKey, T> builder = ImmutableMap.builder();
 
             for (T entry : type.getEnumConstants()) {
@@ -217,6 +219,8 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
             }
 
             map = builder.build();
+            }; // Magma
+            reloader.run(); // Magma
         }
 
         @Nullable

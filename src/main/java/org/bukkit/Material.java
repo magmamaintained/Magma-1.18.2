@@ -3,6 +3,7 @@ package org.bukkit;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -3925,7 +3926,6 @@ public enum Material implements Keyed {
     public static final String LEGACY_PREFIX = "LEGACY_";
 
     private final int id;
-    private int forgeBlockID;
     private final Constructor<? extends MaterialData> ctor;
     private static final Map<String, Material> BY_NAME = Maps.newHashMap();
     private final int maxStack;
@@ -3933,32 +3933,13 @@ public enum Material implements Keyed {
     public final Class<?> data;
     private final boolean legacy;
     private final NamespacedKey key;
-
-    private String modName;
-    private NamespacedKey keyForge;
-    private boolean isForgeBlock = false;
+    private boolean modded; // Magma
+    private boolean block; // Magma
+    private boolean item; // Magma
 
     private Material(final int id) {
         this(id, 64);
     }
-
-    //MAGMA start - Used from <https://github.com/magmafoundation/Magma-1.16.x/blob/1.16.x/src/main/java/org/bukkit/Material.java<
-    private Material(final int id, boolean flag) {
-        this(id, 64);
-        this.isForgeBlock = flag;
-    }
-
-    private Material(final int id, boolean flag, String modName) {
-        this(id, flag, modName, null);
-    }
-
-    private Material(final int id, boolean flag, String modName, NamespacedKey keyForge) {
-        this(id, 64);
-        this.isForgeBlock = flag;
-        this.modName = modName;
-        this.keyForge = keyForge == null ? new NamespacedKey(modName, this.name().toLowerCase(Locale.ROOT).substring(modName.length() + 1)) : keyForge;
-    }
-    //MAGMA end
 
     private Material(final int id, final int stack) {
         this(id, stack, MaterialData.class);
@@ -3976,21 +3957,25 @@ public enum Material implements Keyed {
         this(id, stack, 0, data);
     }
 
+    // Magma start
     private Material(final int id, final int stack, final int durability, /*@NotNull*/ final Class<?> data) {
+        this(id, stack, durability, data, null, false, false);
+    }
+    private Material(final int id, NamespacedKey key, boolean block, boolean item) {
+        this(id, 64, 0, MaterialData.class, key, block, item);
+    }
+    private Material(final int id, final int stack, final int durability, /*@NotNull*/ final Class<?> data, NamespacedKey key, boolean block, boolean item) {
         this.id = id;
 
-        this.forgeBlockID = id;
         this.durability = (short) durability;
         this.maxStack = stack;
         this.data = data;
         this.legacy = this.name().startsWith(LEGACY_PREFIX);
-        this.key = NamespacedKey.minecraft(this.name().toLowerCase(Locale.ROOT));
-        //Magma start
-        if (this.modName == null) {
-            this.modName = "minecraft";
-            this.keyForge = this.key;
-        }
-        //Magma end
+        this.key = key == null ? NamespacedKey.minecraft(this.name().toLowerCase(Locale.ROOT)) : key;
+        this.modded = key != null;
+        this.block = block;
+        this.item = item;
+        // Magma end
         // try to cache the constructor for this material
         try {
             if (MaterialData.class.isAssignableFrom(data)) {
@@ -4016,38 +4001,6 @@ public enum Material implements Keyed {
         Validate.isTrue(legacy, "Cannot get ID of Modern Material");
         return id;
     }
-
-    //MAGMA start
-
-    /**
-     * Gets the ForgeBlock ID of this Material
-     *
-     * @return ID of this material's Block
-     */
-
-    public int getForgeBlockID() {
-        return forgeBlockID;
-    }
-
-    /**
-     * Gets the mod that add the material
-     *
-     * @return the mod name
-     */
-    public String getModName() {
-        return modName;
-    }
-
-    /**
-     * Gets the correct NamespacedKey (modName:blockName)
-     *
-     * @return correct NamespacedKey
-     */
-    public NamespacedKey getKeyForge() {
-        return keyForge;
-    }
-
-    //MAGMA end
 
     /**
      * Do not use for any reason.
@@ -4166,6 +4119,7 @@ public enum Material implements Keyed {
      * @return true if this material is a block
      */
     public boolean isBlock() {
+        if (this.modded) { return this.block; } // Magma
         switch (this) {
             //<editor-fold defaultstate="collapsed" desc="isBlock">
             case ACACIA_BUTTON:
@@ -7635,6 +7589,7 @@ public enum Material implements Keyed {
      * @return true if this material is an item
      */
     public boolean isItem() {
+        if (this.modded) { return this.item; } // Magma
         switch (this) {
             //<editor-fold defaultstate="collapsed" desc="isItem">
             case ACACIA_WALL_SIGN:
@@ -9857,40 +9812,15 @@ public enum Material implements Keyed {
     }
 
     // Magma - start <Used from https://github.com/magmafoundation/Magma-1.16.x/blob/1.16.x/src/main/java/org/bukkit/Material.java>
-    // use a normalize() function to ensure it is accessible after a round-trip
-    public static String normalizeName(String name) {
-        return name.toUpperCase(java.util.Locale.ENGLISH).replaceAll("(:|\\s)", "_").replaceAll("\\W", "");
-    }
-
-    public static Material addMaterial(String materialName, int id, boolean isBlock, String modName, NamespacedKey keyForge) {
-        if (isBlock) {
-            Material material = BY_NAME.get(materialName);
-            if (material != null) {
-                material.forgeBlockID = id;
-                material.isForgeBlock = true;
-                BY_NAME.put(materialName, material);
-                return material;
-            } else {
-                try {
-                    material = EnumJ17Helper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE, Boolean.TYPE, String.class, NamespacedKey.class}, new Object[]{id, true, modName, keyForge});
-            BY_NAME.put(materialName, material);
+    public static Material addMaterial(String name, int id, NamespacedKey key, boolean block, boolean item) {
+        try {
+            var material = EnumJ17Helper.makeEnum(Material.class, name, id, List.of(Integer.TYPE, NamespacedKey.class, Boolean.TYPE, Boolean.TYPE), List.of(id, key, block, item));
+            BY_NAME.put(name, material);
             return material;
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-        } else {
-            try {
-                Material material = EnumJ17Helper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE, Boolean.TYPE, String.class, NamespacedKey.class}, new Object[]{id, false, modName, keyForge});
-                BY_NAME.put(materialName, material);
-                return material;
-            } catch (Throwable e) {
-                e.printStackTrace();
-                return null;
-            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return null;
         }
     }
     // Magma - end
-
 }

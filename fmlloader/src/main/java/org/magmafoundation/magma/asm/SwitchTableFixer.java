@@ -1,6 +1,7 @@
-package org.magmafoundation.magma.remapping;
+package org.magmafoundation.magma.asm;
 
 import java.lang.reflect.Modifier;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,17 +19,22 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 
+import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
+
 /**
  * SwitchTableFixer
  *
  * @author Mainly by IzzelAliz and modified by Sm0keySa1m0n
- * @classFrom <a href="https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-forge/src/main/java/io/izzel/arclight/boot/asm/SwitchTableFixer.java">Click here to get to github</a>
+ * @classFrom <a href=
+ *            "https://github.com/IzzelAliz/Arclight/blob/1.18/arclight-forge/src/main/java/io/izzel/arclight/boot/asm/SwitchTableFixer.java">Click
+ *            here to get to github</a>
  *
- * This classes is modified by Magma to support the Magma software.
+ *            This classes is modified by Magma to support the Magma software.
  */
-public class SwitchTableFixer implements PluginTransformer {
-    
-    public static final SwitchTableFixer INSTANCE = new SwitchTableFixer();
+public class SwitchTableFixer implements ILaunchPluginService {
+
+    private static final EnumSet<Phase> YAY = EnumSet.of(Phase.AFTER);
+    private static final EnumSet<Phase> NAY = EnumSet.noneOf(Phase.class);
 
     private static final Logger logger = LogManager.getLogger("SwitchTableFixer");
 
@@ -44,19 +50,33 @@ public class SwitchTableFixer implements PluginTransformer {
             "org/bukkit/entity/SpawnCategory",
             "org/bukkit/entity/EnderDragon$Phase");
 
-    private SwitchTableFixer() {}
-
     @Override
-    public void handleClass(ClassNode node, ClassLoaderRemapper remapper) {
-        for (var method : node.methods) {
-            // There are two variants of switch map
-            if (!inject1(node, method)) {
-                inject2(node, method);
-            } 
-        }
+    public String name() {
+        return "switch_table_fixer";
     }
 
-    private boolean inject1(ClassNode node, MethodNode method) {
+    @Override
+    public EnumSet<Phase> handlesClass(Type classType, boolean isEmpty) {
+        return isEmpty ? NAY : YAY;
+    }
+
+    @Override
+    public boolean processClass(Phase phase, ClassNode classNode, Type classType, String reason) {
+        return handleClass(classNode);
+    }
+
+    public static boolean handleClass(ClassNode node) {
+        var success = false;
+        for (var method : node.methods) {
+            // There are two variants of switch map
+            if (inject1(node, method) || inject2(node, method)) {
+                success = true;
+            }
+        }
+        return success;
+    }
+
+    private static boolean inject1(ClassNode node, MethodNode method) {
         if (Modifier.isStatic(method.access) && (method.access & Opcodes.ACC_SYNTHETIC) != 0
                 && method.desc.equals("()[I")) {
             boolean foundTryCatch = false;
@@ -144,7 +164,7 @@ public class SwitchTableFixer implements PluginTransformer {
         return arr;
     }
 
-    private boolean inject2(ClassNode node, MethodNode method) {
+    private static boolean inject2(ClassNode node, MethodNode method) {
         if ((node.access & Opcodes.ACC_SYNTHETIC) != 0) {
             if (node.methods.size() == 1 && Modifier.isStatic(method.access) && method.name.equals("<clinit>")) {
                 boolean foundTryCatch = false;

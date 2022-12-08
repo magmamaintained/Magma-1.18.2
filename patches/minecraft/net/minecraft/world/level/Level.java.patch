@@ -352,7 +352,7 @@
 +            generator = getCraftServer().getGenerator( p_204150_.getRegistryName().m_135827_() );
 +        }
 +        if (environment == null) {
-+            environment = ForgeInject.environment.getOrDefault(getTypeKey(), World.Environment.CUSTOM);
++            environment = ForgeInject.environments.getOrDefault(getTypeKey(), World.Environment.CUSTOM);
 +        }
 +        // CraftBukkit end
 +        this.f_46446_ = p_204152_;

@@ -10,6 +10,7 @@ import org.bukkit.plugin.SimplePluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.asm.SwitchTableFixer;
 import org.magmafoundation.magma.patcher.Patcher;
 import org.magmafoundation.magma.remapping.ClassLoaderRemapper;
 import org.magmafoundation.magma.remapping.MagmaRemapper;
@@ -44,6 +45,7 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
     private final JarFile jar;
     private final Manifest manifest;
     private final URL url;
+    private final ClassLoader libraryLoader;
     final JavaPlugin plugin;
     private JavaPlugin pluginInit;
     private IllegalStateException pluginState;
@@ -68,6 +70,7 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         this.jar = new JarFile(file);
         this.manifest = jar.getManifest();
         this.url = file.toURI().toURL();
+        this.libraryLoader = libraryLoader;
         this.patcher = Magma.getInstance().getPatcherManager().getPatchByName(description.getName());
 
         try {
@@ -133,6 +136,13 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         } catch (ClassNotFoundException ex) {
         }
 
+        if (checkLibraries && libraryLoader != null) {
+            try {
+                return libraryLoader.loadClass(name);
+            } catch (ClassNotFoundException ex) {
+            }
+        }
+
         if (checkGlobal) {
             // This ignores the libraries of other plugins, unless they are transitive dependencies.
             Class<?> result = loader.getClassByName(name, resolve, description);
@@ -160,9 +170,8 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
             }
         }
 
-        return super.loadClass(name, resolve);
+        throw new ClassNotFoundException(name);
     }
-
 
     @Override
     public Class<?> findClass(String name) throws ClassNotFoundException {

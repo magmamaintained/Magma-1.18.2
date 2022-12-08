@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.ClassNode;
  *
  * This classes is modified by Magma to support the Magma software.
  */
+@FunctionalInterface
 public interface PluginTransformer {
 
     void handleClass(ClassNode node, ClassLoaderRemapper remapper);
