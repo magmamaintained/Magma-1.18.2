@@ -133,7 +133,7 @@
           this.f_8510_.f_19864_ = false;
        }
  
-@@ -189,16 +_,31 @@
+@@ -189,16 +_,29 @@
     public void m_8534_(ServerPlayer p_8535_) {
        this.f_8510_.m_6452_(p_8535_);
        p_8535_.f_8906_.m_141995_(new ClientboundRemoveEntitiesPacket(this.f_8510_.m_142049_()));
@@ -151,14 +151,12 @@
 +   //Magma start - add original method to prevent errors with mods relying on it [fix for quark]
 +   @Nullable public ServerPlayer sendPairingData_ent = null;
     public void m_8536_(Consumer<Packet<?>> p_8537_) {
-+      if (sendPairingData_ent == null)
-+         throw new IllegalStateException("sendPairingData_ent is null");
 +      this.sendPairingData(p_8537_, sendPairingData_ent);
 +      sendPairingData_ent = null;
 +   }
 +   //Magma end
 +
-+   public void sendPairingData(Consumer<Packet<?>> p_8537_, ServerPlayer entityplayer) { // CraftBukkit - add player
++   public void sendPairingData(Consumer<Packet<?>> p_8537_, @Nullable ServerPlayer entityplayer) { // CraftBukkit - add player
        if (this.f_8510_.m_146910_()) {
 -         f_8508_.warn("Fetching packet for removed entity {}", (Object)this.f_8510_);
 +         // CraftBukkit start - Remove useless error spam, just return
@@ -167,14 +165,15 @@
        }
  
        Packet<?> packet = this.f_8510_.m_5654_();
-@@ -211,6 +_,13 @@
+@@ -211,6 +_,14 @@
        boolean flag = this.f_8512_;
        if (this.f_8510_ instanceof LivingEntity) {
           Collection<AttributeInstance> collection = ((LivingEntity)this.f_8510_).m_21204_().m_22170_();
 +
 +         // CraftBukkit start - If sending own attributes send scaled health instead of current maximum health
-+         if (this.f_8510_.m_142049_() == entityplayer.m_142049_()) {
-+            ((ServerPlayer) this.f_8510_).getBukkitEntity().injectScaledMaxHealth(collection, false);
++         int id = entityplayer == null ? this.f_8510_.m_142049_() : entityplayer.m_142049_(); //Magma - add null check
++         if (this.f_8510_.m_142049_() == id && this.f_8510_ instanceof ServerPlayer player) { //Magma - add class check
++            player.getBukkitEntity().injectScaledMaxHealth(collection, false);
 +         }
 +         // CraftBukkit end
 +
