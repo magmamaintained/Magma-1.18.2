@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2486 @@
+@@ -118,1340 +_,2509 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -1541,29 +1541,43 @@
 +        this.m_143617_( p_143612_, p_143613_, p_143614_, p_143615_, p_143616_, Collections.emptySet(), true );
 +    }
 +
-+
++    //Magma start - move bukkit teleport to its own method
 +    public void m_9774_(double p_9775_, double p_9776_, double p_9777_, float p_9778_, float p_9779_) {
 +        this.teleport( p_9775_, p_9776_, p_9777_, p_9778_, p_9779_, PlayerTeleportEvent.TeleportCause.UNKNOWN );
 +    }
 +
 +    public void teleport(double d0, double d1, double d2, float f, float f1, PlayerTeleportEvent.TeleportCause cause) {
-+        this.teleport( d0, d1, d2, f, f1, Collections.emptySet(), false, cause );
++        this.prepareTeleport(cause);
++        this.m_143617_( d0, d1, d2, f, f1, Collections.emptySet(), false );
 +    }
 +
 +
 +    public void teleport(double p_9781_, double p_9782_, double p_9783_, float p_9784_, float p_9785_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_9786_, PlayerTeleportEvent.TeleportCause cause) {
-+        this.teleport( p_9781_, p_9782_, p_9783_, p_9784_, p_9785_, p_9786_, false, cause );
++        this.prepareTeleport(cause);
++        this.m_143617_( p_9781_, p_9782_, p_9783_, p_9784_, p_9785_, p_9786_, false );
 +    }
 +
 +    public void m_9780_(double p_9781_, double p_9782_, double p_9783_, float p_9784_, float p_9785_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_9786_) {
-+        this.teleport( p_9781_, p_9782_, p_9783_, p_9784_, p_9785_, p_9786_, false, PlayerTeleportEvent.TeleportCause.UNKNOWN );
++        resetCause();
++        this.m_143617_( p_9781_, p_9782_, p_9783_, p_9784_, p_9785_, p_9786_, false );
 +    }
 +
++    PlayerTeleportEvent.TeleportCause teleportCause = PlayerTeleportEvent.TeleportCause.UNKNOWN;
++
++    public void prepareTeleport(PlayerTeleportEvent.TeleportCause cause) {
++        teleportCause = cause;
++    }
++
++    public void resetCause() {
++        teleportCause = PlayerTeleportEvent.TeleportCause.UNKNOWN;
++    }
++
++    private boolean teleportResult = true; //assume that the player teleported successfully
 +    public void m_143617_(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_) {
-+        this.teleport( p_143618_, p_143619_, p_143620_, p_143621_, p_143622_, p_143623_, p_143624_, PlayerTeleportEvent.TeleportCause.UNKNOWN );
-+    }
++        PlayerTeleportEvent.TeleportCause tmp = teleportCause;
++        resetCause();
++        teleportResult = true;
 +
-+    public boolean teleport(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_, PlayerTeleportEvent.TeleportCause cause) {
 +        org.bukkit.entity.Player player = this.getCraftPlayer();
 +        Location from = player.getLocation();
 +
@@ -1577,10 +1591,10 @@
 +        // SPIGOT-5171: Triggered on join
 +        if (from.equals( to )) {
 +            this.internalTeleport( p_143618_, p_143619_, p_143620_, p_143621_, p_143622_, p_143623_, p_143624_ );
-+            return false; // CraftBukkit - Return event status
++            return; // CraftBukkit - Return event status
 +        }
 +
-+        PlayerTeleportEvent event = new PlayerTeleportEvent( player, from.clone(), to.clone(), cause );
++        PlayerTeleportEvent event = new PlayerTeleportEvent( player, from.clone(), to.clone(), tmp );
 +        this.cserver.getPluginManager().callEvent( event );
 +
 +        if (event.isCancelled() || !to.equals( event.getTo() )) {
@@ -1594,8 +1608,17 @@
 +        }
 +
 +        this.internalTeleport( p_143618_, p_143619_, p_143620_, p_143621_, p_143622_, p_143623_, p_143624_ );
-+        return event.isCancelled(); // CraftBukkit - Return event status
++        teleportResult = event.isCancelled(); // CraftBukkit - Return event status //Magma - set to variable
 +    }
++
++    public boolean teleport(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_, PlayerTeleportEvent.TeleportCause cause) {
++        this.prepareTeleport(cause);
++        this.m_143617_( p_143618_, p_143619_, p_143620_, p_143621_, p_143622_, p_143623_, p_143624_ );
++        boolean result = teleportResult;
++        teleportResult = true; //reset
++        return result;
++    }
++    //Magma end
 +
 +    public void internalTeleport(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_) {
 +        //CraftBukkit start
