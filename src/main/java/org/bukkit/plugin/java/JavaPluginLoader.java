@@ -29,7 +29,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -42,9 +41,8 @@ import java.util.regex.Pattern;
 public final class JavaPluginLoader implements PluginLoader, JavaPluginLoaderBridge {
     final Server server;
     private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("\\.jar$")};
-    private final Map<String, Class<?>> classes = new ConcurrentHashMap<String, Class<?>>();
-
     private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
+    private final LibraryLoader libraryLoader;
 
     public static final CustomTimingsHandler pluginParentTimer = new CustomTimingsHandler("** Plugins"); // Spigot
     private static final String HIDDEN_FORM =
@@ -62,6 +60,14 @@ public final class JavaPluginLoader implements PluginLoader, JavaPluginLoaderBri
         Validate.notNull(instance, "Server cannot be null");
         server = instance;
 
+        LibraryLoader libraryLoader = null;
+        try {
+            libraryLoader = new LibraryLoader(server.getLogger());
+        } catch (NoClassDefFoundError ex) {
+            // Provided depends were not added back
+            server.getLogger().warning("Could not initialize LibraryLoader (missing dependencies?)");
+        }
+        this.libraryLoader = libraryLoader;
     }
 
     @Override
@@ -130,7 +136,7 @@ public final class JavaPluginLoader implements PluginLoader, JavaPluginLoaderBri
 
         final PluginClassLoader loader;
         try {
-            loader = new PluginClassLoader(this, getClass().getClassLoader(), description, dataFolder, file, null);
+            loader = new PluginClassLoader(this, getClass().getClassLoader(), description, dataFolder, file, (libraryLoader != null) ? libraryLoader.createLoader(description) : null);
         } catch (InvalidPluginException ex) {
             throw ex;
         } catch (Throwable ex) {
@@ -189,25 +195,6 @@ public final class JavaPluginLoader implements PluginLoader, JavaPluginLoaderBri
     }
 
     @Nullable
-    Class<?> getClassByName(final String name) {
-        Class<?> cachedClass = classes.get(name);
-
-        if (cachedClass != null) {
-            return cachedClass;
-        } else {
-            for (PluginClassLoader loader : loaders) {
-                try {
-                    cachedClass = loader.findClass(name, false);
-                } catch (ClassNotFoundException cnfe) {}
-                if (cachedClass != null) {
-                    return cachedClass;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Nullable
     Class<?> getClassByName(final String name, boolean resolve, PluginDescriptionFile description) {
         for (PluginClassLoader loader : loaders) {
             try {
@@ -219,31 +206,16 @@ public final class JavaPluginLoader implements PluginLoader, JavaPluginLoaderBri
     }
 
     void setClass(@NotNull final String name, @NotNull final Class<?> clazz) {
-        if (!classes.containsKey(name)) {
-            classes.put(name, clazz);
-
-            if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
-                Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
-                ConfigurationSerialization.registerClass(serializable);
-            }
+        if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
+            Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
+            ConfigurationSerialization.registerClass(serializable);
         }
     }
 
-    private void removeClass(@NotNull Class<?> clazz){
-        removeClass(clazz.getName());
-    }
-
-    private void removeClass(@NotNull String name) {
-        Class<?> clazz = classes.remove(name);
-
-        try {
-            if ((clazz != null) && (ConfigurationSerializable.class.isAssignableFrom(clazz))) {
-                Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
-                ConfigurationSerialization.unregisterClass(serializable);
-            }
-        } catch (NullPointerException ex) {
-            // Boggle!
-            // (Native methods throwing NPEs is not fun when you can't stop it before-hand)
+    private void removeClass(@NotNull Class<?> clazz) {
+        if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
+            Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
+            ConfigurationSerialization.unregisterClass(serializable);
         }
     }
 

@@ -42,12 +42,17 @@ public enum Art implements Keyed {
     private static final HashMap<String, Art> BY_NAME = Maps.newHashMap();
     private static final HashMap<Integer, Art> BY_ID = Maps.newHashMap();
 
+    // Magma start
     private Art(int id, int width, int height) {
+        this(id, width, height, null);
+    }
+    private Art(int id, int width, int height, NamespacedKey key) {
         this.id = id;
         this.width = width;
         this.height = height;
-        this.key = NamespacedKey.minecraft(name().toLowerCase(java.util.Locale.ENGLISH));
+        this.key = key == null ? NamespacedKey.minecraft(name().toLowerCase(java.util.Locale.ENGLISH)) : key;
     }
+    // Magma end
 
     /**
      * Gets the width of the painting, in blocks
