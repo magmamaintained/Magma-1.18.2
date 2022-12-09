@@ -788,32 +788,20 @@
        }
     }
  
-@@ -1659,15 +_,22 @@
-    }
- 
-    public void m_8061_(EquipmentSlot p_36161_, ItemStack p_36162_) {
-+      // CraftBukkit start
-+      this.setItemSlot(p_36161_, p_36162_, false);
-+   }
-+
-+   @Override
-+   public void setItemSlot(EquipmentSlot p_36161_, ItemStack p_36162_, boolean silent) {
-+      // CraftBukkit end
-       this.m_181122_(p_36162_);
-       if (p_36161_ == EquipmentSlot.MAINHAND) {
--         this.m_147218_(p_36162_);
-+         this.equipEventAndSound(p_36162_, silent); // CraftBukkit
-          this.f_36093_.f_35974_.set(this.f_36093_.f_35977_, p_36162_);
-       } else if (p_36161_ == EquipmentSlot.OFFHAND) {
--         this.m_147218_(p_36162_);
-+         this.equipEventAndSound(p_36162_, silent); // CraftBukkit
-          this.f_36093_.f_35976_.set(0, p_36162_);
-       } else if (p_36161_.m_20743_() == EquipmentSlot.Type.ARMOR) {
--         this.m_147218_(p_36162_);
-+         this.equipEventAndSound(p_36162_, silent); // CraftBukkit
+@@ -1670,7 +_,13 @@
+          this.m_147218_(p_36162_);
           this.f_36093_.f_35975_.set(p_36161_.m_20749_(), p_36162_);
        }
++   }
  
++   @Override
++   public void setItemSlot(EquipmentSlot p_36161_, ItemStack p_36162_, boolean silent) {
++      silenceEquipSound(silent);
++      m_8061_(p_36161_, p_36162_);
++      silenceEquipSound(false); //reset
+    }
+ 
+    public boolean m_36356_(ItemStack p_36357_) {
 @@ -1745,7 +_,11 @@
     }
  

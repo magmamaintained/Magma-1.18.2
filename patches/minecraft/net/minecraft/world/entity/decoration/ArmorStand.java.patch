@@ -33,32 +33,40 @@
     public void m_6210_() {
        double d0 = this.m_20185_();
        double d1 = this.m_20186_();
-@@ -141,15 +_,23 @@
+@@ -141,18 +_,25 @@
        }
     }
  
 +   @Override
     public void m_8061_(EquipmentSlot p_31584_, ItemStack p_31585_) {
-+      // CraftBukkit start
-+      this.setItemSlot(p_31584_, p_31585_, false);
+       this.m_181122_(p_31585_);
+-      switch(p_31584_.m_20743_()) {
+-      case HAND:
+-         this.m_147218_(p_31585_);
+-         this.f_31538_.set(p_31584_.m_20749_(), p_31585_);
+-         break;
+-      case ARMOR:
+-         this.m_147218_(p_31585_);
+-         this.f_31539_.set(p_31584_.m_20749_(), p_31585_);
++      switch (p_31584_.m_20743_()) {
++         case HAND:
++            this.m_147218_(p_31585_);
++            this.f_31538_.set(p_31584_.m_20749_(), p_31585_);
++            break;
++         case ARMOR:
++            this.m_147218_(p_31585_);
++            this.f_31539_.set(p_31584_.m_20749_(), p_31585_);
+       }
 +   }
-+
+ 
 +   @Override
 +   public void setItemSlot(EquipmentSlot p_31584_, ItemStack p_31585_, boolean silent) {
-+      // CraftBukkit end
-       this.m_181122_(p_31585_);
-       switch(p_31584_.m_20743_()) {
-       case HAND:
--         this.m_147218_(p_31585_);
-+         this.equipEventAndSound(p_31585_, silent); // CraftBukkit
-          this.f_31538_.set(p_31584_.m_20749_(), p_31585_);
-          break;
-       case ARMOR:
--         this.m_147218_(p_31585_);
-+         this.equipEventAndSound(p_31585_, silent); // CraftBukkit
-          this.f_31539_.set(p_31584_.m_20749_(), p_31585_);
-       }
++      silenceEquipSound(silent);
++      this.m_8061_(p_31584_, p_31585_);
++      silenceEquipSound(false); //reset
+    }
  
+    public boolean m_7066_(ItemStack p_31638_) {
 @@ -355,6 +_,20 @@
        if (!itemstack.m_41619_() && (this.f_31541_ & 1 << p_31590_.m_20750_() + 8) != 0) {
           return false;
