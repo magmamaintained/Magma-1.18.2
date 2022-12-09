@@ -8,6 +8,8 @@ import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
 import net.md_5.specialsource.provider.ClassLoaderProvider;
 import net.md_5.specialsource.provider.JointProvider;
+
+import org.magmafoundation.magma.asm.SwitchTableFixer;
 import org.magmafoundation.magma.remapping.adapters.ClassLoaderAdapter;
 import org.magmafoundation.magma.remapping.adapters.MagmaRedirectAdapter;
 import org.magmafoundation.magma.remapping.repos.GlobalClassRepo;
@@ -86,7 +88,7 @@ public class MagmaRemapper {
         this.transformerList.add(MagmaInterfaceInvokerGen.INSTANCE);
         this.transformerList.add(MagmaRedirectAdapter.INSTANCE);
         this.transformerList.add(ClassLoaderAdapter.INSTANCE);
-        this.transformerList.add(SwitchTableFixer.INSTANCE);
+        this.transformerList.add((node, remapper) -> SwitchTableFixer.handleClass(node));
         toBukkitMapping.setFallbackInheritanceProvider(GlobalClassRepo.inheritanceProvider());
         this.toBukkitRemapper = new LenientJarRemapper(toBukkitMapping);
         this.toNmsRemapper = new LenientJarRemapper(toNmsMapping);
