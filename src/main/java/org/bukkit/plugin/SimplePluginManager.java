@@ -39,6 +39,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.magmafoundation.magma.helpers.AsyncHelper;
 
 /**
  * Handles all plugin management from the Server
@@ -561,7 +562,7 @@ public final class SimplePluginManager implements PluginManager {
     @Override
     public void callEvent(@NotNull Event event) {
         //Magma start - Add ability to synchronously and asynchronously fire events [Potential fix for mcreator mods]
-        if (event.canBeRunFromAllThreads()) {
+        if (event.canBeRunFromAllThreads() || AsyncHelper.canRunAsync(event)) {
             fireEvent(event);
             return;
         }
