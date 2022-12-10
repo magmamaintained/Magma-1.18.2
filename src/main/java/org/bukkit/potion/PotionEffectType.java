@@ -1,9 +1,6 @@
 package org.bukkit.potion;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
@@ -284,6 +281,6 @@ public abstract class PotionEffectType implements Keyed {
 
     @NotNull
     public static PotionEffectType[] values() {
-        return Arrays.copyOfRange(byId, 1, byId.length);
+        return Arrays.stream(Arrays.copyOfRange(byId, 1, byId.length)).filter(Objects::nonNull).toArray(PotionEffectType[]::new);
     }
 }
