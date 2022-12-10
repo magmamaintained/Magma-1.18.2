@@ -2,16 +2,20 @@ package org.magmafoundation.magma.helpers;
 
 import net.minecraftforge.fml.ModList;
 import org.bukkit.event.Event;
-import org.bukkit.event.world.EntitiesLoadEvent;
-import org.bukkit.event.world.EntitiesUnloadEvent;
 
 public class AsyncHelper {
 
+    private static String[] modIds = {
+            "blue_skies",
+            "the_vault"
+    };
+
     public static boolean canRunAsync(Event event) {
-        if (isModLoaded("the_vault") && (event instanceof EntitiesLoadEvent || event instanceof EntitiesUnloadEvent))
-            return true;
-        if (isModLoaded("blue_skies"))
-            return true;
+        for (String modId : modIds) {
+            if (isModLoaded(modId))
+                return true;
+        }
+
         return false;
     }
 
