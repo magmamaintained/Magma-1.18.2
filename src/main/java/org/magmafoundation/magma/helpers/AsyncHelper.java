@@ -10,6 +10,8 @@ public class AsyncHelper {
     public static boolean canRunAsync(Event event) {
         if (isModLoaded("the_vault") && (event instanceof EntitiesLoadEvent || event instanceof EntitiesUnloadEvent))
             return true;
+        if (isModLoaded("blue_skies"))
+            return true;
         return false;
     }
 
