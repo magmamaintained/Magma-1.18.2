@@ -36,6 +36,9 @@ public class EnumJ17Helper {
 
     @SuppressWarnings("unchecked")
     public static <T> void addEnums(Class<T> cl, List<T> list) {
+        if (list.isEmpty())
+            return;
+
         try {
             Field field = cl.getDeclaredField("$VALUES");
             Object base = Unsafe.staticFieldBase(field);
