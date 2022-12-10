@@ -56,7 +56,8 @@ public class ForgeCommandWrapper extends Command {
 
         CommandSourceStack icommandlistener = getListener(sender);
         dispatcher.setForge(true);
-        dispatcher.performCommand(icommandlistener, toDispatcher(args, getName()), toDispatcher(args, commandLabel), true);
+        //add a slash for forge commands, they get removed with stripslash anyway, fixes worldedit
+        dispatcher.performCommand(icommandlistener, "/"+toDispatcher(args, getName()), "/"+toDispatcher(args, commandLabel), true);
         dispatcher.setForge(false);
         return true;
     }
