@@ -189,7 +189,7 @@
                    if (flag) {
                       itemstack2 = new ItemStack(Items.f_42690_);
                       CompoundTag compoundtag = itemstack.m_41783_();
-@@ -155,15 +_,28 @@
+@@ -155,15 +_,33 @@
                       this.f_39449_.m_6836_(0, itemstack2);
                    }
  
@@ -210,7 +210,12 @@
 +                           EnchantmentInstance weightedrandomenchant = new EnchantmentInstance(nms, entry.getValue());
 +                           EnchantedBookItem.m_41153_(itemstack2, weightedrandomenchant);
 +                        } else {
-+                           item.addUnsafeEnchantment(entry.getKey(), entry.getValue());
++                           NamespacedKey enchantId = entry.getKey().getKey();
++                           net.minecraft.world.item.enchantment.Enchantment nms = Registry.f_122825_.m_7745_(CraftNamespacedKey.toMinecraft(enchantId));
++                           if (nms == null) {
++                              continue;
++                           }
++                           itemstack2.m_41663_(nms, entry.getValue());
 +                        }
 +                     } catch (IllegalArgumentException e) {
 +                        /* Just swallow invalid enchantments */
