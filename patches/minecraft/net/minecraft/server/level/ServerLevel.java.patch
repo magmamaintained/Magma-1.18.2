@@ -121,15 +121,17 @@
  import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
  import net.minecraft.world.level.levelgen.structure.BoundingBox;
  import net.minecraft.world.level.levelgen.structure.StructureCheck;
-@@ -138,6 +_,7 @@
+@@ -136,17 +_,37 @@
+ import net.minecraft.world.level.portal.PortalForcer;
+ import net.minecraft.world.level.saveddata.maps.MapIndex;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
- import net.minecraft.world.level.storage.DimensionDataStorage;
- import net.minecraft.world.level.storage.LevelStorageSource;
-+import net.minecraft.world.level.storage.PrimaryLevelData;
- import net.minecraft.world.level.storage.ServerLevelData;
+-import net.minecraft.world.level.storage.DimensionDataStorage;
+-import net.minecraft.world.level.storage.LevelStorageSource;
+-import net.minecraft.world.level.storage.ServerLevelData;
++import net.minecraft.world.level.storage.*;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-@@ -145,8 +_,29 @@
+ import net.minecraft.world.phys.shapes.BooleanOp;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
  import net.minecraft.world.ticks.LevelTicks;
@@ -140,6 +142,7 @@
 +import org.bukkit.event.entity.CreatureSpawnEvent;
 +import org.bukkit.event.weather.LightningStrikeEvent;
 +import org.magmafoundation.magma.forge.ForgeInject;
++import org.magmafoundation.magma.helpers.DelegateWorldInfo;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nonnull;
@@ -159,7 +162,7 @@
  public class ServerLevel extends Level implements WorldGenLevel {
     public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
     private static final int f_184049_ = 12000;
-@@ -181,23 +_,48 @@
+@@ -181,23 +_,40 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -191,14 +194,6 @@
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
        this.f_8549_ = p_203765_;
-+      //Magma start
-+      try {
-+         this.worldDataServer = ((PrimaryLevelData) f_8549_);
-+         this.worldDataServer.setWorld(this);
-+      } catch (ClassCastException e) {
-+         f_8566_.warn("Could not cast ServerLevelData to PrimaryLevelData, this world will probably not work correctly with Multiverse-Core");
-+      }
-+      //Magma end
 +      p_203769_.conf = spigotConfig; // Spigot
        p_203769_.m_211700_();
        boolean flag = p_203762_.m_6365_();
@@ -210,7 +205,7 @@
           return p_203762_.m_129783_().m_8895_();
        });
        this.f_8552_ = new PortalForcer(this);
-@@ -223,6 +_,20 @@
+@@ -223,6 +_,30 @@
        }
  
        this.f_143245_ = new SleepStatus();
@@ -222,6 +217,16 @@
 +      // CraftBukkit end
 +
 +      this.getCraftServer().addWorld(this.getWorld()); //Magma - add world to bukkit's world list
++
++      //Magma start
++      if (p_203765_ instanceof PrimaryLevelData data) {
++         this.worldDataServer = data;
++      } else if (p_203765_ instanceof DerivedLevelData derived) {
++         this.worldDataServer = DelegateWorldInfo.wrap(derived);
++      }
++
++      this.worldDataServer.setWorld(this);
++      //Magma end
 +   }
 +
 +   public ResourceKey<LevelStem> getTypeKey() {

@@ -64,14 +64,13 @@
     }
  
     public CompoundTag m_6626_(RegistryAccess p_78543_, @Nullable CompoundTag p_78544_) {
-@@ -191,6 +_,14 @@
+@@ -191,6 +_,13 @@
           p_78547_.m_128362_("WanderingTraderId", this.f_78438_);
        }
  
 +      if (Bukkit.getServer() != null) {
 +         p_78547_.m_128359_("Bukkit.Version", Bukkit.getName() + "/" + Bukkit.getVersion() + "/" + Bukkit.getBukkitVersion()); // CraftBukkit
-+         // Magma TODO: 30/05/2022 Once patches are done re-add
-+         // world.getWorld().storeBukkitValues(p_78547_); // CraftBukkit - add pdc
++         world.getWorld().storeBukkitValues(p_78547_); // CraftBukkit - add pdc
 +      }
 +
 +      p_78547_.m_128359_("forgeLifecycle", net.minecraftforge.common.ForgeHooks.encodeLifecycle(this.f_78443_.getLifecycle()));
