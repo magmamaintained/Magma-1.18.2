@@ -176,6 +176,9 @@ public class ForgeInject {
         ForgeRegistries.MOB_EFFECTS.getEntries().forEach(entry -> {
             var pet = new CraftPotionEffectType(entry.getValue());
 
+            if (pet == null)
+                return;
+
             try {
                 PotionEffectType.registerPotionEffectType(pet);
                 debug("Registering Forge Potion into Bukkit: " + pet.getName());
