@@ -265,8 +265,13 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
 
     private int version = CraftMagicNumbers.INSTANCE.getDataVersion(); // Internal use only
 
-    //Magma start
+    //Magma start - this is a list of nbt tags that don't get removed when CraftItemStack.setItemMeta gets called, add things to this list to prevent them from getting removed
     private static final Set<String> EXTEND_TAGS = ImmutableSet.of(
+            //EvilCraft
+            "Name",
+            //Create
+            "Items",
+            //The rest
             "map_is_scaling",
             "map",
             "CustomPotionEffects",
