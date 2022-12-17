@@ -377,7 +377,7 @@
           int i = p_9264_.m_41613_();
           int j = p_9264_.m_41773_();
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.m_41682_(p_9263_, p_9262_, p_9265_);
-@@ -294,10 +_,38 @@
+@@ -294,50 +_,106 @@
        }
     }
  
@@ -391,74 +391,117 @@
 +   public InteractionHand interactHand;
 +   public ItemStack interactItemStack;
     public InteractionResult m_7179_(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_) {
-       BlockPos blockpos = p_9270_.m_82425_();
-       BlockState blockstate = p_9267_.m_8055_(blockpos);
+-      BlockPos blockpos = p_9270_.m_82425_();
+-      BlockState blockstate = p_9267_.m_8055_(blockpos);
 -      if (this.f_9247_ == GameType.SPECTATOR) {
-+
-+      net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
-+      if (event.isCanceled())
-+         return event.getCancellationResult();
-+
-+      if (this.f_9247_ == GameType.SPECTATOR)
-+         useItemOn_cancelledBlock = !(blockstate.m_60750_(p_9267_, blockpos) instanceof MenuProvider);
-+
-+      if (p_9266_.m_36335_().m_41519_(p_9268_.m_41720_()))
-+         useItemOn_cancelledBlock = true;
-+
-+      eventCB = CraftEventFactory.callPlayerInteractEvent(p_9266_, Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.m_82434_(), p_9268_, useItemOn_cancelledBlock, p_9269_);
-+      firedInteract = true;
-+      interactResult = eventCB.useItemInHand() == Event.Result.DENY;
-+      interactPosition = blockpos.m_7949_();
-+      interactHand = p_9269_;
-+      interactItemStack = p_9268_.m_41777_();
-+      if (eventCB.useInteractedBlock() == Event.Result.DENY)
-+         bukkit_useItemOn(p_9266_, p_9267_, p_9268_, p_9269_, p_9270_, blockpos, blockstate);
-+      else if (this.f_9247_ == GameType.SPECTATOR) {
-          MenuProvider menuprovider = blockstate.m_60750_(p_9267_, blockpos);
-          if (menuprovider != null) {
-             p_9266_.m_5893_(menuprovider);
-@@ -306,19 +_,24 @@
-             return InteractionResult.PASS;
-          }
-       } else {
-+         UseOnContext useoncontext = new UseOnContext(p_9266_, p_9269_, p_9270_);
-+         if (event.getUseItem() != net.minecraftforge.eventbus.api.Event.Result.DENY) {
-+            InteractionResult result = p_9268_.onItemUseFirst(useoncontext);
-+            if (result != InteractionResult.PASS) return result;
-+         }
-          boolean flag = !p_9266_.m_21205_().m_41619_() || !p_9266_.m_21206_().m_41619_();
+-         MenuProvider menuprovider = blockstate.m_60750_(p_9267_, blockpos);
+-         if (menuprovider != null) {
+-            p_9266_.m_5893_(menuprovider);
+-            return InteractionResult.SUCCESS;
+-         } else {
+-            return InteractionResult.PASS;
+-         }
+-      } else {
+-         boolean flag = !p_9266_.m_21205_().m_41619_() || !p_9266_.m_21206_().m_41619_();
 -         boolean flag1 = p_9266_.m_36341_() && flag;
-+         boolean flag1 = (p_9266_.m_36341_() && flag) && !(p_9266_.m_21205_().doesSneakBypassUse(p_9267_, blockpos, p_9266_) && p_9266_.m_21206_().doesSneakBypassUse(p_9267_, blockpos, p_9266_));
-          ItemStack itemstack = p_9268_.m_41777_();
+-         ItemStack itemstack = p_9268_.m_41777_();
 -         if (!flag1) {
 -            InteractionResult interactionresult = blockstate.m_60664_(p_9267_, p_9266_, p_9269_, p_9270_);
 -            if (interactionresult.m_19077_()) {
-+         if (event.getUseBlock() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (event.getUseBlock() != net.minecraftforge.eventbus.api.Event.Result.DENY && !flag1)) {
-+            InteractionResult interactionResult = blockstate.m_60664_(p_9267_, p_9266_, p_9269_, p_9270_);
-+            if (interactionResult.m_19077_()) {
-                CriteriaTriggers.f_10562_.m_45482_(p_9266_, blockpos, itemstack);
+-               CriteriaTriggers.f_10562_.m_45482_(p_9266_, blockpos, itemstack);
 -               return interactionresult;
-+               return interactionResult;
++      try {
++         BlockPos blockpos = p_9270_.m_82425_();
++         BlockState blockstate = p_9267_.m_8055_(blockpos);
++
++         net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
++         if (event.isCanceled())
++            return event.getCancellationResult();
++
++         if (this.f_9247_ == GameType.SPECTATOR)
++            useItemOn_cancelledBlock = !(blockstate.m_60750_(p_9267_, blockpos) instanceof MenuProvider);
++
++         if (p_9266_.m_36335_().m_41519_(p_9268_.m_41720_()))
++            useItemOn_cancelledBlock = true;
++
++         eventCB = CraftEventFactory.callPlayerInteractEvent(p_9266_, Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.m_82434_(), p_9268_, useItemOn_cancelledBlock, p_9269_);
++         firedInteract = true;
++         interactResult = eventCB.useItemInHand() == Event.Result.DENY;
++         interactPosition = blockpos.m_7949_();
++         interactHand = p_9269_;
++         interactItemStack = p_9268_.m_41777_();
++         if (eventCB.useInteractedBlock() == Event.Result.DENY)
++            bukkit_useItemOn(p_9266_, p_9267_, p_9268_, p_9269_, p_9270_, blockpos, blockstate);
++         else if (this.f_9247_ == GameType.SPECTATOR) {
++            MenuProvider menuprovider = blockstate.m_60750_(p_9267_, blockpos);
++            if (menuprovider != null) {
++               p_9266_.m_5893_(menuprovider);
++               return InteractionResult.SUCCESS;
++            } else {
++               return InteractionResult.PASS;
              }
-          }
- 
+-         }
+-
 -         if (!p_9268_.m_41619_() && !p_9266_.m_36335_().m_41519_(p_9268_.m_41720_())) {
--            UseOnContext useoncontext = new UseOnContext(p_9266_, p_9269_, p_9270_);
-+         if (event.getUseItem() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (!p_9268_.m_41619_() && !p_9266_.m_36335_().m_41519_(p_9268_.m_41720_()))) {
-+            if (event.getUseItem() == net.minecraftforge.eventbus.api.Event.Result.DENY) return InteractionResult.PASS;
-             InteractionResult interactionresult1;
-             if (this.m_9295_()) {
-                int i = p_9268_.m_41613_();
-@@ -333,11 +_,28 @@
-             }
- 
-             return interactionresult1;
++         } else {
+             UseOnContext useoncontext = new UseOnContext(p_9266_, p_9269_, p_9270_);
+-            InteractionResult interactionresult1;
+-            if (this.m_9295_()) {
+-               int i = p_9268_.m_41613_();
+-               interactionresult1 = p_9268_.m_41661_(useoncontext);
+-               p_9268_.m_41764_(i);
+-            } else {
+-               interactionresult1 = p_9268_.m_41661_(useoncontext);
+-            }
+-
+-            if (interactionresult1.m_19077_()) {
+-               CriteriaTriggers.f_10562_.m_45482_(p_9266_, blockpos, itemstack);
+-            }
+-
+-            return interactionresult1;
 -         } else {
 -            return InteractionResult.PASS;
++            if (event.getUseItem() != net.minecraftforge.eventbus.api.Event.Result.DENY) {
++               InteractionResult result = p_9268_.onItemUseFirst(useoncontext);
++               if (result != InteractionResult.PASS) return result;
++            }
++            boolean flag = !p_9266_.m_21205_().m_41619_() || !p_9266_.m_21206_().m_41619_();
++            boolean flag1 = (p_9266_.m_36341_() && flag) && !(p_9266_.m_21205_().doesSneakBypassUse(p_9267_, blockpos, p_9266_) && p_9266_.m_21206_().doesSneakBypassUse(p_9267_, blockpos, p_9266_));
++            ItemStack itemstack = p_9268_.m_41777_();
++            if (event.getUseBlock() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (event.getUseBlock() != net.minecraftforge.eventbus.api.Event.Result.DENY && !flag1)) {
++               InteractionResult interactionResult = blockstate.m_60664_(p_9267_, p_9266_, p_9269_, p_9270_);
++               if (interactionResult.m_19077_()) {
++                  CriteriaTriggers.f_10562_.m_45482_(p_9266_, blockpos, itemstack);
++                  return interactionResult;
++               }
++            }
++
++            if (event.getUseItem() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || (!p_9268_.m_41619_() && !p_9266_.m_36335_().m_41519_(p_9268_.m_41720_()))) {
++               if (event.getUseItem() == net.minecraftforge.eventbus.api.Event.Result.DENY) return InteractionResult.PASS;
++               InteractionResult interactionresult1;
++               if (this.m_9295_()) {
++                  int i = p_9268_.m_41613_();
++                  interactionresult1 = p_9268_.m_41661_(useoncontext);
++                  p_9268_.m_41764_(i);
++               } else {
++                  interactionresult1 = p_9268_.m_41661_(useoncontext);
++               }
++
++               if (interactionresult1.m_19077_()) {
++                  CriteriaTriggers.f_10562_.m_45482_(p_9266_, blockpos, itemstack);
++               }
++
++               return interactionresult1;
++            }
           }
-       }
+-      }
 -   }
-+      return useItemOn_result;
++         return useItemOn_result;
++      } finally {
++         useItemOn_result = InteractionResult.PASS;
++         useItemOn_cancelledBlock = false;
++         eventCB = null;
++      }
 +   }
 +
 +   private void bukkit_useItemOn(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_, BlockPos blockpos, BlockState blockstate) {
