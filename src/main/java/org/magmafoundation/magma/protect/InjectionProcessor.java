@@ -2,7 +2,6 @@ package org.magmafoundation.magma.protect;
 
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.common.utils.ShortenedStackTrace;
@@ -47,6 +46,5 @@ public class InjectionProcessor {
 
         Optional<? extends ModContainer> modContainerById = modList.getModContainerById(modid);
         return modContainerById.map(ModContainer::getModInfo).orElse(null);
-
     }
 }
