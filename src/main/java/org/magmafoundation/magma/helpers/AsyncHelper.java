@@ -7,6 +7,7 @@ public class AsyncHelper {
 
     private static String[] modIds = {
             "blue_skies",
+            "snowyspirit",
             "the_vault"
     };
 
