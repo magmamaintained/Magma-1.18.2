@@ -66,7 +66,7 @@ class LibraryLoader {
       if (file.exists()) {
         logger.log(Level.INFO, "[{0}] Found library {1}", new Object[]
             {
-                desc.getName(), file.getAbsolutePath()
+                desc.getName(), file
             });
         downloaded.add(file);
         continue;
