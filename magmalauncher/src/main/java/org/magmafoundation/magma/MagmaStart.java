@@ -16,7 +16,7 @@ package org.magmafoundation.magma;/*
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.magmafoundation.magma.betterui.BetterUI;
+import org.magmafoundation.magma.common.betterui.BetterUI;
 import org.magmafoundation.magma.installer.MagmaInstaller;
 import org.magmafoundation.magma.updater.MagmaUpdater;
 import org.magmafoundation.magma.utils.BootstrapLauncher;
