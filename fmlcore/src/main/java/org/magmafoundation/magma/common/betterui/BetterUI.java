@@ -1,4 +1,6 @@
-package org.magmafoundation.magma.betterui;
+package org.magmafoundation.magma.common.betterui;
+
+import org.magmafoundation.magma.common.utils.ShortenedStackTrace;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -26,10 +28,29 @@ public class BetterUI {
         System.out.println("Copyright (c) " + new SimpleDateFormat("yyyy").format(new Date()) + " " + brand + ".");
         System.out.println("--------------------------------------");
         System.out.println("Running on Java " + javaVersion);
-        System.out.println(name + " version  " + version);
-        System.out.println("Bukkit version " + bukkitVersion);
-        System.out.println("Forge version  " + forgeVersion);
+        System.out.println(name + " version   " + version); //Spacing here is intentional
+        System.out.println("Bukkit version  " + bukkitVersion);
+        System.out.println("Forge version   " + forgeVersion);
         System.out.println("--------------------------------------");
+    }
+
+    public static void printError(String errorType, String cause, ShortenedStackTrace... trace) {
+        if (!enabled)
+            return;
+        System.err.println("------------------------------------------------------------");
+        System.err.println("A critical error has occurred and your server was shut down.");
+        System.err.println("Please send this info to the Magma team on Discord or GitLab");
+        System.err.println("Please also include the full log file!                      ");
+        System.err.println("------------------------------------------------------------");
+        System.err.println("Error type: " + errorType);
+        System.err.println("Caused by: " + cause);
+        System.err.println();
+        System.err.println("Short stack trace(s):");
+        for (ShortenedStackTrace s : trace) {
+            s.print();
+            System.err.println();
+        }
+        System.err.println("------------------------------------------------------------");
     }
 
     public static boolean checkEula(Path path_to_eula) throws IOException {
