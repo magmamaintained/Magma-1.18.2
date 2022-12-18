@@ -14,7 +14,7 @@
  import joptsimple.OptionParser;
  import joptsimple.OptionSet;
  import joptsimple.OptionSpec;
-@@ -48,192 +_,299 @@
+@@ -48,192 +_,311 @@
  import net.minecraft.world.level.GameRules;
  import net.minecraft.world.level.LevelSettings;
  import net.minecraft.world.level.levelgen.WorldGenSettings;
@@ -25,8 +25,10 @@
 -import net.minecraft.world.level.storage.WorldData;
 +import net.minecraft.world.level.storage.*;
 +import org.magmafoundation.magma.helpers.ServerInitHelper;
++import org.magmafoundation.magma.protect.InjectProtect;
  import org.slf4j.Logger;
- 
++import org.spongepowered.asm.mixin.throwables.MixinError;
++
 +import java.awt.*;
 +import java.io.File;
 +import java.net.Proxy;
@@ -36,7 +38,7 @@
 +import java.util.Optional;
 +import java.util.concurrent.atomic.AtomicReference;
 +import java.util.function.BooleanSupplier;
-+
+ 
  public class Main {
 -   private static final Logger f_129670_ = LogUtils.getLogger();
 -
@@ -259,7 +261,16 @@
 +                JvmProfiler.f_185340_.m_183425_(Environment.SERVER);
 +            }
 +
-+            Bootstrap.m_135870_();
++            //Magma start - Boot Inject Protection
++            InjectProtect.init();
++
++            try {
++                Bootstrap.m_135870_();
++            } catch (MixinError e) {
++                InjectProtect.onBootErrorCaught(e);
++            }
++            //Magma end
++
 +            Bootstrap.m_135889_();
 +            Util.m_137584_();
 +            if (!optionset.has(optionspec1))
@@ -411,6 +422,7 @@
 +            });
           Thread thread = new Thread("Server Shutdown Thread") {
              public void run() {
++                InjectProtect.shutdownCalled(); //Magma - Mixin Inject protection
 +               // FORGE: Halting as GameTestServer will cause issues as it always calls System#exit on both crash and normal exit, so skip it
 +               if (!(dedicatedserver instanceof net.minecraft.gametest.framework.GameTestServer))
                 dedicatedserver.m_7570_(true);

@@ -1,4 +1,4 @@
-package org.magmafoundation.magma.betterui;
+package org.magmafoundation.magma.common.betterui;
 
 import java.io.InputStream;
 import java.io.OutputStream;
