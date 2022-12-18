@@ -19,160 +19,155 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.remapping.loaders.RemappingURLClassLoader;
 
-class LibraryLoader
-{
+class LibraryLoader {
 
-    private final Logger logger;
+  private final Logger logger;
 
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(20);
+  private static final ExecutorService executorService = Executors.newFixedThreadPool(20);
 
-    public LibraryLoader(@NotNull Logger logger)
-    {
-        this.logger = logger;}
+  public LibraryLoader(@NotNull Logger logger) {
+    this.logger = logger;
+  }
 
-    @Nullable
-    public ClassLoader createLoader(@NotNull PluginDescriptionFile desc)
-    {
-        if ( desc.getLibraries().isEmpty() )
-        {
-            return null;
-        }
-        logger.log( Level.INFO, "[{0}] Loading {1} libraries... please wait", new Object[]
+  @Nullable
+  public ClassLoader createLoader(@NotNull PluginDescriptionFile desc) {
+    if (desc.getLibraries().isEmpty()) {
+      return null;
+    }
+    logger.log(Level.INFO, "[{0}] Loading {1} libraries... please wait", new Object[]
         {
             desc.getName(), desc.getLibraries().size()
-        } );
+        });
 
-        List<Dependency> dependencies = new ArrayList<>();
-        for ( String library : desc.getLibraries() )
-        {
-            String[] args = library.split(":");
-            if(args.length >= 2){
-                Dependency dependency = new Dependency( args[0], args[1], args[2]);
-                dependencies.add( dependency );
-            }
+    List<Dependency> dependencies = new ArrayList<>();
+    for (String library : desc.getLibraries()) {
+      String[] args = library.split(":");
+      if (args.length >= 2) {
+        Dependency dependency = new Dependency(args[0], args[1], args[2]);
+        dependencies.add(dependency);
+      }
 
-        }
+    }
 
-        List<File> downloaded = new ArrayList<>();
-        for (Dependency dependency : dependencies) {
-            String group = dependency.getGroup().replaceAll("\\.", "/");
-            String fileName = dependency.getName() + "-"
-                + dependency.getVersion() + ".jar";
-            String mavenUrl = "https://repo1.maven.org/maven2/" + group + "/"
-                + dependency.getName() + "/"
-                + dependency.getVersion() + "/" + fileName;
+    List<File> downloaded = new ArrayList<>();
 
-            File file = new File( new File("libraries"), group + "/"
-                + dependency.getName() + "/"
-                + dependency.getVersion() + "/" + fileName);
+    for (Dependency dependency : dependencies) {
+      String group = dependency.getGroup().replaceAll("\\.", "/");
+      String fileName = dependency.getName() + "-"
+          + dependency.getVersion() + ".jar";
+      String mavenUrl = "https://repo1.maven.org/maven2/" + group + "/"
+          + dependency.getName() + "/"
+          + dependency.getVersion() + "/" + fileName;
 
-            if (file.exists()) {
-                downloaded.add(file);
-                continue;
-            }
+      File file = new File(new File("libraries"), group + "/"
+          + dependency.getName() + "/"
+          + dependency.getVersion() + "/" + fileName);
 
-            if(!file.getParentFile().mkdirs()) {
-                System.exit(1);
-            }
-
-            Future<Boolean> future = executorService.submit(() -> {
-                if (!file.createNewFile()) {
-                    file.delete();
-                }
-
-                try {
-                    InputStream inputStream = new URL(mavenUrl).openStream();
-                    writeInputStreamToFile(inputStream, file);
-                    downloaded.add(file);
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
+      if (file.exists()) {
+        logger.log(Level.INFO, "[{0}] Found library {1}", new Object[]
+            {
+                desc.getName(), file.getAbsolutePath()
             });
+        downloaded.add(file);
+        continue;
+      }
 
-            try {
-                boolean success = future.get();
-                if (success) {
-                    logger.log( Level.INFO, "Downloading {0}", mavenUrl );
-                }
+      Future<Boolean> future = executorService.submit(() -> {
+        file.getParentFile().mkdirs();
+        file.createNewFile();
 
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+          InputStream inputStream = new URL(mavenUrl).openStream();
+          writeInputStreamToFile(inputStream, file);
+          downloaded.add(file);
+          return true;
+        } catch (IOException e) {
+          return false;
+        }
+      });
 
+
+      try {
+        boolean success = future.get();
+        if (success) {
+          logger.log(Level.INFO, "[{0}] Downloading Library {1}", new Object[]
+              {
+                  desc.getName(), mavenUrl
+              });
         }
 
-
-        List<URL> jarFiles = new ArrayList<>();
-        for ( File file : downloaded )
-        {
-            URL url;
-            try
-            {
-                url = file.toURI().toURL();
-            } catch ( MalformedURLException ex )
-            {
-                throw new AssertionError( ex );
-            }
-
-            jarFiles.add( url );
-            logger.log( Level.INFO, "[{0}] Loaded library {1}", new Object[]
-            {
-                desc.getName(), file
-            } );
-        }
-
-        return new RemappingURLClassLoader( jarFiles.toArray(new URL[0]), getClass().getClassLoader() );
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
     }
 
+    List<URL> jarFiles = new ArrayList<>();
+    for (File file : downloaded) {
+      URL url;
+      try {
+        url = file.toURI().toURL();
+      } catch (MalformedURLException ex) {
+        throw new AssertionError(ex);
+      }
 
-    private static void writeInputStreamToFile(InputStream inputStream, File file) {
-        try (inputStream) {
-            try (FileOutputStream outputStream = new FileOutputStream(file)) {
-                byte[] buffer = new byte[8 * 1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+      jarFiles.add(url);
+      logger.log(Level.INFO, "[{0}] Loaded library {1}", new Object[]
+          {
+              desc.getName(), file
+          });
     }
 
+    return new RemappingURLClassLoader(jarFiles.toArray(new URL[0]), getClass().getClassLoader());
+  }
 
-    public class Dependency {
 
-        private final String group;
-        private final String name;
-        private final String version;
-
-        public Dependency(String group, String name, String version) {
-            this.group = group;
-            this.name = name;
-            this.version = version;
+  private static void writeInputStreamToFile(InputStream inputStream, File file) {
+    try (inputStream) {
+      try (FileOutputStream outputStream = new FileOutputStream(file)) {
+        byte[] buffer = new byte[8 * 1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+          outputStream.write(buffer, 0, bytesRead);
         }
-
-        public String getGroup() {
-            return group;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        @Override
-        public String toString() {
-            return "Dependency{" +
-                "group='" + group + '\'' +
-                ", name='" + name + '\'' +
-                ", version='" + version + '\'' +
-                '}';
-        }
+      }
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
+  }
+
+
+  public class Dependency {
+
+    private final String group;
+    private final String name;
+    private final String version;
+
+    public Dependency(String group, String name, String version) {
+      this.group = group;
+      this.name = name;
+      this.version = version;
+    }
+
+    public String getGroup() {
+      return group;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getVersion() {
+      return version;
+    }
+
+    @Override
+    public String toString() {
+      return "Dependency{" +
+          "group='" + group + '\'' +
+          ", name='" + name + '\'' +
+          ", version='" + version + '\'' +
+          '}';
+    }
+  }
 
 }
