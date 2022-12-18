@@ -1,7 +1,5 @@
 package org.magmafoundation.magma.protect;
 
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.jetbrains.annotations.NotNull;
 import org.magmafoundation.magma.common.betterui.BetterUI;
