@@ -239,9 +239,6 @@ def sharedDeps = {
 
 
     installer 'org.yaml:snakeyaml:1.30'
-    installer 'org.apache.maven:maven-resolver-provider:3.8.4'
-    installer 'org.apache.maven.resolver:maven-resolver-connector-basic:1.7.2'
-    installer 'org.apache.maven.resolver:maven-resolver-transport-http:1.7.2'
     compileOnly 'org.jetbrains:annotations:21.0.1'
     installer 'org.fusesource.jansi:jansi:1.18'
     installer 'jline:jline:2.12.1'
