@@ -241,7 +241,7 @@
 +      return onItemUse(p_41662_, (c) -> m_41720_().onItemUseFirst(this, p_41662_), p_41662_.m_43724_());  // CraftBukkit - take hand
 +   }
 +
-+   private InteractionResult onItemUse(UseOnContext p_41662_, java.util.function.Function<UseOnContext, InteractionResult> callback, InteractionHand hand) { // CraftBukkit - add hand
++   public InteractionResult onItemUse(UseOnContext p_41662_, java.util.function.Function<UseOnContext, InteractionResult> callback, InteractionHand hand) { // CraftBukkit - add hand
        Player player = p_41662_.m_43723_();
        BlockPos blockpos = p_41662_.m_8083_();
        BlockInWorld blockinworld = new BlockInWorld(p_41662_.m_43725_(), blockpos, false);

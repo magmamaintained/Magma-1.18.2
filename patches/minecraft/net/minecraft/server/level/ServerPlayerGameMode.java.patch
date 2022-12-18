@@ -196,7 +196,7 @@
           }
  
        }
-@@ -217,45 +_,153 @@
+@@ -217,45 +_,152 @@
        if (this.m_9280_(p_9287_)) {
           this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9287_, this.f_9244_.m_8055_(p_9287_), p_9288_, true, p_9289_));
        } else {
@@ -247,7 +247,6 @@
 +            destroyBlock_state = destroyBlock_bblock.getState();
 +            f_9244_.captureDrops = new ArrayList<>();
 +            // CraftBukkit end
-+            block.m_5707_(this.f_9244_, p_9281_, blockState, this.f_9245_);
 +            boolean flag = removeBlock(p_9281_, false);
 +
              if (flag) {
