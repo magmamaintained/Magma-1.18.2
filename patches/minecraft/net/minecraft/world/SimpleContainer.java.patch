@@ -8,7 +8,7 @@
  import javax.annotation.Nullable;
  import net.minecraft.core.NonNullList;
  import net.minecraft.nbt.CompoundTag;
-@@ -12,6 +_,10 @@
+@@ -12,14 +_,69 @@
  import net.minecraft.world.inventory.StackedContentsCompatible;
  import net.minecraft.world.item.Item;
  import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,8 @@
  
  public class SimpleContainer implements Container, StackedContentsCompatible {
     private final int f_19146_;
-@@ -19,7 +_,58 @@
+-   private final NonNullList<ItemStack> f_19147_;
++   public final NonNullList<ItemStack> f_19147_; //Magma - private -> public
     @Nullable
     private List<ContainerListener> f_19148_;
  
