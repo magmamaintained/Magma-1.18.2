@@ -121,7 +121,7 @@
  import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
  import net.minecraft.world.level.levelgen.structure.BoundingBox;
  import net.minecraft.world.level.levelgen.structure.StructureCheck;
-@@ -136,17 +_,37 @@
+@@ -136,17 +_,38 @@
  import net.minecraft.world.level.portal.PortalForcer;
  import net.minecraft.world.level.saveddata.maps.MapIndex;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
@@ -138,6 +138,7 @@
 +import org.bukkit.World;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.bukkit.craftbukkit.v1_18_R2.generator.CustomChunkGenerator;
 +import org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID;
 +import org.bukkit.event.entity.CreatureSpawnEvent;
 +import org.bukkit.event.weather.LightningStrikeEvent;
@@ -162,7 +163,7 @@
  public class ServerLevel extends Level implements WorldGenLevel {
     public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
     private static final int f_184049_ = 12000;
-@@ -181,23 +_,40 @@
+@@ -181,23 +_,42 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -194,6 +195,8 @@
        this.f_8548_ = p_203762_;
        this.f_8558_ = p_203772_;
        this.f_8549_ = p_203765_;
++      if (generator != null)
++         p_203769_ = new CustomChunkGenerator(this, p_203769_, generator);
 +      p_203769_.conf = spigotConfig; // Spigot
        p_203769_.m_211700_();
        boolean flag = p_203762_.m_6365_();
