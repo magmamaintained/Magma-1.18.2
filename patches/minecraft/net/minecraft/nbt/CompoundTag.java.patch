@@ -1,6 +1,6 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
-@@ -4,20 +_,17 @@
+@@ -4,20 +_,18 @@
  import com.mojang.serialization.Codec;
  import com.mojang.serialization.DataResult;
  import com.mojang.serialization.Dynamic;
@@ -8,6 +8,7 @@
 +import net.minecraft.CrashReportCategory;
 +import net.minecraft.ReportedException;
 +import org.magmafoundation.magma.Magma;
++import org.magmafoundation.magma.configuration.MagmaConfig;
 +
 +import javax.annotation.Nullable;
  import java.io.DataInput;
@@ -93,11 +94,12 @@
                 }
              }
  
-@@ -154,6 +_,7 @@
+@@ -154,6 +_,8 @@
  
     @Nullable
     public Tag m_128365_(String p_128366_, Tag p_128367_) {
-+      if (p_128367_ == null) Magma.LOGGER.warn("Tried to set key " + p_128366_ + " to null. This warning can be ignored if you know what you're doing."); // Magma - allow null nbt
++      if (p_128367_ == null && MagmaConfig.instance.debugWarnOnNullNBT.getValues())
++         Magma.LOGGER.warn("Tried to set key " + p_128366_ + " to null. This warning can be ignored if you know what you're doing."); // Magma - allow null nbt
        return this.f_128329_.put(p_128366_, p_128367_);
     }
  
