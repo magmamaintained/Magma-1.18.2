@@ -48,6 +48,7 @@ public class MagmaConfig extends ConfigBase {
     public final BooleanValue modCommandPrintIDs = new BooleanValue(this, "magma.command.mods.print-ids", true, "Adds the mod id + version to the end of the mod name");
 
     public final BooleanValue debugPrintInjections = new BooleanValue(this, "debug.print-bukkit-injections", false, "Prints Forge Bukkit Injections");
+    public final BooleanValue debugWarnOnNullNBT = new BooleanValue(this, "debug.warn-on-null-nbt", false, "Prints a warning when an item tries to set an NBT tag to null");
 
     private final String HEADER = "This is the main configuration file for Magma.\n" +
         "\n" +

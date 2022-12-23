@@ -407,7 +407,7 @@ public final class CraftItemStack extends ItemStack {
         //Magma start
         CompoundTag forgeCaps = ((CraftMetaItem) itemMeta).getForgeCaps();
         if (forgeCaps != null)
-            item.setForgeCaps(forgeCaps);
+            item.setForgeCaps(forgeCaps.copy());
         //Magma end
         // SpigotCraft#463 this is required now by the Vanilla client, so mimic ItemStack constructor in ensuring it
         if (item.getItem() != null && item.getItem().canBeDepleted()) {
