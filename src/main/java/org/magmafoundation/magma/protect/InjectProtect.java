@@ -25,7 +25,7 @@ public class InjectProtect {
     }
 
     public static void onBootErrorCaught(MixinError error) {
-        LOGGER.warn("Caught exception during server boot phase, shutting down server");
+        LOGGER.warn("Caught exception during server boot phase, shutting down server", ShortenedStackTrace.findCause(error));
         BetterUI.printError("Mixin related error", InjectionProcessor.getErroringMixin(error), new ShortenedStackTrace(error, 5));
         System.exit(1);
     }
