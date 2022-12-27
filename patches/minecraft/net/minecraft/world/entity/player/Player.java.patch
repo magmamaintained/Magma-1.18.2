@@ -479,7 +479,7 @@
                    }
                 }
  
-@@ -1110,10 +_,14 @@
+@@ -1110,10 +_,13 @@
                    if (flag3) {
                       float f3 = 1.0F + EnchantmentHelper.m_44821_(this) * f;
  
@@ -492,7 +492,6 @@
 +                           // CraftBukkit start - Only apply knockback if the damage hits
 +                           if (livingentity.m_6469_(DamageSource.m_19344_(this).sweep(), f4)) {
 +                              livingentity.m_147240_((double)0.4F, (double)Mth.m_14031_(this.m_146908_() * ((float)Math.PI / 180F)), (double)(-Mth.m_14089_(this.m_146908_() * ((float)Math.PI / 180F))));
-+                              livingentity.m_6469_(DamageSource.m_19344_(this), f3);
 +                           }
 +                           // CraftBukkit end
                          }
