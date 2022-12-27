@@ -41,7 +41,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1214 @@
+@@ -45,859 +_,1221 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -464,19 +464,20 @@
 +        }
 +    }
 +
++    //Magma start - move to original method
++    private int setBlock_int = 512;
 +    public boolean m_7731_(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {
-+        return this.m_6933_( p_46601_, p_46602_, p_46603_, 512 );
-+    }
++        int p_46608_ = setBlock_int;
++        setBlock_int = 512; //reset
 +
-+    public boolean m_6933_(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {
 +        // CraftBukkit start - tree generation
 +        if (this.captureTreeGeneration) {
-+            CapturedBlockState blockstate = capturedBlockStates.get( p_46605_ );
++            CapturedBlockState blockstate = capturedBlockStates.get( p_46601_ );
 +            if (blockstate == null) {
-+                blockstate = CapturedBlockState.getTreeBlockState( this, p_46605_, p_46607_ );
-+                this.capturedBlockStates.put( p_46605_.m_7949_(), blockstate );
++                blockstate = CapturedBlockState.getTreeBlockState( this, p_46601_, p_46603_ );
++                this.capturedBlockStates.put( p_46601_.m_7949_(), blockstate );
 +            }
-+            blockstate.setData( p_46606_ );
++            blockstate.setData( p_46602_ );
              return true;
 -         }
 -      }
@@ -857,57 +858,57 @@
 -         if (i >= 15) {
 +        }
 +        // CraftBukkit end
-+        if (this.m_151570_( p_46605_ )) {
++        if (this.m_151570_( p_46601_ )) {
 +            return false;
 +        } else if (!this.f_46443_ && this.m_46659_()) {
 +            return false;
 +        } else {
-+            LevelChunk levelchunk = this.m_46745_( p_46605_ );
-+            Block block = p_46606_.m_60734_();
++            LevelChunk levelchunk = this.m_46745_( p_46601_ );
++            Block block = p_46602_.m_60734_();
 +
-+            p_46605_ = p_46605_.m_7949_(); // Forge - prevent mutable BlockPos leaks
++            p_46601_ = p_46601_.m_7949_(); // Forge - prevent mutable BlockPos leaks
 +            net.minecraftforge.common.util.BlockSnapshot blockSnapshot = null;
 +            if (this.captureBlockSnapshots && !this.f_46443_) {
-+                blockSnapshot = net.minecraftforge.common.util.BlockSnapshot.create( this.f_46421_, this, p_46605_, p_46607_ );
++                blockSnapshot = net.minecraftforge.common.util.BlockSnapshot.create( this.f_46421_, this, p_46601_, p_46603_ );
 +                this.capturedBlockSnapshots.add( blockSnapshot );
 +            }
 +
-+            BlockState old = m_8055_( p_46605_ );
-+            int oldLight = old.getLightEmission( this, p_46605_ );
-+            int oldOpacity = old.m_60739_( this, p_46605_ );
++            BlockState old = m_8055_( p_46601_ );
++            int oldLight = old.getLightEmission( this, p_46601_ );
++            int oldOpacity = old.m_60739_( this, p_46601_ );
 +
 +            // CraftBukkit start - capture blockstates
 +            boolean captured = false;
-+            if (this.captureBlockStates && !this.capturedBlockStates.containsKey( p_46605_ )) {
-+                CapturedBlockState blockstate = CapturedBlockState.getBlockState( this, p_46605_, p_46607_ );
-+                this.capturedBlockStates.put( p_46605_.m_7949_(), blockstate );
++            if (this.captureBlockStates && !this.capturedBlockStates.containsKey( p_46601_ )) {
++                CapturedBlockState blockstate = CapturedBlockState.getBlockState( this, p_46601_, p_46603_ );
++                this.capturedBlockStates.put( p_46601_.m_7949_(), blockstate );
 +                captured = true;
 +            }
 +            // CraftBukkit end
-+            BlockState blockstate = levelchunk.setBlockState( p_46605_, p_46606_, (p_46607_ & 64) != 0, (p_46607_ & 1024) == 0 ); // CraftBukkit custom NO_PLACE flag
++            BlockState blockstate = levelchunk.setBlockState( p_46601_, p_46602_, (p_46603_ & 64) != 0, (p_46603_ & 1024) == 0 ); // CraftBukkit custom NO_PLACE flag
 +
 +            if (blockstate == null) {
 +                // CraftBukkit start - remove blockstate if failed (or the same)
 +                if (this.captureBlockStates && captured) {
-+                    this.capturedBlockStates.remove( p_46605_ );
++                    this.capturedBlockStates.remove( p_46601_ );
 +                }
 +                // CraftBukkit end
 +                if (blockSnapshot != null) this.capturedBlockSnapshots.remove( blockSnapshot );
 +                return false;
 +            } else {
-+                BlockState blockstate1 = this.m_8055_( p_46605_ );
-+                if ((p_46607_ & 128) == 0 && blockstate1 != blockstate && (blockstate1.m_60739_( this, p_46605_ ) != oldOpacity || blockstate1.getLightEmission( this, p_46605_ ) != oldLight || blockstate1.m_60787_() || blockstate.m_60787_())) {
++                BlockState blockstate1 = this.m_8055_( p_46601_ );
++                if ((p_46603_ & 128) == 0 && blockstate1 != blockstate && (blockstate1.m_60739_( this, p_46601_ ) != oldOpacity || blockstate1.getLightEmission( this, p_46601_ ) != oldLight || blockstate1.m_60787_() || blockstate.m_60787_())) {
 +                    this.m_46473_().m_6180_( "queueCheckLight" );
-+                    this.m_7726_().m_7827_().m_142202_( p_46605_ );
++                    this.m_7726_().m_7827_().m_142202_( p_46601_ );
 +                    this.m_46473_().m_7238_();
 +                }
 +
 +                if (blockSnapshot == null) { // Don't notify clients or update physics while capturing blockstates
 +                    // Spigot start
 +                    try {
-+                        this.markAndNotifyBlock( p_46605_, levelchunk, blockstate, p_46606_, p_46607_, p_46608_ );
++                        this.markAndNotifyBlock( p_46601_, levelchunk, blockstate, p_46602_, p_46603_, p_46608_ );
 +                    } catch (StackOverflowError ex) {
-+                        lastPhysicsProblem = new BlockPos(p_46605_);
++                        lastPhysicsProblem = new BlockPos(p_46601_);
 +                    }
 +                    // Spigot end
 +                }
@@ -916,6 +917,12 @@
 +            }
 +        }
 +    }
++
++    public boolean m_6933_(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {
++        setBlock_int = p_46608_;
++        return m_7731_( p_46605_, p_46606_, p_46607_ );
++    }
++    //Magma end
 +
 +    // Split off from original setBlockState(BlockPos, BlockState, int, int) method in order to directly send client and physic updates
 +    public void markAndNotifyBlock(BlockPos p_46605_, @Nullable LevelChunk levelchunk, BlockState blockstate, BlockState p_46606_, int p_46607_, int p_46608_) {
