@@ -98,6 +98,7 @@ import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.potion.PotionEffect;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
@@ -244,6 +245,10 @@ public class CraftEventFactory {
         CraftServer craftServer = world.getCraftServer();
 
         Player player = (Player) who.getBukkitEntity();
+        PlayerInventory inventory = player.getInventory();
+
+        if (inventory == null)
+            return null;
 
         Block blockClicked = craftWorld.getBlockAt(clickedX, clickedY, clickedZ);
         Block placedBlock = replacedBlockState.getBlock();
@@ -253,10 +258,10 @@ public class CraftEventFactory {
         org.bukkit.inventory.ItemStack item;
         EquipmentSlot equipmentSlot;
         if (hand == InteractionHand.MAIN_HAND) {
-            item = player.getInventory().getItemInMainHand();
+            item = inventory.getItemInMainHand();
             equipmentSlot = EquipmentSlot.HAND;
         } else {
-            item = player.getInventory().getItemInOffHand();
+            item = inventory.getItemInOffHand();
             equipmentSlot = EquipmentSlot.OFF_HAND;
         }
 
