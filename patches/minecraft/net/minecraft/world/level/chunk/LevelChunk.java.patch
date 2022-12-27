@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -5,16 +_,10 @@
+@@ -5,13 +_,6 @@
  import com.mojang.logging.LogUtils;
  import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
  import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -14,15 +14,10 @@
  import net.minecraft.CrashReport;
  import net.minecraft.CrashReportCategory;
  import net.minecraft.ReportedException;
-+import net.minecraft.client.multiplayer.ClientLevel;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Registry;
- import net.minecraft.core.SectionPos;
-@@ -47,659 +_,846 @@
+@@ -47,659 +_,851 @@
  import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.ticks.LevelChunkTicks;
  import net.minecraft.world.ticks.TickContainerAccess;
-+import org.bukkit.Server;
 +import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer;
 +import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry;
  import org.slf4j.Logger;
@@ -659,14 +654,13 @@
 +        }
 +    }
 +
-+    // CraftBukkit start
++    //Magma start - move to original method
++    private boolean setBlockState_doPlace = true;
 +    @Nullable
 +    public BlockState m_6978_(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_) {
-+        return this.setBlockState( p_62865_, p_62866_, p_62867_, true );
-+    }
++        boolean doPlace = setBlockState_doPlace;
++        setBlockState_doPlace = true; //reset
 +
-+    public BlockState setBlockState(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_, boolean doPlace) {
-+        // CraftBukkit end
 +        int i = p_62865_.m_123342_();
 +        LevelChunkSection levelchunksection = this.m_183278_( this.m_151564_( i ) );
 +        boolean flag = levelchunksection.m_188008_();
@@ -724,6 +718,13 @@
 +            }
 +        }
 +    }
++
++    @Nullable
++    public BlockState setBlockState(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_, boolean doPlace) {
++        setBlockState_doPlace = doPlace;
++        return m_6978_(p_62865_, p_62866_, p_62867_);
++    }
++    //Magma end
 +
 +    /**
 +     * @deprecated
