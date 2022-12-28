@@ -65,7 +65,7 @@
  
  public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob {
     private static final EntityDataAccessor<Integer> f_31420_ = SynchedEntityData.m_135353_(WitherBoss.class, EntityDataSerializers.f_135028_);
-@@ -219,16 +_,42 @@
+@@ -219,15 +_,42 @@
           int k1 = this.m_31502_() - 1;
           this.f_31430_.m_142711_(1.0F - (float)k1 / 220.0F);
           if (k1 <= 0) {
@@ -107,11 +107,10 @@
  
           this.m_31510_(k1);
           if (this.f_19797_ % 10 == 0) {
--            this.m_5634_(10.0F);
-+            this.heal(10.0F, EntityRegainHealthEvent.RegainReason.WITHER_SPAWN); // CraftBukkit
++            this.setRegainReason(EntityRegainHealthEvent.RegainReason.WITHER_SPAWN);
+             this.m_5634_(10.0F);
           }
  
-       } else {
 @@ -266,6 +_,8 @@
                    List<LivingEntity> list = this.f_19853_.m_45971_(LivingEntity.class, f_31432_, this, this.m_142469_().m_82377_(20.0D, 8.0D, 20.0D));
                    if (!list.isEmpty()) {
@@ -144,15 +143,15 @@
                             flag = this.f_19853_.m_46953_(blockpos, true, this) || flag;
                          }
                       }
-@@ -308,13 +_,14 @@
+@@ -308,6 +_,7 @@
           }
  
           if (this.f_19797_ % 20 == 0) {
--            this.m_5634_(1.0F);
-+            this.heal(1.0F, EntityRegainHealthEvent.RegainReason.REGEN); // CraftBukkit
++            this.setRegainReason(EntityRegainHealthEvent.RegainReason.REGEN);
+             this.m_5634_(1.0F);
           }
  
-          this.f_31430_.m_142711_(this.m_21223_() / this.m_21233_());
+@@ -315,6 +_,7 @@
        }
     }
  
