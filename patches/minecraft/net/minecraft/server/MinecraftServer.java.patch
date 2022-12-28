@@ -559,7 +559,7 @@
 +        //Magma start - add magma
 +            //metrics
 +            metrics = new Metrics();
-+            metrics.addCustomChart(new Metrics.SimplePie("number_of_mods", () -> String.valueOf(ServerAPI.getModSize()))); // Report how many mods are running // MAGMA TODO: Add Server API
++
 +
 +            magma = Magma.getInstance();
 +
