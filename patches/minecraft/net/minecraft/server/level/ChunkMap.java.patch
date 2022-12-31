@@ -1986,7 +1986,7 @@
 +        }
 +    }
 +
-+    private boolean m_140258_(ChunkAccess p_140259_) {
++    public boolean m_140258_(ChunkAccess p_140259_) { //Magma - private -> public
 +        this.f_140138_.m_63796_( p_140259_.m_7697_() );
 +        if (!p_140259_.m_6344_()) {
 +            return false;
