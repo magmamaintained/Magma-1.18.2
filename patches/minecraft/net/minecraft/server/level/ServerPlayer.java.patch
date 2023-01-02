@@ -1451,7 +1451,7 @@
        }
  
     }
-@@ -921,83 +_,132 @@
+@@ -921,83 +_,140 @@
     public void m_8972_(double p_8973_, boolean p_8974_) {
        if (!this.m_146899_()) {
           BlockPos blockpos = this.m_20097_();
@@ -1596,7 +1596,6 @@
  
     public void m_6915_() {
 -      this.f_8906_.m_141995_(new ClientboundContainerClosePacket(this.f_36096_.f_38840_));
-+      CraftEventFactory.handleInventoryCloseEvent( this ); // CraftBukkit
 +      this.f_8906_.m_141995_( new ClientboundContainerClosePacket( this.f_36096_.f_38840_ ) );
        this.m_9230_();
     }
@@ -1604,6 +1603,15 @@
     public void m_9230_() {
 -      this.f_36096_.m_6877_(this);
 -      this.f_36095_.m_150414_(this.f_36096_);
++      //Magma start - fix inventory closing
++      if (this.f_36096_ != this.f_36095_) {
++         Player old = InventoryViewHelper.getContainerOwner();
++         InventoryViewHelper.captureContainerOwner(this);
++         CraftEventFactory.handleInventoryCloseEvent(this);
++         InventoryViewHelper.captureContainerOwner(old);
++      }
++      //Magma end
++
 +      this.f_36096_.m_6877_( this );
 +      this.f_36095_.m_150414_( this.f_36096_ );
 +      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post( new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close( this, this.f_36096_ ) );
