@@ -7253,7 +7253,6 @@ net/minecraft/world/item/ItemStack net/minecraft/world/item/ItemStack
     int f_41588_ -> s
     net.minecraft.world.item.Item f_41589_ -> t
     net.minecraft.nbt.NBTTagCompound f_41590_ -> u
-    net.minecraft.nbt.NBTTagCompound f_41590_ -> tag
     boolean f_41591_ -> v
     net.minecraft.world.entity.Entity f_41592_ -> w
     net.minecraft.world.item.AdventureModeCheck f_186360_ -> x
