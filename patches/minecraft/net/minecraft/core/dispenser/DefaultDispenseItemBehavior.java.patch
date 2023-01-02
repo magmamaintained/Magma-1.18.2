@@ -1,20 +1,21 @@
 --- a/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DefaultDispenseItemBehavior.java
-@@ -7,8 +_,22 @@
+@@ -7,8 +_,23 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.DispenserBlock;
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftVector;
 +import org.bukkit.event.block.BlockDispenseEvent;
++import org.jetbrains.annotations.Nullable;
  
  public class DefaultDispenseItemBehavior implements DispenseItemBehavior {
 +
 +   // CraftBukkit start
-+   private boolean dropper;
++   private static boolean dropper;
 +
 +   public DefaultDispenseItemBehavior(boolean dropper) {
-+      this.dropper = dropper;
++      DefaultDispenseItemBehavior.dropper = dropper;
 +   }
 +   // CraftBukkit end
 +
@@ -23,68 +24,87 @@
     public final ItemStack m_6115_(BlockSource p_123391_, ItemStack p_123392_) {
        ItemStack itemstack = this.m_7498_(p_123391_, p_123392_);
        this.m_6823_(p_123391_);
-@@ -18,13 +_,20 @@
+@@ -16,15 +_,30 @@
+       return itemstack;
+    }
  
++   //Magma start - fix mixin inject
     protected ItemStack m_7498_(BlockSource p_123385_, ItemStack p_123386_) {
        Direction direction = p_123385_.m_6414_().m_61143_(DispenserBlock.f_52659_);
 -      Position position = DispenserBlock.m_52720_(p_123385_);
        ItemStack itemstack = p_123386_.m_41620_(1);
 -      m_123378_(p_123385_.m_7727_(), itemstack, 6, direction, position);
 +      // CraftBukkit start
-+      if (!spawnItem(p_123385_.m_7727_(), itemstack, 6, direction, p_123385_, dropper)) {
++      spawnItem_source = p_123385_;
++      m_123378_(p_123385_.m_7727_(), itemstack, 6, direction, DispenserBlock.m_52720_(p_123385_));
++      if (!spawnItem_return) {
 +         itemstack.m_41769_(1);
 +      }
 +      // CraftBukkit end
        return p_123386_;
     }
  
--   public static void m_123378_(Level p_123379_, ItemStack p_123380_, int p_123381_, Direction p_123382_, Position p_123383_) {
 +   // CraftBukkit start - void -> boolean return, IPosition -> ISourceBlock last argument
-+   public static boolean spawnItem(Level p_123379_, ItemStack p_123380_, int p_123381_, Direction p_123382_, BlockSource blockSource, boolean dropper) {
-+      if (p_123380_.m_41619_()) return true;
-+      Position p_123383_ = DispenserBlock.m_52720_(blockSource);
++   private static boolean spawnItem_return = true;
++   private static @Nullable BlockSource spawnItem_source = null;
+    public static void m_123378_(Level p_123379_, ItemStack p_123380_, int p_123381_, Direction p_123382_, Position p_123383_) {
++      spawnItem_return = true; //reset
++
++      if (p_123380_.m_41619_())
++         return; //return here, boolean is already true
++
 +      // CraftBukkit end
        double d0 = p_123383_.m_7096_();
        double d1 = p_123383_.m_7098_();
        double d2 = p_123383_.m_7094_();
-@@ -37,7 +_,40 @@
+@@ -36,9 +_,49 @@
+ 
        ItemEntity itementity = new ItemEntity(p_123379_, d0, d1, d2, p_123380_);
        double d3 = p_123379_.f_46441_.nextDouble() * 0.1D + 0.2D;
-       itementity.m_20334_(p_123379_.f_46441_.nextGaussian() * (double)0.0075F * (double)p_123381_ + (double)p_123382_.m_122429_() * d3, p_123379_.f_46441_.nextGaussian() * (double)0.0075F * (double)p_123381_ + (double)0.2F, p_123379_.f_46441_.nextGaussian() * (double)0.0075F * (double)p_123381_ + (double)p_123382_.m_122431_() * d3);
+-      itementity.m_20334_(p_123379_.f_46441_.nextGaussian() * (double)0.0075F * (double)p_123381_ + (double)p_123382_.m_122429_() * d3, p_123379_.f_46441_.nextGaussian() * (double)0.0075F * (double)p_123381_ + (double)0.2F, p_123379_.f_46441_.nextGaussian() * (double)0.0075F * (double)p_123381_ + (double)p_123382_.m_122431_() * d3);
++      itementity.m_20334_(p_123379_.f_46441_.nextGaussian() * (double) 0.0075F * (double) p_123381_ + (double) p_123382_.m_122429_() * d3, p_123379_.f_46441_.nextGaussian() * (double) 0.0075F * (double) p_123381_ + (double) 0.2F, p_123379_.f_46441_.nextGaussian() * (double) 0.0075F * (double) p_123381_ + (double) p_123382_.m_122431_() * d3);
 +
++      //Magma - add null check
++      if (spawnItem_source != null) {
++         // CraftBukkit start
++         org.bukkit.block.Block block = p_123379_.getWorld().getBlockAt(spawnItem_source.m_7961_().m_123341_(), spawnItem_source.m_7961_().m_123342_(), spawnItem_source.m_7961_().m_123343_());
++         CraftItemStack craftItem = CraftItemStack.asCraftMirror(p_123380_);
 +
-+      // CraftBukkit start
-+      org.bukkit.block.Block block = p_123379_.getWorld().getBlockAt(blockSource.m_7961_().m_123341_(), blockSource.m_7961_().m_123342_(), blockSource.m_7961_().m_123343_());
-+      CraftItemStack craftItem = CraftItemStack.asCraftMirror(p_123380_);
-+
-+      BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), CraftVector.toBukkit(itementity.m_20184_()));
-+      if (!DispenserBlock.eventFired) {
-+         p_123379_.getCraftServer().getPluginManager().callEvent(event);
-+      }
-+
-+      if (event.isCancelled()) {
-+         return false;
-+      }
-+
-+      itementity.m_32045_(CraftItemStack.asNMSCopy(event.getItem()));
-+      itementity.m_20256_(CraftVector.toNMS(event.getVelocity()));
-+
-+      if (!dropper && !event.getItem().getType().equals(craftItem.getType())) {
-+         // Chain to handler for new item
-+         ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
-+         DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.f_52661_.get(eventStack.m_41720_());
-+         if (idispensebehavior != DispenseItemBehavior.f_123393_ && idispensebehavior.getClass() != DefaultDispenseItemBehavior.class) {
-+            idispensebehavior.m_6115_(blockSource, eventStack);
-+         } else {
-+            p_123379_.m_7967_(itementity);
++         BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), CraftVector.toBukkit(itementity.m_20184_()));
++         if (!DispenserBlock.eventFired) {
++            p_123379_.getCraftServer().getPluginManager().callEvent(event);
 +         }
-+         return false;
++
++         if (event.isCancelled()) {
++            spawnItem_return = false;
++            return;
++         }
++
++         itementity.m_32045_(CraftItemStack.asNMSCopy(event.getItem()));
++         itementity.m_20256_(CraftVector.toNMS(event.getVelocity()));
++
++         if (!DefaultDispenseItemBehavior.dropper && !event.getItem().getType().equals(craftItem.getType())) {
++            // Chain to handler for new item
++            ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++            DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.f_52661_.get(eventStack.m_41720_());
++            if (idispensebehavior != DispenseItemBehavior.f_123393_ && idispensebehavior.getClass() != DefaultDispenseItemBehavior.class) {
++               idispensebehavior.m_6115_(spawnItem_source, eventStack);
++            } else {
++               p_123379_.m_7967_(itementity);
++            }
++            spawnItem_return = false;
++            return;
++         }
 +      }
 +
        p_123379_.m_7967_(itementity);
 +
-+      return true;
++      spawnItem_return = true;
++
++      spawnItem_source = null; //reset
 +      //CraftBukkit end
     }
++   //Magma end
  
     protected void m_6823_(BlockSource p_123384_) {
+       p_123384_.m_7727_().m_46796_(1000, p_123384_.m_7961_(), 0);
