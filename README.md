@@ -9,7 +9,7 @@
 [![](https://img.shields.io/discord/612695539729039411.svg?logo=discord&logoWidth=18&colorB=7289DA)](https://discord.gg/magma)
 
 <a href="https://bstats.org/plugin/server-implementation/Magma/17219"> <img src="https://bstats.org/signatures/server-implementation/Magma.svg" alt="Stats" width="800"></a>
-</div>
+</div> 
 
 ## ❓ About
 
@@ -34,6 +34,7 @@ Magma for Minecraft 1.12 and above can be found in their own repositories.
 
 - Click [here](https://git.magmafoundation.org/magmafoundation/Magma) to visit the 1.12 repository.
 - Click [here](https://git.magmafoundation.org/magmafoundation/Magma-1-16-x) to visit the 1.16 repository. (1.16 is End Of Life and not actively maintained anymore)
+- 1.19 Soon!
 
 ## 🪣 Deployment
 
