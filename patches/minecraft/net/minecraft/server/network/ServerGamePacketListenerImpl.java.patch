@@ -105,7 +105,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2509 @@
+@@ -118,1340 +_,2508 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -3304,7 +3304,6 @@
 +        PacketUtils.m_131359_( p_9858_, this, this.f_9743_.m_183503_() );
 +
 +        if (this.f_9743_.m_6107_()) return; // CraftBukkit
-+        CraftEventFactory.handleInventoryCloseEvent(this.f_9743_); // CraftBukkit
 +
 +        this.f_9743_.m_9230_();
 +    }
