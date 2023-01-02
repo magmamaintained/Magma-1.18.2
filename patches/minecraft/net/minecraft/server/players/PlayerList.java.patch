@@ -349,12 +349,24 @@
        if (serverstatscounter != null) {
           serverstatscounter.m_12818_();
        }
-@@ -313,9 +_,24 @@
+@@ -313,9 +_,37 @@
  
     }
  
--   public void m_11286_(ServerPlayer p_11287_) {
-+   public String remove(ServerPlayer p_11287_) { // CraftBukkit - return string
++   //Magma start - move to original method
++   @Nullable
++   public String removeAndReturn(ServerPlayer thePlayer) {
++      m_11286_(thePlayer);
++      String tmp = remove_quitMsg;
++      remove_quitMsg = null; //reset
++      return tmp;
++   }
++
++   public @Nullable String remove_quitMsg = null; //Magma
+    public void m_11286_(ServerPlayer p_11287_) {
++      if (remove_quitMsg != null)
++         remove_quitMsg = null; //reset
++
 +      net.minecraftforge.event.ForgeEventFactory.firePlayerLoggedOut(p_11287_);
        ServerLevel serverlevel = p_11287_.m_183503_();
        p_11287_.m_36220_(Stats.f_12989_);
@@ -375,7 +387,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,134 +_,376 @@
+@@ -332,134 +_,377 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -411,8 +423,9 @@
 +      cserver.getScoreboardManager().removePlayer(p_11287_.getBukkitEntity());
 +      // CraftBukkit end
 +
-+      return playerQuitEvent.getQuitMessage(); // CraftBukkit
++      remove_quitMsg = playerQuitEvent.getQuitMessage(); // CraftBukkit //Magma
     }
++   //Magma end
  
     @Nullable
 -   public Component m_6418_(SocketAddress p_11257_, GameProfile p_11258_) {

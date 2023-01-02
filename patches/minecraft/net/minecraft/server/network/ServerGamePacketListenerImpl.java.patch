@@ -2864,7 +2864,7 @@
 +        this.server.getPlayerList().broadcastMessage( (new TranslatableComponent( "multiplayer.player.left", this.player.getDisplayName() )).withStyle( ChatFormatting.YELLOW ), ChatType.SYSTEM, Util.NIL_UUID );
 +        */
 +        this.f_9743_.m_9231_();
-+        String quitMessage = this.f_9745_.m_6846_().remove(this.f_9743_);
++        String quitMessage = this.f_9745_.m_6846_().removeAndReturn(this.f_9743_);
 +        if ((quitMessage != null) && (quitMessage.length() > 0)) {
 +            this.f_9745_.m_6846_().broadcastMessage(CraftChatMessage.fromString(quitMessage));
 +        }
