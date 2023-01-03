@@ -103,13 +103,9 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                         stringToUrl(loadedLibsPaths));
 
                 //Delete brigadier, we have our own implementation
-                File brigadierDir = new File(libPath + "com/mojang/brigadier");
-                if (brigadierDir.exists()) {
-                    Files.walk(brigadierDir.toPath())
-                            .map(Path::toFile)
-                            .forEach(File::delete);
-                    brigadierDir.delete();
-                }
+                deleteLib("com/mojang/brigadier");
+                //Delete datafixers, we have our own implementation
+                deleteLib("com/mojang/datafixerupper");
                 unmute();
                 pb.step();
                 if (!mc_unpacked.exists()) {
@@ -236,6 +232,16 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         }
         TimeUnit.SECONDS.sleep(1);
         restartServer(arguments);
+    }
+
+    private void deleteLib(String path) throws IOException {
+        File libDir = new File(libPath + path);
+        if (libDir.exists()) {
+            Files.walk(libDir.toPath())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            libDir.delete();
+        }
     }
 
     private void purge() {
