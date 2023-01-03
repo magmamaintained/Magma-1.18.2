@@ -236,6 +236,7 @@ def sharedDeps = {
 
     //Spigot
     installer 'net.md-5:bungeecord-chat:1.16-R0.4'
+    installer 'javax.inject:javax.inject:1'
 
 
     installer 'org.yaml:snakeyaml:1.30'
