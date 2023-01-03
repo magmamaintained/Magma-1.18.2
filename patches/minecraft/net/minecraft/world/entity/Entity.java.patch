@@ -71,7 +71,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -103,20 +_,91 @@
+@@ -103,20 +_,89 @@
  import net.minecraft.world.level.material.PushReaction;
  import net.minecraft.world.level.portal.PortalInfo;
  import net.minecraft.world.level.portal.PortalShape;
@@ -93,7 +93,6 @@
 +import org.bukkit.block.BlockFace;
 +import org.bukkit.command.CommandSender;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-+import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
@@ -109,10 +108,8 @@
 +import org.bukkit.event.vehicle.VehicleExitEvent;
 +import org.bukkit.plugin.PluginManager;
  import org.slf4j.Logger;
--
+ 
 -public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-+import org.spigotmc.CustomTimingsHandler;
-+
 +import javax.annotation.Nullable;
 +import java.util.*;
 +import java.util.concurrent.atomic.AtomicInteger;
@@ -193,7 +190,7 @@
     protected Object2DoubleMap<TagKey<Fluid>> f_19799_ = new Object2DoubleArrayMap<>(2);
     protected boolean f_19800_;
     private final Set<TagKey<Fluid>> f_19801_ = new HashSet<>();
-@@ -228,7 +_,41 @@
+@@ -228,7 +_,40 @@
     @Nullable
     private BlockState f_185934_ = null;
  
@@ -206,7 +203,6 @@
 +   public boolean lastDamageCancelled; // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Keep track if the event was canceled
 +   public boolean persistentInvisibility = false;
 +   public BlockPos lastLavaContact;
-+   public CustomTimingsHandler tickTimer = SpigotTimings.getEntityTimings(this); // Spigot
 +
 +   // Spigot start
 +   public final org.spigotmc.ActivationRange.ActivationType activationType = org.spigotmc.ActivationRange.initializeEntityActivationType(this);
@@ -411,14 +407,6 @@
        int i = p_20255_ * 20;
        if (this instanceof LivingEntity) {
           i = ProtectionEnchantment.m_45138_((LivingEntity)this, i);
-@@ -550,6 +_,7 @@
-    }
- 
-    public void m_6478_(MoverType p_19973_, Vec3 p_19974_) {
-+      SpigotTimings.entityMoveTimer.startTiming(); // Spigot
-       if (this.f_19794_) {
-          this.m_6034_(this.m_20185_() + p_19974_.f_82479_, this.m_20186_() + p_19974_.f_82480_, this.m_20189_() + p_19974_.f_82481_);
-       } else {
 @@ -612,6 +_,28 @@
                 block.m_5548_(this.f_19853_, this);
              }
@@ -463,7 +451,7 @@
                 this.f_19788_ += (float)Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3) * 0.6F;
                 if (this.f_19788_ > this.f_19829_ && !blockstate.m_60795_()) {
                    this.f_19829_ = this.m_6059_();
-@@ -659,26 +_,25 @@
+@@ -659,25 +_,23 @@
  
              this.m_146872_();
              float f2 = this.m_6041_();
@@ -501,10 +489,8 @@
 +
 +         this.f_19853_.m_46473_().m_7238_();
        }
-+      SpigotTimings.entityMoveTimer.stopTiming(); // Spigot
     }
  
-    protected boolean m_196406_(Vec3 p_196625_) {
 @@ -715,10 +_,10 @@
        int j = Mth.m_14107_(this.f_19825_.f_82480_ - (double)0.2F);
        int k = Mth.m_14107_(this.f_19825_.f_82481_);
