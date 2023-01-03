@@ -41,7 +41,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1221 @@
+@@ -45,859 +_,1223 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -227,7 +227,6 @@
 +import org.bukkit.World;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-+import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState;
 +import org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
@@ -302,8 +301,11 @@
 +    public List<ItemEntity> captureDrops;
 +    public final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<SpawnCategory> ticksPerSpawnCategory = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
 +    public boolean populating;
-+    public final SpigotTimings.WorldTimingsHandler timings; // Spigot
++    public final co.aikar.timings.WorldTimingsHandler timings; // Paper
 +    public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
++
++    public final com.destroystokyo.paper.PaperWorldConfig paperConfig; // Paper
++
 +    public static BlockPos lastPhysicsProblem; // Spigot
 +    private org.spigotmc.TickLimiter entityLimiter;
 +    private org.spigotmc.TickLimiter tileLimiter;
@@ -341,6 +343,7 @@
 +            this.init_levelName = Strings.EMPTY;
 +        }
 +        this.spigotConfig = new org.spigotmc.SpigotWorldConfig(init_levelName); // Spigot
++        this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((ServerLevelData) p_204149_).m_5462_(), this.spigotConfig); // Paper
 +        //Magma end
 +        // CraftBukkit Ticks things
 +        for (SpawnCategory spawnCategory : SpawnCategory.values()) {
@@ -416,7 +419,7 @@
 +            }
 +        } );
 +        // CraftBukkit end
-+        timings = new SpigotTimings.WorldTimingsHandler( this ); // Spigot - code below can generate new world and access timings
++        timings = new co.aikar.timings.WorldTimingsHandler(this); // Paper - code below can generate new world and access timings
 +        this.entityLimiter = new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime);
 +        this.tileLimiter = new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime);
 +    }
@@ -1239,16 +1242,15 @@
 +
 +        timings.tileEntityTick.stopTiming(); // Spigot
 +        this.f_151504_ = false;
++        co.aikar.timings.TimingHistory.tileEntityTicks += this.f_151512_.size(); // Paper
 +        profilerfiller.m_7238_();
 +        spigotConfig.currentPrimedTnt = 0; // Spigot
 +    }
 +
 +    public <T extends Entity> void m_46653_(Consumer<T> p_46654_, T p_46655_) {
 +        try {
-+            SpigotTimings.tickEntityTimer.startTiming(); // Spigot
 +            net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackStart( p_46655_ );
 +            p_46654_.accept( p_46655_ );
-+            SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
 +        } catch (Throwable throwable) {
 +            CrashReport crashreport = CrashReport.m_127521_( throwable, "Ticking entity" );
 +            CrashReportCategory crashreportcategory = crashreport.m_127514_( "Entity being ticked" );

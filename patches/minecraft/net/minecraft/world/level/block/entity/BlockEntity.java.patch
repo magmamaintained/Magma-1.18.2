@@ -1,27 +1,26 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -1,7 +_,6 @@
+@@ -1,7 +_,8 @@
  package net.minecraft.world.level.block.entity;
  
++import co.aikar.timings.MinecraftTimings;
++import co.aikar.timings.Timing;
  import com.mojang.logging.LogUtils;
 -import javax.annotation.Nullable;
  import net.minecraft.CrashReportCategory;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Registry;
-@@ -13,9 +_,17 @@
+@@ -13,9 +_,15 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer;
 +import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry;
 +import org.bukkit.inventory.InventoryHolder;
 +import org.magmafoundation.magma.helpers.InventoryHelper;
  import org.slf4j.Logger;
--
+ 
 -public abstract class BlockEntity {
-+import org.spigotmc.CustomTimingsHandler;
-+
 +import javax.annotation.Nullable;
 +
 +public abstract class BlockEntity extends net.minecraftforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.minecraftforge.common.extensions.IForgeBlockEntity {
@@ -34,7 +33,7 @@
     private BlockState f_58856_;
 +   private CompoundTag customTileData;
 +
-+   public CustomTimingsHandler tickTimer = SpigotTimings.getTileEntityTimings(this); // Spigot
++   public Timing tickTimer = MinecraftTimings.getTileEntityTimings(this); // Paper
 +
 +   // CraftBukkit start - data containers
 +   private static final CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new CraftPersistentDataTypeRegistry();

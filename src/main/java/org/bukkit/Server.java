@@ -1617,9 +1617,40 @@ public interface Server extends PluginMessageRecipient {
         public void restart() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        // Paper start
+        @NotNull
+        public org.bukkit.configuration.file.YamlConfiguration getBukkitConfig()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        @NotNull
+        public org.bukkit.configuration.file.YamlConfiguration getSpigotConfig()
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @NotNull
+        public org.bukkit.configuration.file.YamlConfiguration getPaperConfig()
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        // Paper end
+
+        // Magma start
+        @NotNull
+        public org.bukkit.configuration.file.YamlConfiguration getMagmaConfig() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        // Magma end
     }
 
     @NotNull
     Spigot spigot();
     // Spigot end
+
+
+
+    // Paper end
 }

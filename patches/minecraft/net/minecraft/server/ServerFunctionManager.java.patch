@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/ServerFunctionManager.java
++++ b/net/minecraft/server/ServerFunctionManager.java
+@@ -78,7 +_,7 @@
+          }
+       } else {
+          int i;
+-         try {
++         try (co.aikar.timings.Timing timing = p_179961_.getTiming().startTiming()) { // Paper
+             this.f_179959_ = new ServerFunctionManager.ExecutionContext(p_179963_);
+             i = this.f_179959_.m_179977_(p_179961_, p_179962_);
+          } finally {

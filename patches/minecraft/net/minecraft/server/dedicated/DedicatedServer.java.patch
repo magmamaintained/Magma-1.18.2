@@ -1,6 +1,13 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -7,29 +_,12 @@
+@@ -1,5 +_,6 @@
+ package net.minecraft.server.dedicated;
+ 
++import co.aikar.timings.MinecraftTimings;
+ import com.google.common.base.Strings;
+ import com.google.common.collect.Lists;
+ import com.mojang.authlib.GameProfile;
+@@ -7,26 +_,7 @@
  import com.mojang.authlib.minecraft.MinecraftSessionService;
  import com.mojang.datafixers.DataFixer;
  import com.mojang.logging.LogUtils;
@@ -24,32 +31,21 @@
 -import net.minecraft.SharedConstants;
 -import net.minecraft.SystemReport;
 -import net.minecraft.Util;
-+import com.mojang.serialization.DynamicOps;
 +import net.minecraft.*;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.NonNullList;
-+import net.minecraft.nbt.Tag;
- import net.minecraft.network.chat.Component;
- import net.minecraft.server.ConsoleInput;
- import net.minecraft.server.MinecraftServer;
-@@ -52,13 +_,37 @@
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.CreativeModeTab;
- import net.minecraft.world.item.Items;
-+import net.minecraft.world.level.DataPackConfig;
- import net.minecraft.world.level.GameRules;
- import net.minecraft.world.level.GameType;
+@@ -57,8 +_,31 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.entity.SkullBlockEntity;
  import net.minecraft.world.level.storage.LevelStorageSource;
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
-+import org.bukkit.craftbukkit.v1_18_R2.SpigotTimings;
 +import org.bukkit.craftbukkit.v1_18_R2.command.CraftRemoteConsoleCommandSender;
 +import org.bukkit.craftbukkit.v1_18_R2.util.ForwardLogHandler;
 +import org.bukkit.craftbukkit.v1_18_R2.util.TerminalConsoleWriterThread;
++import org.bukkit.craftbukkit.v1_18_R2.util.Waitable;
 +import org.bukkit.event.server.RemoteServerCommandEvent;
 +import org.bukkit.event.server.ServerCommandEvent;
 +import org.magmafoundation.magma.configuration.MagmaConfig;
@@ -141,7 +137,7 @@
        thread.setDaemon(true);
        thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_139598_));
        thread.start();
-@@ -120,13 +_,23 @@
+@@ -120,13 +_,32 @@
           this.m_129913_(dedicatedserverproperties.f_139730_);
        }
  
@@ -150,6 +146,15 @@
 +      org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
 +      org.spigotmc.SpigotConfig.registerCommands();
 +      // Spigot end
++      // Paper start
++      try {
++         com.destroystokyo.paper.PaperConfig.init((java.io.File) options.valueOf("paper-settings"));
++      } catch (Exception e) {
++         DedicatedServer.f_139598_.error("Unable to load server configuration", e);
++         return false;
++      }
++      com.destroystokyo.paper.PaperConfig.registerCommands();
++      // Paper end
 +
 +      // Magma start
 +      MagmaConfig.instance.registerCommands();
@@ -248,7 +253,7 @@
     }
  
     public void m_139665_() {
-+      SpigotTimings.serverCommandTimer.startTiming(); // Spigot
++      MinecraftTimings.serverCommandTimer.startTiming(); // Spigot
        while(!this.f_139600_.isEmpty()) {
           ConsoleInput consoleinput = this.f_139600_.remove(0);
 -         this.m_129892_().m_82117_(consoleinput.f_135929_, consoleinput.f_135928_);
@@ -264,11 +269,11 @@
 +         // CraftBukkit end
        }
 -
-+      SpigotTimings.serverCommandTimer.stopTiming(); // Spigot
++      MinecraftTimings.serverCommandTimer.stopTiming(); // Spigot
     }
  
     public boolean m_6982_() {
-@@ -518,13 +_,44 @@
+@@ -518,14 +_,74 @@
     }
  
     public String m_7138_() {
@@ -300,6 +305,7 @@
     }
  
     public String m_7261_(String p_139644_) {
++      Waitable[] waitableArray = new Waitable[1];
        this.f_139602_.m_11512_();
        this.m_18709_(() -> {
 -         this.m_129892_().m_82117_(this.f_139602_.m_11514_(), p_139644_);
@@ -309,12 +315,41 @@
 +         if (event.isCancelled()) {
 +            return;
 +         }
++         // Paper start
++         if (p_139644_.toLowerCase().startsWith("timings") && p_139644_.toLowerCase().matches("timings (report|paste|get|merged|seperate)")) {
++            org.bukkit.command.BufferedCommandSender sender = new org.bukkit.command.BufferedCommandSender();
++            Waitable<String> waitable = new Waitable<String>() {
++               @Override
++               protected String evaluate() {
++                  return sender.getBuffer();
++               }
++            };
++            waitableArray[0] = waitable;
++            co.aikar.timings.Timings.generateReport(new co.aikar.timings.TimingsReportListener(sender, waitable));
++         } else {
++            // Paper end
 +         ConsoleInput serverCommand = new ConsoleInput(event.getCommand(), f_139602_.m_11514_());
 +         server.dispatchServerCommand(remoteConsole, serverCommand);
++         } // Paper
 +         // CraftBukkit end
        });
++      // Paper start
++      if (waitableArray[0] != null) {
++         //noinspection unchecked
++         Waitable<String> waitable = waitableArray[0];
++         try {
++            return waitable.get();
++         } catch (java.util.concurrent.ExecutionException e) {
++            throw new RuntimeException("Exception processing rcon command " + p_139644_, e.getCause());
++         } catch (InterruptedException e) {
++            Thread.currentThread().interrupt(); // Maintain interrupted state
++            throw new RuntimeException("Interrupted processing rcon command " + p_139644_, e);
++         }
++      }
++      // Paper end
        return this.f_139602_.m_11513_();
     }
+ 
 @@ -545,6 +_,11 @@
        return false;
     }

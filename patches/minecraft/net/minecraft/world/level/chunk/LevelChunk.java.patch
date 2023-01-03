@@ -14,7 +14,7 @@
  import net.minecraft.CrashReport;
  import net.minecraft.CrashReportCategory;
  import net.minecraft.ReportedException;
-@@ -47,659 +_,854 @@
+@@ -47,659 +_,856 @@
  import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.ticks.LevelChunkTicks;
  import net.minecraft.world.ticks.TickContainerAccess;
@@ -1120,6 +1120,7 @@
 +             */
 +            server.getPluginManager().callEvent( new org.bukkit.event.world.ChunkLoadEvent( this.bukkitChunk, this.needsDecoration ) );
 +            if (this.needsDecoration) {
++                try (co.aikar.timings.Timing ignored = this.f_62776_.timings.chunkLoadPopulate.startTiming()) { // Paper
 +                this.needsDecoration = false;
 +                java.util.Random random = new java.util.Random();
 +                ServerLevel level = ((ServerLevel) this.f_62776_);
@@ -1139,6 +1140,7 @@
 +                    }
 +                }
 +                server.getPluginManager().callEvent( new org.bukkit.event.world.ChunkPopulateEvent( bukkitChunk ) );
++                } // Paper
 +            }
 +        }
 +    }
