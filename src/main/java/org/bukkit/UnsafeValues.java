@@ -23,6 +23,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 @Deprecated
 public interface UnsafeValues {
 
+    void reportTimings(); // Paper
+
     Material toLegacy(Material material);
 
     Material fromLegacy(Material material);
@@ -78,4 +80,12 @@ public interface UnsafeValues {
     Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(Material material, EquipmentSlot slot);
 
     CreativeCategory getCreativeCategory(Material material);
+
+    // Paper start
+    /**
+     * Server name to report to timings v2
+     * @return name
+     */
+    String getTimingsServerName();
+    // Paper end
 }

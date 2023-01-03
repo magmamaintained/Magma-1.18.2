@@ -26,6 +26,22 @@
     private static final LoadingCache<VoxelShape, Boolean> f_49785_ = CacheBuilder.newBuilder().maximumSize(512L).weakKeys().build(new CacheLoader<VoxelShape, Boolean>() {
        public Boolean load(VoxelShape p_49972_) {
           return !Shapes.m_83157_(Shapes.m_83144_(), p_49972_, BooleanOp.f_82687_);
+@@ -87,6 +_,15 @@
+    public static final int f_152391_ = 512;
+    protected final StateDefinition<Block, BlockState> f_49792_;
+    private BlockState f_49786_;
++   // Paper start
++   public co.aikar.timings.Timing timing;
++   public co.aikar.timings.Timing getTiming() {
++      if (timing == null) {
++         timing = co.aikar.timings.MinecraftTimings.getBlockTiming(this);
++      }
++      return timing;
++   }
++   // Paper end
+    @Nullable
+    private String f_49787_;
+    @Nullable
 @@ -178,7 +_,7 @@
              f_49790_.error("Block classes should end with Block and {} doesn't.", (Object)s);
           }

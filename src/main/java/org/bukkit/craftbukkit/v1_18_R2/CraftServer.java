@@ -146,7 +146,9 @@ import org.bukkit.scheduler.BukkitWorker;
 import org.bukkit.structure.StructureManager;
 import org.bukkit.util.StringUtil;
 import org.bukkit.util.permissions.DefaultPermissions;
+import org.jetbrains.annotations.NotNull;
 import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.permission.ForgeCommandWrapper;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -2178,11 +2180,40 @@ public final class CraftServer implements Server {
     // Spigot start
     private final org.bukkit.Server.Spigot spigot = new org.bukkit.Server.Spigot()
     {
+        @Deprecated
         @Override
         public YamlConfiguration getConfig()
         {
             return org.spigotmc.SpigotConfig.config;
         }
+
+        @Override
+        public YamlConfiguration getBukkitConfig()
+        {
+            return configuration;
+        }
+
+        @Override
+        public YamlConfiguration getSpigotConfig()
+        {
+            return org.spigotmc.SpigotConfig.config;
+        }
+
+        @Override
+        public YamlConfiguration getPaperConfig()
+        {
+            return com.destroystokyo.paper.PaperConfig.config;
+        }
+
+        // Magma start
+
+        @NotNull
+        @Override
+        public YamlConfiguration getMagmaConfig() {
+            return MagmaConfig.instance.config;
+        }
+
+        // Magma end
 
         @Override
         public void restart() {
@@ -2209,4 +2240,32 @@ public final class CraftServer implements Server {
         return spigot;
     }
     // Spigot end
+
+    // Paper start
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static java.nio.file.Path dumpHeap(java.nio.file.Path dir, String name) {
+        try {
+            java.nio.file.Files.createDirectories(dir);
+            javax.management.MBeanServer server = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+            java.nio.file.Path file;
+            try {
+                Class clazz = Class.forName("openj9.lang.management.OpenJ9DiagnosticsMXBean");
+                Object openj9Mbean = java.lang.management.ManagementFactory.newPlatformMXBeanProxy(server, "openj9.lang.management:type=OpenJ9Diagnostics", clazz);
+                java.lang.reflect.Method m = clazz.getMethod("triggerDumpToFile", String.class, String.class);
+                file = dir.resolve(name + ".phd");
+                m.invoke(openj9Mbean, "heap", file.toString());
+            } catch (ClassNotFoundException e) {
+                Class clazz = Class.forName("com.sun.management.HotSpotDiagnosticMXBean");
+                Object hotspotMBean = java.lang.management.ManagementFactory.newPlatformMXBeanProxy(server, "com.sun.management:type=HotSpotDiagnostic", clazz);
+                java.lang.reflect.Method m = clazz.getMethod("dumpHeap", String.class, boolean.class);
+                file = dir.resolve(name + ".hprof");
+                m.invoke(hotspotMBean, file.toString(), true);
+            }
+            return file;
+        } catch (Throwable t) {
+            Bukkit.getLogger().log(Level.SEVERE, "Could not write heap", t);
+            return null;
+        }
+    }
+    // Paper end
 }

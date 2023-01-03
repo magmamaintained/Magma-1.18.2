@@ -36,7 +36,8 @@ import java.util.logging.Level;
 /**
  * A ClassLoader for plugins, to allow shared classes across multiple plugins
  */
-final class PluginClassLoader extends URLClassLoader implements RemappingClassLoader {
+public final class PluginClassLoader extends URLClassLoader implements RemappingClassLoader {
+    public JavaPlugin getPlugin() { return plugin; } // Spigot
     private final JavaPluginLoader loader;
     private final Map<String, Class<?>> classes = new ConcurrentHashMap<String, Class<?>>();
     private final PluginDescriptionFile description;

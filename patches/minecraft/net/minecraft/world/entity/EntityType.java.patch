@@ -30,17 +30,27 @@
     private static <T extends Entity> EntityType<T> m_20634_(String p_20635_, EntityType.Builder<T> p_20636_) {
        return Registry.m_122961_(Registry.f_122826_, p_20635_, p_20636_.m_20712_(p_20635_));
     }
-@@ -296,6 +_,9 @@
+@@ -295,7 +_,19 @@
+       return Registry.f_122826_.m_6612_(ResourceLocation.m_135820_(p_20633_));
     }
  
++   // Paper start - add id
++   public final String id;
++
     public EntityType(EntityType.EntityFactory<T> p_20574_, MobCategory p_20575_, boolean p_20576_, boolean p_20577_, boolean p_20578_, boolean p_20579_, ImmutableSet<Block> p_20580_, EntityDimensions p_20581_, int p_20582_, int p_20583_) {
 +       this(p_20574_, p_20575_, p_20576_, p_20577_, p_20578_, p_20579_, p_20580_, p_20581_, p_20582_, p_20583_, EntityType::defaultVelocitySupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, null);
 +   }
++
 +   public EntityType(EntityType.EntityFactory<T> p_20574_, MobCategory p_20575_, boolean p_20576_, boolean p_20577_, boolean p_20578_, boolean p_20579_, ImmutableSet<Block> p_20580_, EntityDimensions p_20581_, int p_20582_, int p_20583_, final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier, final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier, final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier, final java.util.function.BiFunction<net.minecraftforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory) {
++      this(p_20574_, p_20575_, p_20576_, p_20577_, p_20578_, p_20579_, p_20580_, p_20581_, p_20582_, p_20583_, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory, "custom");
++   }
++
++   public EntityType(EntityType.EntityFactory<T> p_20574_, MobCategory p_20575_, boolean p_20576_, boolean p_20577_, boolean p_20578_, boolean p_20579_, ImmutableSet<Block> p_20580_, EntityDimensions p_20581_, int p_20582_, int p_20583_, final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier, final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier, final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier, final java.util.function.BiFunction<net.minecraftforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory, String id) {
++      // Paper end
        this.f_20535_ = p_20574_;
        this.f_20536_ = p_20575_;
        this.f_20541_ = p_20579_;
-@@ -306,18 +_,34 @@
+@@ -306,18 +_,42 @@
        this.f_20547_ = p_20581_;
        this.f_20542_ = p_20582_;
        this.f_20543_ = p_20583_;
@@ -48,6 +58,14 @@
 +      this.trackingRangeSupplier = trackingRangeSupplier;
 +      this.updateIntervalSupplier = updateIntervalSupplier;
 +      this.customClientFactory = customClientFactory;
++
++      // Paper start - timings
++      this.id = id;
++      this.tickTimer = co.aikar.timings.MinecraftTimings.getEntityTimings(id, "tick");
++      this.inactiveTickTimer = co.aikar.timings.MinecraftTimings.getEntityTimings(id, "inactiveTick");
++      this.passengerTickTimer = co.aikar.timings.MinecraftTimings.getEntityTimings(id, "passengerTick");
++      this.passengerInactiveTickTimer = co.aikar.timings.MinecraftTimings.getEntityTimings(id, "passengerInactiveTick");
++      // Paper end
     }
  
     @Nullable
@@ -88,7 +106,7 @@
           return t;
        }
     }
-@@ -544,14 +_,23 @@
+@@ -544,14 +_,29 @@
     }
  
     public int m_20681_() {
@@ -105,6 +123,12 @@
        return this.f_20543_;
     }
  
++   // Paper start - timings
++   public final co.aikar.timings.Timing tickTimer;
++   public final co.aikar.timings.Timing inactiveTickTimer;
++   public final co.aikar.timings.Timing passengerTickTimer;
++   public final co.aikar.timings.Timing passengerInactiveTickTimer;
++   // Paper end
     public boolean m_20683_() {
 +      return velocityUpdateSupplier.test(this);
 +   }
@@ -137,7 +161,7 @@
        private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
           this.f_20685_ = p_20696_;
           this.f_20686_ = p_20697_;
-@@ -642,12 +_,36 @@
+@@ -642,16 +_,46 @@
           return this;
        }
  
@@ -171,7 +195,17 @@
           }
  
 -         return new EntityType<>(this.f_20685_, this.f_20686_, this.f_20688_, this.f_20689_, this.f_20690_, this.f_20691_, this.f_20687_, this.f_20694_, this.f_20692_, this.f_20693_);
-+         return new EntityType<>(this.f_20685_, this.f_20686_, this.f_20688_, this.f_20689_, this.f_20690_, this.f_20691_, this.f_20687_, this.f_20694_, this.f_20692_, this.f_20693_, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory);
++         return new EntityType<>(this.f_20685_, this.f_20686_, this.f_20688_, this.f_20689_, this.f_20690_, this.f_20691_, this.f_20687_, this.f_20694_, this.f_20692_, this.f_20693_, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory, p_20713_); // Paper - add id
        }
     }
  
+    public interface EntityFactory<T extends Entity> {
+       T m_20721_(EntityType<T> p_20722_, Level p_20723_);
+    }
++
++   // Paper start
++   public static java.util.Set<ResourceLocation> getEntityNameList() {
++      return Registry.f_122826_.m_6566_();
++   }
++   // Paper end
+ }

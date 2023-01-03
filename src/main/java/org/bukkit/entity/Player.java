@@ -1661,6 +1661,12 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        // Paper start
+        public int getPing() {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+        // Paper end
+
     }
 
     @NotNull

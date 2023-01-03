@@ -14,7 +14,7 @@
  import joptsimple.OptionParser;
  import joptsimple.OptionSet;
  import joptsimple.OptionSpec;
-@@ -48,192 +_,311 @@
+@@ -48,192 +_,336 @@
  import net.minecraft.world.level.GameRules;
  import net.minecraft.world.level.LevelSettings;
  import net.minecraft.world.level.levelgen.WorldGenSettings;
@@ -221,6 +221,12 @@
 +                .defaultsTo(new File("spigot.yml"))
 +                .describedAs("Yml file");
 +
++        optionparser.acceptsAll(Arrays.asList("p", "paper-settings"), "File for paper settings")
++                .withRequiredArg()
++                .ofType(File.class)
++                .defaultsTo(new File("paper.yml"))
++                .describedAs("Yml file");
++
 +        optionparser.acceptsAll(Arrays.asList("C", "commands-settings"), "File for command settings")
 +                .withRequiredArg()
 +                .ofType(File.class)
@@ -279,6 +285,11 @@
 +            Path path = Paths.get("server.properties");
 +            DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path);
 +            dedicatedserversettings.m_139780_();
++            // Paper start - load config files for access below if needed
++            org.bukkit.configuration.file.YamlConfiguration bukkitConfiguration = loadConfigFile((File) optionset.valueOf("bukkit-settings"));
++            org.bukkit.configuration.file.YamlConfiguration spigotConfiguration = loadConfigFile((File) optionset.valueOf("spigot-settings"));
++            org.bukkit.configuration.file.YamlConfiguration paperConfiguration = loadConfigFile((File) optionset.valueOf("paper-settings"));
++            // Paper end
 +            if (optionset.has(optionspec1)) {
 +                f_129670_.info("Initialized '{}' and '{}'", path.toAbsolutePath(), path1.toAbsolutePath());
 +                return;
@@ -460,7 +471,17 @@
 -         if (!p_195492_.getAsBoolean()) {
 -            worldupgrader.m_18820_();
 -         } else {
--            try {
++        } catch (Exception exception1) {
++            f_129670_.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable) exception1);
++        }
++
++    }
++
++    // Paper start - load config files
++    private static org.bukkit.configuration.file.YamlConfiguration loadConfigFile(File configFile) throws Exception {
++        org.bukkit.configuration.file.YamlConfiguration config = new org.bukkit.configuration.file.YamlConfiguration();
++        if (configFile.exists()) {
+             try {
 -               Thread.sleep(1000L);
 -            } catch (InterruptedException interruptedexception) {
 -            }
@@ -468,11 +489,14 @@
 -      }
 -
 -   }
-+        } catch (Exception exception1) {
-+            f_129670_.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable) exception1);
++                config.load(configFile);
++            } catch (Exception ex) {
++                throw new Exception("Failed to load configuration file: " + configFile.getName(), ex);
++            }
 +        }
-+
++        return config;
 +    }
++    // Paper end
 +
 +    public static void m_195488_(LevelStorageSource.LevelStorageAccess p_195489_, DataFixer p_195490_, boolean p_195491_, BooleanSupplier p_195492_, WorldGenSettings p_195493_) {
 +        f_129670_.info("Forcing world upgrade! {}", p_195489_.m_78277_()); // CraftBukkit

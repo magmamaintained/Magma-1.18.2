@@ -1934,6 +1934,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
             getHandle().connection.send(packet);
         }
 
+        // Paper start
+        @Override
+        public int getPing()
+        {
+            return getHandle().latency;
+        }
+        // Paper end
+
     };
 
 
