@@ -1,0 +1,19 @@
+--- a/net/minecraft/commands/CommandFunction.java
++++ b/net/minecraft/commands/CommandFunction.java
+@@ -17,6 +_,16 @@
+    private final CommandFunction.Entry[] f_77976_;
+    final ResourceLocation f_77977_;
+ 
++   // Paper start
++   public co.aikar.timings.Timing timing;
++   public co.aikar.timings.Timing getTiming() {
++      if (timing == null) {
++         timing = co.aikar.timings.MinecraftTimings.getCommandFunctionTiming(this);
++      }
++      return timing;
++   }
++   // Paper end
++
+    public CommandFunction(ResourceLocation p_77979_, CommandFunction.Entry[] p_77980_) {
+       this.f_77977_ = p_77979_;
+       this.f_77976_ = p_77980_;

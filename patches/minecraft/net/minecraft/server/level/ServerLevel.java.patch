@@ -1,5 +1,12 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.server.level;
+ 
++import co.aikar.timings.TimingHistory;
+ import com.google.common.annotations.VisibleForTesting;
+ import com.google.common.collect.Lists;
+ import com.mojang.datafixers.DataFixer;
 @@ -9,55 +_,19 @@
  import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  import it.unimi.dsi.fastutil.longs.LongSet;
@@ -254,20 +261,24 @@
        this.m_46465_();
        this.m_8809_();
        profilerfiller.m_6182_("tickPending");
-+      timings.doTickPending.startTiming(); // Spigot
++      timings.scheduledBlocks.startTiming(); // Paper
        if (!this.m_46659_()) {
           long k = this.m_46467_();
           profilerfiller.m_6180_("blockTicks");
-@@ -272,28 +_,34 @@
+@@ -272,28 +_,38 @@
           this.f_184047_.m_193225_(k, 65536, this::m_184076_);
           profilerfiller.m_7238_();
        }
-+      timings.doTickPending.stopTiming(); // Spigot
++      timings.scheduledBlocks.stopTiming(); // Paper
  
        profilerfiller.m_6182_("raid");
++      this.timings.raids.startTiming(); // Paper - timings
        this.f_8565_.m_37957_();
++      this.timings.raids.stopTiming(); // Paper - timings
        profilerfiller.m_6182_("chunkSource");
++      this.timings.chunkProviderTick.startTiming(); // Paper - timings
        this.m_7726_().m_201698_(p_8794_, true);
++      this.timings.chunkProviderTick.stopTiming(); // Paper - timings
        profilerfiller.m_6182_("blockEvents");
 +      timings.doSounds.startTiming(); // Spigot
        this.m_8807_();
@@ -329,6 +340,22 @@
           if (biome.m_47477_(this, blockpos3)) {
              this.m_46597_(blockpos3, Blocks.f_50126_.m_49966_());
           }
+@@ -422,6 +_,7 @@
+       }
+ 
+       profilerfiller.m_6182_("tickBlocks");
++      timings.chunkTicksBlocks.startTiming(); // Paper
+       if (p_8716_ > 0) {
+          for(LevelChunkSection levelchunksection : p_8715_.m_7103_()) {
+             if (levelchunksection.m_63014_()) {
+@@ -446,6 +_,7 @@
+          }
+       }
+ 
++      timings.chunkTicksBlocks.stopTiming(); // Paper
+       profilerfiller.m_7238_();
+    }
+ 
 @@ -592,15 +_,19 @@
           this.f_8548_.m_6846_().m_11270_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132161_, this.f_46440_), this.m_46472_());
        }
@@ -353,18 +380,26 @@
        }
  
     }
-@@ -633,6 +_,14 @@
+@@ -633,6 +_,22 @@
     }
  
     public void m_8647_(Entity p_8648_) {
++      ++TimingHistory.entityTicks; // Paper - timings
 +      // Spigot start
++      co.aikar.timings.Timing timer; // Paper
 +      if (!org.spigotmc.ActivationRange.checkIfActive(p_8648_)) {
 +         p_8648_.f_19797_++;
++         timer = p_8648_.m_6095_().inactiveTickTimer.startTiming(); try { // Paper - timings
 +         p_8648_.inactiveTick();
++         } finally { timer.stopTiming(); } // Paper
 +         return;
 +      }
 +      // Spigot end
-+      p_8648_.tickTimer.startTiming(); // Spigot
++      // Paper start- timings
++      TimingHistory.activatedEntityTicks++;
++      timer = p_8648_.m_20202_() != null ? p_8648_.m_6095_().passengerTickTimer.startTiming() : p_8648_.m_6095_().tickTimer.startTiming();
++      try {
++         // Paper end - timings
        p_8648_.m_146867_();
        ProfilerFiller profilerfiller = this.m_46473_();
        ++p_8648_.f_19797_;
@@ -373,7 +408,7 @@
           this.m_8662_(p_8648_, entity);
        }
 -
-+      p_8648_.tickTimer.stopTiming(); // Spigot
++      } finally { timer.stopTiming(); } // Paper - timings
     }
  
     private void m_8662_(Entity p_8663_, Entity p_8664_) {
@@ -391,15 +426,26 @@
              profilerfiller.m_7238_();
  
              for(Entity entity : p_8664_.m_20197_()) {
-@@ -679,6 +_,7 @@
+@@ -679,6 +_,8 @@
     public void m_8643_(@Nullable ProgressListener p_8644_, boolean p_8645_, boolean p_8646_) {
        ServerChunkCache serverchunkcache = this.m_7726_();
        if (!p_8646_) {
 +         org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
++         try (co.aikar.timings.Timing ignored = timings.worldSave.startTiming()) { // Paper
           if (p_8644_ != null) {
              p_8644_.m_6309_(new TranslatableComponent("menu.savingLevel"));
           }
-@@ -695,7 +_,9 @@
+@@ -688,14 +_,19 @@
+             p_8644_.m_6307_(new TranslatableComponent("menu.savingChunks"));
+          }
+ 
++         timings.worldSaveChunks.startTiming(); // Paper
+          serverchunkcache.m_8419_(p_8645_);
++            timings.worldSaveChunks.stopTiming(); // Paper
++         }// Paper
+          if (p_8645_) {
+             this.f_143244_.m_157561_();
+          } else {
              this.f_143244_.m_157554_();
           }
  
