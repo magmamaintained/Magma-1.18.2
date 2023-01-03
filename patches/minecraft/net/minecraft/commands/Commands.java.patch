@@ -7,12 +7,13 @@
  import com.google.common.collect.Maps;
  import com.mojang.brigadier.CommandDispatcher;
  import com.mojang.brigadier.ParseResults;
-@@ -9,103 +_,33 @@
+@@ -9,103 +_,34 @@
  import com.mojang.brigadier.builder.LiteralArgumentBuilder;
  import com.mojang.brigadier.builder.RequiredArgumentBuilder;
  import com.mojang.brigadier.exceptions.CommandSyntaxException;
 +import com.mojang.brigadier.suggestion.SuggestionProvider;
  import com.mojang.brigadier.tree.CommandNode;
++import com.mojang.brigadier.tree.LiteralCommandNode;
  import com.mojang.brigadier.tree.RootCommandNode;
  import com.mojang.logging.LogUtils;
 -import java.util.Map;
@@ -144,7 +145,7 @@
           TestCommand.m_127946_(this.f_82090_);
        }
  
-@@ -201,26 +_,76 @@
+@@ -201,26 +_,87 @@
        if (p_82093_.f_82144_) {
           PublishCommand.m_138184_(this.f_82090_);
        }
@@ -185,11 +186,16 @@
 +      String cmd = args[0];
 +      if (cmd.startsWith("minecraft:")) cmd = cmd.substring("minecraft:".length());
 +      if (cmd.startsWith("bukkit:")) cmd = cmd.substring("bukkit:".length());
++      if (cmd.startsWith("forge:")) {
++         setForge(true);
++         cmd = cmd.substring("forge:".length());
++      }
 +
 +      // Block disallowed commands
 +      if (cmd.equalsIgnoreCase("stop") || cmd.equalsIgnoreCase("kick") || cmd.equalsIgnoreCase("op")
 +              || cmd.equalsIgnoreCase("deop") || cmd.equalsIgnoreCase("ban") || cmd.equalsIgnoreCase("ban-ip")
 +              || cmd.equalsIgnoreCase("pardon") || cmd.equalsIgnoreCase("pardon-ip") || cmd.equalsIgnoreCase("reload")) {
++         setForge(false);
 +         return 0;
 +      }
 +
@@ -199,7 +205,11 @@
 +      }
 +
 +      String newCommand = joiner.join(args);
-+      return this.performCommand(sender, newCommand, newCommand, false);
++      try {
++         return this.performCommand(sender, newCommand, newCommand, false);
++      } finally {
++         setForge(false);
++      }
 +   }
 +
 +   //Magma start - fix mixin inject on original performCommand
@@ -220,7 +230,7 @@
 -            return this.f_82090_.execute(stringreader, p_82118_);
 +            if (parseCommand(stringreader, p_82118_).isEmpty())
 +               return 1;
-+            return this.getCurrentDispatcher().execute(parseCommand(stringreader, p_82118_).get().getParseResults());
++            return this.getCurrentDispatcher(stringreader.getString()).execute(parseCommand(stringreader, p_82118_).get().getParseResults());
           } catch (CommandRuntimeException commandruntimeexception) {
              p_82118_.m_81352_(commandruntimeexception.m_79226_());
              return 0;
@@ -246,7 +256,7 @@
 +   }
 +
 +   private Optional<net.minecraftforge.event.CommandEvent> parseCommand(StringReader stringreader, CommandSourceStack stack) throws Exception {
-+      ParseResults<CommandSourceStack> parse = this.getCurrentDispatcher().parse(stringreader, stack);
++      ParseResults<CommandSourceStack> parse = this.getCurrentDispatcher(stringreader.getString()).parse(stringreader, stack);
 +      net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(parse);
 +      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
 +         if (event.getException() instanceof Exception exception) {
@@ -333,7 +343,7 @@
     @Nullable
     public static <S> CommandSyntaxException m_82097_(ParseResults<S> p_82098_) {
        if (!p_82098_.getReader().canRead()) {
-@@ -362,6 +_,17 @@
+@@ -362,6 +_,40 @@
           throw new IllegalStateException("Unregistered argument types");
        }
     }
@@ -344,8 +354,31 @@
 +      this.forge = b;
 +   }
 +
-+   private CommandDispatcher<CommandSourceStack> getCurrentDispatcher() {
-+      return forge ? getForgeDispatcher() : m_82094_();
++   private CommandDispatcher<CommandSourceStack> getCurrentDispatcher(String command) {
++      if (forge)
++         return getForgeDispatcher();
++
++      String literal = command.split(" ")[0]; //the command root, ex. deop
++      if (literal.startsWith("/"))
++         literal = literal.substring(1);
++
++      if (literal.startsWith("forge:"))
++         return getForgeDispatcher();
++
++      final String search = literal;
++      CommandNode<CommandSourceStack> found = getForgeDispatcher()
++              .getRoot()
++              .getChildren()
++              .stream()
++              .filter(node -> node instanceof LiteralCommandNode)
++              .filter(node -> ((LiteralCommandNode<?>) node).getLiteral().equals(search))
++              .findFirst()
++              .orElse(null);
++
++      if (found != null)
++         return getForgeDispatcher();
++
++      return m_82094_();
 +   }
 +   //Magma end
  
