@@ -68,7 +68,7 @@ public class ServerInitHelper {
                     for (String s : split) {
                         if (s.startsWith("libraries/com/mojang/brigadier"))
                             continue;
-                        if (s.startsWith("libraries/com/mojang/datafixers"))
+                        if (s.startsWith("libraries/com/mojang/datafixerupper"))
                             continue;
 
                         if (s.startsWith("libraries/")) {
