@@ -1,7 +1,9 @@
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -2,29 +_,19 @@
+@@ -1,30 +_,21 @@
+ package net.minecraft.world.level;
  
++import com.destroystokyo.paper.youcandfindpaper.PaperWorldConfig;
  import com.google.common.collect.Lists;
  import com.mojang.serialization.Codec;
 -import java.io.IOException;
@@ -304,7 +306,7 @@
 +    public final co.aikar.timings.WorldTimingsHandler timings; // Paper
 +    public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
 +
-+    public final com.destroystokyo.paper.PaperWorldConfig paperConfig; // Paper
++    public final PaperWorldConfig paperConfig; // Paper
 +
 +    public static BlockPos lastPhysicsProblem; // Spigot
 +    private org.spigotmc.TickLimiter entityLimiter;
@@ -343,7 +345,7 @@
 +            this.init_levelName = Strings.EMPTY;
 +        }
 +        this.spigotConfig = new org.spigotmc.SpigotWorldConfig(init_levelName); // Spigot
-+        this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((ServerLevelData) p_204149_).m_5462_(), this.spigotConfig); // Paper
++        this.paperConfig = new PaperWorldConfig(((ServerLevelData) p_204149_).m_5462_(), this.spigotConfig); // Paper
 +        //Magma end
 +        // CraftBukkit Ticks things
 +        for (SpawnCategory spawnCategory : SpawnCategory.values()) {

@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.destroystokyo.paper.youcandfindpaper.PaperConfig;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMultimap;
@@ -358,7 +360,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
     // Paper start
     @Override
     public String getTimingsServerName() {
-        return com.destroystokyo.paper.PaperConfig.timingsServerName;
+        return PaperConfig.timingsServerName;
     }
     // Paper end
 
