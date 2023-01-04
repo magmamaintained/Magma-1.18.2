@@ -1,16 +1,14 @@
-package com.destroystokyo.paper;
+package com.destroystokyo.paper.youcandfindpaper;
 
 import java.util.List;
 
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.spigotmc.SpigotWorldConfig;
 
-import static com.destroystokyo.paper.PaperConfig.log;
-import static com.destroystokyo.paper.PaperConfig.logError;
-import static com.destroystokyo.paper.PaperConfig.saveConfig;
+import static com.destroystokyo.paper.youcandfindpaper.PaperConfig.log;
+import static com.destroystokyo.paper.youcandfindpaper.PaperConfig.saveConfig;
 
 public class PaperWorldConfig {
 

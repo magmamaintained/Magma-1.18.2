@@ -1,4 +1,4 @@
-package com.destroystokyo.paper;
+package com.destroystokyo.paper.youcandfindpaper;
 
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsManager;

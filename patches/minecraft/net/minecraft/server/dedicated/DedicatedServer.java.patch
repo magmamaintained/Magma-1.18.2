@@ -1,9 +1,10 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -1,5 +_,6 @@
+@@ -1,5 +_,7 @@
  package net.minecraft.server.dedicated;
  
 +import co.aikar.timings.MinecraftTimings;
++import com.destroystokyo.paper.youcandfindpaper.PaperConfig;
  import com.google.common.base.Strings;
  import com.google.common.collect.Lists;
  import com.mojang.authlib.GameProfile;
@@ -148,12 +149,12 @@
 +      // Spigot end
 +      // Paper start
 +      try {
-+         com.destroystokyo.paper.PaperConfig.init((java.io.File) options.valueOf("paper-settings"));
++         PaperConfig.init((java.io.File) options.valueOf("paper-settings"));
 +      } catch (Exception e) {
 +         DedicatedServer.f_139598_.error("Unable to load server configuration", e);
 +         return false;
 +      }
-+      com.destroystokyo.paper.PaperConfig.registerCommands();
++      PaperConfig.registerCommands();
 +      // Paper end
 +
 +      // Magma start
