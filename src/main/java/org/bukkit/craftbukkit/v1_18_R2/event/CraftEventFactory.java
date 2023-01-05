@@ -51,6 +51,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.util.FakePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -777,6 +778,20 @@ public class CraftEventFactory {
         } else if (source instanceof EntityDamageSource) {
             Entity damager = source.getEntity();
             DamageCause cause = (source.isSweep()) ? DamageCause.ENTITY_SWEEP_ATTACK : DamageCause.ENTITY_ATTACK;
+
+            //Magma start - custom event in case of a FakePlayer interaction
+            if (damager instanceof FakePlayer) {
+                EntityDamageEvent event = new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), cause, modifiers, modifierFunctions);
+                event.setCancelled(cancelled);
+                callEvent(event);
+                if (!event.isCancelled()) {
+                    event.getEntity().setLastDamageCause(event);
+                } else {
+                    entity.lastDamageCancelled = true;
+                }
+                return event;
+            }
+            //Magma end
 
             if (source instanceof IndirectEntityDamageSource) {
                 damager = ((IndirectEntityDamageSource) source).getProximateDamageSource();
