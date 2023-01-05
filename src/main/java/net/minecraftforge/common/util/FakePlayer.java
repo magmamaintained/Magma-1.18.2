@@ -67,6 +67,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.magmafoundation.magma.craftbukkit.entity.CraftFakePlayer;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -80,6 +81,10 @@ public class FakePlayer extends ServerPlayer
     {
         super(level.getServer(), level, name);
         this.connection = new FakePlayerNetHandler(level.getServer(), this);
+    }
+
+    public CraftFakePlayer getBukkitEntity() {
+        return (CraftFakePlayer) super.getBukkitEntity();
     }
 
     @Override public Vec3 position(){ return new Vec3(0, 0, 0); }
