@@ -1,6 +1,7 @@
 package org.magmafoundation.magma.permission;
 
 import com.google.common.base.Joiner;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.commands.CommandSourceStack;
@@ -68,11 +69,13 @@ public class ForgeCommandWrapper extends Command {
         Validate.notNull(args, "Arguments cannot be null");
         Validate.notNull(alias, "Alias cannot be null");
 
+        CommandDispatcher<CommandSourceStack> dispatch = dispatcher.getForgeDispatcher().unwrap();
+
         CommandSourceStack icommandlistener = getListener(sender);
-        ParseResults<CommandSourceStack> parsed = dispatcher.getForgeDispatcher().parse(toDispatcher(args, getName()), icommandlistener);
+        ParseResults<CommandSourceStack> parsed = dispatch.parse(toDispatcher(args, getName()), icommandlistener);
 
         List<String> results = new ArrayList<>();
-        dispatcher.getForgeDispatcher().getCompletionSuggestions(parsed).thenAccept((suggestions) -> {
+        dispatch.getCompletionSuggestions(parsed).thenAccept((suggestions) -> {
             suggestions.getList().forEach((s) -> results.add(s.getText()));
         });
 
