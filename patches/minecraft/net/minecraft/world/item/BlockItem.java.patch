@@ -57,7 +57,7 @@
                    blockstate1.m_60734_().m_6402_(level, blockpos, blockstate1, player, itemstack);
 +
 +                  // CraftBukkit start
-+                  if (blockstateCB != null && player != null && !(p_40577_ instanceof DirectionalPlaceContext)) { //Magma - avoid NPE when player is null
++                  if (blockstateCB != null) {
 +                     org.bukkit.event.block.BlockPlaceEvent placeEvent = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockPlaceEvent((ServerLevel) level, player, blockplacecontext.m_43724_(), blockstateCB, blockpos.m_123341_(), blockpos.m_123342_(), blockpos.m_123343_());
 +                     if (placeEvent != null && (placeEvent.isCancelled() || !placeEvent.canBuild())) {
 +                        blockstateCB.update(true, false);
