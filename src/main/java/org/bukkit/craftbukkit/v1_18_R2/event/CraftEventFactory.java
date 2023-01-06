@@ -248,9 +248,6 @@ public class CraftEventFactory {
         Player player = (Player) who.getBukkitEntity();
         PlayerInventory inventory = player.getInventory();
 
-        if (inventory == null)
-            return null;
-
         Block blockClicked = craftWorld.getBlockAt(clickedX, clickedY, clickedZ);
         Block placedBlock = replacedBlockState.getBlock();
 
@@ -258,12 +255,17 @@ public class CraftEventFactory {
 
         org.bukkit.inventory.ItemStack item;
         EquipmentSlot equipmentSlot;
-        if (hand == InteractionHand.MAIN_HAND) {
-            item = inventory.getItemInMainHand();
-            equipmentSlot = EquipmentSlot.HAND;
-        } else {
-            item = inventory.getItemInOffHand();
-            equipmentSlot = EquipmentSlot.OFF_HAND;
+
+        try { //Magma - catch NPE for non-bukkit inventories [Fixes PlantUtil.tryPlant]
+            if (hand == InteractionHand.MAIN_HAND) {
+                item = inventory.getItemInMainHand();
+                equipmentSlot = EquipmentSlot.HAND;
+            } else {
+                item = inventory.getItemInOffHand();
+                equipmentSlot = EquipmentSlot.OFF_HAND;
+            }
+        } catch (NullPointerException e) {
+            return null;
         }
 
         BlockPlaceEvent event = new BlockPlaceEvent(placedBlock, replacedBlockState, blockClicked, item, player, canBuild, equipmentSlot);
