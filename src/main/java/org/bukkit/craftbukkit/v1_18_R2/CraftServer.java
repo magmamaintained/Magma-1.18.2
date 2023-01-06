@@ -392,7 +392,7 @@ public final class CraftServer implements Server {
         Commands dispatcher = console.vanillaCommandDispatcher;
 
         // Build a list of all Forge commands and create wrappers
-        for (CommandNode<CommandSourceStack> cmd : dispatcher.getForgeDispatcher().getRoot().getChildren()) {
+        for (CommandNode<CommandSourceStack> cmd : dispatcher.getForgeDispatcher().unwrap().getRoot().getChildren()) {
             // Magma start
             ForgeCommandWrapper wrapper = new ForgeCommandWrapper(dispatcher, cmd);
             if (org.spigotmc.SpigotConfig.replaceCommands.contains( wrapper.getName() ) ) {
@@ -440,7 +440,7 @@ public final class CraftServer implements Server {
                     forgeNode = clone;
                 }
 
-                dispatcher.getForgeDispatcher().getRoot().addChild(forgeNode);
+                dispatcher.getForgeDispatcher().unwrap().getRoot().addChild(forgeNode);
             } else {
                 new BukkitCommandWrapper(this, entry.getValue()).register(dispatcher.getDispatcher(), label);
             }
