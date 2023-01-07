@@ -24,6 +24,7 @@ import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.utils.ServerInitHelper;
 import org.magmafoundation.magma.common.utils.SystemType;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,10 +85,12 @@ public class MagmaStart {
             forgeArgs.add(arg.split(" ")[1]);
         });
 
-        new MagmaInstaller(Arrays.stream(args).toList());
+        MagmaInstaller.run();
 
         ServerInitHelper.init(launchArgs);
 
+        ServerInitHelper.addToPath(new File("libraries/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar").toPath());
+        ServerInitHelper.addToPath(new File("libraries/org/yaml/snakeyaml/1.30/snakeyaml-1.30.jar").toPath());
         if (enableUpdate)
             MagmaUpdater.checkForUpdates();
 
