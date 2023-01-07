@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/RecordItem.java
 +++ b/net/minecraft/world/item/RecordItem.java
-@@ -20,16 +_,45 @@
+@@ -20,15 +_,38 @@
  import net.minecraft.world.level.block.state.BlockState;
  
  public class RecordItem extends Item {
@@ -17,7 +17,6 @@
        this.f_43033_ = p_43037_;
        this.f_43034_ = p_43038_;
        f_43032_.put(this.f_43034_, this);
--   }
 +      this.soundSupplier = this.f_43034_.delegate;
 +   }
 +
@@ -37,16 +36,9 @@
 +      this.f_43033_ = comparatorValue;
 +      this.f_43034_ = null;
 +      this.soundSupplier = soundSupplier;
-+   }
-+
-+   //Magma start - fix music discs not playing
-+   public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-+      return stack.m_41661_(context); //Redirect to ItemStack.useOn
-+   }
-+   //Magma end
+    }
  
     public InteractionResult m_6225_(UseOnContext p_43048_) {
-       Level level = p_43048_.m_43725_();
 @@ -38,6 +_,7 @@
        if (blockstate.m_60713_(Blocks.f_50131_) && !blockstate.m_61143_(JukeboxBlock.f_54254_)) {
           ItemStack itemstack = p_43048_.m_43722_();
