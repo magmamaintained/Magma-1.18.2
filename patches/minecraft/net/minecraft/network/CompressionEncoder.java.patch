@@ -1,6 +1,14 @@
 --- a/net/minecraft/network/CompressionEncoder.java
 +++ b/net/minecraft/network/CompressionEncoder.java
-@@ -9,6 +_,8 @@
+@@ -3,12 +_,16 @@
+ import io.netty.buffer.ByteBuf;
+ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.MessageToByteEncoder;
++import org.magmafoundation.magma.configuration.MagmaConfig;
++
+ import java.util.zip.Deflater;
+ 
+ public class CompressionEncoder extends MessageToByteEncoder<ByteBuf> {
     private final byte[] f_129444_ = new byte[8192];
     private final Deflater f_129445_;
     private int f_129446_;
@@ -9,14 +17,15 @@
  
     public CompressionEncoder(int p_129448_) {
        this.f_129446_ = p_129448_;
-@@ -22,6 +_,12 @@
+@@ -22,6 +_,13 @@
           friendlybytebuf.m_130130_(0);
           friendlybytebuf.writeBytes(p_129453_);
        } else {
-+         if (!DISABLE_PACKET_DEBUG && i > 8388608) { //Magma - increase packet size to 8mb - from 2mb
++         int maxSize = MagmaConfig.instance.forgePacketCompressionThreshold.getValues();
++         if (!DISABLE_PACKET_DEBUG && i > maxSize) { //Magma - make packet size configurable
 +             p_129453_.markReaderIndex();
-+             LOGGER.error("Attempted to send packet over maximum protocol size: {} > 8388608\nData:\n{}", i,
-+                     net.minecraftforge.logging.PacketDump.getContentDump(p_129453_));
++             LOGGER.error("Attempted to send packet over maximum protocol size: {} > {}", i, maxSize);
++             LOGGER.error("[PACKET DUMP DISABLED BY MAGMA]"); //Magma - you're welcome
 +             p_129453_.resetReaderIndex();
 +         }
           byte[] abyte = new byte[i];
