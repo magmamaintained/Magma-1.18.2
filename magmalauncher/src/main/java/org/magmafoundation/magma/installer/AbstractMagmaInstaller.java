@@ -11,7 +11,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 
@@ -25,18 +24,19 @@ import java.util.jar.JarFile;
  */
 public abstract class AbstractMagmaInstaller {
 
+    public static final String LIB_PATH = new File(JarTool.getJarDir(), MagmaConstants.INSTALLER_LIBRARIES_FOLDER).getAbsolutePath() + "/";
+    public static final File INSTALL_INFO = new File(LIB_PATH + "org/magma/install/installInfo");
+
     private PrintStream origin = System.out;
     public String forgeVer;
     public String mcpVer;
     public String mcVer;
-    public String libPath = new File(JarTool.getJarDir(), MagmaConstants.INSTALLER_LIBRARIES_FOLDER).getAbsolutePath() + "/";
 
     public String forgeStart;
     public File universalJar;
     public File serverJar;
 
     public File lzma;
-    public File installInfo;
 
     public String otherStart;
     public File extra;
@@ -54,24 +54,23 @@ public abstract class AbstractMagmaInstaller {
         this.mcpVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[3];
         this.mcVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[0];
 
-        this.forgeStart = libPath + "net/minecraftforge/forge/" + mcVer + "-" + forgeVer + "/forge-" + mcVer + "-" + forgeVer;
+        this.forgeStart = LIB_PATH + "net/minecraftforge/forge/" + mcVer + "-" + forgeVer + "/forge-" + mcVer + "-" + forgeVer;
         this.universalJar = new File(forgeStart + "-universal.jar");
         this.serverJar = new File(forgeStart + "-server.jar");
 
-        this.lzma = new File(libPath + "org/magma/install/data/server.lzma");
-        this.installInfo = new File(libPath + "org/magma/install/installInfo");
+        this.lzma = new File(LIB_PATH + "org/magma/install/data/server.lzma");
 
-        this.otherStart = libPath + "net/minecraft/server/" + mcVer + "-" + mcpVer + "/server-" + mcVer + "-" + mcpVer;
+        this.otherStart = LIB_PATH + "net/minecraft/server/" + mcVer + "-" + mcpVer + "/server-" + mcVer + "-" + mcpVer;
 
         this.extra = new File(otherStart + "-extra.jar");
         this.slim = new File(otherStart + "-slim.jar");
         this.srg = new File(otherStart + "-srg.jar");
 
-        this.mcpStart = libPath + "de/oceanlabs/mcp/mcp_config/" + mcVer + "-" + mcpVer + "/mcp_config-" + mcVer + "-" + mcpVer;
+        this.mcpStart = LIB_PATH + "de/oceanlabs/mcp/mcp_config/" + mcVer + "-" + mcpVer + "/mcp_config-" + mcVer + "-" + mcpVer;
         this.mcpZip = new File(mcpStart + ".zip");
         this.mcpTxt = new File(mcpStart + "-mappings.txt");
 
-        this.minecraft_server = new File(libPath + "minecraft_server." + mcVer + ".jar");
+        this.minecraft_server = new File(LIB_PATH + "minecraft_server." + mcVer + ".jar");
     }
 
     protected void launchService(String mainClass, List<String> args, List<URL> classPath) throws Exception {
@@ -130,7 +129,7 @@ public abstract class AbstractMagmaInstaller {
             Files.delete(dir.toPath());
     }
 
-    protected void deleteFolder(File folder) {
+    protected static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
         if (files != null) { //some JVMs return null for empty dirs
             for(File f : files) {
@@ -152,51 +151,4 @@ public abstract class AbstractMagmaInstaller {
             return true;
         }
     }
-
-    protected void restartServer(List<String> arguments) throws Exception {
-        //clearConsole(); //Does not work atm
-
-        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-        final File currentJar = new File(AbstractMagmaInstaller.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-
-        /* is it a jar file? */
-        if(!currentJar.getName().endsWith(".jar"))
-            return;
-
-        /* Build command: java -jar application.jar */
-        final ArrayList<String> command = new ArrayList<String>();
-        command.add(javaBin);
-        command.add("-jar");
-        command.add(currentJar.getPath());
-        arguments.parallelStream().forEach(command::add);
-        command.add("-postinstall");
-
-        final ProcessBuilder builder = new ProcessBuilder(command);
-        //System.out.println(Arrays.toString(builder.command().toArray()));
-        builder.inheritIO().start().waitFor();
-        Thread.sleep(2000);
-        System.exit(0);
-    }
-
-    private void clearConsole()
-    {
-        try
-        {
-            final String os = System.getProperty("os.name");
-
-            if (os.contains("Windows"))
-            {
-                Runtime.getRuntime().exec("cls");
-            }
-            else
-            {
-                Runtime.getRuntime().exec("clear");
-            }
-        }
-        catch (final Exception e)
-        {
-            //  Handle any exceptions.
-        }
-    }
-
 }
