@@ -19,14 +19,16 @@ import org.magmafoundation.magma.utils.ServerInitHelper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Project: Magma
@@ -42,39 +44,24 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     private final String magmaVersion = MagmaConstants.VERSION;
 
-    public final File fmlloader = new File(libPath + "net/minecraftforge/fmlloader/" + mcVer + "-" + forgeVer + "/fmlloader-" + mcVer + "-" + forgeVer + ".jar");
-    public final File fmlcore = new File(libPath + "net/minecraftforge/fmlcore/" + mcVer + "-" + forgeVer + "/fmlcore-" + mcVer + "-" + forgeVer + ".jar");
-    public final File javafmllanguage = new File(libPath + "net/minecraftforge/javafmllanguage/" + mcVer + "-" + forgeVer + "/javafmllanguage-" + mcVer + "-" + forgeVer + ".jar");
-    public final File mclanguage = new File(libPath + "net/minecraftforge/mclanguage/" + mcVer + "-" + forgeVer + "/mclanguage-" + mcVer + "-" + forgeVer + ".jar");
-    public final File lowcodelanguage = new File(libPath + "net/minecraftforge/lowcodelanguage/" + mcVer + "-" + forgeVer + "/lowcodelanguage-" + mcVer + "-" + forgeVer + ".jar");
+    public final File fmlloader = new File(LIB_PATH + "net/minecraftforge/fmlloader/" + mcVer + "-" + forgeVer + "/fmlloader-" + mcVer + "-" + forgeVer + ".jar");
+    public final File fmlcore = new File(LIB_PATH + "net/minecraftforge/fmlcore/" + mcVer + "-" + forgeVer + "/fmlcore-" + mcVer + "-" + forgeVer + ".jar");
+    public final File javafmllanguage = new File(LIB_PATH + "net/minecraftforge/javafmllanguage/" + mcVer + "-" + forgeVer + "/javafmllanguage-" + mcVer + "-" + forgeVer + ".jar");
+    public final File mclanguage = new File(LIB_PATH + "net/minecraftforge/mclanguage/" + mcVer + "-" + forgeVer + "/mclanguage-" + mcVer + "-" + forgeVer + ".jar");
+    public final File lowcodelanguage = new File(LIB_PATH + "net/minecraftforge/lowcodelanguage/" + mcVer + "-" + forgeVer + "/lowcodelanguage-" + mcVer + "-" + forgeVer + ".jar");
 
     public final File mojmap = new File(otherStart + "-mappings.txt");
     public final File mc_unpacked = new File(otherStart + "-unpacked.jar");
 
     public final File mergedMapping = new File(mcpStart + "-mappings-merged.txt");
 
-    private List<String> arguments;
-
-    public MagmaInstaller(List<String> arguments) {
-        this.arguments = Objects.requireNonNullElseGet(arguments, ArrayList::new);
-        try {
-            downloadInternalLibraries();
-            new Dependencies(mcVer, mcpVer, minecraft_server);
-            install();
-        } catch (Exception ignored) {}
+    public MagmaInstaller() throws Exception {
+        new Dependencies(mcVer, mcpVer, minecraft_server);
+        install();
     }
 
     //Inspired by the Mohist 1.19 installer
     private void install() throws Exception {
-        if (installInfo.exists()) {
-            String magmaMD5 = MD5.getMd5(JarTool.getFile());
-            List<String> lines = Files.readAllLines(installInfo.toPath());
-            String storedMagmaMD5 = lines.get(1);
-            if (magmaMD5.equals(storedMagmaMD5)) //Latest patch is installed
-                return;
-            else purge();
-        }
-
         ProgressBarBuilder builder = new ProgressBarBuilder()
                 .setTaskName("Patching server...")
                 .setStyle(ProgressBarStyle.ASCII)
@@ -99,7 +86,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                 mute();
                 System.out.println("Extracting bundled resources...");
                 launchService("net.minecraftforge.installertools.ConsoleTool",
-                        new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", libPath, "--libraries")),
+                        new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", LIB_PATH, "--libraries")),
                         stringToUrl(loadedLibsPaths));
 
                 //Delete brigadier, we have our own implementation
@@ -189,8 +176,8 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             String serverMD5 = MD5.getMd5(serverJar);
             String magmaMD5 = MD5.getMd5(JarTool.getFile());
 
-            if (installInfo.exists()) {
-                List<String> infoLines = Files.readAllLines(installInfo.toPath());
+            if (INSTALL_INFO.exists()) {
+                List<String> infoLines = Files.readAllLines(INSTALL_INFO.toPath());
                 if (infoLines.size() > 0)
                     storedServerMD5 = infoLines.get(0);
                 if (infoLines.size() > 1)
@@ -207,35 +194,33 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                 launchService("net.minecraftforge.binarypatcher.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--clean", srg.getAbsolutePath(), "--output", serverJar.getAbsolutePath(), "--apply", lzma.getAbsolutePath())),
                         stringToUrl(new ArrayList<>(Arrays.asList(
-                                libPath + "net/minecraftforge/binarypatcher/1.0.12/binarypatcher-1.0.12.jar",
-                                libPath + "commons-io/commons-io/2.4/commons-io-2.4.jar",
-                                libPath + "com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
-                                libPath + "net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar",
-                                libPath + "com/github/jponge/lzma-java/1.3/lzma-java-1.3.jar",
-                                libPath + "com/nothome/javaxdelta/2.0.1/javaxdelta-2.0.1.jar",
-                                libPath + "com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
-                                libPath + "org/checkerframework/checker-qual/2.0.0/checker-qual-2.0.0.jar",
-                                libPath + "com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar",
-                                libPath + "com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
-                                libPath + "org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar",
-                                libPath + "trove/trove/1.0.2/trove-1.0.2.jar"
+                                LIB_PATH + "net/minecraftforge/binarypatcher/1.0.12/binarypatcher-1.0.12.jar",
+                                LIB_PATH + "commons-io/commons-io/2.4/commons-io-2.4.jar",
+                                LIB_PATH + "com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
+                                LIB_PATH + "net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar",
+                                LIB_PATH + "com/github/jponge/lzma-java/1.3/lzma-java-1.3.jar",
+                                LIB_PATH + "com/nothome/javaxdelta/2.0.1/javaxdelta-2.0.1.jar",
+                                LIB_PATH + "com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
+                                LIB_PATH + "org/checkerframework/checker-qual/2.0.0/checker-qual-2.0.0.jar",
+                                LIB_PATH + "com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar",
+                                LIB_PATH + "com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
+                                LIB_PATH + "org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar",
+                                LIB_PATH + "trove/trove/1.0.2/trove-1.0.2.jar"
                         ))));
                 unmute();
                 serverMD5 = MD5.getMd5(serverJar);
             }
             pb.step();
 
-            FileWriter fw = new FileWriter(installInfo);
+            FileWriter fw = new FileWriter(INSTALL_INFO);
             fw.write(serverMD5 + "\n");
             fw.write(magmaMD5);
             fw.close();
         }
-        TimeUnit.SECONDS.sleep(1);
-        restartServer(arguments);
     }
 
     private void deleteLib(String path) throws IOException {
-        File libDir = new File(libPath + path);
+        File libDir = new File(LIB_PATH + path);
         if (libDir.exists()) {
             Files.walk(libDir.toPath())
                     .map(Path::toFile)
@@ -244,30 +229,78 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         }
     }
 
-    private void purge() {
-        System.out.println("WARNING: It appears you have installed a new version of magma, please remove the libraries folder before continuing. The server will now shut down.");
-        System.exit(0);
+    public static void run() {
+        try {
+            if (!checkDependencies())
+                return;
+
+            var urls = loadInternalDependencies();
+            urls.add(MagmaInstaller.class.getProtectionDomain().getCodeSource().getLocation().toURI().toURL());
+            var installerClassLoader = new URLClassLoader(urls.toArray(URL[]::new), null);
+            var installerClass = Class.forName(MagmaInstaller.class.getName(), false, installerClassLoader);
+            installerClass.getConstructor().newInstance();
+            installerClassLoader.close();
+
+            // Who needs file systems anyway
+            ServerInitHelper.addOpens("java.base", "java.nio.file.spi", "ALL-UNNAMED");
+            var loadingProvidersField = FileSystemProvider.class.getDeclaredField("loadingProviders");
+            loadingProvidersField.setAccessible(true);
+            loadingProvidersField.set(null, false);
+            var installedProvidersField = FileSystemProvider.class.getDeclaredField("installedProviders");
+            installedProvidersField.setAccessible(true);
+            installedProvidersField.set(null, null);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
-
-    private void downloadInternalLibraries() {
-        HashMap<File, List<String>> dependencies = new HashMap<>();
-        dependencies.put(new File(libPath + "dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar"), Arrays.asList("e6b19d4a5e3687432530a0aa9edf6fcc", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar"));
-        dependencies.put(new File(libPath + "dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"), Arrays.asList("e8cee80f1719c02ef3076ff42bab0ad9", "https://s01.oss.sonatype.org/content/repositories/snapshots/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"));
-        dependencies.put(new File(libPath + "org/jline/jline/3.21.0/jline-3.21.0.jar"), Arrays.asList("859778f9cdd3bd42bbaaf0f6f7fe5e6a", "https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.jar"));
-        dependencies.put(new File(libPath + "me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar"), Arrays.asList("25d3101d2ca7f0847a804208d5411d78", "https://repo1.maven.org/maven2/me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar"));
-
-        for (File lib : dependencies.keySet()) {
-            if(lib.exists() && Objects.equals(MD5.getMd5(lib), dependencies.get(lib).get(0))) {
-                ServerInitHelper.addToPath(lib.toPath());
-                continue;
+    private static boolean checkDependencies() throws IOException {
+        if (INSTALL_INFO.exists()) {
+            String magmaMD5 = MD5.getMd5(JarTool.getFile());
+            List<String> lines = Files.readAllLines(INSTALL_INFO.toPath());
+            if (lines.size() >= 2 && magmaMD5.equals(lines.get(1))) //Latest patch is installed
+                return false;
+            else {
+                System.out.println("Deleting libraries...");
+                deleteFolder(new File(LIB_PATH));
+                return true;
             }
-            lib.getParentFile().mkdirs();
+        }
+        return true;
+    }
+
+    private static List<URL> loadInternalDependencies() throws Exception {
+        var dependencies = new InternalDependency[] {
+                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar", "e6b19d4a5e3687432530a0aa9edf6fcc", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar"),
+                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar", "e8cee80f1719c02ef3076ff42bab0ad9", "https://s01.oss.sonatype.org/content/repositories/snapshots/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"),
+                new InternalDependency(LIB_PATH + "org/jline/jline/3.21.0/jline-3.21.0.jar", "859778f9cdd3bd42bbaaf0f6f7fe5e6a", "https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.jar"),
+                new InternalDependency(LIB_PATH + "me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar", "25d3101d2ca7f0847a804208d5411d78", "https://repo1.maven.org/maven2/me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar")
+        };
+        var urls = new ArrayList<URL>();
+        for (var dependency : dependencies) {
+            if (!dependency.file().exists() || !dependency.signature().equals(MD5.getMd5(dependency.file()))) {
+                dependency.file().getParentFile().mkdirs();
+                dependency.download();
+            }
+            urls.add(dependency.url());
+        }
+        return urls;
+    }
+
+    private record InternalDependency(File file, String signature, String link) {
+        private InternalDependency(String path, String signature, String link) {
+            this(new File(path), signature, link);
+        }
+
+        private void download() throws Exception {
+            NetworkUtils.downloadFile(this.link(), this.file(), this.signature());
+        }
+
+        private URL url() {
             try {
-                NetworkUtils.downloadFile(dependencies.get(lib).get(1), lib, dependencies.get(lib).get(0));
-                ServerInitHelper.addToPath(lib.toPath());
-            } catch (Exception e) {
-                e.printStackTrace();
+                return file.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -344,7 +377,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         }
 
         public void downloadMcp(String mc_version, String mcp_version) {
-            File mcp_config = new File(libPath + "de/oceanlabs/mcp/mcp_config/" + mc_version + "-" + mcp_version + "/mcp_config-" + mc_version + "-" + mcp_version + ".zip");
+            File mcp_config = new File(LIB_PATH + "de/oceanlabs/mcp/mcp_config/" + mc_version + "-" + mcp_version + "/mcp_config-" + mc_version + "-" + mcp_version + ".zip");
             if (Files.exists(mcp_config.toPath()))
                 return;
             mcp_config.getParentFile().mkdirs();
