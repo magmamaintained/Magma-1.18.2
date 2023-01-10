@@ -17,26 +17,17 @@ public class RecipeIterator implements Iterator<Recipe> {
 
     @Override
     public boolean hasNext() {
-        if (current != null && current.hasNext()) {
-            return true;
-        }
-
-        if (recipes.hasNext()) {
-            current = recipes.next().getValue().values().iterator();
-            return hasNext();
-        }
-
-        return false;
+        return (current != null && current.hasNext()) || recipes.hasNext();
     }
 
     @Override
     public Recipe next() {
         if (current == null || !current.hasNext()) {
             current = recipes.next().getValue().values().iterator();
-            return next();
         }
 
-        return current.next().toBukkitRecipe();
+        Recipe next = current.next().toBukkitRecipe();
+        return next == null ? next() : next; //Magma - skip recipes that have a null bukkit recipe
     }
 
     @Override
