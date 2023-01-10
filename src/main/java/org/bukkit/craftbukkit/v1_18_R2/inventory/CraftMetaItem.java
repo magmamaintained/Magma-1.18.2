@@ -271,6 +271,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
             "Name",
             //Create
             "Items",
+            "Schedule",
             //The rest
             "map_is_scaling",
             "map",
