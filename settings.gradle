@@ -12,7 +12,7 @@ include 'fmlcore'
 include 'mclanguage'
 include 'javafmllanguage'
 include 'lowcodelanguage'
-include 'magmalaucher'
+include 'magmalauncher'
 
 include ':mcp'
 include ':clean'
@@ -23,5 +23,3 @@ project(":mcp").projectDir = file("projects/mcp")
 project(":clean").projectDir = file("projects/clean")
 project(":fmlonly").projectDir = file("projects/fmlonly")
 project(":forge").projectDir = file("projects/magma")
-include 'magmalauncher'
-
