@@ -112,7 +112,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2501 @@
+@@ -118,1340 +_,2502 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -3226,6 +3226,7 @@
 +                        }
 +                        // CraftBukkit end
 +                        InteractionResult interactionresult = p_143680_.m_143694_( ServerGamePacketListenerImpl.this.f_9743_, entity, p_143679_ );
++                        if (net.minecraftforge.common.ForgeHooks.onInteractEntityAt(f_9743_, entity, entity.m_20182_(), p_143679_) != null) return;
 +
 +                        // CraftBukkit start
 +                        if (!itemInHand.m_41619_() && itemInHand.m_41613_() <= -1) {
