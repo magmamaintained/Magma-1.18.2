@@ -56,7 +56,7 @@
  import net.minecraft.util.Mth;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.InteractionHand;
-@@ -66,28 +_,16 @@
+@@ -66,28 +_,17 @@
  import net.minecraft.world.effect.MobEffectUtil;
  import net.minecraft.world.effect.MobEffects;
  import net.minecraft.world.entity.ai.Brain;
@@ -74,6 +74,7 @@
 -import net.minecraft.world.entity.animal.Wolf;
  import net.minecraft.world.entity.boss.wither.WitherBoss;
  import net.minecraft.world.entity.item.ItemEntity;
++import net.minecraft.world.entity.player.Inventory;
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.food.FoodProperties;
@@ -104,7 +105,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.material.Fluid;
-@@ -115,14 +_,27 @@
+@@ -115,14 +_,29 @@
  import net.minecraft.world.phys.HitResult;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
@@ -115,6 +116,8 @@
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 +import org.bukkit.event.entity.*;
 +import org.bukkit.event.player.PlayerItemConsumeEvent;
++import org.lwjgl.system.CallbackI;
++import org.magmafoundation.magma.forge.ForgeInventoryHelper;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -773,11 +776,19 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,58 @@
+@@ -1286,32 +_,68 @@
        }
     }
  
 +   //Magma start - rewrite
++   private Inventory forgeCaptures = null;
++
++   protected Inventory getForgeCaptures() {
++      Inventory temp = forgeCaptures;
++      forgeCaptures = null;
++      return temp;
++   }
++
     protected void m_6668_(DamageSource p_21192_) {
        Entity entity = p_21192_.m_7639_();
 -      int i;
@@ -798,13 +809,15 @@
        }
 +      Collection<ItemEntity> drops = captureDrops(null);
 +      this.expToDrop = this.getExpReward();
-+      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
-+         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
-+         CraftEventFactory.callEntityDeathEvent(this, this.drops);
  
 -      this.m_5907_();
 -      this.m_21226_();
++      ForgeInventoryHelper.capturePlayerInventory(this);
++      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
++         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
++         CraftEventFactory.callEntityDeathEvent(this, this.drops);
 +      }
++      forgeCaptures = ForgeInventoryHelper.restorePlayerInventory(this);
     }
 +   //Magma end
  
