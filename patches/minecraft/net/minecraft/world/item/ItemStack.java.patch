@@ -264,7 +264,7 @@
 +         InteractionResult interactionresult = callback.apply(p_41662_);
 +         CompoundTag newData = this.getTagClone();
 +         int newCount = this.m_41613_();
-+         this.m_41764_(oldCount);
++         this.m_41764_(interactionresult == InteractionResult.PASS && newCount != oldCount ? newCount : oldCount); //Magma - special case for mods that return PASS but do change the count
 +         this.setTagClone(oldData);
 +         world.captureBlockStates = false;
 +         if (interactionresult.m_19077_() && world.captureTreeGeneration && world.capturedBlockStates.size() > 0) {
