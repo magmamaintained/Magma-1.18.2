@@ -388,7 +388,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,134 +_,377 @@
+@@ -332,134 +_,379 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -525,8 +525,6 @@
        return new ServerPlayer(this.f_11195_, this.f_11195_.m_129783_(), p_11301_);
     }
 -
--   public ServerPlayer m_11236_(ServerPlayer p_11237_, boolean p_11238_) {
--      this.f_11196_.remove(p_11237_);
 +   //Magma end
 +
 +   //Magma - implementation based on Arclight but modified for our own needs
@@ -647,7 +645,8 @@
 +   }
 +
 +   private @Nullable Location respawn_location;
-+   public ServerPlayer m_11236_(ServerPlayer p_11237_, boolean p_11238_) { //FIXME: players lose enchants on respawn
+    public ServerPlayer m_11236_(ServerPlayer p_11237_, boolean p_11238_) {
+-      this.f_11196_.remove(p_11237_);
 +      respawn_location = null;
 +      p_11237_.m_8127_();
 +      this.removePlayer(p_11237_);
@@ -781,11 +780,14 @@
 +      p_11237_.f_8906_.f_9743_ = serverplayerentity;
 +
 +      serverplayerentity.f_8906_ = p_11237_.f_8906_;
-+      serverplayerentity.m_9015_(p_11237_, p_11238_);
-+      serverplayerentity.m_9158_(p_11237_.m_8963_(), p_11237_.m_8961_(), p_11237_.m_8962_(), p_11237_.m_8964_(), false);
++      serverplayerentity.m_143429_(); //Magma - fix inventory not displaying items while they are there
++
 +      if (!p_11238_) {  // keep inventory here since inventory dropped at ServerPlayer#die
 +         serverplayerentity.m_150109_().m_36006_(p_11237_.m_150109_());
-+      }
++      } //Magma - move up before restoreFrom
++
++      serverplayerentity.m_9015_(p_11237_, p_11238_);
++      serverplayerentity.m_9158_(p_11237_.m_8963_(), p_11237_.m_8961_(), p_11237_.m_8962_(), p_11237_.m_8964_(), false);
 +      serverplayerentity.m_20234_(p_11237_.m_142049_());
 +      serverplayerentity.m_36163_(p_11237_.m_5737_());
 +
@@ -820,7 +822,6 @@
 +         this.playersByName.put(serverplayerentity.m_6302_().toLowerCase(java.util.Locale.ROOT), serverplayerentity); // Spigot
 +         this.f_11197_.put(serverplayerentity.m_142081_(), serverplayerentity);
 +      }
-+      serverplayerentity.m_143429_();
 +      serverplayerentity.m_21153_(serverplayerentity.m_21223_());
 +      net.minecraftforge.event.ForgeEventFactory.firePlayerRespawnEvent(serverplayerentity, p_11238_);
        if (flag2) {

@@ -88,7 +88,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.monster.Monster;
-@@ -99,19 +_,11 @@
+@@ -99,18 +_,9 @@
  import net.minecraft.world.entity.player.Inventory;
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -108,10 +108,8 @@
 +import net.minecraft.world.inventory.*;
 +import net.minecraft.world.item.*;
  import net.minecraft.world.item.crafting.Recipe;
-+import net.minecraft.world.item.enchantment.EnchantmentHelper;
  import net.minecraft.world.item.trading.MerchantOffers;
  import net.minecraft.world.level.ChunkPos;
- import net.minecraft.world.level.GameRules;
 @@ -119,6 +_,7 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.biome.BiomeManager;
@@ -120,7 +118,7 @@
  import net.minecraft.world.level.block.HorizontalDirectionalBlock;
  import net.minecraft.world.level.block.NetherPortalBlock;
  import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -132,10 +_,30 @@
+@@ -132,10 +_,28 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Score;
@@ -135,10 +133,8 @@
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftPortalEvent;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftDimensionUtil;
-+import org.bukkit.event.entity.PlayerDeathEvent;
 +import org.bukkit.event.player.*;
 +import org.bukkit.inventory.MainHand;
 +import org.magmafoundation.magma.helpers.InventoryViewHelper;
@@ -737,7 +733,7 @@
           }
        }
  
-@@ -535,36 +_,58 @@
+@@ -535,36 +_,65 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -764,9 +760,16 @@
 +      }
 +      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_);
 +
++      if(!this.m_5833_()){
++         this.m_6668_(p_9035_);
++      }
++
++      List<org.bukkit.inventory.ItemStack> capturedDrops = this.drops;
++      this.drops.clear();
++
 +      Component defaultMessage = this.m_21231_().m_19293_();
 +      String deathmessage = defaultMessage.getString();
-+      org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, this.drops, deathmessage, keepInventory);
++      org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, capturedDrops, deathmessage, keepInventory);
 +      // SPIGOT-943 - only call if they have an inventory open
 +      if (this.f_36096_ != this.f_36095_) {
 +         this.m_9230_();
@@ -815,23 +818,20 @@
           }
        } else {
           this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
-@@ -575,11 +_,24 @@
+@@ -575,11 +_,20 @@
           this.m_9215_();
        }
  
 -      if (!this.m_5833_()) {
-+      if(!this.m_5833_()){
-          this.m_6668_(p_9035_);
-       }
- 
--      this.m_36329_().m_83427_(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
+-         this.m_6668_(p_9035_);
 +      // SPIGOT-5478 must be called manually now
 +      this.m_21226_();
 +      // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
 +      if (!event.getKeepInventory()) {
 +         this.m_150109_().m_6211_();
-+      }
-+
+       }
+ 
+-      this.m_36329_().m_83427_(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
 +      //      this.getWorldScoreboard().forAllObjectives(ScoreCriteria.DEATH_COUNT, this.getScoreboardName(), Score::incrementScore);
 +      this.m_9213_(this); // Remove spectated target
 +      // CraftBukkit end
@@ -1687,7 +1687,7 @@
        }
  
     }
-@@ -1067,129 +_,148 @@
+@@ -1067,129 +_,154 @@
  
     public void m_9233_() {
        this.f_8917_ = -1.0E8F;
@@ -1760,6 +1760,12 @@
 -         this.m_36397_(p_9016_.m_36344_());
 +         this.m_36397_( p_9016_.m_36344_() );
        }
++
++      Inventory forgeCaptures = p_9016_.getForgeCaptures();
++      if (forgeCaptures != null)
++         forgeCaptures.f_35974_.stream().filter(item -> !item.m_41619_()).forEach(item -> this.m_150109_().m_36054_(item));
++
++      this.m_150109_().m_6596_();
  
        this.f_36081_ = p_9016_.f_36081_;
        this.f_36094_ = p_9016_.f_36094_;
