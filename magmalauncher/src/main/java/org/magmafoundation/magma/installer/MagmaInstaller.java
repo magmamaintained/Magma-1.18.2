@@ -58,6 +58,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
     public MagmaInstaller() throws Exception {
         new Dependencies(mcVer, mcpVer, minecraft_server);
         install();
+        unmute(); //just to be sure ;)
     }
 
     //Inspired by the Mohist 1.19 installer
@@ -84,7 +85,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
             if (minecraft_server.exists()) {
                 mute();
-                System.out.println("Extracting bundled resources...");
+                System.out.println("[STEP ONE] Extracting bundled resources...");
                 launchService("net.minecraftforge.installertools.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", LIB_PATH, "--libraries")),
                         stringToUrl(loadedLibsPaths));
@@ -93,14 +94,16 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                 deleteLib("com/mojang/brigadier");
                 //Delete datafixers, we have our own implementation
                 deleteLib("com/mojang/datafixerupper");
+                System.out.println();
                 unmute();
                 pb.step();
                 if (!mc_unpacked.exists()) {
                     mute();
-                    System.out.println("Extracting jars...");
+                    System.out.println("[STEP TWO] Extracting jars...");
                     launchService("net.minecraftforge.installertools.ConsoleTool",
                             new ArrayList<>(Arrays.asList("--task", "BUNDLER_EXTRACT", "--input", minecraft_server.getAbsolutePath(), "--output", mc_unpacked.getAbsolutePath(), "--jar-only")),
                             stringToUrl(loadedLibsPaths));
+                    System.out.println();
                     unmute();
                 }
                 pb.step();
@@ -112,10 +115,11 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             if (mcpZip.exists()) {
                 if (!mcpTxt.exists()) {
                     mute();
-                    System.out.println("Getting mappings...");
+                    System.out.println("[STEP THREE] Getting mappings...");
                     launchService("net.minecraftforge.installertools.ConsoleTool",
                             new ArrayList<>(Arrays.asList("--task", "MCP_DATA", "--input", mcpZip.getAbsolutePath(), "--output", mcpTxt.getAbsolutePath(), "--key", "mappings")),
                             stringToUrl(loadedLibsPaths));
+                    System.out.println();
                     unmute();
                 }
             } else {
@@ -130,43 +134,47 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
             if (!mojmap.exists()) {
                 mute();
-                System.out.println("Downloading mojang mappings...");
+                System.out.println("[STEP FOUR] Downloading mojang mappings...");
                 launchService("net.minecraftforge.installertools.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--task", "DOWNLOAD_MOJMAPS", "--version", mcVer, "--side", "server", "--output", mojmap.getAbsolutePath())),
                         stringToUrl(loadedLibsPaths));
+                System.out.println();
                 unmute();
             }
             pb.step();
 
             if (!mergedMapping.exists()) {
                 mute();
-                System.out.println("Merging mappings...");
+                System.out.println("[STEP FIVE] Merging mappings...");
                 launchService("net.minecraftforge.installertools.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--task", "MERGE_MAPPING", "--left", mcpTxt.getAbsolutePath(), "--right", mojmap.getAbsolutePath(), "--output", mergedMapping.getAbsolutePath(), "--classes", "--reverse-right")),
                         stringToUrl(loadedLibsPaths));
+                System.out.println();
                 unmute();
             }
             pb.step();
 
             if (!slim.exists() || !extra.exists()) {
                 mute();
-                System.out.println("Splitting server jar...");
+                System.out.println("[STEP SIX] Splitting server jar...");
                 launchService("net.minecraftforge.jarsplitter.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--input", minecraft_server.getAbsolutePath(), "--slim", slim.getAbsolutePath(), "--extra", extra.getAbsolutePath(), "--srg", mergedMapping.getAbsolutePath())),
                         stringToUrl(loadedLibsPaths));
                 launchService("net.minecraftforge.jarsplitter.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--input", mc_unpacked.getAbsolutePath(), "--slim", slim.getAbsolutePath(), "--extra", extra.getAbsolutePath(), "--srg", mergedMapping.getAbsolutePath())),
                         stringToUrl(loadedLibsPaths));
+                System.out.println();
                 unmute();
             }
             pb.step();
 
             if (!srg.exists()) {
                 mute();
-                System.out.println("Creating srg jar file...");
+                System.out.println("[STEP SEVEN] Creating srg jar file...");
                 launchService("net.minecraftforge.fart.Main",
                         new ArrayList<>(Arrays.asList("--input", slim.getAbsolutePath(), "--output", srg.getAbsolutePath(), "--names", mergedMapping.getAbsolutePath(), "--ann-fix", "--ids-fix", "--src-fix", "--record-fix")),
                         stringToUrl(loadedLibsPaths));
+                System.out.println();
                 unmute();
             }
             pb.step();
@@ -190,7 +198,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                     || !storedServerMD5.equals(serverMD5)
                     || !storedMagmaMD5.equals(magmaMD5)) {
                 mute();
-                System.out.println("Patching forge jar...");
+                System.out.println("[STEP EIGHT] Patching forge jar...");
                 launchService("net.minecraftforge.binarypatcher.ConsoleTool",
                         new ArrayList<>(Arrays.asList("--clean", srg.getAbsolutePath(), "--output", serverJar.getAbsolutePath(), "--apply", lzma.getAbsolutePath())),
                         stringToUrl(new ArrayList<>(Arrays.asList(
@@ -261,8 +269,20 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             if (lines.size() >= 2 && magmaMD5.equals(lines.get(1))) //Latest patch is installed
                 return false;
             else {
-                System.out.println("Deleting libraries...");
-                deleteFolder(new File(LIB_PATH));
+                System.out.println("Update found! Magma will now update itself...");
+                //extracted libs
+                deleteFolder(new File(LIB_PATH + "net/minecraftforge/"));
+                deleteFolder(new File(LIB_PATH + "net/minecraft/server/"));
+
+                //install info
+                deleteFolder(INSTALL_DIR);
+
+                //mcp
+                deleteFolder(new File(LIB_PATH + "de/oceanlabs/mcp/"));
+
+                //libraries in path
+                deleteFolder(new File(LIB_PATH + "cpw/mods"));
+                deleteFolder(new File(LIB_PATH + "org/ow2/asm/"));
                 return true;
             }
         }
@@ -311,7 +331,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         private String mcpVersion;
         private File minecraft_server;
 
-        public Dependencies(String mcVersion, String mcpVersion, File minecraft_server) throws IOException {
+        public Dependencies(String mcVersion, String mcpVersion, File minecraft_server) throws Exception {
             this.mcVersion = mcVersion;
             this.mcpVersion = mcpVersion;
             this.minecraft_server = minecraft_server;
@@ -319,7 +339,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             downloadLibraries();
         }
 
-        public void downloadLibraries() throws IOException {
+        public void downloadLibraries() throws Exception {
             DependencyPathProvider dependencyPathProvider = new CleanupPathProvider() {
 
                 public final Path baseDirPath = JarTool.getJarDir().toPath();
@@ -342,7 +362,6 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             DependencyManager manager = new DependencyManager(dependencyPathProvider);
             manager.loadFromResource(new URL("jar:file:" + JarTool.getJarPath() + "!/data/magma_libraries.txt"));
 
-            Executor executor = Executors.newCachedThreadPool();
             List<Repository> standardRepositories = new ArrayList<>();
             standardRepositories.add(new StandardRepository("https://maven.minecraftforge.net/"));
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2/"));
@@ -351,26 +370,30 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
             List<Dependency> dependencies = manager.getDependencies();
 
-            if (!MagmaStart.postInstall) {
-                ProgressBarBuilder builder = new ProgressBarBuilder()
-                        .setTaskName("Loading libraries...")
-                        .setStyle(ProgressBarStyle.ASCII)
-                        .setUpdateIntervalMillis(100)
-                        .setInitialMax(dependencies.size());
+            ProgressBarBuilder builder = new ProgressBarBuilder()
+                    .setTaskName("Loading libraries...")
+                    .setStyle(ProgressBarStyle.ASCII)
+                    .setUpdateIntervalMillis(100)
+                    .setInitialMax(dependencies.size());
 
-                //AtomicReference<Throwable> error = new AtomicReference<>(null);
-                ProgressBar.wrap(dependencies.stream(), builder).forEach(dep -> {
-                    try {
-                        LibHelper.downloadDependency(manager, dep, standardRepositories);
-                        LibHelper.loadDependency(manager, dep, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath()));
-                    } catch (IOException | NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            } else {
-                manager.downloadAll(executor, standardRepositories);
-                manager.loadAll(executor, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath()));
-            }
+            mute();
+            System.out.println("[INITIAL SETUP] Loading libraries...");
+            unmute();
+
+            //AtomicReference<Throwable> error = new AtomicReference<>(null);
+            ProgressBar.wrap(dependencies.stream(), builder).forEach(dep -> {
+                try {
+                    mute();
+                    System.out.println("Considering library " + dep.getFileName() + "...");
+                    LibHelper.downloadDependency(manager, dep, standardRepositories);
+                    LibHelper.loadDependency(manager, dep, path -> loadedLibsPaths.add(path.toFile().getAbsolutePath()));
+                    System.out.println("Library " + dep.getFileName() + " loaded!");
+                    unmute();
+                } catch (Exception e) {
+                    unmute();
+                    throw new RuntimeException("Something went wrong while trying to load dependencies", e);
+                }
+            });
 
             downloadMcp(mcVersion, mcpVersion);
             downloadMinecraftServer(minecraft_server);

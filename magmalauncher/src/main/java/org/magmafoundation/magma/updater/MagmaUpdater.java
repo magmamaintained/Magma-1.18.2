@@ -88,7 +88,7 @@ public class MagmaUpdater {
 
     public static void checkForUpdates() throws IOException {
         Path path = Paths.get("magma.yml");
-        if(Files.exists(path) && !MagmaStart.postInstall) {
+        if(Files.exists(path)) {
             try (InputStream stream = Files.newInputStream(path)) {
                 Yaml yaml = new Yaml();
                 Map<String, Object> data = yaml.load(stream);
