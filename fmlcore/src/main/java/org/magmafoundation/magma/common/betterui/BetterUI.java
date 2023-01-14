@@ -66,30 +66,34 @@ public class BetterUI {
 
             int wrong = 0;
 
-            while (true) {
-                BufferedReader input = new BufferedReader( new InputStreamReader( System.in ) );
-                String answer = input.readLine();
-                switch (answer.toLowerCase()) {
-                    case "yes":
-                        file.delete();
-                        file.createNewFile();
-                        try (FileWriter writer = new FileWriter(file)) {
-                            writer.write("eula=true");
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
+                while (true) {
+                    String answer = input.readLine();
+                    switch (answer.toLowerCase()) {
+                        case "y", "yes" -> {
+                            file.delete();
+                            file.createNewFile();
+                            try (FileWriter writer = new FileWriter(file)) {
+                                writer.write("eula=true");
+                            }
+                            return true;
                         }
-                        return true;
-                    case "no":
-                        System.err.println("You must accept the EULA to continue. Exiting.");
-                        return false;
-                    default:
-                        if (wrong++ >= 2) {
-                            System.err.println("You have typed the wrong answer too many times. Exiting.");
+                        case "n", "no" -> {
+                            System.err.println("You must accept the EULA to continue. Exiting.");
                             return false;
                         }
-                        System.out.println("Please type 'yes' or 'no'.");
-                        System.out.print("Do you accept? (yes/no): ");
-                        break;
+                        default -> {
+                            if (wrong++ >= 2) {
+                                System.err.println("You have typed the wrong answer too many times. Exiting.");
+                                return false;
+                            }
+                            System.out.println("Please type 'yes' or 'no'.");
+                            System.out.print("Do you accept? (yes/no): ");
+                        }
+                    }
                 }
             }
+
         } else return true;
     }
 

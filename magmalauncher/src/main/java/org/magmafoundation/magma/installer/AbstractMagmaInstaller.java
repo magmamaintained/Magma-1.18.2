@@ -25,7 +25,8 @@ import java.util.jar.JarFile;
 public abstract class AbstractMagmaInstaller {
 
     public static final String LIB_PATH = new File(JarTool.getJarDir(), MagmaConstants.INSTALLER_LIBRARIES_FOLDER).getAbsolutePath() + "/";
-    public static final File INSTALL_INFO = new File(LIB_PATH + "org/magma/install/installInfo");
+    public static final File INSTALL_DIR = new File(LIB_PATH + "org/magma/install/");
+    public static final File INSTALL_INFO = new File(INSTALL_DIR.getAbsolutePath() + "/installInfo");
 
     private PrintStream origin = System.out;
     public String forgeVer;
@@ -49,7 +50,9 @@ public abstract class AbstractMagmaInstaller {
 
     public File minecraft_server;
 
-    protected AbstractMagmaInstaller() {
+    private PrintStream installerLog;
+
+    protected AbstractMagmaInstaller() throws IOException {
         this.forgeVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[1];
         this.mcpVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[3];
         this.mcVer = MagmaConstants.FORGE_VERSION_FULL.split("-")[0];
@@ -71,6 +74,17 @@ public abstract class AbstractMagmaInstaller {
         this.mcpTxt = new File(mcpStart + "-mappings.txt");
 
         this.minecraft_server = new File(LIB_PATH + "minecraft_server." + mcVer + ".jar");
+
+        File out = new File("logs/installer.log");
+        if(!out.exists()) {
+            out.getParentFile().mkdirs();
+            out.createNewFile();
+        } else {
+            out.delete();
+            out.createNewFile();
+        }
+
+        this.installerLog = new PrintStream(new BufferedOutputStream(new FileOutputStream(out)));
     }
 
     protected void launchService(String mainClass, List<String> args, List<URL> classPath) throws Exception {
@@ -96,13 +110,8 @@ public abstract class AbstractMagmaInstaller {
     /*
     THIS IS TO NOT SPAM CONSOLE WHEN IT WILL PRINT A LOT OF THINGS
      */
-    protected void mute() throws Exception {
-        File out = new File("logs/installer.log");
-        if(!out.exists()) {
-            out.getParentFile().mkdirs();
-            out.createNewFile();
-        }
-        System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream(out))));
+    protected void mute() {
+        System.setOut(installerLog);
     }
 
     protected void unmute() {
