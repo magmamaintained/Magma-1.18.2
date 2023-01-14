@@ -12,6 +12,7 @@ import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_18_R2.CraftStatistic;
+import org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData;
 import org.bukkit.craftbukkit.v1_18_R2.enchantments.CraftEnchantment;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionUtil;
@@ -105,8 +106,12 @@ public class ForgeInject {
             var block = entry.getValue();
             var item = ForgeRegistries.ITEMS.getValue(location);
             try {
-                var material = Material.addMaterial(enumName, ordinal,
-                        CraftNamespacedKey.fromMinecraft(location), true, item != null && item != Items.AIR);
+            	Class<?> match = CraftBlockData.getClosestBlockDataClass(block.getClass());
+            	Class<?> blockDataClass = match == null ? null : match.getInterfaces()[0];
+                var material = blockDataClass == null ? Material.addMaterial(enumName, ordinal,
+                        CraftNamespacedKey.fromMinecraft(location), true, item != null && item != Items.AIR)
+                		: Material.addMaterial(enumName, ordinal, blockDataClass,
+                                CraftNamespacedKey.fromMinecraft(location), true, item != null && item != Items.AIR);
                 if (material == null) {
                     Magma.LOGGER.warn("Could not inject block into Bukkit: " + enumName);
                     continue;
@@ -117,6 +122,9 @@ public class ForgeInject {
                 CraftMagicNumbers.BLOCK_MATERIAL.put(block, material);
                 CraftMagicNumbers.MATERIAL_BLOCK.put(material, block);
                 debug("Injecting Forge Blocks into Bukkit: " + material.name());
+				if (blockDataClass != null) {
+                	debug("Assigning block data " + blockDataClass + " to " + material.name() + " because it extends " + block.getClass());
+                }
             } catch (Throwable e) {
                 error("Could not inject block into Bukkit: " + enumName + ". " + e.getMessage());
             }
