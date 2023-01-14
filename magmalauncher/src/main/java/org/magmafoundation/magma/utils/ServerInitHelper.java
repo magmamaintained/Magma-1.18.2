@@ -43,7 +43,7 @@ public class ServerInitHelper {
         String libsPath = JarTool.getJarDir() + File.separator + MagmaConstants.INSTALLER_LIBRARIES_FOLDER + File.separator;
         StringBuilder modulePath = new StringBuilder();
 
-        args.parallelStream().parallel().forEach(arg -> {
+        args.parallelStream().forEach(arg -> {
             if(arg.startsWith("-p ")) {
                 MODULE_PATH = arg.substring(2).trim();
                 String[] split = MODULE_PATH.split(File.pathSeparator);
