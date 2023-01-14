@@ -701,12 +701,12 @@
                    this.m_36222_(Stats.f_12995_, l);
 -                  this.m_36399_(0.0F * (float)l * 0.01F);
 +                  this.setExhaustionReason(EntityExhaustionEvent.ExhaustionReason.CROUCH);
-+                  this.m_36399_(f_19853_.spigotConfig.sprintMultiplier * (float)l * 0.01F);
++                  this.m_36399_(f_19853_.spigotConfig.otherMultiplier * (float)l * 0.01F);
                 } else {
                    this.m_36222_(Stats.f_12994_, l);
 -                  this.m_36399_(0.0F * (float)l * 0.01F);
 +                  this.setExhaustionReason(EntityExhaustionEvent.ExhaustionReason.WALK);
-+                  this.m_36399_(f_19853_.spigotConfig.sprintMultiplier * (float)l * 0.01F);
++                  this.m_36399_(f_19853_.spigotConfig.otherMultiplier * (float)l * 0.01F);
                 }
              }
           } else if (this.m_21255_()) {
