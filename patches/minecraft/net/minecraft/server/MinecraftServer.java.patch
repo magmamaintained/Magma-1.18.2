@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2015 @@
+@@ -144,1693 +_,2099 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -145,6 +145,7 @@
  import net.minecraft.world.level.storage.loot.PredicateManager;
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
++import net.minecraftforge.common.MinecraftForge;
  import org.apache.commons.lang3.Validate;
 +import org.bukkit.Bukkit;
 +import org.bukkit.command.CommandSender;
@@ -152,6 +153,9 @@
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboardManager;
 +import org.bukkit.event.server.ServerLoadEvent;
++import org.bukkit.event.world.WorldInitEvent;
++import org.bukkit.event.world.WorldLoadEvent;
++import org.bukkit.plugin.PluginLoadOrder;
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.Metrics;
 +import org.magmafoundation.magma.forge.ForgeInject;
@@ -621,7 +625,6 @@
 +                f_129750_.warn("Failed to stop JFR profiling", throwable);
 +            }
 +        }
-+
 +    }
 +
 +    protected void m_7044_() {
@@ -648,7 +651,7 @@
 +
 +        ServerLevel serverlevel = new ServerLevel(this, this.f_129738_, this.f_129744_, serverleveldata, Level.f_46428_, holder, p_129816_, chunkgenerator, flag, j, list, true);
 +        ForgeInject.addForgeEnvironment(this.f_129749_.m_5961_().m_204655_());
-+        this.f_129762_.put(Level.f_46428_, serverlevel);
++        this.f_129762_.put(Level.f_46428_, bukkitInit(serverlevel)); //Magma - bukkitInit
 +        DimensionDataStorage dimensiondatastorage = serverlevel.m_8895_();
 +        this.m_129841_(dimensiondatastorage);
 +        this.f_129732_ = new CommandStorage(dimensiondatastorage);
@@ -2160,21 +2163,101 @@
 +                DerivedLevelData derivedleveldata = new DerivedLevelData(this.f_129749_, serverleveldata);
 +                ServerLevel serverlevel1 = new ServerLevel(this, this.f_129738_, this.f_129744_, derivedleveldata, resourcekey1, holder1, p_129816_, chunkgenerator1, flag, j, ImmutableList.of(), false);
 +                worldborder.m_61929_(new BorderChangeListener.DelegateBorderChangeListener(serverlevel1.m_6857_()));
-+                this.f_129762_.put(resourcekey1, serverlevel1);
-+                if (this.server.scoreboardManager == null) {
-+                    this.server.scoreboardManager = new CraftScoreboardManager(this, serverlevel1.m_6188_());
-+                }
++                this.f_129762_.put(resourcekey1, bukkitInit(serverlevel1)); //Magma - bukkitInit
 +                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(f_129762_.get(resourcekey)));
 +            }
 +        }
 +
-+        // CraftBukkit start
-+        this.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
-+        this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
-+        // CraftBukkit end
 +        worldborder.m_61931_(serverleveldata.m_5813_());
-+        this.f_129755_.acceptConnections(); // CraftBukkit
++
++        // CraftBukkit start
++        this.server.enablePlugins(PluginLoadOrder.POSTWORLD);
++        this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
++        this.f_129755_.acceptConnections();
++        // CraftBukkit end
 +    }
++
++    private ServerLevel bukkitInit(ServerLevel level) {
++        CraftScoreboardManager manager = ((CraftServer) Bukkit.getServer()).scoreboardManager;
++        if (manager == null) {
++            manager = new CraftScoreboardManager((MinecraftServer) (Object) this, level.m_6188_());
++            ((CraftServer) Bukkit.getServer()).scoreboardManager = manager;
++        }
++
++        org.bukkit.generator.ChunkGenerator generator = level.getWorld().getGenerator();
++        if (generator != null)
++            level.getWorld().getPopulators().addAll(generator.getDefaultPopulators(level.getWorld()));
++        Bukkit.getPluginManager().callEvent(new WorldInitEvent(level.getWorld()));
++        return level;
++    }
++
++    //Magma start - bukkit methods
++    public void initWorld(ServerLevel level, PrimaryLevelData worldData, PrimaryLevelData worldData1, WorldGenSettings worldGenSettings) {
++        boolean flag = worldGenSettings.m_64668_();
++        org.bukkit.generator.ChunkGenerator generator = level.getWorld().getGenerator();
++        if (generator != null)
++            level.getWorld().getPopulators().addAll(generator.getDefaultPopulators(level.getWorld()));
++
++        WorldBorder worldborder = level.m_6857_();
++        worldborder.m_61931_(worldData1.m_5813_());
++        if (!worldData1.m_6535_()) {
++            try {
++                m_177896_(level, worldData1, worldGenSettings.m_64660_(), flag);
++                worldData1.m_5555_(true);
++                if (flag)
++                    this.m_129847_(worldData);
++            } catch (Throwable throwable1) {
++                CrashReport crashreport = CrashReport.m_127521_(throwable1, "Exception initializing level");
++
++                try {
++                    level.m_6026_(crashreport);
++                } catch (Throwable ignored) {}
++
++                throw new ReportedException(crashreport);
++            }
++
++            worldData1.m_5555_(true);
++        }
++    }
++
++    public void prepareLevels(ChunkProgressListener progressListener, ServerLevel internal) {
++        this.markWorldsDirty();
++        MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(internal));
++        if (!internal.getWorld().getKeepSpawnInMemory())
++            return;
++        this.forceTicks = true;
++        f_129750_.info("Preparing start region for dimension {}", internal.m_46472_().m_135782_());
++        BlockPos blockpos = internal.m_8900_();
++        progressListener.m_7647_(new ChunkPos(blockpos));
++        ServerChunkCache serverchunkprovider = internal.m_7726_();
++        serverchunkprovider.m_7827_().m_9310_(500);
++        this.f_129726_ = Util.m_137550_();
++        serverchunkprovider.m_8387_(TicketType.f_9442_, new ChunkPos(blockpos), 11, Unit.INSTANCE);
++
++        while (serverchunkprovider.m_8427_() < 441) {
++            this.executeModerately();
++        }
++
++        this.executeModerately();
++
++        ForcedChunksSavedData forcedchunkssavedata = internal.m_8895_().m_164858_(ForcedChunksSavedData::m_151483_, "chunks");
++        if (forcedchunkssavedata != null) {
++            LongIterator longiterator = forcedchunkssavedata.m_46116_().iterator();
++
++            while (longiterator.hasNext()) {
++                long i = longiterator.nextLong();
++                ChunkPos chunkpos = new ChunkPos(i);
++                internal.m_7726_().m_6692_(chunkpos, true);
++            }
++            net.minecraftforge.common.world.ForgeChunkManager.reinstatePersistentChunks(internal, forcedchunkssavedata);
++        }
++        this.executeModerately();
++        progressListener.m_7646_();
++        serverchunkprovider.m_7827_().m_9310_(5);
++        internal.m_46703_(this.m_7004_(), this.m_6998_());
++        this.forceTicks = false;
++    }
++    // Magma end
 +
 +    @Override
 +    public CommandSender getBukkitSender(CommandSourceStack wrapper) {
@@ -2241,6 +2324,7 @@
 +
 +    public void m_129940_(ChunkProgressListener p_129941_) {
 +        ServerLevel serverlevel = this.m_129783_();
++        this.forceTicks = true; // CraftBukkit
 +        f_129750_.info("Preparing start region for dimension {}", (Object) serverlevel.m_46472_().m_135782_());
 +        BlockPos blockpos = serverlevel.m_8900_();
 +        p_129941_.m_7647_(new ChunkPos(blockpos));
@@ -2249,34 +2333,35 @@
 +        this.f_129726_ = Util.m_137550_();
 +        serverchunkcache.m_8387_(TicketType.f_9442_, new ChunkPos(blockpos), 11, Unit.INSTANCE);
 +
-+        while (serverchunkcache.m_8427_() != 441) {
-+            this.f_129726_ = Util.m_137550_() + 10L;
-+            this.m_130012_();
++        while (serverchunkcache.m_8427_() < 441) {
++            this.executeModerately();
 +        }
 +
-+        this.f_129726_ = Util.m_137550_() + 10L;
-+        this.m_130012_();
++        this.executeModerately();
 +
 +        for (ServerLevel serverlevel1 : this.f_129762_.values()) {
-+            serverlevel1.paperConfig.removeOldValues(); // Paper - callback for clearing old config options, after any migrations have taken place
-+            ForcedChunksSavedData forcedchunkssaveddata = serverlevel1.m_8895_().m_164858_(ForcedChunksSavedData::m_151483_, "chunks");
-+            if (forcedchunkssaveddata != null) {
-+                LongIterator longiterator = forcedchunkssaveddata.m_46116_().iterator();
++            if (serverlevel1.getWorld().getKeepSpawnInMemory()) {
++                serverlevel1.paperConfig.removeOldValues(); // Paper - callback for clearing old config options, after any migrations have taken place
++                ForcedChunksSavedData forcedchunkssaveddata = serverlevel1.m_8895_().m_164858_(ForcedChunksSavedData::m_151483_, "chunks");
++                if (forcedchunkssaveddata != null) {
++                    LongIterator longiterator = forcedchunkssaveddata.m_46116_().iterator();
 +
-+                while (longiterator.hasNext()) {
-+                    long i = longiterator.nextLong();
-+                    ChunkPos chunkpos = new ChunkPos(i);
-+                    serverlevel1.m_7726_().m_6692_(chunkpos, true);
++                    while (longiterator.hasNext()) {
++                        long i = longiterator.nextLong();
++                        ChunkPos chunkpos = new ChunkPos(i);
++                        serverlevel1.m_7726_().m_6692_(chunkpos, true);
++                    }
++                    net.minecraftforge.common.world.ForgeChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
 +                }
-+                net.minecraftforge.common.world.ForgeChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
 +            }
++            Bukkit.getPluginManager().callEvent(new WorldLoadEvent(serverlevel1.getWorld())); // CraftBukkit
 +        }
 +
-+        this.f_129726_ = Util.m_137550_() + 10L;
-+        this.m_130012_();
++        this.executeModerately();
 +        p_129941_.m_7646_();
 +        serverchunkcache.m_7827_().m_9310_(5);
 +        this.m_129962_();
++        this.forceTicks = false; // CraftBukkit
 +    }
 +
 +    protected void m_130007_() {
@@ -2605,15 +2690,22 @@
 +    }
 +
 +    private boolean m_129960_() {
-+        // CraftBukkit start
-+        return this.forceTicks || this.m_18767_() || Util.m_137550_() < (this.f_129728_ ? this.f_129727_ : this.f_129726_);
++        if (this.forceTicks)
++            return true;
++        return this.m_18767_() || Util.m_137550_() < (this.f_129728_ ? this.f_129727_ : this.f_129726_);
 +    }
 +
 +    private void executeModerately() {
 +        this.m_18699_();
++        this.drainQueuedTasks();
 +        java.util.concurrent.locks.LockSupport.parkNanos("executing tasks", 1000L);
 +    }
-+    // CraftBukkit end
++
++    public void drainQueuedTasks() {
++        while (!processQueue.isEmpty()) {
++            processQueue.remove().run();
++        }
++    }
 +
 +    protected void m_130012_() {
 +        this.m_18699_();
@@ -3812,12 +3904,4 @@
 +            };
 +        }
 +    }
-+
-+    // Magma Stub
-+    public void initWorld(ServerLevel level, PrimaryLevelData worldData, PrimaryLevelData worldData1, WorldGenSettings worldGenSettings) {
-+    }
-+
-+    public void prepareLevels(ChunkProgressListener progressListener, ServerLevel internal) {
-+    }
-+    // Magma end
  }
