@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -4,18 +_,6 @@
+@@ -4,40 +_,19 @@
  import com.google.common.collect.Lists;
  import com.mojang.datafixers.DataFixer;
  import com.mojang.datafixers.util.Either;
@@ -19,7 +19,11 @@
  import net.minecraft.Util;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.SectionPos;
-@@ -26,18 +_,8 @@
+ import net.minecraft.network.protocol.Packet;
++import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.level.progress.ChunkProgressListener;
+ import net.minecraft.util.VisibleForDebug;
+ import net.minecraft.util.profiling.ProfilerFiller;
  import net.minecraft.util.thread.BlockableEventLoop;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.entity.ai.village.poi.PoiManager;
@@ -294,3 +298,25 @@
     }
  
     public void m_6692_(ChunkPos p_8400_, boolean p_8401_) {
+@@ -524,11 +_,16 @@
+       }
+ 
+       public boolean m_7245_() {
+-         if (ServerChunkCache.this.m_8489_()) {
+-            return true;
+-         } else {
+-            ServerChunkCache.this.f_8331_.m_9409_();
+-            return super.m_7245_();
++         try {
++            if (ServerChunkCache.this.m_8489_()) {
++               return true;
++            } else {
++               ServerChunkCache.this.f_8331_.m_9409_();
++               return super.m_7245_();
++            }
++         } finally {
++            ServerChunkCache.this.f_8325_.callbackExecutor.run();
++            MinecraftServer.getServerInstance().drainQueuedTasks();
+          }
+       }
+    }
