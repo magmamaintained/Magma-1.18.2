@@ -345,7 +345,7 @@
 +            this.init_levelName = Strings.EMPTY;
 +        }
 +        this.spigotConfig = new org.spigotmc.SpigotWorldConfig(init_levelName); // Spigot
-+        this.paperConfig = new PaperWorldConfig(((ServerLevelData) p_204149_).m_5462_(), this.spigotConfig); // Paper
++        this.paperConfig = new PaperWorldConfig(init_levelName, this.spigotConfig); // Paper
 +        //Magma end
 +        // CraftBukkit Ticks things
 +        for (SpawnCategory spawnCategory : SpawnCategory.values()) {
