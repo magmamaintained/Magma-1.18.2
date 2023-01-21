@@ -4,10 +4,12 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.util.Strings;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.magmafoundation.magma.helpers.ConfigHelper;
 import org.spigotmc.SpigotWorldConfig;
 
-import static com.destroystokyo.paper.youcandfindpaper.PaperConfig.log;
 import static com.destroystokyo.paper.youcandfindpaper.PaperConfig.saveConfig;
 
 public class PaperWorldConfig {
@@ -17,17 +19,35 @@ public class PaperWorldConfig {
    private YamlConfiguration config;
    private boolean verbose;
 
+   public boolean dummy = false; //Magma
+   private boolean alreadyRegistered; //Magma
+
    public PaperWorldConfig(String worldName, SpigotWorldConfig spigotConfig) {
       this.worldName = worldName;
       this.spigotConfig = spigotConfig;
       this.config = PaperConfig.config;
+
+      if (Strings.isBlank(worldName))
+         dummy = true; //Magma
+
+      alreadyRegistered = ConfigHelper.isPaperConfigAlreadyRegistered(worldName); //Magma
+
       init();
    }
 
    public void init() {
       this.config = PaperConfig.config; // grab updated reference
+      this.verbose = config.getBoolean("verbose", true); //Magma
       log("-------- World Settings For [" + worldName + "] --------");
       PaperConfig.readConfig(PaperWorldConfig.class, this);
+   }
+
+   private void log(String s)
+   {
+      if ( verbose && !dummy && !alreadyRegistered ) //Magma
+      {
+         Bukkit.getLogger().info( s );
+      }
    }
 
    private void set(String path, Object val) {
