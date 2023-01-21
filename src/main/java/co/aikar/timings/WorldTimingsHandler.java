@@ -58,8 +58,8 @@ public class WorldTimingsHandler {
 
    public final Timing miscMobSpawning;
 
-   public WorldTimingsHandler(Level server) {
-      String name = ((ServerLevelData) server.getLevelData()).getLevelName() + " - ";
+   public WorldTimingsHandler(String levelName) {
+      String name = levelName + " - ";
 
       mobSpawn = Timings.ofSafe(name + "mobSpawn");
       doChunkUnload = Timings.ofSafe(name + "doChunkUnload");
