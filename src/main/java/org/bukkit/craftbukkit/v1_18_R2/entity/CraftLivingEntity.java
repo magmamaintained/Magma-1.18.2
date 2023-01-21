@@ -444,11 +444,6 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
     }
 
     @Override
-    public EntityType getType() {
-        return EntityType.UNKNOWN;
-    }
-
-    @Override
     public boolean hasLineOfSight(Entity other) {
         Preconditions.checkState(!getHandle().generation, "Cannot check line of sight during world generation");
 

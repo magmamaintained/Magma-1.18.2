@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Slime;
 
 public class CraftSlime extends CraftMob implements Slime {
@@ -28,10 +27,5 @@ public class CraftSlime extends CraftMob implements Slime {
     @Override
     public String toString() {
         return "CraftSlime";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.SLIME;
     }
 }

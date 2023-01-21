@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EnderSignal;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 public class CraftEnderSignal extends CraftEntity implements EnderSignal {
@@ -23,11 +22,6 @@ public class CraftEnderSignal extends CraftEntity implements EnderSignal {
     @Override
     public String toString() {
         return "CraftEnderSignal";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.ENDER_SIGNAL;
     }
 
     @Override

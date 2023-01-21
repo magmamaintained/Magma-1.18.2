@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionUtil;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -47,10 +46,5 @@ public class CraftThrownPotion extends CraftProjectile implements ThrownPotion {
     @Override
     public net.minecraft.world.entity.projectile.ThrownPotion getHandle() {
         return (net.minecraft.world.entity.projectile.ThrownPotion) entity;
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.SPLASH_POTION;
     }
 }

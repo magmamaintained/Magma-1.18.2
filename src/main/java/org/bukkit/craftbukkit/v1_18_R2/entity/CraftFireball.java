@@ -2,7 +2,6 @@ package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.apache.commons.lang3.Validate;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
@@ -67,10 +66,5 @@ public class CraftFireball extends AbstractProjectile implements Fireball {
     @Override
     public String toString() {
         return "CraftFireball";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.UNKNOWN;
     }
 }

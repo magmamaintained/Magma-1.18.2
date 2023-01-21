@@ -47,6 +47,7 @@ import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegist
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftSpawnCategory;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftVector;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.SpawnCategory;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -58,6 +59,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 import org.magmafoundation.magma.craftbukkit.entity.*;
+import org.magmafoundation.magma.forge.ForgeInject;
 
 public abstract class CraftEntity implements org.bukkit.entity.Entity {
     private static PermissibleBase perm;
@@ -67,10 +69,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
     protected Entity entity;
     private EntityDamageEvent lastDamageEvent;
     private final CraftPersistentDataContainer persistentDataContainer = new CraftPersistentDataContainer(DATA_TYPE_REGISTRY);
+    private final EntityType type;
 
     public CraftEntity(final CraftServer server, final Entity entity) {
         this.server = server;
         this.entity = entity;
+        this.type = ForgeInject.getBukkitEntityType(entity);
     }
 
     public static CraftEntity getEntity(CraftServer server, Entity entity) {
@@ -437,6 +441,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         //Magma - instead of throwing an AssertionError we return a custom entity
         return new CraftCustomEntity(server, entity);
         // CHECKSTYLE:ON
+    }
+    
+    @Override
+    public EntityType getType() {
+    	return type;
     }
 
     @Override

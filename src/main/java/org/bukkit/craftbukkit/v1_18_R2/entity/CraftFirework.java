@@ -7,7 +7,6 @@ import net.minecraft.world.item.Items;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 
@@ -42,11 +41,6 @@ public class CraftFirework extends CraftProjectile implements Firework {
     @Override
     public String toString() {
         return "CraftFirework";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.FIREWORK;
     }
 
     @Override
