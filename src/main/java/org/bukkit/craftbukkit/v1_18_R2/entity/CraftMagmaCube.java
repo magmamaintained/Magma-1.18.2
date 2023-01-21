@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.MagmaCube;
 
 public class CraftMagmaCube extends CraftSlime implements MagmaCube {
@@ -18,10 +17,5 @@ public class CraftMagmaCube extends CraftSlime implements MagmaCube {
     @Override
     public String toString() {
         return "CraftMagmaCube";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.MAGMA_CUBE;
     }
 }

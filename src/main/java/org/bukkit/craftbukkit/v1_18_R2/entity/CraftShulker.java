@@ -5,7 +5,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Shulker;
 
 public class CraftShulker extends CraftGolem implements Shulker {
@@ -17,11 +16,6 @@ public class CraftShulker extends CraftGolem implements Shulker {
     @Override
     public String toString() {
         return "CraftShulker";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.SHULKER;
     }
 
     @Override

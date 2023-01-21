@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.SpectralArrow;
 
 public class CraftSpectralArrow extends CraftArrow implements SpectralArrow {
@@ -18,11 +17,6 @@ public class CraftSpectralArrow extends CraftArrow implements SpectralArrow {
     @Override
     public String toString() {
         return "CraftSpectralArrow";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.SPECTRAL_ARROW;
     }
 
     @Override

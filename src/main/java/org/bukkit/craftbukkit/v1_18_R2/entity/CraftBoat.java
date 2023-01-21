@@ -3,7 +3,6 @@ package org.bukkit.craftbukkit.v1_18_R2.entity;
 import org.bukkit.TreeSpecies;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.entity.Boat;
-import org.bukkit.entity.EntityType;
 
 public class CraftBoat extends CraftVehicle implements Boat {
 
@@ -73,11 +72,6 @@ public class CraftBoat extends CraftVehicle implements Boat {
     @Override
     public String toString() {
         return "CraftBoat";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.BOAT;
     }
 
     public static TreeSpecies getTreeSpecies(net.minecraft.world.entity.vehicle.Boat.Type boatType) {

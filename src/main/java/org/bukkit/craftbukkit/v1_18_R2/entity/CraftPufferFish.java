@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.PufferFish;
 
 public class CraftPufferFish extends CraftFish implements PufferFish {
@@ -28,10 +27,5 @@ public class CraftPufferFish extends CraftFish implements PufferFish {
     @Override
     public String toString() {
         return "CraftPufferFish";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.PUFFERFISH;
     }
 }

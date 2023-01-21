@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.EvokerFangs;
 import org.bukkit.entity.LivingEntity;
 
@@ -19,11 +18,6 @@ public class CraftEvokerFangs extends CraftEntity implements EvokerFangs {
     @Override
     public String toString() {
         return "CraftEvokerFangs";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.EVOKER_FANGS;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LargeFireball;
 
 public class CraftLargeFireball extends CraftSizedFireball implements LargeFireball {
@@ -23,10 +22,5 @@ public class CraftLargeFireball extends CraftSizedFireball implements LargeFireb
     @Override
     public String toString() {
         return "CraftLargeFireball";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.FIREBALL;
     }
 }

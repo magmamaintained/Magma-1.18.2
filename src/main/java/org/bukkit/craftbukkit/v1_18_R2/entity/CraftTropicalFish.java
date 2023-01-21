@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.DyeColor;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TropicalFish;
 
 public class CraftTropicalFish extends CraftFish implements TropicalFish {
@@ -21,11 +20,6 @@ public class CraftTropicalFish extends CraftFish implements TropicalFish {
     @Override
     public String toString() {
         return "CraftTropicalFish";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.TROPICAL_FISH;
     }
 
     @Override
