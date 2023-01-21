@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Witch;
 
 public class CraftWitch extends CraftRaider implements Witch {
@@ -17,10 +16,5 @@ public class CraftWitch extends CraftRaider implements Witch {
     @Override
     public String toString() {
         return "CraftWitch";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.WITCH;
     }
 }

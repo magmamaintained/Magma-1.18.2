@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Vindicator;
 
 public class CraftVindicator extends CraftIllager implements Vindicator {
@@ -18,11 +17,6 @@ public class CraftVindicator extends CraftIllager implements Vindicator {
     @Override
     public String toString() {
         return "CraftVindicator";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.VINDICATOR;
     }
 
     @Override

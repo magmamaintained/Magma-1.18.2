@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.entity.Bee;
-import org.bukkit.entity.EntityType;
 
 public class CraftBee extends CraftAnimals implements Bee {
 
@@ -21,11 +20,6 @@ public class CraftBee extends CraftAnimals implements Bee {
     @Override
     public String toString() {
         return "CraftBee";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.BEE;
     }
 
     @Override

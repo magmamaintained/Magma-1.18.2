@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.entity.EnderCrystal;
-import org.bukkit.entity.EntityType;
 
 public class CraftEnderCrystal extends CraftEntity implements EnderCrystal {
     public CraftEnderCrystal(CraftServer server, net.minecraft.world.entity.boss.enderdragon.EndCrystal entity) {
@@ -46,10 +45,5 @@ public class CraftEnderCrystal extends CraftEntity implements EnderCrystal {
     @Override
     public String toString() {
         return "CraftEnderCrystal";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.ENDER_CRYSTAL;
     }
 }
