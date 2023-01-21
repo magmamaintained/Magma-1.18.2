@@ -112,7 +112,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2502 @@
+@@ -118,1340 +_,2497 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -153,6 +153,8 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
 -import org.apache.commons.lang3.StringUtils;
++import net.minecraftforge.common.ForgeHooks;
++import org.bukkit.Bukkit;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 +import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
@@ -2424,336 +2426,6 @@
 -         this.f_9743_.m_9243_();
 -         String s = p_143629_.m_143719_();
 -         if (s.startsWith("/")) {
--            this.m_9957_(s);
--         } else {
--            String s1 = p_143629_.m_143722_();
--            Component component = s1.isEmpty() ? null : new TranslatableComponent("chat.type.text", this.f_9743_.m_5446_(), s1);
--            Component component1 = new TranslatableComponent("chat.type.text", this.f_9743_.m_5446_(), s);
--            this.f_9745_.m_6846_().m_143991_(component1, (p_184197_) -> {
--               return this.f_9743_.m_143421_(p_184197_) ? component : component1;
--            }, ChatType.CHAT, this.f_9743_.m_142081_());
--         }
--
--         this.f_9750_ += 20;
--         if (this.f_9750_ > 200 && !this.f_9745_.m_6846_().m_11303_(this.f_9743_.m_36316_())) {
--            this.m_9942_(new TranslatableComponent("disconnect.spam"));
--         }
--
--      }
--   }
--
--   private void m_9957_(String p_9958_) {
--      this.f_9745_.m_129892_().m_82117_(this.f_9743_.m_20203_(), p_9958_);
--   }
--
--   public void m_7953_(ServerboundSwingPacket p_9926_) {
--      PacketUtils.m_131359_(p_9926_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9243_();
--      this.f_9743_.m_6674_(p_9926_.m_134674_());
--   }
--
--   public void m_5681_(ServerboundPlayerCommandPacket p_9891_) {
--      PacketUtils.m_131359_(p_9891_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9243_();
--      switch(p_9891_.m_134320_()) {
--      case PRESS_SHIFT_KEY:
--         this.f_9743_.m_20260_(true);
--         break;
--      case RELEASE_SHIFT_KEY:
--         this.f_9743_.m_20260_(false);
--         break;
--      case START_SPRINTING:
--         this.f_9743_.m_6858_(true);
--         break;
--      case STOP_SPRINTING:
--         this.f_9743_.m_6858_(false);
--         break;
--      case STOP_SLEEPING:
--         if (this.f_9743_.m_5803_()) {
--            this.f_9743_.m_6145_(false, true);
--            this.f_9766_ = this.f_9743_.m_20182_();
--         }
--         break;
--      case START_RIDING_JUMP:
--         if (this.f_9743_.m_20202_() instanceof PlayerRideableJumping) {
--            PlayerRideableJumping playerrideablejumping1 = (PlayerRideableJumping)this.f_9743_.m_20202_();
--            int i = p_9891_.m_134321_();
--            if (playerrideablejumping1.m_7132_() && i > 0) {
--               playerrideablejumping1.m_7199_(i);
--            }
--         }
--         break;
--      case STOP_RIDING_JUMP:
--         if (this.f_9743_.m_20202_() instanceof PlayerRideableJumping) {
--            PlayerRideableJumping playerrideablejumping = (PlayerRideableJumping)this.f_9743_.m_20202_();
--            playerrideablejumping.m_8012_();
--         }
--         break;
--      case OPEN_INVENTORY:
--         if (this.f_9743_.m_20202_() instanceof AbstractHorse) {
--            ((AbstractHorse)this.f_9743_.m_20202_()).m_30620_(this.f_9743_);
--         }
--         break;
--      case START_FALL_FLYING:
--         if (!this.f_9743_.m_36319_()) {
--            this.f_9743_.m_36321_();
--         }
--         break;
--      default:
--         throw new IllegalArgumentException("Invalid client command!");
--      }
--
--   }
--
--   public void m_6946_(ServerboundInteractPacket p_9866_) {
--      PacketUtils.m_131359_(p_9866_, this, this.f_9743_.m_183503_());
--      ServerLevel serverlevel = this.f_9743_.m_183503_();
--      final Entity entity = p_9866_.m_179603_(serverlevel);
--      this.f_9743_.m_9243_();
--      this.f_9743_.m_20260_(p_9866_.m_134061_());
--      if (entity != null) {
--         if (!serverlevel.m_6857_().m_61937_(entity.m_142538_())) {
--            return;
--         }
--
--         double d0 = 36.0D;
--         if (this.f_9743_.m_20280_(entity) < 36.0D) {
--            p_9866_.m_179617_(new ServerboundInteractPacket.Handler() {
--               private void m_143678_(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
--                  ItemStack itemstack = ServerGamePacketListenerImpl.this.f_9743_.m_21120_(p_143679_).m_41777_();
--                  InteractionResult interactionresult = p_143680_.m_143694_(ServerGamePacketListenerImpl.this.f_9743_, entity, p_143679_);
--                  if (interactionresult.m_19077_()) {
--                     CriteriaTriggers.f_10565_.m_61494_(ServerGamePacketListenerImpl.this.f_9743_, itemstack, entity);
--                     if (interactionresult.m_19080_()) {
--                        ServerGamePacketListenerImpl.this.f_9743_.m_21011_(p_143679_, true);
--                     }
--                  }
--
--               }
--
--               public void m_142299_(InteractionHand p_143677_) {
--                  this.m_143678_(p_143677_, Player::m_36157_);
--               }
--
--               public void m_142143_(InteractionHand p_143682_, Vec3 p_143683_) {
--                  this.m_143678_(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
--                     return p_143687_.m_7111_(p_143686_, p_143683_, p_143688_);
--                  });
--               }
--
--               public void m_141994_() {
--                  if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrb) && !(entity instanceof AbstractArrow) && entity != ServerGamePacketListenerImpl.this.f_9743_) {
--                     ServerGamePacketListenerImpl.this.f_9743_.m_5706_(entity);
--                  } else {
--                     ServerGamePacketListenerImpl.this.m_9942_(new TranslatableComponent("multiplayer.disconnect.invalid_entity_attacked"));
--                     ServerGamePacketListenerImpl.f_9744_.warn("Player {} tried to attack an invalid entity", (Object)ServerGamePacketListenerImpl.this.f_9743_.m_7755_().getString());
--                  }
--               }
--            });
--         }
--      }
--
--   }
--
--   public void m_6272_(ServerboundClientCommandPacket p_9843_) {
--      PacketUtils.m_131359_(p_9843_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9243_();
--      ServerboundClientCommandPacket.Action serverboundclientcommandpacket$action = p_9843_.m_133850_();
--      switch(serverboundclientcommandpacket$action) {
--      case PERFORM_RESPAWN:
--         if (this.f_9743_.f_8944_) {
--            this.f_9743_.f_8944_ = false;
--            this.f_9743_ = this.f_9745_.m_6846_().m_11236_(this.f_9743_, true);
--            CriteriaTriggers.f_10588_.m_19757_(this.f_9743_, Level.f_46430_, Level.f_46428_);
--         } else {
--            if (this.f_9743_.m_21223_() > 0.0F) {
--               return;
--            }
--
--            this.f_9743_ = this.f_9745_.m_6846_().m_11236_(this.f_9743_, false);
--            if (this.f_9745_.m_7035_()) {
--               this.f_9743_.m_143403_(GameType.SPECTATOR);
--               this.f_9743_.m_183503_().m_46469_().m_46170_(GameRules.f_46146_).m_46246_(false, this.f_9745_);
--            }
--         }
--         break;
--      case REQUEST_STATS:
--         this.f_9743_.m_8951_().m_12819_(this.f_9743_);
--      }
--
--   }
--
--   public void m_7951_(ServerboundContainerClosePacket p_9858_) {
--      PacketUtils.m_131359_(p_9858_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9230_();
--   }
--
--   public void m_5914_(ServerboundContainerClickPacket p_9856_) {
--      PacketUtils.m_131359_(p_9856_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9243_();
--      if (this.f_9743_.f_36096_.f_38840_ == p_9856_.m_133959_()) {
--         if (this.f_9743_.m_5833_()) {
--            this.f_9743_.f_36096_.m_150429_();
--         } else {
--            int i = p_9856_.m_133962_();
--            if (!this.f_9743_.f_36096_.m_207775_(i)) {
--               f_9744_.debug("Player {} clicked invalid slot index: {}, available slots: {}", this.f_9743_.m_7755_(), i, this.f_9743_.f_36096_.f_38839_.size());
--            } else {
--               boolean flag = p_9856_.m_182741_() != this.f_9743_.f_36096_.m_182424_();
--               this.f_9743_.f_36096_.m_150443_();
--               this.f_9743_.f_36096_.m_150399_(i, p_9856_.m_133963_(), p_9856_.m_133966_(), this.f_9743_);
--
--               for(Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(p_9856_.m_179582_())) {
--                  this.f_9743_.f_36096_.m_182414_(entry.getIntKey(), entry.getValue());
--               }
--
--               this.f_9743_.f_36096_.m_150422_(p_9856_.m_179581_());
--               this.f_9743_.f_36096_.m_150444_();
--               if (flag) {
--                  this.f_9743_.f_36096_.m_182423_();
--               } else {
--                  this.f_9743_.f_36096_.m_38946_();
--               }
--
--            }
--         }
--      }
--   }
--
--   public void m_7191_(ServerboundPlaceRecipePacket p_9882_) {
--      PacketUtils.m_131359_(p_9882_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9243_();
--      if (!this.f_9743_.m_5833_() && this.f_9743_.f_36096_.f_38840_ == p_9882_.m_134249_() && this.f_9743_.f_36096_ instanceof RecipeBookMenu) {
--         this.f_9745_.m_129894_().m_44043_(p_9882_.m_134252_()).ifPresent((p_184200_) -> {
--            ((RecipeBookMenu)this.f_9743_.f_36096_).m_6951_(p_9882_.m_134253_(), p_184200_, this.f_9743_);
--         });
--      }
--   }
--
--   public void m_6557_(ServerboundContainerButtonClickPacket p_9854_) {
--      PacketUtils.m_131359_(p_9854_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9243_();
--      if (this.f_9743_.f_36096_.f_38840_ == p_9854_.m_133935_() && !this.f_9743_.m_5833_()) {
--         boolean flag = this.f_9743_.f_36096_.m_6366_(this.f_9743_, p_9854_.m_133938_());
--         if (flag) {
--            this.f_9743_.f_36096_.m_38946_();
--         }
--      }
--
--   }
--
--   public void m_5964_(ServerboundSetCreativeModeSlotPacket p_9915_) {
--      PacketUtils.m_131359_(p_9915_, this, this.f_9743_.m_183503_());
--      if (this.f_9743_.f_8941_.m_9295_()) {
--         boolean flag = p_9915_.m_134561_() < 0;
--         ItemStack itemstack = p_9915_.m_134564_();
--         CompoundTag compoundtag = BlockItem.m_186336_(itemstack);
--         if (!itemstack.m_41619_() && compoundtag != null && compoundtag.m_128441_("x") && compoundtag.m_128441_("y") && compoundtag.m_128441_("z")) {
--            BlockPos blockpos = BlockEntity.m_187472_(compoundtag);
--            BlockEntity blockentity = this.f_9743_.f_19853_.m_7702_(blockpos);
--            if (blockentity != null) {
--               blockentity.m_187476_(itemstack);
--            }
--         }
--
--         boolean flag1 = p_9915_.m_134561_() >= 1 && p_9915_.m_134561_() <= 45;
--         boolean flag2 = itemstack.m_41619_() || itemstack.m_41773_() >= 0 && itemstack.m_41613_() <= 64 && !itemstack.m_41619_();
--         if (flag1 && flag2) {
--            this.f_9743_.f_36095_.m_38853_(p_9915_.m_134561_()).m_5852_(itemstack);
--            this.f_9743_.f_36095_.m_38946_();
--         } else if (flag && flag2 && this.f_9751_ < 200) {
--            this.f_9751_ += 20;
--            this.f_9743_.m_36176_(itemstack, true);
--         }
--      }
--
--   }
--
--   public void m_5527_(ServerboundSignUpdatePacket p_9921_) {
--      List<String> list = Stream.of(p_9921_.m_134663_()).map(ChatFormatting::m_126649_).collect(Collectors.toList());
--      this.m_9815_(list, (p_184205_) -> {
--         this.m_9922_(p_9921_, p_184205_);
--      });
--   }
--
--   private void m_9922_(ServerboundSignUpdatePacket p_9923_, List<TextFilter.FilteredText> p_9924_) {
--      this.f_9743_.m_9243_();
--      ServerLevel serverlevel = this.f_9743_.m_183503_();
--      BlockPos blockpos = p_9923_.m_134660_();
--      if (serverlevel.m_46805_(blockpos)) {
--         BlockState blockstate = serverlevel.m_8055_(blockpos);
--         BlockEntity blockentity = serverlevel.m_7702_(blockpos);
--         if (!(blockentity instanceof SignBlockEntity)) {
--            return;
--         }
--
--         SignBlockEntity signblockentity = (SignBlockEntity)blockentity;
--         if (!signblockentity.m_59751_() || !this.f_9743_.m_142081_().equals(signblockentity.m_155726_())) {
--            f_9744_.warn("Player {} just tried to change non-editable sign", (Object)this.f_9743_.m_7755_().getString());
--            return;
--         }
--
--         for(int i = 0; i < p_9924_.size(); ++i) {
--            TextFilter.FilteredText textfilter$filteredtext = p_9924_.get(i);
--            if (this.f_9743_.m_143387_()) {
--               signblockentity.m_59732_(i, new TextComponent(textfilter$filteredtext.m_143722_()));
--            } else {
--               signblockentity.m_155702_(i, new TextComponent(textfilter$filteredtext.m_143719_()), new TextComponent(textfilter$filteredtext.m_143722_()));
--            }
--         }
--
--         signblockentity.m_6596_();
--         serverlevel.m_7260_(blockpos, blockstate, blockstate, 3);
--      }
--
--   }
--
--   public void m_5683_(ServerboundKeepAlivePacket p_9870_) {
--      if (this.f_9748_ && p_9870_.m_134102_() == this.f_9749_) {
--         int i = (int)(Util.m_137550_() - this.f_9747_);
--         this.f_9743_.f_8943_ = (this.f_9743_.f_8943_ * 3 + i) / 4;
--         this.f_9748_ = false;
--      } else if (!this.m_9956_()) {
--         this.m_9942_(new TranslatableComponent("disconnect.timeout"));
--      }
--
--   }
--
--   public void m_6828_(ServerboundPlayerAbilitiesPacket p_9887_) {
--      PacketUtils.m_131359_(p_9887_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_150110_().f_35935_ = p_9887_.m_134264_() && this.f_9743_.m_150110_().f_35936_;
--   }
--
--   public void m_5617_(ServerboundClientInformationPacket p_9845_) {
--      PacketUtils.m_131359_(p_9845_, this, this.f_9743_.m_183503_());
--      this.f_9743_.m_9156_(p_9845_);
--   }
--
--   public void m_7423_(ServerboundCustomPayloadPacket p_9860_) {
--   }
--
--   public void m_7477_(ServerboundChangeDifficultyPacket p_9839_) {
--      PacketUtils.m_131359_(p_9839_, this, this.f_9743_.m_183503_());
--      if (this.f_9743_.m_20310_(2) || this.m_9956_()) {
--         this.f_9745_.m_129827_(p_9839_.m_133824_(), false);
--      }
--   }
--
--   public void m_7728_(ServerboundLockDifficultyPacket p_9872_) {
--      PacketUtils.m_131359_(p_9872_, this, this.f_9743_.m_183503_());
--      if (this.f_9743_.m_20310_(2) || this.m_9956_()) {
--         this.f_9745_.m_129958_(p_9872_.m_134115_());
--      }
--   }
--
--   public ServerPlayer m_142253_() {
--      return this.f_9743_;
--   }
--
--   @FunctionalInterface
--   interface EntityInteraction {
--      InteractionResult m_143694_(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
--   }
 +        }
 +
 +        return true;
@@ -2951,85 +2623,65 @@
 +
 +    }
 +
-+    // CraftBukkit start - add method
++    // CraftBukkit start - add method //Magma - implement ArcLight version
 +    private void m_143628_(TextFilter.FilteredText p_143629_) {
-+        if (this.f_9743_.m_146910_() || this.f_9743_.m_9241_() == ChatVisiblity.HIDDEN) { // CraftBukkit - dead men tell no tales
-+            this.m_141995_( new ClientboundChatPacket( (new TranslatableComponent( "chat.disabled.options" )).m_130940_( ChatFormatting.RED ), ChatType.SYSTEM, Util.f_137441_ ) );
++        if (this.f_9743_.m_146910_() || this.f_9743_.m_9241_() == ChatVisiblity.HIDDEN) {
++            this.m_141995_(new ClientboundChatPacket((new TranslatableComponent("chat.cannotSend")).m_130940_(ChatFormatting.RED), ChatType.SYSTEM, Util.f_137441_));
 +        } else {
 +            this.f_9743_.m_9243_();
 +            String s = p_143629_.m_143719_();
-+            // CraftBukkit start
-+            boolean isSync = s.startsWith( "/" );
++            boolean isSync = s.startsWith("/");
 +            if (isSync) {
 +                try {
-+                    this.f_9745_.server.playerCommandState = true;
-+                    this.m_9957_( s );
++                    this.cserver.playerCommandState = true;
++                    this.m_9957_(s);
 +                } finally {
-+                    this.f_9745_.server.playerCommandState = false;
++                    this.cserver.playerCommandState = false;
 +                }
 +            } else if (s.isEmpty()) {
-+                f_9744_.warn( this.f_9743_.m_7755_() + " tried to send an empty message" );
-+            } else if (getCraftPlayer().isConversing()) {
-+                final String conversationInput = s;
-+                this.f_9745_.processQueue.add( new Runnable() {
-+                    @Override
-+                    public void run() {
-+                        getCraftPlayer().acceptConversationInput( conversationInput );
-+                    }
-+                } );
-+            } else if (this.f_9743_.m_9241_() == ChatVisiblity.SYSTEM) { // Re-add "Command Only" flag check
-+                this.m_141995_( new ClientboundChatPacket( (new TranslatableComponent( "chat.cannotSend" )).m_130940_( ChatFormatting.RED ), ChatType.SYSTEM, Util.f_137441_ ) );
-+            } else if (true) {
-+                this.chat( s, true );
-+                // CraftBukkit end - the below is for reference. :)
++                f_9744_.warn(this.f_9743_.m_6302_() + " tried to send an empty message");
++            } else if (this.getCraftPlayer().isConversing()) {
++                String conversationInput = s;
++                this.f_9745_.processQueue.add(() -> this.getCraftPlayer().acceptConversationInput(conversationInput));
++            } else if (this.f_9743_.m_9241_() == ChatVisiblity.SYSTEM) {
++                this.m_141995_(new ClientboundChatPacket((new TranslatableComponent("chat.cannotSend")).m_130940_(ChatFormatting.RED), ChatType.SYSTEM, Util.f_137441_));
 +            } else {
-+                String s1 = p_143629_.m_143722_();
-+                Component component = s1.isEmpty() ? null : new TranslatableComponent( "chat.type.text", this.f_9743_.m_5446_(), s1 );
-+                Component component1 = new TranslatableComponent( "chat.type.text", this.f_9743_.m_5446_(), s );
-+                var event = net.minecraftforge.common.ForgeHooks.onServerChatEvent(this, s, component1, s1, component);
-+                if (event != null && event.getComponent() != null)
-+                    this.f_9745_.m_6846_().m_143991_(component1, (p_184197_) -> {
-+                        return this.f_9743_.m_143421_(p_184197_) ? event.getFilteredComponent() : event.getComponent();
-+                    }, ChatType.CHAT, this.f_9743_.m_142081_());
++                this.chat(s, true);
 +            }
 +
-+            // Spigot start - spam exclusions
 +            boolean counted = true;
-+            for ( String exclude : org.spigotmc.SpigotConfig.spamExclusions )
-+            {
-+                if ( exclude != null && s.startsWith( exclude ) )
-+                {
++            for (String exclude : org.spigotmc.SpigotConfig.spamExclusions) {
++                if (exclude != null && s.startsWith(exclude)) {
 +                    counted = false;
 +                    break;
 +                }
 +            }
-+            // Spigot end
++            if (counted) {
++                this.f_9750_ += 20;
++                if (this.f_9750_ > 200 && !this.f_9745_.m_6846_().m_11303_(this.f_9743_.m_36316_())) {
++                    if (!isSync) {
++                        class Disconnect2 extends Waitable {
 +
-+            // CraftBukkit start - replaced with thread safe throttle //Magma - let's not
-+            this.f_9750_ += 20;
-+            if (f_9750_ > 200 && !this.f_9745_.m_6846_().m_11303_( this.f_9743_.m_36316_() )) {
-+                if (!isSync) {
-+                    Waitable waitable = new Waitable() {
-+                        @Override
-+                        protected Object evaluate() {
-+                            ServerGamePacketListenerImpl.this.m_9942_( new TranslatableComponent( "disconnect.spam" ) );
-+                            return null;
++                            @Override
++                            protected Object evaluate() {
++                                m_9942_(new TranslatableComponent("disconnect.spam"));
++                                return null;
++                            }
 +                        }
-+                    };
-+
-+                    this.f_9745_.processQueue.add( waitable );
-+
-+                    try {
-+                        waitable.get();
-+                    } catch (InterruptedException e) {
-+                        Thread.currentThread().interrupt();
-+                    } catch (ExecutionException e) {
-+                        throw new RuntimeException( e );
++                        Waitable waitable2 = new Disconnect2();
++                        this.f_9745_.processQueue.add(waitable2);
++                        try {
++                            waitable2.get();
++                            return;
++                        } catch (InterruptedException e4) {
++                            Thread.currentThread().interrupt();
++                            return;
++                        } catch (ExecutionException e2) {
++                            throw new RuntimeException(e2);
++                        }
 +                    }
-+                } else {
-+                    this.m_9942_( new TranslatableComponent( "disconnect.spam" ) );
++                    this.m_9942_(new TranslatableComponent("disconnect.spam"));
 +                }
-+                // CraftBukkit end
 +            }
 +        }
 +    }
@@ -3840,82 +3492,424 @@
 +        return this.f_9743_;
 +    }
 +
-+    // CraftBukkit start - add method
++    // CraftBukkit start - add method //Magma - implement ArcLight version
 +    public void chat(String s, boolean async) {
 +        if (s.isEmpty() || this.f_9743_.m_9241_() == ChatVisiblity.HIDDEN) {
 +            return;
 +        }
-+
-+        if (!async && s.startsWith( "/" )) {
-+            this.m_9957_( s );
-+        } else if (this.f_9743_.m_9241_() == ChatVisiblity.SYSTEM) {
-+            // Do nothing, this is coming from a plugin
-+        } else {
-+            org.bukkit.entity.Player player = this.getCraftPlayer();
-+            AsyncPlayerChatEvent event = new AsyncPlayerChatEvent( async, player, s, new LazyPlayerSet( f_9745_ ) );
-+
-+            Waitable wait = new Waitable() {
-+                @Override
-+                protected Object evaluate() {
-+                    ServerGamePacketListenerImpl.this.cserver.getPluginManager().callEvent( event );
-+                    return null;
-+                }
-+            };
-+            wait.run();
-+
++        if (!async && s.startsWith("/")) {
+             this.m_9957_(s);
+-         } else {
+-            String s1 = p_143629_.m_143722_();
+-            Component component = s1.isEmpty() ? null : new TranslatableComponent("chat.type.text", this.f_9743_.m_5446_(), s1);
+-            Component component1 = new TranslatableComponent("chat.type.text", this.f_9743_.m_5446_(), s);
+-            this.f_9745_.m_6846_().m_143991_(component1, (p_184197_) -> {
+-               return this.f_9743_.m_143421_(p_184197_) ? component : component1;
+-            }, ChatType.CHAT, this.f_9743_.m_142081_());
+-         }
+-
+-         this.f_9750_ += 20;
+-         if (this.f_9750_ > 200 && !this.f_9745_.m_6846_().m_11303_(this.f_9743_.m_36316_())) {
+-            this.m_9942_(new TranslatableComponent("disconnect.spam"));
+-         }
+-
+-      }
+-   }
+-
+-   private void m_9957_(String p_9958_) {
+-      this.f_9745_.m_129892_().m_82117_(this.f_9743_.m_20203_(), p_9958_);
+-   }
+-
+-   public void m_7953_(ServerboundSwingPacket p_9926_) {
+-      PacketUtils.m_131359_(p_9926_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9243_();
+-      this.f_9743_.m_6674_(p_9926_.m_134674_());
+-   }
+-
+-   public void m_5681_(ServerboundPlayerCommandPacket p_9891_) {
+-      PacketUtils.m_131359_(p_9891_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9243_();
+-      switch(p_9891_.m_134320_()) {
+-      case PRESS_SHIFT_KEY:
+-         this.f_9743_.m_20260_(true);
+-         break;
+-      case RELEASE_SHIFT_KEY:
+-         this.f_9743_.m_20260_(false);
+-         break;
+-      case START_SPRINTING:
+-         this.f_9743_.m_6858_(true);
+-         break;
+-      case STOP_SPRINTING:
+-         this.f_9743_.m_6858_(false);
+-         break;
+-      case STOP_SLEEPING:
+-         if (this.f_9743_.m_5803_()) {
+-            this.f_9743_.m_6145_(false, true);
+-            this.f_9766_ = this.f_9743_.m_20182_();
+-         }
+-         break;
+-      case START_RIDING_JUMP:
+-         if (this.f_9743_.m_20202_() instanceof PlayerRideableJumping) {
+-            PlayerRideableJumping playerrideablejumping1 = (PlayerRideableJumping)this.f_9743_.m_20202_();
+-            int i = p_9891_.m_134321_();
+-            if (playerrideablejumping1.m_7132_() && i > 0) {
+-               playerrideablejumping1.m_7199_(i);
+-            }
+-         }
+-         break;
+-      case STOP_RIDING_JUMP:
+-         if (this.f_9743_.m_20202_() instanceof PlayerRideableJumping) {
+-            PlayerRideableJumping playerrideablejumping = (PlayerRideableJumping)this.f_9743_.m_20202_();
+-            playerrideablejumping.m_8012_();
+-         }
+-         break;
+-      case OPEN_INVENTORY:
+-         if (this.f_9743_.m_20202_() instanceof AbstractHorse) {
+-            ((AbstractHorse)this.f_9743_.m_20202_()).m_30620_(this.f_9743_);
+-         }
+-         break;
+-      case START_FALL_FLYING:
+-         if (!this.f_9743_.m_36319_()) {
+-            this.f_9743_.m_36321_();
+-         }
+-         break;
+-      default:
+-         throw new IllegalArgumentException("Invalid client command!");
+-      }
+-
+-   }
+-
+-   public void m_6946_(ServerboundInteractPacket p_9866_) {
+-      PacketUtils.m_131359_(p_9866_, this, this.f_9743_.m_183503_());
+-      ServerLevel serverlevel = this.f_9743_.m_183503_();
+-      final Entity entity = p_9866_.m_179603_(serverlevel);
+-      this.f_9743_.m_9243_();
+-      this.f_9743_.m_20260_(p_9866_.m_134061_());
+-      if (entity != null) {
+-         if (!serverlevel.m_6857_().m_61937_(entity.m_142538_())) {
+-            return;
+-         }
+-
+-         double d0 = 36.0D;
+-         if (this.f_9743_.m_20280_(entity) < 36.0D) {
+-            p_9866_.m_179617_(new ServerboundInteractPacket.Handler() {
+-               private void m_143678_(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
+-                  ItemStack itemstack = ServerGamePacketListenerImpl.this.f_9743_.m_21120_(p_143679_).m_41777_();
+-                  InteractionResult interactionresult = p_143680_.m_143694_(ServerGamePacketListenerImpl.this.f_9743_, entity, p_143679_);
+-                  if (interactionresult.m_19077_()) {
+-                     CriteriaTriggers.f_10565_.m_61494_(ServerGamePacketListenerImpl.this.f_9743_, itemstack, entity);
+-                     if (interactionresult.m_19080_()) {
+-                        ServerGamePacketListenerImpl.this.f_9743_.m_21011_(p_143679_, true);
+-                     }
+-                  }
+-
+-               }
+-
+-               public void m_142299_(InteractionHand p_143677_) {
+-                  this.m_143678_(p_143677_, Player::m_36157_);
+-               }
+-
+-               public void m_142143_(InteractionHand p_143682_, Vec3 p_143683_) {
+-                  this.m_143678_(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
+-                     return p_143687_.m_7111_(p_143686_, p_143683_, p_143688_);
+-                  });
+-               }
+-
+-               public void m_141994_() {
+-                  if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrb) && !(entity instanceof AbstractArrow) && entity != ServerGamePacketListenerImpl.this.f_9743_) {
+-                     ServerGamePacketListenerImpl.this.f_9743_.m_5706_(entity);
+-                  } else {
+-                     ServerGamePacketListenerImpl.this.m_9942_(new TranslatableComponent("multiplayer.disconnect.invalid_entity_attacked"));
+-                     ServerGamePacketListenerImpl.f_9744_.warn("Player {} tried to attack an invalid entity", (Object)ServerGamePacketListenerImpl.this.f_9743_.m_7755_().getString());
+-                  }
+-               }
+-            });
+-         }
+-      }
+-
+-   }
+-
+-   public void m_6272_(ServerboundClientCommandPacket p_9843_) {
+-      PacketUtils.m_131359_(p_9843_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9243_();
+-      ServerboundClientCommandPacket.Action serverboundclientcommandpacket$action = p_9843_.m_133850_();
+-      switch(serverboundclientcommandpacket$action) {
+-      case PERFORM_RESPAWN:
+-         if (this.f_9743_.f_8944_) {
+-            this.f_9743_.f_8944_ = false;
+-            this.f_9743_ = this.f_9745_.m_6846_().m_11236_(this.f_9743_, true);
+-            CriteriaTriggers.f_10588_.m_19757_(this.f_9743_, Level.f_46430_, Level.f_46428_);
+-         } else {
+-            if (this.f_9743_.m_21223_() > 0.0F) {
+-               return;
+-            }
+-
+-            this.f_9743_ = this.f_9745_.m_6846_().m_11236_(this.f_9743_, false);
+-            if (this.f_9745_.m_7035_()) {
+-               this.f_9743_.m_143403_(GameType.SPECTATOR);
+-               this.f_9743_.m_183503_().m_46469_().m_46170_(GameRules.f_46146_).m_46246_(false, this.f_9745_);
+-            }
+-         }
+-         break;
+-      case REQUEST_STATS:
+-         this.f_9743_.m_8951_().m_12819_(this.f_9743_);
+-      }
+-
+-   }
+-
+-   public void m_7951_(ServerboundContainerClosePacket p_9858_) {
+-      PacketUtils.m_131359_(p_9858_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9230_();
+-   }
+-
+-   public void m_5914_(ServerboundContainerClickPacket p_9856_) {
+-      PacketUtils.m_131359_(p_9856_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9243_();
+-      if (this.f_9743_.f_36096_.f_38840_ == p_9856_.m_133959_()) {
+-         if (this.f_9743_.m_5833_()) {
+-            this.f_9743_.f_36096_.m_150429_();
+-         } else {
+-            int i = p_9856_.m_133962_();
+-            if (!this.f_9743_.f_36096_.m_207775_(i)) {
+-               f_9744_.debug("Player {} clicked invalid slot index: {}, available slots: {}", this.f_9743_.m_7755_(), i, this.f_9743_.f_36096_.f_38839_.size());
+-            } else {
+-               boolean flag = p_9856_.m_182741_() != this.f_9743_.f_36096_.m_182424_();
+-               this.f_9743_.f_36096_.m_150443_();
+-               this.f_9743_.f_36096_.m_150399_(i, p_9856_.m_133963_(), p_9856_.m_133966_(), this.f_9743_);
+-
+-               for(Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(p_9856_.m_179582_())) {
+-                  this.f_9743_.f_36096_.m_182414_(entry.getIntKey(), entry.getValue());
+-               }
+-
+-               this.f_9743_.f_36096_.m_150422_(p_9856_.m_179581_());
+-               this.f_9743_.f_36096_.m_150444_();
+-               if (flag) {
+-                  this.f_9743_.f_36096_.m_182423_();
+-               } else {
+-                  this.f_9743_.f_36096_.m_38946_();
+-               }
+-
+-            }
+-         }
+-      }
+-   }
+-
+-   public void m_7191_(ServerboundPlaceRecipePacket p_9882_) {
+-      PacketUtils.m_131359_(p_9882_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9243_();
+-      if (!this.f_9743_.m_5833_() && this.f_9743_.f_36096_.f_38840_ == p_9882_.m_134249_() && this.f_9743_.f_36096_ instanceof RecipeBookMenu) {
+-         this.f_9745_.m_129894_().m_44043_(p_9882_.m_134252_()).ifPresent((p_184200_) -> {
+-            ((RecipeBookMenu)this.f_9743_.f_36096_).m_6951_(p_9882_.m_134253_(), p_184200_, this.f_9743_);
+-         });
+-      }
+-   }
+-
+-   public void m_6557_(ServerboundContainerButtonClickPacket p_9854_) {
+-      PacketUtils.m_131359_(p_9854_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9243_();
+-      if (this.f_9743_.f_36096_.f_38840_ == p_9854_.m_133935_() && !this.f_9743_.m_5833_()) {
+-         boolean flag = this.f_9743_.f_36096_.m_6366_(this.f_9743_, p_9854_.m_133938_());
+-         if (flag) {
+-            this.f_9743_.f_36096_.m_38946_();
+-         }
+-      }
+-
+-   }
+-
+-   public void m_5964_(ServerboundSetCreativeModeSlotPacket p_9915_) {
+-      PacketUtils.m_131359_(p_9915_, this, this.f_9743_.m_183503_());
+-      if (this.f_9743_.f_8941_.m_9295_()) {
+-         boolean flag = p_9915_.m_134561_() < 0;
+-         ItemStack itemstack = p_9915_.m_134564_();
+-         CompoundTag compoundtag = BlockItem.m_186336_(itemstack);
+-         if (!itemstack.m_41619_() && compoundtag != null && compoundtag.m_128441_("x") && compoundtag.m_128441_("y") && compoundtag.m_128441_("z")) {
+-            BlockPos blockpos = BlockEntity.m_187472_(compoundtag);
+-            BlockEntity blockentity = this.f_9743_.f_19853_.m_7702_(blockpos);
+-            if (blockentity != null) {
+-               blockentity.m_187476_(itemstack);
+-            }
+-         }
+-
+-         boolean flag1 = p_9915_.m_134561_() >= 1 && p_9915_.m_134561_() <= 45;
+-         boolean flag2 = itemstack.m_41619_() || itemstack.m_41773_() >= 0 && itemstack.m_41613_() <= 64 && !itemstack.m_41619_();
+-         if (flag1 && flag2) {
+-            this.f_9743_.f_36095_.m_38853_(p_9915_.m_134561_()).m_5852_(itemstack);
+-            this.f_9743_.f_36095_.m_38946_();
+-         } else if (flag && flag2 && this.f_9751_ < 200) {
+-            this.f_9751_ += 20;
+-            this.f_9743_.m_36176_(itemstack, true);
+-         }
+-      }
+-
+-   }
+-
+-   public void m_5527_(ServerboundSignUpdatePacket p_9921_) {
+-      List<String> list = Stream.of(p_9921_.m_134663_()).map(ChatFormatting::m_126649_).collect(Collectors.toList());
+-      this.m_9815_(list, (p_184205_) -> {
+-         this.m_9922_(p_9921_, p_184205_);
+-      });
+-   }
+-
+-   private void m_9922_(ServerboundSignUpdatePacket p_9923_, List<TextFilter.FilteredText> p_9924_) {
+-      this.f_9743_.m_9243_();
+-      ServerLevel serverlevel = this.f_9743_.m_183503_();
+-      BlockPos blockpos = p_9923_.m_134660_();
+-      if (serverlevel.m_46805_(blockpos)) {
+-         BlockState blockstate = serverlevel.m_8055_(blockpos);
+-         BlockEntity blockentity = serverlevel.m_7702_(blockpos);
+-         if (!(blockentity instanceof SignBlockEntity)) {
+-            return;
+-         }
+-
+-         SignBlockEntity signblockentity = (SignBlockEntity)blockentity;
+-         if (!signblockentity.m_59751_() || !this.f_9743_.m_142081_().equals(signblockentity.m_155726_())) {
+-            f_9744_.warn("Player {} just tried to change non-editable sign", (Object)this.f_9743_.m_7755_().getString());
+-            return;
+-         }
+-
+-         for(int i = 0; i < p_9924_.size(); ++i) {
+-            TextFilter.FilteredText textfilter$filteredtext = p_9924_.get(i);
+-            if (this.f_9743_.m_143387_()) {
+-               signblockentity.m_59732_(i, new TextComponent(textfilter$filteredtext.m_143722_()));
+-            } else {
+-               signblockentity.m_155702_(i, new TextComponent(textfilter$filteredtext.m_143719_()), new TextComponent(textfilter$filteredtext.m_143722_()));
+-            }
+-         }
+-
+-         signblockentity.m_6596_();
+-         serverlevel.m_7260_(blockpos, blockstate, blockstate, 3);
+-      }
+-
+-   }
+-
+-   public void m_5683_(ServerboundKeepAlivePacket p_9870_) {
+-      if (this.f_9748_ && p_9870_.m_134102_() == this.f_9749_) {
+-         int i = (int)(Util.m_137550_() - this.f_9747_);
+-         this.f_9743_.f_8943_ = (this.f_9743_.f_8943_ * 3 + i) / 4;
+-         this.f_9748_ = false;
+-      } else if (!this.m_9956_()) {
+-         this.m_9942_(new TranslatableComponent("disconnect.timeout"));
+-      }
+-
+-   }
+-
+-   public void m_6828_(ServerboundPlayerAbilitiesPacket p_9887_) {
+-      PacketUtils.m_131359_(p_9887_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_150110_().f_35935_ = p_9887_.m_134264_() && this.f_9743_.m_150110_().f_35936_;
+-   }
+-
+-   public void m_5617_(ServerboundClientInformationPacket p_9845_) {
+-      PacketUtils.m_131359_(p_9845_, this, this.f_9743_.m_183503_());
+-      this.f_9743_.m_9156_(p_9845_);
+-   }
+-
+-   public void m_7423_(ServerboundCustomPayloadPacket p_9860_) {
+-   }
+-
+-   public void m_7477_(ServerboundChangeDifficultyPacket p_9839_) {
+-      PacketUtils.m_131359_(p_9839_, this, this.f_9743_.m_183503_());
+-      if (this.f_9743_.m_20310_(2) || this.m_9956_()) {
+-         this.f_9745_.m_129827_(p_9839_.m_133824_(), false);
+-      }
+-   }
+-
+-   public void m_7728_(ServerboundLockDifficultyPacket p_9872_) {
+-      PacketUtils.m_131359_(p_9872_, this, this.f_9743_.m_183503_());
+-      if (this.f_9743_.m_20310_(2) || this.m_9956_()) {
+-         this.f_9745_.m_129958_(p_9872_.m_134115_());
+-      }
+-   }
+-
+-   public ServerPlayer m_142253_() {
+-      return this.f_9743_;
+-   }
+-
+-   @FunctionalInterface
+-   interface EntityInteraction {
+-      InteractionResult m_143694_(ServerPlayer p_143695_, Entity p_143696_, InteractionHand p_143697_);
+-   }
++        } else if (this.f_9743_.m_9241_() != ChatVisiblity.SYSTEM) {
++            org.bukkit.entity.Player thisPlayer = this.getCraftPlayer();
++            AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(async, thisPlayer, s, new LazyPlayerSet(this.f_9745_));
++            this.cserver.getPluginManager().callEvent(event);
 +            if (PlayerChatEvent.getHandlerList().getRegisteredListeners().length != 0) {
-+                // Evil plugins still listening to deprecated event
-+                final PlayerChatEvent queueEvent = new PlayerChatEvent( player, event.getMessage(), event.getFormat(), event.getRecipients() );
-+                queueEvent.setCancelled( event.isCancelled() );
-+                Waitable waitable = new Waitable() {
++                PlayerChatEvent queueEvent = new PlayerChatEvent(thisPlayer, event.getMessage(), event.getFormat(), event.getRecipients());
++                queueEvent.setCancelled(event.isCancelled());
++                class SyncChat extends Waitable {
++
 +                    @Override
 +                    protected Object evaluate() {
-+                        org.bukkit.Bukkit.getPluginManager().callEvent( queueEvent );
++                        Bukkit.getPluginManager().callEvent(queueEvent);
 +                        if (queueEvent.isCancelled()) {
 +                            return null;
 +                        }
-+                        String message = String.format( queueEvent.getFormat(), queueEvent.getPlayer().getDisplayName(), queueEvent.getMessage() );
-+                        ServerGamePacketListenerImpl.this.f_9745_.console.sendMessage( message );
++                        String message = String.format(queueEvent.getFormat(), queueEvent.getPlayer().getDisplayName(), queueEvent.getMessage());
++                        var chatWithLinks = CraftChatMessage.fromStringOrNull(message);
++                        if (chatWithLinks == null) return null;
++                        var event = ForgeHooks.onServerChatEvent(ServerGamePacketListenerImpl.this, queueEvent.getMessage(), ForgeHooks.newChatWithLinks(message), queueEvent.getMessage(), chatWithLinks);
++                        var component = event == null ? null : event.getComponent();
++                        if (component == null) return null;
++                        Bukkit.getConsoleSender().sendMessage(CraftChatMessage.fromComponent(component));
 +                        if (((LazyPlayerSet) queueEvent.getRecipients()).isLazy()) {
-+                            for (ServerPlayer recipient : f_9745_.m_6846_().m_11314_()) {
-+                                recipient.getBukkitEntity().sendMessage( ServerGamePacketListenerImpl.this.f_9743_.m_142081_(), message );
++                            for (ServerPlayer player : f_9745_.m_6846_().f_11196_) {
++                                player.m_6352_(component, thisPlayer.getUniqueId());
 +                            }
 +                        } else {
-+                            for (org.bukkit.entity.Player player : queueEvent.getRecipients()) {
-+                                player.sendMessage( ServerGamePacketListenerImpl.this.f_9743_.m_142081_(), message );
++                            for (org.bukkit.entity.Player player2 : queueEvent.getRecipients()) {
++                                ((CraftPlayer) player2).getHandle().m_6352_(component, thisPlayer.getUniqueId());
 +                            }
 +                        }
 +                        return null;
 +                    }
-+                };
++                }
++                Waitable waitable = new SyncChat();
 +                if (async) {
-+                    f_9745_.processQueue.add( waitable );
++                    this.f_9745_.processQueue.add(waitable);
 +                } else {
 +                    waitable.run();
 +                }
 +                try {
 +                    waitable.get();
-+                } catch (InterruptedException e) {
-+                    Thread.currentThread().interrupt(); // This is proper habit for java. If we aren't handling it, pass it on!
-+                } catch (ExecutionException e) {
-+                    throw new RuntimeException( "Exception processing chat event", e.getCause() );
-+                }
-+            } else {
-+                if (event.isCancelled()) {
 +                    return;
++                } catch (InterruptedException e2) {
++                    Thread.currentThread().interrupt();
++                    return;
++                } catch (ExecutionException e) {
++                    throw new RuntimeException("Exception processing chat event", e.getCause());
 +                }
++            }
++            if (event.isCancelled()) {
++                return;
++            }
++            s = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
++            Component chatWithLinks = CraftChatMessage.fromStringOrNull(s);
++            if (chatWithLinks == null) return;
++            class ForgeChat extends Waitable<Void> {
 +
-+                s = String.format( event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage() );
-+                f_9745_.console.sendMessage( s );
-+                if (((LazyPlayerSet) event.getRecipients()).isLazy()) {
-+                    for (ServerPlayer recipient : f_9745_.m_6846_().m_11314_()) {
-+                        recipient.getBukkitEntity().sendMessage( ServerGamePacketListenerImpl.this.f_9743_.m_142081_(), s );
++                @Override
++                protected Void evaluate() {
++                    // this is called on main thread
++                    var chatEvent = ForgeHooks.onServerChatEvent(ServerGamePacketListenerImpl.this, event.getMessage(), chatWithLinks, event.getMessage(), chatWithLinks);
++                    var component = chatEvent != null ? chatEvent.getComponent() : null;
++                    if (component == null) return null;
++                    Bukkit.getConsoleSender().sendMessage(CraftChatMessage.fromComponent(component));
++                    if (((LazyPlayerSet) event.getRecipients()).isLazy()) {
++                        for (ServerPlayer recipient : f_9745_.m_6846_().f_11196_) {
++                            recipient.m_6352_(component, thisPlayer.getUniqueId());
++                        }
++                    } else {
++                        for (org.bukkit.entity.Player recipient2 : event.getRecipients()) {
++                            ((CraftPlayer) recipient2).getHandle().m_6352_(component, thisPlayer.getUniqueId());
++                        }
 +                    }
-+                } else {
-+                    for (org.bukkit.entity.Player recipient : event.getRecipients()) {
-+                        recipient.sendMessage( ServerGamePacketListenerImpl.this.f_9743_.m_142081_(), s );
-+                    }
++                    return null;
 +                }
++            }
++            Waitable<Void> waitable = new ForgeChat();
++            if (async) {
++               this.f_9745_.processQueue.add(waitable);
++            } else {
++                waitable.run();
 +            }
 +        }
 +    }
