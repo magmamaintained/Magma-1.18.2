@@ -421,7 +421,7 @@
 +            }
 +        } );
 +        // CraftBukkit end
-+        timings = new co.aikar.timings.WorldTimingsHandler(this); // Paper - code below can generate new world and access timings
++        timings = new co.aikar.timings.WorldTimingsHandler(init_levelName); // Paper - code below can generate new world and access timings
 +        this.entityLimiter = new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime);
 +        this.tileLimiter = new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime);
 +    }
