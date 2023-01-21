@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Vex;
 
 public class CraftVex extends CraftMonster implements Vex {
@@ -21,11 +20,6 @@ public class CraftVex extends CraftMonster implements Vex {
     @Override
     public String toString() {
         return "CraftVex";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.VEX;
     }
 
     @Override

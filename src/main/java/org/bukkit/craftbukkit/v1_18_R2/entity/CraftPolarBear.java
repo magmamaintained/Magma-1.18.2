@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.PolarBear;
 
 public class CraftPolarBear extends CraftAnimals implements PolarBear {
@@ -18,10 +17,5 @@ public class CraftPolarBear extends CraftAnimals implements PolarBear {
     @Override
     public String toString() {
         return "CraftPolarBear";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.POLAR_BEAR;
     }
 }

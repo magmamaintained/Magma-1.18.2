@@ -2,6 +2,7 @@ package org.magmafoundation.magma.forge;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +37,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -51,6 +53,11 @@ public class ForgeInject {
 
     public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new ConcurrentHashMap<>();
     public static final Map<net.minecraft.world.entity.EntityType<?>, String> ENTITY_TYPES = new ConcurrentHashMap<>();
+    
+    public static EntityType getBukkitEntityType(Entity entity) {
+    	EntityType type = EntityType.fromName(ENTITY_TYPES.get(entity.getType()));
+    	return type == null ? EntityType.UNKNOWN : type;
+    }
 
     public static void init() {
         debug("Injecting Forge Materials into Bukkit");
@@ -255,10 +262,11 @@ public class ForgeInject {
         List<EntityType> values = new ArrayList<>();
         for (var entry : ForgeRegistries.ENTITIES.getEntries()) {
             var location = entry.getValue().getRegistryName();
+            var enumName = ResourceLocationUtil.standardize(location);
+            ENTITY_TYPES.put(entry.getValue(), enumName);
             if (location.getNamespace().equals(NamespacedKey.MINECRAFT)) {
                 continue;
             }
-            var enumName = ResourceLocationUtil.standardize(location);
             int typeId = enumName.hashCode();
             try {
                 var bukkitType = EnumJ17Helper.makeEnum(EntityType.class, enumName, ordinal,
@@ -268,7 +276,6 @@ public class ForgeInject {
                 EntityType.ID_MAP.put((short) typeId, bukkitType);
                 ordinal++;
                 values.add(bukkitType);
-                ENTITY_TYPES.put(entry.getValue(), enumName);
                 debug("Injecting Forge Entity into Bukkit: " + enumName);
             } catch (Throwable e) {
                 error("Could not inject entity into Bukkit: " + enumName + ". " + e.getMessage());

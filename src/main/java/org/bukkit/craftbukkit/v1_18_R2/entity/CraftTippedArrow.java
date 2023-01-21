@@ -9,7 +9,6 @@ import org.bukkit.Color;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionUtil;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.EntityType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -28,11 +27,6 @@ public class CraftTippedArrow extends CraftArrow implements Arrow {
     @Override
     public String toString() {
         return "CraftTippedArrow";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.ARROW;
     }
 
     @Override

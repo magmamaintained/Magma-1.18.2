@@ -4,7 +4,6 @@ import java.util.UUID;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
@@ -88,10 +87,5 @@ public class CraftItem extends CraftEntity implements Item {
     @Override
     public String toString() {
         return "CraftItem";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.DROPPED_ITEM;
     }
 }

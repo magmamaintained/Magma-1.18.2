@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.WitherSkeleton;
 
@@ -14,11 +13,6 @@ public class CraftWitherSkeleton extends CraftAbstractSkeleton implements Wither
     @Override
     public String toString() {
         return "CraftWitherSkeleton";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.WITHER_SKELETON;
     }
 
     @Override

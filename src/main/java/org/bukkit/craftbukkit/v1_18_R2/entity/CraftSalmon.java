@@ -1,7 +1,6 @@
 package org.bukkit.craftbukkit.v1_18_R2.entity;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Salmon;
 
 public class CraftSalmon extends CraftFish implements Salmon {
@@ -18,10 +17,5 @@ public class CraftSalmon extends CraftFish implements Salmon {
     @Override
     public String toString() {
         return "CraftSalmon";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.SALMON;
     }
 }

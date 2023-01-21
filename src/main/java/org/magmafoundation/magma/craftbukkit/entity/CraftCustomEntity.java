@@ -3,7 +3,6 @@ package org.magmafoundation.magma.craftbukkit.entity;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,12 +32,6 @@ public class CraftCustomEntity extends CraftEntity {
             System.err.println("Entity class: " + entity.getClass());
             return null;
         }
-    }
-
-    @Override
-    public @NotNull EntityType getType() {
-        EntityType type = EntityType.fromName(this.entityName);
-        return type != null ? type : EntityType.UNKNOWN;
     }
 
     @Override

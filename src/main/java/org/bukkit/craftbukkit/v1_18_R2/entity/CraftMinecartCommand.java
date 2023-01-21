@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
@@ -45,11 +44,6 @@ public class CraftMinecartCommand extends CraftMinecart implements CommandMineca
     @Override
     public String toString() {
         return "CraftMinecartCommand";
-    }
-
-    @Override
-    public EntityType getType() {
-        return EntityType.MINECART_COMMAND;
     }
 
     @Override

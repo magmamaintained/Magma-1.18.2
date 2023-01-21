@@ -22,27 +22,18 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftMinecartContainer;
-import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 public class CraftCustomMinecartContainer extends CraftMinecartContainer {
 
-    private final EntityType entityType;
-
     public CraftCustomMinecartContainer(CraftServer server, AbstractMinecart entity) {
         super(server, entity);
-        this.entityType = entity.getBukkitEntity().getType();
-    }
-
-    @Override
-    public @NotNull EntityType getType() {
-        return entityType;
     }
 
     @Override
     public String toString() {
         return "CraftCustomMinecartContainer{" +
-                "entityType=" + entityType +
+                "entityType=" + getType() +
                 '}';
     }
 }
