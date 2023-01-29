@@ -112,7 +112,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2497 @@
+@@ -118,1340 +_,2498 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -1540,6 +1540,7 @@
 +    }
 +
 +    public void dismount(double p_143612_, double p_143613_, double p_143614_, float p_143615_, float p_143616_, PlayerTeleportEvent.TeleportCause cause) {
++        this.prepareTeleport(cause);
 +        this.m_143617_( p_143612_, p_143613_, p_143614_, p_143615_, p_143616_, Collections.emptySet(), true );
 +    }
 +
