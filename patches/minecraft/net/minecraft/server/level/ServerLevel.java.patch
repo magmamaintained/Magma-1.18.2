@@ -551,7 +551,7 @@
        Entity entity = this.m_142646_().m_142694_(p_8854_.m_142081_());
        if (entity != null) {
           f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_142081_().toString());
-@@ -775,28 +_,67 @@
+@@ -775,28 +_,74 @@
           this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
@@ -588,7 +588,14 @@
 +         }
 +         // CraftBukkit end
 +
-+         return this.f_143244_.m_157533_(entity);
++         //Magma start - make entity recognize that it actually exists
++         if (this.f_143244_.m_157533_(entity)) {
++            entity.onAddedToWorld();
++            return true;
++         } else {
++            return false;
++         }
++         //Magma end
        }
     }
  
