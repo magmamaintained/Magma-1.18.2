@@ -114,7 +114,7 @@
     public String[] m_78432_() {
        String[] astring = this.f_78427_.list();
        if (astring == null) {
-@@ -72,4 +_,9 @@
+@@ -72,4 +_,15 @@
  
        return astring;
     }
@@ -122,5 +122,11 @@
 +   public File getPlayerDataFolder() {
 +      return f_78427_;
 +   }
++
++   //CraftBukkit start
++   public File getPlayerDir() {
++       return getPlayerDataFolder();
++   }
++   //CraftBukkit end
 +
  }
