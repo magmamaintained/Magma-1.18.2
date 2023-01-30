@@ -3319,7 +3319,7 @@
 +        }).thenAcceptAsync((p_212919_) -> {
 +            this.f_129740_.close();
 +            this.f_129740_ = p_212919_;
-+            this.server.syncCommands(); // SPIGOT-5884: Lost on reload
++            this.server.doSync(p_212919_.f_206585_().f_206847_); //Magma - sync forge commands
 +            this.f_129730_.m_10509_(p_129862_);
 +            this.f_129749_.m_6645_(m_129817_(this.f_129730_));
 +            this.f_129740_.f_206585_.m_206868_(this.m_206579_());
