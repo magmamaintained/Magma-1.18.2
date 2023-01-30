@@ -61,7 +61,7 @@
        }
  
        for(int j = 0; j < this.f_79110_.length; ++j) {
-@@ -104,8 +_,26 @@
+@@ -104,8 +_,29 @@
     }
  
     public void m_79123_(Container p_79124_, LootContext p_79125_) {
@@ -78,10 +78,13 @@
 +      if (!p_79125_.isEmptyParams()) {
 +         // CraftBukkit start
 +         LootGenerateEvent event = CraftEventFactory.callLootGenerateEvent(p_79124_, this, p_79125_, list, plugin);
-+         if (event.isCancelled()) {
-+            return;
++
++         if (event != null) {
++            if (event.isCancelled()) {
++               return;
++            }
++            list = event.getLoot().stream().map(CraftItemStack::asNMSCopy).collect(Collectors.toList());
 +         }
-+         list = event.getLoot().stream().map(CraftItemStack::asNMSCopy).collect(Collectors.toList());
 +         // CraftBukkit end
 +      }
 +      //Magma end
