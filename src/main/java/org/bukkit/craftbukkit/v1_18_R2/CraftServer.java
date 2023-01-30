@@ -350,24 +350,35 @@ public final class CraftServer implements Server {
         }
 
         if (type == PluginLoadOrder.POSTWORLD) {
-            // Spigot start - Allow vanilla commands to be forced to be the main command
-            setVanillaCommands(true);
-            setForgeCommands(true);
-            commandMap.setFallbackCommands();
-            setVanillaCommands(false);
-            setForgeCommands(false);
-            // Spigot end
-            commandMap.registerServerAliases();
-            DefaultPermissions.registerCorePermissions();
-            CraftDefaultPermissions.registerCorePermissions();
-            loadCustomPermissions();
-            helpMap.initializeCommands();
-            syncCommands();
+            doSync(console.vanillaCommandDispatcher);
         }
     }
 
     public void disablePlugins() {
         pluginManager.disablePlugins();
+    }
+
+    private boolean firstSync = true;
+    public void doSync(Commands dispatcher) {
+        if (!firstSync)
+            commandMap.clearCommands();
+
+        setVanillaCommands(true);
+        setForgeCommands(true, dispatcher);
+        commandMap.setFallbackCommands();
+        setVanillaCommands(false);
+        setForgeCommands(false, dispatcher);
+        commandMap.registerServerAliases();
+
+        if (firstSync) {
+            DefaultPermissions.registerCorePermissions();
+            CraftDefaultPermissions.registerCorePermissions();
+            loadCustomPermissions();
+            helpMap.initializeCommands();
+        }
+
+        syncCommands();
+        firstSync = false;
     }
 
     private void setVanillaCommands(boolean first) { // Spigot
@@ -388,9 +399,7 @@ public final class CraftServer implements Server {
         }
     }
 
-    private void setForgeCommands(boolean first) { // Magma
-        Commands dispatcher = console.vanillaCommandDispatcher;
-
+    private void setForgeCommands(boolean first, Commands dispatcher) { // Magma
         // Build a list of all Forge commands and create wrappers
         for (CommandNode<CommandSourceStack> cmd : dispatcher.getForgeDispatcher().unwrap().getRoot().getChildren()) {
             // Magma start
@@ -788,7 +797,7 @@ public final class CraftServer implements Server {
 
     @Override
     public void reload() {
-       getLogger().info("Reloading is not supported in Magma");
+       Magma.LOGGER.warn("Bukkit reloading is not supported by Magma.");
     }
 
     @Override
