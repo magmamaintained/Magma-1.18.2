@@ -9,6 +9,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.command.VanillaCommandWrapper;
 import org.bukkit.help.*;
+import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.permission.ForgeCommandWrapper;
 
 /**
@@ -94,6 +95,13 @@ public class SimpleHelpMap implements HelpMap {
                 addTopic(topic);
             }
         }
+    }
+
+    public synchronized void updateCommands() {
+        helpTopics.clear();
+        initializeGeneralTopics();
+        initializeCommands();
+        Magma.LOGGER.info("Reloaded {} help topics", helpTopics.size());
     }
 
     /**
