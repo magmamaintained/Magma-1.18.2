@@ -375,7 +375,7 @@ public final class CraftServer implements Server {
             CraftDefaultPermissions.registerCorePermissions();
             loadCustomPermissions();
             helpMap.initializeCommands();
-        }
+        } else helpMap.updateCommands();
 
         syncCommands();
         firstSync = false;
