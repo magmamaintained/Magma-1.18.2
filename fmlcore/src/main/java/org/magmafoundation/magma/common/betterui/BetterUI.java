@@ -22,6 +22,11 @@ public class BetterUI {
     public static void printTitle(String name, String brand, String javaVersion, String version, String bukkitVersion, String forgeVersion) {
         if (!enabled)
             return;
+
+        String[] split = forgeVersion.split("-");
+        if (split.length > 1)
+            forgeVersion = forgeVersion.substring(forgeVersion.indexOf("-") + 1, forgeVersion.lastIndexOf("-"));
+
         if (enableBigLogo)
             System.out.println(bigLogo);
         else System.out.println(name);
@@ -43,7 +48,7 @@ public class BetterUI {
         System.err.println("Please also include the full log file!                      ");
         System.err.println("------------------------------------------------------------");
         System.err.println("Error type: " + errorType);
-        System.err.println("Caused by: " + cause);
+        System.err.println("Caused by: " + (cause == null ? "Unknown reason" : cause));
         System.err.println();
         System.err.println("Short stack trace(s):");
         for (ShortenedStackTrace s : trace) {
@@ -66,9 +71,19 @@ public class BetterUI {
 
             int wrong = 0;
 
-            try (BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
+            try (InputStreamReader reader = new InputStreamReader(System.in); BufferedReader input = new BufferedReader(reader)) {
                 while (true) {
                     String answer = input.readLine();
+                    if (answer == null || answer.isBlank()) {
+                        if (wrong++ >= 2) {
+                            System.err.println("You have typed the wrong answer too many times. Exiting.");
+                            return false;
+                        }
+                        System.out.println("Please type 'yes' or 'no'.");
+                        System.out.print("Do you accept? (yes/no): ");
+                        continue;
+                    }
+
                     switch (answer.toLowerCase()) {
                         case "y", "yes" -> {
                             file.delete();
