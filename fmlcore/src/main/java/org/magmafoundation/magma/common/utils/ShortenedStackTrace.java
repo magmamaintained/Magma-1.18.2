@@ -2,11 +2,13 @@ package org.magmafoundation.magma.common.utils;
 
 public class ShortenedStackTrace {
 
+    private final Throwable cause;
     private final StackTraceElement[] stackTrace;
     private final int maxElements;
 
     public ShortenedStackTrace(Throwable error, int maxElements) {
-        this.stackTrace = findCause(error).getStackTrace();
+        this.cause = findCause(error);
+        this.stackTrace = cause.getStackTrace();
         this.maxElements = maxElements;
     }
 
@@ -18,6 +20,8 @@ public class ShortenedStackTrace {
     }
 
     public void print() {
+        if (cause.getMessage() != null || !cause.getMessage().isEmpty())
+            System.out.println(cause.getMessage());
         for (int i = 0; i < maxElements; i++) {
             System.out.println(stackTrace[i]);
         }
