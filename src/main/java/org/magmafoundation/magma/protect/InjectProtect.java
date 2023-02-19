@@ -26,7 +26,7 @@ public class InjectProtect {
 
     public static void onBootErrorCaught(MixinError error) {
         LOGGER.warn("Caught exception during server boot phase, shutting down server", ShortenedStackTrace.findCause(error));
-        BetterUI.printError("Mixin related error", InjectionProcessor.getErroringMixin(error), new ShortenedStackTrace(error, 5));
+        BetterUI.printError("Mixin related error", InjectionProcessor.getErroringMixin(error), new ShortenedStackTrace(error, 3));
         System.exit(1);
     }
 
@@ -45,7 +45,7 @@ public class InjectProtect {
         if (errors.size() == 1) {
             LOGGER.debug("Found 1 error, showing user friendly error");
             Throwable t = errors.get(0).getThrowable();
-            BetterUI.printError("Mixin injection error", InjectionProcessor.getErroringMixin(t) + getMod(t), new ShortenedStackTrace(t, 5));
+            BetterUI.printError("Mixin injection error", InjectionProcessor.getErroringMixin(t) + getMod(t), new ShortenedStackTrace(t, 3));
             return;
         }
 
@@ -54,7 +54,7 @@ public class InjectProtect {
         String modIDS = "";
         for (int i = 0; i < errors.size(); i++) {
             Throwable t = errors.get(i).getThrowable();
-            traces[i] = new ShortenedStackTrace(t, 5);
+            traces[i] = new ShortenedStackTrace(t, 3);
             modIDS += InjectionProcessor.getErroringMixin(t) + ", ";
         }
 
