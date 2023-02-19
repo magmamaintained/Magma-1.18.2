@@ -2609,7 +2609,7 @@
 +        public void m_140497_(ServerPlayer p_140498_) {
 +            org.spigotmc.AsyncCatcher.catchOp( "player tracker update" ); // Spigot
 +            if (p_140498_ != this.f_140472_) {
-+                Vec3 vec3 = p_140498_.m_20182_().m_82546_( this.f_140472_.m_20182_() ); // MC-155077, SPIGOT-5113
++                Vec3 vec3 = p_140498_.m_20182_().m_82546_(this.f_140471_.m_8540_()); //Magma - this makes no sense! If I use this.entity.position() (like Forge does), valkyrien skies crashes, but when I use this it works fine...
 +                double d0 = (double) Math.min( this.m_140496_(), (ChunkMap.this.f_140126_ - 1) * 16 );
 +                double d1 = vec3.f_82479_ * vec3.f_82479_ + vec3.f_82481_ * vec3.f_82481_;
 +                double d2 = d0 * d0;
