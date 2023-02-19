@@ -1228,7 +1228,7 @@
           this.f_8933_ = null;
        }
  
-@@ -789,97 +_,152 @@
+@@ -789,97 +_,151 @@
        if (p_9014_.m_5833_()) {
           return this.m_8954_() == this;
        } else {
@@ -1243,13 +1243,20 @@
        this.f_36096_.m_38946_();
     }
  
--   public Either<Player.BedSleepingProblem, Unit> m_7720_(BlockPos p_9115_) {
++   //Magma start - original method (fixes mixin inject)
++   @Override
+    public Either<Player.BedSleepingProblem, Unit> m_7720_(BlockPos p_9115_) {
 -      Direction direction = this.f_19853_.m_8055_(p_9115_).m_61143_(HorizontalDirectionalBlock.f_54117_);
-+   // CraftBukkit start - moved bed result checks from below into separate method
-+   public Either<Player.BedSleepingProblem, Unit> getBedResult(BlockPos p_9115_, Direction direction) {
++      boolean force = startSleepInBed_force; //Magma
++      startSleepInBed_force = false; //reset
++
++      Direction enumdirection = (Direction) this.f_19853_.m_8055_( p_9115_ ).m_61143_( HorizontalDirectionalBlock.f_54117_ );
++      Either<Player.BedSleepingProblem, Unit> bedResult = null;
++
 +      java.util.Optional<BlockPos> optAt = java.util.Optional.of( p_9115_ );
 +      Player.BedSleepingProblem ret = net.minecraftforge.event.ForgeEventFactory.onPlayerSleepInBed( this, optAt );
-+      if (ret != null) return Either.left( ret );
++      if (ret != null)
++         bedResult = Either.left( ret );
        if (!this.m_5803_() && this.m_6084_()) {
           if (!this.f_19853_.m_6042_().m_63956_()) {
 -            return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_HERE);
@@ -1257,18 +1264,18 @@
 -            return Either.left(Player.BedSleepingProblem.TOO_FAR_AWAY);
 -         } else if (this.m_9191_(p_9115_, direction)) {
 -            return Either.left(Player.BedSleepingProblem.OBSTRUCTED);
-+            return Either.left( Player.BedSleepingProblem.NOT_POSSIBLE_HERE );
-+         } else if (!this.m_9116_( p_9115_, direction )) {
-+            return Either.left( Player.BedSleepingProblem.TOO_FAR_AWAY );
-+         } else if (this.m_9191_( p_9115_, direction )) {
-+            return Either.left( Player.BedSleepingProblem.OBSTRUCTED );
++            bedResult = Either.left( Player.BedSleepingProblem.NOT_POSSIBLE_HERE );
++         } else if (!this.m_9116_( p_9115_, enumdirection )) {
++            bedResult = Either.left( Player.BedSleepingProblem.TOO_FAR_AWAY );
++         } else if (this.m_9191_( p_9115_, enumdirection )) {
++            bedResult = Either.left( Player.BedSleepingProblem.OBSTRUCTED );
           } else {
 -            this.m_9158_(this.f_19853_.m_46472_(), p_9115_, this.m_146908_(), false, true);
 -            if (this.f_19853_.m_46461_()) {
 -               return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
 +            this.m_9158_( this.f_19853_.m_46472_(), p_9115_, this.m_146908_(), false, true );
 +            if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck( this, optAt )) {
-+               return Either.left( Player.BedSleepingProblem.NOT_POSSIBLE_NOW );
++               bedResult = Either.left( Player.BedSleepingProblem.NOT_POSSIBLE_NOW );
              } else {
                 if (!this.m_7500_()) {
                    double d0 = 8.0D;
@@ -1283,7 +1290,7 @@
 +                  } );
                    if (!list.isEmpty()) {
 -                     return Either.left(Player.BedSleepingProblem.NOT_SAFE);
-+                     return Either.left( Player.BedSleepingProblem.NOT_SAFE );
++                     bedResult = Either.left( Player.BedSleepingProblem.NOT_SAFE );
                    }
                 }
  
@@ -1291,23 +1298,13 @@
 -                  this.m_36220_(Stats.f_12969_);
 -                  CriteriaTriggers.f_10583_.m_53645_(this);
 -               });
-+               return Either.right( Unit.INSTANCE );
++               if (bedResult == null)
++                  bedResult = Either.right( Unit.INSTANCE );
 +            }
 +         }
 +      } else {
-+         return Either.left( Player.BedSleepingProblem.OTHER_PROBLEM );
++         bedResult = Either.left( Player.BedSleepingProblem.OTHER_PROBLEM );
 +      }
-+   }
-+
-+   @Override
-+   public Either<Player.BedSleepingProblem, Unit> m_7720_(BlockPos p_9115_) {
-+      return this.startSleepInBed( p_9115_, false );
-+   }
-+
-+   @Override
-+   public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos blockposition, boolean force) {
-+      Direction enumdirection = (Direction) this.f_19853_.m_8055_( blockposition ).m_61143_( HorizontalDirectionalBlock.f_54117_ );
-+      Either<Player.BedSleepingProblem, Unit> bedResult = this.getBedResult( blockposition, enumdirection );
 +
 +      if (bedResult.left().orElse( null ) == Player.BedSleepingProblem.OTHER_PROBLEM) {
 +         return bedResult; // return immediately if the result is not bypassable by plugins
@@ -1317,7 +1314,7 @@
 +         bedResult = Either.right( Unit.INSTANCE );
 +      }
 +
-+      bedResult = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerBedEnterEvent( this, blockposition, bedResult );
++      bedResult = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerBedEnterEvent( this, p_9115_, bedResult );
 +      if (bedResult.left().isPresent()) {
 +         return bedResult;
 +      }
@@ -1325,7 +1322,7 @@
 +      {
 +         {
 +            {
-+               Either<Player.BedSleepingProblem, Unit> either = super.startSleepInBed( blockposition, force ).ifRight( (unit) -> {
++               Either<Player.BedSleepingProblem, Unit> either = super.forceSleepInBed(force).m_7720_( p_9115_ ).ifRight( (unit) -> {
 +                  this.m_36220_( Stats.f_12969_ );
 +                  CriteriaTriggers.f_10583_.m_53645_( this );
 +               } );
@@ -1344,6 +1341,7 @@
 +         //CraftBukkit end
        }
     }
++   //Magma end
  
     public void m_5802_(BlockPos p_9190_) {
 -      this.m_7166_(Stats.f_12988_.m_12902_(Stats.f_12992_));

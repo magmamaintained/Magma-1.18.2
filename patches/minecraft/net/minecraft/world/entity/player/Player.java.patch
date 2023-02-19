@@ -605,21 +605,22 @@
     public Abilities m_150110_() {
        return this.f_36077_;
     }
-@@ -1253,13 +_,21 @@
+@@ -1253,6 +_,14 @@
     public void m_141945_(ItemStack p_150098_, ItemStack p_150099_, ClickAction p_150100_) {
     }
  
++   //Magma start - force sleep
++   protected boolean startSleepInBed_force = false;
++   public Player forceSleepInBed(boolean force) {
++      startSleepInBed_force = force;
++      return this;
++   }
++   //Magma end
 +
     public Either<Player.BedSleepingProblem, Unit> m_7720_(BlockPos p_36203_) {
-+      // CraftBukkit start
-+      return this.startSleepInBed(p_36203_, false);
-+   }
-+
-+   public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_36203_, boolean force) {
-+      // CraftBukkit end
        this.m_5802_(p_36203_);
        this.f_36110_ = 0;
-       return Either.right(Unit.INSTANCE);
+@@ -1260,6 +_,7 @@
     }
  
     public void m_6145_(boolean p_36226_, boolean p_36227_) {
