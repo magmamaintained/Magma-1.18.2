@@ -776,7 +776,7 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,68 @@
+@@ -1286,32 +_,62 @@
        }
     }
  
@@ -842,14 +842,8 @@
 +   public void m_21226_() { //Magma - protected -> public
 +      // CraftBukkit start - Update getExpReward() above if the removed if() changes!
 +      if (true) {
-+         int i = this.expToDrop;
-+
-+         i = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.f_20888_, i);
-+         while(i > 0) {
-+            int j = ExperienceOrb.m_20782_(i);
-+            i -= j;
-+            this.f_19853_.m_7967_(new ExperienceOrb(this.f_19853_, this.m_20185_(), this.m_20186_(), this.m_20189_(), j));
-+         }
++         int i = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.f_20888_, this.expToDrop);
++         ExperienceOrb.m_147082_((ServerLevel) this.f_19853_, this.m_20182_(), i); //Magma - revert to award, fixes mixin inject
 +         this.expToDrop = 0;
 +      }
 +      // CraftBukkit end
