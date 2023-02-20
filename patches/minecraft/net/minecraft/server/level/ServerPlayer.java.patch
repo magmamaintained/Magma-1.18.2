@@ -1228,7 +1228,7 @@
           this.f_8933_ = null;
        }
  
-@@ -789,97 +_,151 @@
+@@ -789,97 +_,145 @@
        if (p_9014_.m_5833_()) {
           return this.m_8954_() == this;
        } else {
@@ -1298,11 +1298,19 @@
 -                  this.m_36220_(Stats.f_12969_);
 -                  CriteriaTriggers.f_10583_.m_53645_(this);
 -               });
+-               if (!this.m_183503_().m_143333_()) {
+-                  this.m_5661_(new TranslatableComponent("sleep.not_possible"), true);
+-               }
+-
+-               ((ServerLevel)this.f_19853_).m_8878_();
+-               return either;
 +               if (bedResult == null)
 +                  bedResult = Either.right( Unit.INSTANCE );
-+            }
-+         }
-+      } else {
+             }
+          }
+       } else {
+-         return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
+-      }
 +         bedResult = Either.left( Player.BedSleepingProblem.OTHER_PROBLEM );
 +      }
 +
@@ -1319,27 +1327,17 @@
 +         return bedResult;
 +      }
 +
-+      {
-+         {
-+            {
-+               Either<Player.BedSleepingProblem, Unit> either = super.forceSleepInBed(force).m_7720_( p_9115_ ).ifRight( (unit) -> {
-+                  this.m_36220_( Stats.f_12969_ );
-+                  CriteriaTriggers.f_10583_.m_53645_( this );
-+               } );
-                if (!this.m_183503_().m_143333_()) {
--                  this.m_5661_(new TranslatableComponent("sleep.not_possible"), true);
-+                  this.m_5661_( new TranslatableComponent( "sleep.not_possible" ), true );
-                }
- 
--               ((ServerLevel)this.f_19853_).m_8878_();
-+               ((ServerLevel) this.f_19853_).m_8878_();
-                return either;
-             }
-          }
--      } else {
--         return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-+         //CraftBukkit end
-       }
++
++      Either<Player.BedSleepingProblem, Unit> either = super.m_7720_( p_9115_ ).ifRight( (unit) -> {
++         this.m_36220_( Stats.f_12969_ );
++         CriteriaTriggers.f_10583_.m_53645_( this );
++      } );
++      if (!this.m_183503_().m_143333_()) {
++         this.m_5661_( new TranslatableComponent( "sleep.not_possible" ), true );
++      }
++
++      ((ServerLevel) this.f_19853_).m_8878_();
++      return either;
     }
 +   //Magma end
  
