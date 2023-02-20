@@ -291,8 +291,8 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     private static List<URL> loadInternalDependencies() throws Exception {
         var dependencies = new InternalDependency[] {
-                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar", "e6b19d4a5e3687432530a0aa9edf6fcc", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-common/1.2.1/dependencydownload-common-1.2.1.jar"),
-                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar", "e8cee80f1719c02ef3076ff42bab0ad9", "https://s01.oss.sonatype.org/content/repositories/snapshots/dev/vankka/dependencydownload-runtime/1.2.2-SNAPSHOT/dependencydownload-runtime-1.2.2-20220425.122523-9.jar"),
+                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-common/1.3.0/dependencydownload-common-1.3.0.jar", "b6d32a6d0c4d4407f54e601cfa3f0a5a", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-common/1.3.0/dependencydownload-common-1.3.0.jar"),
+                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-runtime/1.3.0/dependencydownload-runtime-1.3.0.jar", "ec35cf4906c6151111d9eabe4f4ea949", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-runtime/1.3.0/dependencydownload-runtime-1.3.0.jar"),
                 new InternalDependency(LIB_PATH + "org/jline/jline/3.21.0/jline-3.21.0.jar", "859778f9cdd3bd42bbaaf0f6f7fe5e6a", "https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.jar"),
                 new InternalDependency(LIB_PATH + "me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar", "25d3101d2ca7f0847a804208d5411d78", "https://repo1.maven.org/maven2/me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar")
         };
