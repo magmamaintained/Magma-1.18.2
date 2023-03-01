@@ -13,7 +13,7 @@ dependencies {
     compileOnly('org.jetbrains:annotations:21.0.1')
     implementation(project(':fmlloader'))
     api('net.minecraftforge:eventbus:5.0.+')
-    implementation('commons-io:commons-io:2.11.0')
+    implementation('commons-io:commons-io:2.5')
 }
 
 task sourcesJar(type: Jar) {
