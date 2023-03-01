@@ -1392,9 +1392,17 @@ public class CraftEventFactory {
                 event = new PlayerStatisticIncrementEvent(player, stat, current, newValue);
             } else if (stat.getType() == Type.ENTITY) {
                 EntityType entityType = CraftStatistic.getEntityTypeFromStatistic((net.minecraft.stats.Stat<net.minecraft.world.entity.EntityType<?>>) statistic);
+
+                if (stat.isInjected() && entityType == null) //Magma
+                    return null;
+
                 event = new PlayerStatisticIncrementEvent(player, stat, current, newValue, entityType);
             } else {
                 Material material = CraftStatistic.getMaterialFromStatistic(statistic);
+
+                if (stat.isInjected() && material == null) //Magma
+                    return null;
+
                 event = new PlayerStatisticIncrementEvent(player, stat, current, newValue, material);
             }
         }
