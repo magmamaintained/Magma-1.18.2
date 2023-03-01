@@ -2,11 +2,11 @@ package org.magmafoundation.magma.forge;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.minecraft.stats.Stats;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
@@ -331,13 +331,13 @@ public class ForgeInject {
         List<Statistic> values = new ArrayList<>();
         var statistics = HashBiMap.create(CraftStatistic.statistics);
         int ordinal = Statistic.values().length;
-        for (var entry : Registry.CUSTOM_STAT.entrySet()) {
-            ResourceLocation resourceLocation = entry.getKey().location();
-            assert resourceLocation != null;
-            if (!resourceLocation.getNamespace().equals(NamespacedKey.MINECRAFT)) {
+        Stats.CUSTOM.forEach(stat -> {
+            ResourceLocation resourceLocation = stat.getValue();
+            if (!statistics.containsKey(resourceLocation)) {
                 var name = ResourceLocationUtil.standardize(resourceLocation);
                 try {
                     var statistic = EnumJ17Helper.makeEnum(Statistic.class, name, ordinal, List.of(), List.of());
+                    statistic.setInjected();
                     values.add(statistic);
                     statistics.put(resourceLocation, statistic);
                     debug("Injected Forge Statistic into Bukkit: " + statistic.name());
@@ -345,7 +345,7 @@ public class ForgeInject {
                     error("Could not inject statistic into Bukkit: " + name + ". " + e.getMessage());
                 }
             }
-        }
+        });
         EnumJ17Helper.addEnums(Statistic.class, values);
         CraftStatistic.statistics = statistics;
         debug("Injecting Forge Statistic into Bukkit: DONE");
