@@ -62,6 +62,7 @@ public class Metrics {
     private boolean enabled;
 
     public Metrics() {
+        System.out.println("Sending: " + Bukkit.getVersion() + " - " + Bukkit.getName());
         // Get the config file
         File bStatsFolder = new File(new File((File) MinecraftServer.getServerInstance().options.valueOf("plugins"), "bStats"), "config");
         File configFile = new File(bStatsFolder, "config.yml");
