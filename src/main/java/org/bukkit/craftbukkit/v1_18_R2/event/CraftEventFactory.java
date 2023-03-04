@@ -797,6 +797,12 @@ public class CraftEventFactory {
 
             if (source instanceof IndirectEntityDamageSource) {
                 damager = ((IndirectEntityDamageSource) source).getProximateDamageSource();
+
+                //Magma start - assume that if proximate damage source is null, that the damage source is our damagee
+                if (damager == null)
+                    damager = entity;
+                //Magma end
+
                 if (damager.getBukkitEntity() instanceof ThrownPotion) {
                     cause = DamageCause.MAGIC;
                 } else if (damager.getBukkitEntity() instanceof Projectile) {
