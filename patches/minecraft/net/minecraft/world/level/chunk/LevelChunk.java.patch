@@ -716,7 +716,7 @@
 +        }
 +    }
 +
-+    private boolean doPlace() {
++    public boolean doPlace() {
 +        boolean place = setBlockState_doPlace;
 +        setBlockState_doPlace = true;
 +        return place;
