@@ -43,7 +43,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1223 @@
+@@ -45,859 +_,1225 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -890,7 +890,9 @@
 +                captured = true;
 +            }
 +            // CraftBukkit end
-+            BlockState blockstate = levelchunk.setBlockState( p_46601_, p_46602_, (p_46603_ & 64) != 0, (p_46603_ & 1024) == 0 ); // CraftBukkit custom NO_PLACE flag
++            if ((p_46603_ & 1024) == 0) //Magma - doplace call
++                levelchunk.doPlace();
++            BlockState blockstate = levelchunk.m_6978_( p_46601_, p_46602_, (p_46603_ & 64) != 0);
 +
 +            if (blockstate == null) {
 +                // CraftBukkit start - remove blockstate if failed (or the same)
