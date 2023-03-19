@@ -18,6 +18,7 @@ public class InjectProtect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InjectProtect.class);
     private static final List<InjectSet> errors = new ArrayList<>();
+    private static boolean shutdownCalled = false;
 
     public static void init() {
         LOGGER.info("Booting up InjectProtect");
@@ -36,6 +37,10 @@ public class InjectProtect {
     }
 
     public static void shutdownCalled() {
+        if (shutdownCalled)
+            return;
+        shutdownCalled = true;
+
         LOGGER.debug("Processing shutdown request");
         if (errors.isEmpty()) {
             LOGGER.debug("No errors found, shutting down");

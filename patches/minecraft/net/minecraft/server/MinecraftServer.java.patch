@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2099 @@
+@@ -144,1693 +_,2113 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -161,8 +161,10 @@
 +import org.magmafoundation.magma.forge.ForgeInject;
 +import org.magmafoundation.magma.helpers.ServerInitHelper;
 +import org.magmafoundation.magma.patcher.PatcherManager;
++import org.magmafoundation.magma.protect.InjectProtect;
  import org.slf4j.Logger;
- 
++import org.spongepowered.asm.mixin.throwables.MixinError;
++
 +import javax.annotation.Nullable;
 +import javax.imageio.ImageIO;
 +import java.awt.image.BufferedImage;
@@ -186,7 +188,7 @@
 +import java.util.function.BooleanSupplier;
 +import java.util.function.Consumer;
 +import java.util.function.Function;
-+
+ 
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
 -   public static final Logger f_129750_ = LogUtils.getLogger();
 -   public static final String f_195495_ = "vanilla";
@@ -2572,25 +2574,24 @@
 +                this.f_129757_.m_134912_(new ServerStatus.Version(SharedConstants.m_183709_().getName(), SharedConstants.m_183709_().getProtocolVersion()));
 +                this.m_129878_(this.f_129757_);
 +
-+               // Spigot start
-+                Arrays.fill( recentTps, 20 );
++                // Spigot start
++                Arrays.fill(recentTps, 20);
 +                long curTime, tickSection = Util.m_137550_(), tickCount = 1;
 +                while (this.f_129764_) {
 +                    long i = (curTime = Util.m_137550_()) - this.f_129726_;
 +                    if (i > 5000L && this.f_129726_ - this.f_129718_ >= 30000L) { // CraftBukkit
 +                        long j = i / 50L;
 +                        if (server.getWarnOnOverload()) // CraftBukkit
-+                        f_129750_.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", i, j);
++                            f_129750_.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", i, j);
 +                        this.f_129726_ += j * 50L;
 +                        this.f_129718_ = this.f_129726_;
 +                    }
 +
-+                    if ( tickCount++ % SAMPLE_INTERVAL == 0 )
-+                    {
-+                        double currentTps = 1E3 / ( curTime - tickSection ) * SAMPLE_INTERVAL;
-+                        recentTps[0] = calcTps( recentTps[0], 0.92, currentTps ); // 1/exp(5sec/1min)
-+                        recentTps[1] = calcTps( recentTps[1], 0.9835, currentTps ); // 1/exp(5sec/5min)
-+                        recentTps[2] = calcTps( recentTps[2], 0.9945, currentTps ); // 1/exp(5sec/15min)
++                    if (tickCount++ % SAMPLE_INTERVAL == 0) {
++                        double currentTps = 1E3 / (curTime - tickSection) * SAMPLE_INTERVAL;
++                        recentTps[0] = calcTps(recentTps[0], 0.92, currentTps); // 1/exp(5sec/1min)
++                        recentTps[1] = calcTps(recentTps[1], 0.9835, currentTps); // 1/exp(5sec/5min)
++                        recentTps[2] = calcTps(recentTps[2], 0.9945, currentTps); // 1/exp(5sec/15min)
 +                        tickSection = curTime;
 +                    }
 +                    // Spigot end
@@ -2620,6 +2621,19 @@
 +                net.minecraftforge.server.ServerLifecycleHooks.expectServerStopped(); // has to come before finalTick to avoid race conditions
 +                this.m_7268_((CrashReport) null);
 +            }
++        } catch (MixinError mixinerror) {
++            InjectProtect.mixinInjectCaught(null, mixinerror);
++            CrashReport crashreport = m_206568_(mixinerror);
++            this.m_177935_(crashreport.m_178626_());
++            File file1 = new File(new File(this.m_6237_(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
++            if (crashreport.m_127512_(file1)) {
++                f_129750_.error("This crash report has been saved to: {}", (Object) file1.getAbsolutePath());
++            } else {
++                f_129750_.error("We were unable to save this crash report to disk.");
++            }
++
++            net.minecraftforge.server.ServerLifecycleHooks.expectServerStopped(); // has to come before finalTick to avoid race conditions
++            this.m_7268_(crashreport);
 +        } catch (Throwable throwable1) {
 +            f_129750_.error("Encountered an unexpected exception", throwable1);
 +            // Spigot Start
