@@ -41,7 +41,7 @@ public class InjectionProcessor {
     }
 
     private static @Nullable String getJsonFromString(String message) {
-        int index = message.indexOf(".mixins.json"); //should be required in all mixin errors
+        int index = message.indexOf(".json"); //should be required in all mixin errors
         if (index == -1)
             return null;
 
@@ -67,6 +67,10 @@ public class InjectionProcessor {
             return null;
 
         int index = file.indexOf(".mixins.json");
+
+        if (index == -1)
+            index = file.indexOf(".mixin.json");
+
         if (index == -1)
             return null;
 

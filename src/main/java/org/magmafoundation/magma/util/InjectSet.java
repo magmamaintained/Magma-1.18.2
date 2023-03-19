@@ -2,6 +2,7 @@ package org.magmafoundation.magma.util;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class InjectSet {
@@ -19,7 +20,7 @@ public class InjectSet {
         return new InjectSet(info, t);
     }
 
-    public IMixinInfo getInfo() {
+    public @Nullable IMixinInfo getInfo() {
         return info;
     }
 
