@@ -191,12 +191,16 @@
           });
        } else {
           for(ItemEntity itementity : m_155589_(p_155553_, p_155554_)) {
-@@ -193,16 +_,45 @@
+@@ -193,24 +_,71 @@
        }
     }
  
--   private static boolean m_59354_(Hopper p_59355_, Container p_59356_, int p_59357_, Direction p_59358_) {
-+   private static boolean tryTakeInItemFromSlot(Hopper p_59355_, Container p_59356_, int p_59357_, Direction p_59358_, Level level) { // Spigot
++   //Magma - add original method
++   private static @Nullable Level tryTakeInItemFromSlot_level;
+    private static boolean m_59354_(Hopper p_59355_, Container p_59356_, int p_59357_, Direction p_59358_) {
++      Level level = tryTakeInItemFromSlot_level;
++      tryTakeInItemFromSlot_level = null;
++
        ItemStack itemstack = p_59356_.m_8020_(p_59357_);
        if (!itemstack.m_41619_() && m_59380_(p_59356_, itemstack, p_59357_, p_59358_)) {
           ItemStack itemstack1 = itemstack.m_41777_();
@@ -239,8 +243,15 @@
           p_59356_.m_6836_(p_59357_, itemstack1);
        }
  
-@@ -211,6 +_,13 @@
+       return false;
+    }
  
++   private static boolean tryTakeInItemFromSlot(Hopper p_59355_, Container p_59356_, int p_59357_, Direction p_59358_, Level level) {
++      tryTakeInItemFromSlot_level = level;
++      return m_59354_(p_59355_, p_59356_, p_59357_, p_59358_);
++   }
++   //Magma end
++
     public static boolean m_59331_(Container p_59332_, ItemEntity p_59333_) {
        boolean flag = false;
 +      // CraftBukkit start
