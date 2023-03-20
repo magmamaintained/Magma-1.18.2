@@ -325,7 +325,7 @@ public final class CraftItemStack extends ItemStack {
         if (item == null || item == net.minecraft.world.item.ItemStack.EMPTY)
             return null;
 
-        if (!hasItemMeta(item)) {
+        if (item.getTag() == null) {
             ItemMeta meta = CraftItemFactory.instance().getItemMeta(getType(item));
             ((CraftMetaItem) meta).setForgeCaps(item.getForgeCaps());
             return meta;
