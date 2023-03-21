@@ -15,7 +15,7 @@
  import net.minecraft.world.level.levelgen.structure.LegacyStructureDataHandler;
  import net.minecraft.world.level.storage.DimensionDataStorage;
  
-@@ -30,8 +_,45 @@
+@@ -30,8 +_,48 @@
        this.f_63495_ = new IOWorker(p_196912_, p_196914_, "chunk");
     }
  
@@ -43,16 +43,19 @@
 +      return false;
 +   }
 +
-+   public CompoundTag upgradeChunkTag(ResourceKey<Level> p_188289_, Supplier<DimensionDataStorage> p_188290_, CompoundTag p_188291_, Optional<ResourceKey<Codec<? extends ChunkGenerator>>> p_188292_, ChunkPos pos, @Nullable LevelAccessor generatoraccess) throws IOException  {
++   //Magma start - move to original method
++   private @Nullable ChunkPos upgradeChunkTag_pos;
++   private @Nullable LevelAccessor upgradeChunkTag_generatoraccess;
++   public CompoundTag m_188288_(ResourceKey<Level> p_188289_, Supplier<DimensionDataStorage> p_188290_, CompoundTag p_188291_, Optional<ResourceKey<Codec<? extends ChunkGenerator>>> p_188292_) throws IOException {
 +      // CraftBukkit end
        int i = m_63505_(p_188291_);
 +
 +      // CraftBukkit start
-+      if (i < 1466) {
++      if (i < 1466 && upgradeChunkTag_pos != null) { //Magma - null check
 +         CompoundTag level = p_188291_.m_128469_("Level");
 +         if (level.m_128471_("TerrainPopulated") && !level.m_128471_("LightPopulated")) {
-+            ServerChunkCache cps = (generatoraccess == null) ? null : ((ServerLevel) generatoraccess).m_7726_();
-+            if (check(cps, pos.f_45578_ - 1, pos.f_45579_) && check(cps, pos.f_45578_ - 1, pos.f_45579_ - 1) && check(cps, pos.f_45578_, pos.f_45579_ - 1)) {
++            ServerChunkCache cps = (upgradeChunkTag_generatoraccess == null) ? null : ((ServerLevel) upgradeChunkTag_generatoraccess).m_7726_();
++            if (check(cps, upgradeChunkTag_pos.f_45578_ - 1, upgradeChunkTag_pos.f_45579_) && check(cps, upgradeChunkTag_pos.f_45578_ - 1, upgradeChunkTag_pos.f_45579_ - 1) && check(cps, upgradeChunkTag_pos.f_45578_, upgradeChunkTag_pos.f_45579_ - 1)) {
 +               level.m_128379_("LightPopulated", true);
 +            }
 +         }
@@ -62,13 +65,13 @@
        if (i < 1493) {
           p_188291_ = NbtUtils.m_129218_(this.f_63496_, DataFixTypes.CHUNK, p_188291_, i, 1493);
           if (p_188291_.m_128469_("Level").m_128471_("hasLegacyStructureData")) {
-@@ -43,11 +_,26 @@
+@@ -43,15 +_,42 @@
           }
        }
  
 +      // Spigot start - SPIGOT-6806: Quick and dirty way to prevent below zero generation in old chunks, by setting the status to heightmap instead of empty
 +      boolean stopBelowZero = false;
-+      boolean belowZeroGenerationInExistingChunks = (generatoraccess != null) ? ((ServerLevel) generatoraccess).spigotConfig.belowZeroGenerationInExistingChunks : org.spigotmc.SpigotConfig.belowZeroGenerationInExistingChunks;
++      boolean belowZeroGenerationInExistingChunks = (upgradeChunkTag_generatoraccess != null) ? ((ServerLevel) upgradeChunkTag_generatoraccess).spigotConfig.belowZeroGenerationInExistingChunks : org.spigotmc.SpigotConfig.belowZeroGenerationInExistingChunks;
 +
 +      if (i <= 2730 && !belowZeroGenerationInExistingChunks) {
 +         stopBelowZero = ChunkStatus.f_62326_.m_62467_().equals(p_188291_.m_128469_("Level").m_128461_("Status"));
@@ -80,12 +83,28 @@
        if (i < SharedConstants.m_183709_().getWorldVersion()) {
           p_188291_.m_128405_("DataVersion", SharedConstants.m_183709_().getWorldVersion());
        }
-+
+ 
 +      // Spigot start
 +      if (stopBelowZero) {
 +         p_188291_.m_128359_("Status", ChunkStatus.f_62325_.m_62467_());
 +      }
 +      // Spigot end
- 
++
        p_188291_.m_128473_("__context");
        return p_188291_;
+    }
++
++   public CompoundTag upgradeChunkTag(ResourceKey<Level> p_188289_, Supplier<DimensionDataStorage> p_188290_, CompoundTag p_188291_, Optional<ResourceKey<Codec<? extends ChunkGenerator>>> p_188292_, ChunkPos pos, @Nullable LevelAccessor generatoraccess) throws IOException  {
++      upgradeChunkTag_pos = pos;
++      upgradeChunkTag_generatoraccess = generatoraccess;
++      try {
++         return m_188288_(p_188289_, p_188290_, p_188291_, p_188292_);
++      } finally {
++         upgradeChunkTag_pos = null;
++         upgradeChunkTag_generatoraccess = null;
++      }
++   }
++   //Magma end
+ 
+    public static void m_196918_(CompoundTag p_196919_, ResourceKey<Level> p_196920_, Optional<ResourceKey<Codec<? extends ChunkGenerator>>> p_196921_) {
+       CompoundTag compoundtag = new CompoundTag();
