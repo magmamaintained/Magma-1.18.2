@@ -113,7 +113,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2514 @@
+@@ -118,1340 +_,2512 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -182,10 +182,7 @@
  
 +import javax.annotation.Nullable;
 +import java.nio.charset.StandardCharsets;
-+import java.util.Collections;
-+import java.util.List;
-+import java.util.Optional;
-+import java.util.Set;
++import java.util.*;
 +import java.util.concurrent.CompletableFuture;
 +import java.util.concurrent.ExecutionException;
 +import java.util.function.BiFunction;
@@ -561,7 +558,7 @@
 +        if (this.processedDisconnect) {
 +            return;
 +        }
-+        String leaveMessage = ChatFormatting.YELLOW + this.f_9743_.m_6302_() + " left the game.";
++        String leaveMessage = ChatFormatting.YELLOW + this.f_9743_.m_6302_() + " left the game";
 +
 +        PlayerKickEvent event = new PlayerKickEvent(this.f_9743_.getBukkitEntity(), s, leaveMessage);
 +
@@ -2541,8 +2538,9 @@
 +        this.server.getPlayerList().broadcastMessage( (new TranslatableComponent( "multiplayer.player.left", this.player.getDisplayName() )).withStyle( ChatFormatting.YELLOW ), ChatType.SYSTEM, Util.NIL_UUID );
 +        */
 +        this.f_9743_.m_9231_();
++        String defaultQuitMessage = ChatFormatting.YELLOW + this.f_9743_.m_7755_().getString() + " left the game";
 +        String quitMessage = this.f_9745_.m_6846_().removeAndReturn(this.f_9743_);
-+        if ((quitMessage != null) && (quitMessage.length() > 0)) {
++        if (!Objects.equals(quitMessage, defaultQuitMessage) && ((quitMessage != null) && (quitMessage.length() > 0))) { //Magma - check for default quit message
 +            this.f_9745_.m_6846_().broadcastMessage(CraftChatMessage.fromString(quitMessage));
 +        } else { //Magma - avoid mixin inject
 +            this.f_9745_.m_6846_().m_11264_( (new TranslatableComponent( "multiplayer.player.left", this.f_9743_.m_5446_() )).m_130940_( ChatFormatting.YELLOW ), ChatType.SYSTEM, Util.f_137441_ );
