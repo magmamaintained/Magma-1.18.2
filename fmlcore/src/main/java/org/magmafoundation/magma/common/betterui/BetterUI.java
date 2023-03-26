@@ -71,40 +71,39 @@ public class BetterUI {
 
             int wrong = 0;
 
-            try (InputStreamReader reader = new InputStreamReader(System.in); BufferedReader input = new BufferedReader(reader)) {
-                while (true) {
-                    String answer = input.readLine();
-                    if (answer == null || answer.isBlank()) {
+            Console console = System.console();
+            while (true) {
+                String answer = console.readLine();
+                if (answer == null || answer.isBlank()) {
+                    if (wrong++ >= 2) {
+                        System.err.println("You have typed the wrong answer too many times. Exiting.");
+                        return false;
+                    }
+                    System.out.println("Please type 'yes' or 'no'.");
+                    System.out.print("Do you accept? (yes/no): ");
+                    continue;
+                }
+
+                switch (answer.toLowerCase()) {
+                    case "y", "yes" -> {
+                        file.delete();
+                        file.createNewFile();
+                        try (FileWriter writer = new FileWriter(file)) {
+                            writer.write("eula=true");
+                        }
+                        return true;
+                    }
+                    case "n", "no" -> {
+                        System.err.println("You must accept the EULA to continue. Exiting.");
+                        return false;
+                    }
+                    default -> {
                         if (wrong++ >= 2) {
                             System.err.println("You have typed the wrong answer too many times. Exiting.");
                             return false;
                         }
                         System.out.println("Please type 'yes' or 'no'.");
                         System.out.print("Do you accept? (yes/no): ");
-                        continue;
-                    }
-
-                    switch (answer.toLowerCase()) {
-                        case "y", "yes" -> {
-                            file.delete();
-                            file.createNewFile();
-                            try (FileWriter writer = new FileWriter(file)) {
-                                writer.write("eula=true");
-                            }
-                            return true;
-                        }
-                        case "n", "no" -> {
-                            System.err.println("You must accept the EULA to continue. Exiting.");
-                            return false;
-                        }
-                        default -> {
-                            if (wrong++ >= 2) {
-                                System.err.println("You have typed the wrong answer too many times. Exiting.");
-                                return false;
-                            }
-                            System.out.println("Please type 'yes' or 'no'.");
-                            System.out.print("Do you accept? (yes/no): ");
-                        }
                     }
                 }
             }
