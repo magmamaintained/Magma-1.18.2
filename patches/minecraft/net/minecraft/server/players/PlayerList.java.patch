@@ -772,7 +772,7 @@
 +      ServerPlayer serverplayerentity = new ServerPlayer(this.f_11195_, serverWorld, p_11237_.m_36316_());
 +
 +      // Forward to new player instance
-+      p_11237_.getBukkitEntity().setHandle(serverplayerentity);
++      serverplayerentity.getBukkitEntity().restore(p_11237_.getBukkitEntity());
 +      serverplayerentity.setBukkitEntity(p_11237_.getBukkitEntity());
 +      if ((Object) p_11237_ instanceof Mob mob) {
 +         mob.m_21455_(true, false);

@@ -1707,6 +1707,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         getHandle().connection.send(packetReset);
     }
 
+    //Magma start - fix players losing custom names on respawn
+    public void restore(CraftPlayer original) {
+        setDisplayName(original.getDisplayName());
+        original.setHandle(getHandle());
+    }
+    //Magma end
+
     @Override
     public void spawnParticle(Particle particle, Location location, int count) {
         spawnParticle(particle, location.getX(), location.getY(), location.getZ(), count);
