@@ -833,7 +833,7 @@
 +      }
 +
 +      // Added from changeDimension
-+      m_11292_(p_11237_); // Update health, etc...
++      m_11292_(serverplayerentity); // Update health, etc...
 +      p_11237_.m_6885_();
 +      for (MobEffectInstance mobEffect : p_11237_.m_21220_()) {
 +         p_11237_.f_8906_.m_141995_(new ClientboundUpdateMobEffectPacket(p_11237_.m_142049_(), mobEffect));
