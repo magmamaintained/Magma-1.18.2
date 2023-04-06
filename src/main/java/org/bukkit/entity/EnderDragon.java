@@ -64,7 +64,18 @@ public interface EnderDragon extends ComplexLivingEntity, Boss, Mob {
         /**
          * The dragon will hover at its current location, not performing any actions.
          */
-        HOVER
+        HOVER,
+        /**
+         * The bukkit phase is unknown. Likely caused by a modded entity.
+         */
+        UNKNOWN;
+
+        //Magma start - return unknown when phase is not found
+        public static @Nullable Phase getOrUnknown(int id) {
+            final Phase[] values = values();
+            return id >= 0 && id < values.length - 1 /* -1 to prevent UNKNOWN getting detected as valid phase */ ? values[id] : UNKNOWN;
+        }
+        //Magma end
     }
 
     /**

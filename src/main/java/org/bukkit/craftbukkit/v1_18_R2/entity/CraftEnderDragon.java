@@ -49,7 +49,7 @@ public class CraftEnderDragon extends CraftMob implements EnderDragon {
     }
 
     public static Phase getBukkitPhase(EnderDragonPhase phase) {
-        return Phase.values()[phase.getId()];
+        return Phase.getOrUnknown(phase.getId()); //Magma - return unknown when phase is not found
     }
 
     public static EnderDragonPhase getMinecraftPhase(Phase phase) {
