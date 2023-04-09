@@ -16,13 +16,11 @@ package org.magmafoundation.magma;/*
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.magmafoundation.magma.common.betterui.BetterUI;
-import org.magmafoundation.magma.installer.MagmaInstaller;
-import org.magmafoundation.magma.updater.MagmaUpdater;
-import org.magmafoundation.magma.utils.BootstrapLauncher;
-import org.magmafoundation.magma.common.utils.JarTool;
-import org.magmafoundation.magma.utils.ServerInitHelper;
-import org.magmafoundation.magma.common.utils.SystemType;
+import static org.magmafoundation.magma.common.MagmaConstants.BRAND;
+import static org.magmafoundation.magma.common.MagmaConstants.BUKKIT_VERSION;
+import static org.magmafoundation.magma.common.MagmaConstants.FORGE_VERSION;
+import static org.magmafoundation.magma.common.MagmaConstants.NAME;
+import static org.magmafoundation.magma.common.MagmaConstants.VERSION;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -32,8 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static org.magmafoundation.magma.common.MagmaConstants.*;
+import org.magmafoundation.magma.common.betterui.BetterUI;
+import org.magmafoundation.magma.common.utils.JarTool;
+import org.magmafoundation.magma.common.utils.SystemType;
+import org.magmafoundation.magma.installer.MagmaInstaller;
+import org.magmafoundation.magma.updater.MagmaUpdater;
+import org.magmafoundation.magma.utils.BootstrapLauncher;
+import org.magmafoundation.magma.utils.ServerInitHelper;
 
 
 /**
@@ -64,11 +67,7 @@ public class MagmaStart {
         containsArg("-nojline"); //For some reason when passing -nojline to the console the whole thing crashes, remove this
 
         BetterUI.printTitle(NAME, BRAND, System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")", VERSION, BUKKIT_VERSION, FORGE_VERSION);
-
-        //Temporary warning for people using the new server jar
-        System.err.println("WARNING: The new server jar is still under development and will be unstable! If you experience any issues, please report them to the developers.");
-        System.err.println("WARNING: If the server crashes while installing, try removing the libraries folder and launching the server again.");
-        //Temporary warning for people using the new server jar
+        System.out.println("If the server crashes while installing, try removing the libraries folder and launching the server again.");
 
         if(!BetterUI.checkEula(eula)) System.exit(0);
 
