@@ -360,9 +360,6 @@ public final class CraftServer implements Server {
 
     private boolean firstSync = true;
     public void doSync(Commands dispatcher) {
-        if (!firstSync)
-            commandMap.clearCommands();
-
         setVanillaCommands(true);
         setForgeCommands(true, dispatcher);
         commandMap.setFallbackCommands();
