@@ -455,7 +455,7 @@
     }
  
     private void m_8806_() {
-@@ -740,15 +_,36 @@
+@@ -740,15 +_,39 @@
     }
  
     public boolean m_7967_(Entity p_8837_) {
@@ -465,7 +465,8 @@
 +   }
 +
 +   public boolean addFreshEntity(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
-+      return this.addEntity(entity, reason);
++      prepareAddEntity(reason);
++      return this.m_8872_(entity);
 +      // CraftBukkit end
     }
  
@@ -476,7 +477,8 @@
 +   }
 +
 +   public boolean addWithUUID(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
-+      return this.addEntity(entity, reason);
++      prepareAddEntity(reason);
++      return this.m_8872_(entity);
 +      // CraftBukkit end
     }
  
@@ -490,7 +492,8 @@
 +   }
 +
 +   public void addDuringTeleport(Entity entity, CreatureSpawnEvent.SpawnReason reason) {
-+      this.addEntity(entity, reason);
++      prepareAddEntity(reason);
++      this.m_8872_(entity);
 +      // CraftBukkit end
     }
  
@@ -551,51 +554,49 @@
        Entity entity = this.m_142646_().m_142694_(p_8854_.m_142081_());
        if (entity != null) {
           f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_142081_().toString());
-@@ -775,28 +_,74 @@
+@@ -775,28 +_,68 @@
           this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
 -      this.f_143244_.m_157533_(p_8854_);
+-   }
+-
+-   private boolean m_8872_(Entity p_8873_) {
 +      this.f_143244_.addNewEntityWithoutEvent(p_8854_);
 +      p_8854_.onAddedToWorld();
-    }
- 
-    private boolean m_8872_(Entity p_8873_) {
++   }
++
++   //Magma start - remove spawnReason from addEntity
++   private @Nullable CreatureSpawnEvent.SpawnReason addEntity_spawnReason;
++   public void prepareAddEntity(CreatureSpawnEvent.SpawnReason spawnReason) {
++      addEntity_spawnReason = spawnReason;
++   }
++
++   // CraftBukkit start
++   public boolean m_8872_(Entity p_8873_) {
 +      org.spigotmc.AsyncCatcher.catchOp("entity add"); // Spigot
        if (p_8873_.m_146910_()) {
-          f_8566_.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.m_20613_(p_8873_.m_6095_()));
+-         f_8566_.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.m_20613_(p_8873_.m_6095_()));
++         // WorldServer.LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityTypes.getKey(entity.getType())); // CraftBukkit
           return false;
        } else {
 -         return this.f_143244_.m_157533_(p_8873_);
++         CreatureSpawnEvent.SpawnReason spawnReason = addEntity_spawnReason;
++         addEntity_spawnReason = null; //reset
++         //Magma end
++
++         // SPIGOT-6415: Don't call spawn event when reason is null. For example when an entity teleports to a new world.
++         if (spawnReason != null && !CraftEventFactory.doEntityAddEventCalling(this, p_8873_, spawnReason)) {
++            return false;
++         }
++         // CraftBukkit end
++
 +         if (this.f_143244_.m_157533_(p_8873_)) {
 +            p_8873_.onAddedToWorld();
 +            return true;
 +         } else {
 +            return false;
 +         }
-+      }
-+   }
-+
-+   // CraftBukkit start
-+   public boolean addEntity(Entity entity, CreatureSpawnEvent.SpawnReason spawnReason) {
-+      if (entity.m_146910_()) {
-+         // WorldServer.LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityTypes.getKey(entity.getType())); // CraftBukkit
-+         return false;
-+      } else {
-+         // SPIGOT-6415: Don't call spawn event when reason is null. For example when an entity teleports to a new world.
-+         if (spawnReason != null && !CraftEventFactory.doEntityAddEventCalling(this, entity, spawnReason)) {
-+            return false;
-+         }
-+         // CraftBukkit end
-+
-+         //Magma start - make entity recognize that it actually exists
-+         if (this.f_143244_.m_157533_(entity)) {
-+            entity.onAddedToWorld();
-+            return true;
-+         } else {
-+            return false;
-+         }
-+         //Magma end
        }
     }
  
