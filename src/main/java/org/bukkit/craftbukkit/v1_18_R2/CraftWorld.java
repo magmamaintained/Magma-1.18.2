@@ -426,7 +426,8 @@ public class CraftWorld extends CraftRegionAccessor implements World {
         if (function != null) {
             function.accept((org.bukkit.entity.Item) entity.getBukkitEntity());
         }
-        world.addEntity(entity, SpawnReason.CUSTOM);
+        world.prepareAddEntity(SpawnReason.CUSTOM);
+        world.addEntity(entity);
         return (org.bukkit.entity.Item) entity.getBukkitEntity();
     }
 
