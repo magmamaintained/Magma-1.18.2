@@ -214,7 +214,7 @@
 +
 +   //Magma start - fix mixin inject on original performCommand
 +   private @Nullable String performCommand_label = null;
-+   private boolean performCommand_stripSlash = false;
++   private boolean performCommand_stripSlash = true;
     public int m_82117_(CommandSourceStack p_82118_, String p_82119_) {
        StringReader stringreader = new StringReader(p_82119_);
 -      if (stringreader.canRead() && stringreader.peek() == '/') {
@@ -250,7 +250,7 @@
 -      }
 -   }
 -
-+         this.performCommand_stripSlash = false;
++         this.performCommand_stripSlash = true;
 +         this.performCommand_label = null;
 +      }
 +   }
