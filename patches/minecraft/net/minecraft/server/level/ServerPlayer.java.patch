@@ -1448,7 +1448,7 @@
        }
  
     }
-@@ -921,83 +_,140 @@
+@@ -921,83 +_,138 @@
     public void m_8972_(double p_8973_, boolean p_8974_) {
        if (!this.m_146899_()) {
           BlockPos blockpos = this.m_20097_();
@@ -1461,38 +1461,43 @@
 -      p_9101_.m_155713_(this.m_142081_());
 -      this.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_19853_, p_9101_.m_58899_()));
 -      this.f_8906_.m_141995_(new ClientboundOpenSignEditorPacket(p_9101_.m_58899_()));
+-   }
+-
+-   public void m_9217_() {
+-      this.f_8940_ = this.f_8940_ % 100 + 1;
 +      p_9101_.m_155713_( this.m_142081_() );
 +      this.f_8906_.m_141995_( new ClientboundBlockUpdatePacket( this.f_19853_, p_9101_.m_58899_() ) );
 +      this.f_8906_.m_141995_( new ClientboundOpenSignEditorPacket( p_9101_.m_58899_() ) );
-    }
- 
-    public void m_9217_() {
-       this.f_8940_ = this.f_8940_ % 100 + 1;
-    }
- 
-+   // CraftBukkit start
-+   public int nextContainerCounterInt() {
-+      this.f_8940_ = this.f_8940_ % 100 + 1;
-+      return f_8940_; // CraftBukkit
 +   }
-+   // CraftBukkit end
 +
++   public void m_9217_() { //original nextContainerCounter
++      this.f_8940_ = this.f_8940_ % 100 + 1;
++   }
++
++   public int nextContainerCounter() {
++      this.f_8940_ = this.f_8940_ % 100 + 1;
++      return f_8940_;
+    }
+ 
     public OptionalInt m_5893_(@Nullable MenuProvider p_9033_) {
        if (p_9033_ == null) {
           return OptionalInt.empty();
        } else {
 -         if (this.f_36096_ != this.f_36095_) {
 -            this.m_6915_();
+-         }
+-
+-         this.m_9217_();
+-         AbstractContainerMenu abstractcontainermenu = p_9033_.m_7208_(this.f_8940_, this.m_150109_(), this);
 +         // CraftBukkit start - SPIGOT-6552: Handle inventory closing in CraftEventFactory#callInventoryOpenEvent(...)
 +          /*
 +         if (this.containerMenu != this.inventoryMenu) {
 +            this.closeContainer();
-          }
++         }
 +         */
 +         // CraftBukkit end
- 
-          this.m_9217_();
--         AbstractContainerMenu abstractcontainermenu = p_9033_.m_7208_(this.f_8940_, this.m_150109_(), this);
++
++         this.nextContainerCounter();
 +         AbstractContainerMenu abstractcontainermenu = p_9033_.m_7208_( this.f_8940_, this.m_150109_(), this );
 +
 +         // CraftBukkit start - Inventory open hook
@@ -1544,15 +1549,8 @@
     }
  
     public void m_6658_(AbstractHorse p_9059_, Container p_9060_) {
--      if (this.f_36096_ != this.f_36095_) {
--         this.m_6915_();
--      }
--
 +      // CraftBukkit start - Inventory open hook
-       this.m_9217_();
--      this.f_8906_.m_141995_(new ClientboundHorseScreenOpenPacket(this.f_8940_, p_9060_.m_6643_(), p_9059_.m_142049_()));
--      this.f_36096_ = new HorseInventoryMenu(this.f_8940_, this.m_150109_(), p_9060_, p_9059_);
--      this.m_143399_(this.f_36096_);
++      this.nextContainerCounter();
 +      AbstractContainerMenu container = new HorseInventoryMenu( this.f_8940_, this.m_150109_(), p_9060_, p_9059_ );
 +      container.setTitle( p_9059_.m_5446_() );
 +      container = CraftEventFactory.callInventoryOpenEvent( this, container );
@@ -1561,10 +1559,14 @@
 +         return;
 +      }
 +      // CraftBukkit end
-+      if (this.f_36096_ != this.f_36095_) {
-+         this.m_6915_();
-+      }
-+
+       if (this.f_36096_ != this.f_36095_) {
+          this.m_6915_();
+       }
+ 
+-      this.m_9217_();
+-      this.f_8906_.m_141995_(new ClientboundHorseScreenOpenPacket(this.f_8940_, p_9060_.m_6643_(), p_9059_.m_142049_()));
+-      this.f_36096_ = new HorseInventoryMenu(this.f_8940_, this.m_150109_(), p_9060_, p_9059_);
+-      this.m_143399_(this.f_36096_);
 +      // this.nextContainerCounter();  // CraftBukkit - moved up
 +      this.f_8906_.m_141995_( new ClientboundHorseScreenOpenPacket( this.f_8940_, p_9060_.m_6643_(), p_9059_.m_142049_() ) );
 +      this.f_36096_ = container; // CraftBukkit
