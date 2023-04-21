@@ -1,19 +1,27 @@
 package org.magmafoundation.magma.forge;
 
 import java.lang.reflect.Modifier;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 
 import net.minecraft.stats.Stats;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.*;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_18_R2.CraftStatistic;
+import org.bukkit.craftbukkit.v1_18_R2.block.*;
 import org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftFloorSign;
+import org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftWallSign;
 import org.bukkit.craftbukkit.v1_18_R2.enchantments.CraftEnchantment;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_18_R2.potion.CraftPotionUtil;
@@ -23,6 +31,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.NotNull;
 import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.craftbukkit.entity.CraftCustomEntity;
@@ -33,7 +42,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -53,6 +61,7 @@ public class ForgeInject {
 
     public static final Map<Villager.Profession, ResourceLocation> PROFESSION_MAP = new ConcurrentHashMap<>();
     public static final Map<net.minecraft.world.entity.EntityType<?>, String> ENTITY_TYPES = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, List<Map.Entry<Block, Material>>> MATERIALS = new ConcurrentHashMap<>();
     
     public static EntityType getBukkitEntityType(Entity entity) {
     	EntityType type = EntityType.fromName(ENTITY_TYPES.get(entity.getType()));
@@ -62,6 +71,8 @@ public class ForgeInject {
     public static void init() {
         debug("Injecting Forge Materials into Bukkit");
         addForgeMaterials();
+        debug("Registering Forge Materials to Bukkit");
+        registerForgeMaterials();
         debug("Injecting Forge Enchantments into Bukkit");
         addForgeEnchantments();
         debug("Injecting Forge Potions into Bukkit");
@@ -89,9 +100,16 @@ public class ForgeInject {
 
     private static void debug(String message) {
         if (MagmaConfig.instance.debugPrintInjections.getValues())
-            Magma.LOGGER.warn(message);
+            Magma.LOGGER.info(message);
         else
             Magma.LOGGER.debug(message);
+    }
+
+    private static void debugWarn(String message) {
+        if (MagmaConfig.instance.debugPrintInjections.getValues())
+            Magma.LOGGER.warn(message);
+        else
+            Magma.LOGGER.debug("Warning - " + message);
     }
 
     private static void error(String message) {
@@ -128,6 +146,8 @@ public class ForgeInject {
                 blocks++;
                 CraftMagicNumbers.BLOCK_MATERIAL.put(block, material);
                 CraftMagicNumbers.MATERIAL_BLOCK.put(material, block);
+                if (match != null)
+                    MATERIALS.computeIfAbsent(match, k -> new ArrayList<>()).add(new AbstractMap.SimpleEntry<>(block, material));
                 debug("Injecting Forge Blocks into Bukkit: " + material.name());
 				if (blockDataClass != null) {
                 	debug("Assigning block data " + blockDataClass + " to " + material.name() + " because it extends " + block.getClass());
@@ -171,6 +191,128 @@ public class ForgeInject {
         debug("Injecting Forge Material into Bukkit: DONE");
         EnumJ17Helper.addEnums(Material.class, values);
         Magma.LOGGER.info("Injected {} modded materials ({} blocks, {} items)", ordinal - origin, blocks, items);
+    }
+
+    private static void registerForgeMaterials() {
+        final Map<Class<?>, List<Map.Entry<Block, Material>>> materials = new ConcurrentHashMap<>(MATERIALS);
+        //see CraftBlockStates static {} method
+
+        registerSigns(materials);
+        registerMaterialsFor(materials, CraftSkull.class, SkullBlockEntity.class, CraftSkull::new);
+        registerMaterialsFor(materials, CraftCommandBlock.class, CommandBlockEntity.class, CraftCommandBlock::new);
+        registerMaterialsFor(materials, CraftBanner.class, BannerBlockEntity.class, CraftBanner::new);
+        registerMaterialsFor(materials, CraftShulkerBox.class, ShulkerBoxBlockEntity.class, CraftShulkerBox::new);
+        registerMaterialsFor(materials, CraftBed.class, BedBlockEntity.class, CraftBed::new);
+        registerMaterialsFor(materials, CraftBeehive.class, BeehiveBlockEntity.class, CraftBeehive::new);
+        registerMaterialsFor(materials, CraftCampfire.class, CampfireBlockEntity.class, CraftCampfire::new);
+        registerMaterialsFor(materials, CraftBarrel.class, BarrelBlockEntity.class, CraftBarrel::new);
+        registerMaterialsFor(materials, CraftBeacon.class, BeaconBlockEntity.class, CraftBeacon::new);
+        registerMaterialsFor(materials, CraftBell.class, BellBlockEntity.class, CraftBell::new);
+        registerMaterialsFor(materials, CraftBlastFurnace.class, BlastFurnaceBlockEntity.class, CraftBlastFurnace::new);
+        registerMaterialsFor(materials, CraftBrewingStand.class, BrewingStandBlockEntity.class, CraftBrewingStand::new);
+        registerMaterialsFor(materials, CraftComparator.class, ComparatorBlockEntity.class, CraftComparator::new);
+        registerMaterialsFor(materials, CraftConduit.class, ConduitBlockEntity.class, CraftConduit::new);
+        registerMaterialsFor(materials, CraftDaylightDetector.class, DaylightDetectorBlockEntity.class, CraftDaylightDetector::new);
+        registerMaterialsFor(materials, CraftDispenser.class, DispenserBlockEntity.class, CraftDispenser::new);
+        registerMaterialsFor(materials, CraftDropper.class, DropperBlockEntity.class, CraftDropper::new);
+        registerMaterialsFor(materials, CraftEnchantingTable.class, EnchantmentTableBlockEntity.class, CraftEnchantingTable::new);
+        registerMaterialsFor(materials, CraftEnderChest.class, EnderChestBlockEntity.class, CraftEnderChest::new);
+        registerMaterialsFor(materials, CraftEndGateway.class, TheEndGatewayBlockEntity.class, CraftEndGateway::new);
+        registerMaterialsFor(materials, CraftEndPortal.class, TheEndPortalBlockEntity.class, CraftEndPortal::new);
+        registerMaterialsFor(materials, CraftFurnaceFurnace.class, FurnaceBlockEntity.class, CraftFurnaceFurnace::new);
+        registerMaterialsFor(materials, CraftHopper.class, HopperBlockEntity.class, CraftHopper::new);
+        registerMaterialsFor(materials, CraftJigsaw.class, JigsawBlockEntity.class, CraftJigsaw::new);
+        registerMaterialsFor(materials, CraftJukebox.class, JukeboxBlockEntity.class, CraftJukebox::new);
+        registerMaterialsFor(materials, CraftLectern.class, LecternBlockEntity.class, CraftLectern::new);
+        registerMaterialsFor(materials, CraftMovingPiston.class, PistonMovingBlockEntity.class, CraftMovingPiston::new);
+        registerMaterialsFor(materials, CraftSculkSensor.class, SculkSensorBlockEntity.class, CraftSculkSensor::new);
+        registerMaterialsFor(materials, CraftSmoker.class, SmokerBlockEntity.class, CraftSmoker::new);
+        registerMaterialsFor(materials, CraftCreatureSpawner.class, SpawnerBlockEntity.class, CraftCreatureSpawner::new);
+        registerMaterialsFor(materials, CraftStructureBlock.class, StructureBlockEntity.class, CraftStructureBlock::new);
+        registerChests(materials);
+        materials.keySet().forEach(craftClass -> {
+            debugWarn("Could not find a matching block entity for " + craftClass.getSimpleName());
+        });
+        debug("Registering Forge Materials: DONE");
+    }
+
+    private static <T extends BlockEntity, B extends CraftBlockEntityState<T>> void registerMaterialsFor(@NotNull Map<Class<?>, List<Map.Entry<Block, Material>>> materialsMap, Class<B> craftClass, Class<T> entityClass, BiFunction<World, T, B> blockStateConstructor) {
+        final List<Map.Entry<Block, Material>> materials = materialsMap.remove(craftClass);
+        if (materials == null || materials.isEmpty())
+            return;
+
+        for (Map.Entry<Block, Material> entry : materials) {
+            final Block block = entry.getKey();
+            final Material material = entry.getValue();
+
+            if (block instanceof EntityBlock entityBlock) {
+                debug("Registering " + material.name() + " as " + craftClass.getSimpleName());
+                CraftBlockStates.register(material, craftClass, blockStateConstructor, (pos, state) -> {
+                    final BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
+                    try {
+                        return entityClass.cast(blockEntity);
+                    } catch (ClassCastException cce) {
+                        Magma.LOGGER.error("Could not register " + material.name() + " as " + craftClass.getSimpleName(), cce);
+                        return null;
+                    }
+                });
+            }
+        }
+    }
+
+    private static void registerSigns(@NotNull Map<Class<?>, List<Map.Entry<Block, Material>>> materialsMap) {
+        final List<Map.Entry<Block, Material>> materials = new ArrayList<>();
+        if (materialsMap.containsKey(CraftSign.class))
+            materials.addAll(materialsMap.remove(CraftSign.class));
+        if (materialsMap.containsKey(CraftWallSign.class))
+            materials.addAll(materialsMap.remove(CraftWallSign.class));
+        if (materialsMap.containsKey(CraftFloorSign.class))
+            materials.addAll(materialsMap.remove(CraftFloorSign.class));
+
+        if (materials.isEmpty())
+            return;
+
+        for (Map.Entry<Block, Material> entry : materials) {
+            final Block block = entry.getKey();
+            final Material material = entry.getValue();
+
+            if (block instanceof EntityBlock entityBlock) {
+                debug("Registering " + material.name() + " as " + CraftSign.class.getSimpleName());
+                CraftBlockStates.register(material, CraftSign.class, CraftSign::new, (pos, state) -> {
+                    final BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
+                    try {
+                        return SignBlockEntity.class.cast(blockEntity);
+                    } catch (ClassCastException cce) {
+                        Magma.LOGGER.error("Could not register " + material.name() + " as " + CraftSign.class.getSimpleName(), cce);
+                        return null;
+                    }
+                });
+            }
+        }
+    }
+
+    private static void registerChests(@NotNull Map<Class<?>, List<Map.Entry<Block, Material>>> materialsMap) {
+        final List<Map.Entry<Block, Material>> materials = materialsMap.remove(CraftChest.class);
+        if (materials == null || materials.isEmpty())
+            return;
+
+        for (Map.Entry<Block, Material> entry : materials) {
+            final Block block = entry.getKey();
+            final Material material = entry.getValue();
+
+            if (block instanceof EntityBlock entityBlock) {
+                debug("Registering " + material.name() + " as " + CraftChest.class.getSimpleName());
+                CraftBlockStates.register(material, CraftChest.class, CraftChest::new, (pos, state) -> {
+                    final BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
+                    try {
+                        return (block instanceof TrappedChestBlock ? TrappedChestBlockEntity.class : ChestBlockEntity.class).cast(blockEntity);
+                    } catch (ClassCastException cce) {
+                        Magma.LOGGER.error("Could not register " + material.name() + " as " + CraftChest.class.getSimpleName(), cce);
+                        return null;
+                    }
+                });
+            }
+        }
     }
 
     private static void addForgeEnchantments() {
