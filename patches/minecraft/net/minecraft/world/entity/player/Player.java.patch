@@ -849,6 +849,17 @@
        return this.m_36218_(mutablecomponent);
     }
  
+@@ -1778,6 +_,10 @@
+          p_36396_ = 0.0F;
+       }
+ 
++      //Magma - Fix for absorption
++      if (Float.isNaN(p_36396_))
++         p_36396_ = 0.0F;
++
+       this.m_20088_().m_135381_(f_36107_, p_36396_);
+    }
+ 
 @@ -1895,24 +_,24 @@
           Predicate<ItemStack> predicate = ((ProjectileWeaponItem)p_36349_.m_41720_()).m_6442_();
           ItemStack itemstack = ProjectileWeaponItem.m_43010_(this, predicate);
