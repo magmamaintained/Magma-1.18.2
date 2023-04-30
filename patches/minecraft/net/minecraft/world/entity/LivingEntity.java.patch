@@ -105,11 +105,12 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.material.Fluid;
-@@ -115,14 +_,29 @@
+@@ -115,14 +_,30 @@
  import net.minecraft.world.phys.HitResult;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
 +import net.minecraftforge.common.ForgeHooks;
++import net.minecraftforge.fml.ModList;
 +import org.bukkit.Location;
 +import org.bukkit.craftbukkit.v1_18_R2.attribute.CraftAttributeMap;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
@@ -928,12 +929,13 @@
              this.m_5496_(soundtype.m_56779_(), soundtype.m_56773_() * 0.5F, soundtype.m_56774_() * 0.75F);
           }
  
-@@ -1473,7 +_,7 @@
+@@ -1473,7 +_,8 @@
  
     protected float m_21161_(DamageSource p_21162_, float p_21163_) {
        if (!p_21162_.m_19376_()) {
 -         this.m_6472_(p_21162_, p_21163_);
-+         // this.hurtArmor(p_21162_, p_21163_); // CraftBukkit - Moved into damageEntity0(DamageSource, float)
++         if (ModList.get().isLoaded("the_vault")) //Magma - prevent mixin inject, just don't use the bukkit hurt event if the_vault is loaded
++            this.m_6472_(p_21162_, p_21163_);
           p_21163_ = CombatRules.m_19272_(p_21163_, (float)this.m_21230_(), (float)this.m_21133_(Attributes.f_22285_));
        }
  
@@ -1059,7 +1061,7 @@
 +         }
 +
 +         // Apply damage to armor
-+         if (!p_21240_.m_19376_()) {
++         if (!p_21240_.m_19376_() && !ModList.get().isLoaded("the_vault")) { //Magma - skip armor damage if the_vault is loaded
 +            float armorDamage = (float) (event.getDamage() + event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) + event.getDamage(EntityDamageEvent.DamageModifier.HARD_HAT));
 +            this.m_6472_(p_21240_, armorDamage);
 +         }
