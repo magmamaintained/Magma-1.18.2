@@ -58,6 +58,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
+import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.craftbukkit.entity.*;
 import org.magmafoundation.magma.forge.ForgeInject;
 
@@ -273,6 +274,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                         }
                     } else if (entity instanceof net.minecraft.world.entity.monster.Zoglin) {
                         return new CraftZoglin(server, (net.minecraft.world.entity.monster.Zoglin) entity);
+                    } else if (entity instanceof net.minecraft.world.entity.raid.Raider) {
+                        return new CraftCustomRaider(server, (net.minecraft.world.entity.raid.Raider) entity);
                     } else {
                         return new CraftMonster(server, (Monster) entity);
                     }
@@ -439,6 +442,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             return new CraftCustomMinecartContainer(server, (AbstractMinecartContainer) entity);
         }
         //Magma - instead of throwing an AssertionError we return a custom entity
+        Magma.LOGGER.warn("Unknown entity type: " + entity.getClass().getName());
         return new CraftCustomEntity(server, entity);
         // CHECKSTYLE:ON
     }
