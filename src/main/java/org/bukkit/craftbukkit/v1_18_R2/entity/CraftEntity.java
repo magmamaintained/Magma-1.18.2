@@ -443,8 +443,10 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             return new CraftCustomMinecartContainer(server, (AbstractMinecartContainer) entity);
         }
         //Magma - instead of throwing an AssertionError we return a custom entity
-        if (MagmaConfig.instance.debugWarnOnUnknownEntity.getValues())
-            Magma.LOGGER.warn("Unknown entity type: " + entity.getClass().getName() + " (" + entity.getClass().getSuperclass() + ")");
+        if (MagmaConfig.instance.debugWarnOnUnknownEntity.getValues()) {
+            String superclass = entity.getClass().getSuperclass() == null ? "" : " (" + entity.getClass().getSuperclass().getName() + ")";
+            Magma.LOGGER.warn("Unknown entity type: " + entity.getClass().getName() + superclass);
+        }
         return new CraftCustomEntity(server, entity);
         // CHECKSTYLE:ON
     }
