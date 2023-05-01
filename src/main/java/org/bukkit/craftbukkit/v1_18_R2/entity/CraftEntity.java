@@ -59,6 +59,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 import org.magmafoundation.magma.Magma;
+import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.craftbukkit.entity.*;
 import org.magmafoundation.magma.forge.ForgeInject;
 
@@ -442,7 +443,10 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             return new CraftCustomMinecartContainer(server, (AbstractMinecartContainer) entity);
         }
         //Magma - instead of throwing an AssertionError we return a custom entity
-        Magma.LOGGER.warn("Unknown entity type: " + entity.getClass().getName());
+        if (MagmaConfig.instance.debugWarnOnUnknownEntity.getValues()) {
+            String superclass = entity.getClass().getSuperclass() == null ? "" : " (" + entity.getClass().getSuperclass().getName() + ")";
+            Magma.LOGGER.warn("Unknown entity type: " + entity.getClass().getName() + superclass);
+        }
         return new CraftCustomEntity(server, entity);
         // CHECKSTYLE:ON
     }
