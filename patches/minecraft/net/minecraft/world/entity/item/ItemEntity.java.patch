@@ -37,7 +37,7 @@
 +   /**
 +    * The maximum age of this EntityItem.  The item is expired once this is reached.
 +    */
-+   public int lifespan = 6000;
++   public int lifespan = ItemEntity.f_149659_;
 +   private int lastTick = MinecraftServer.currentTick - 1; // CraftBukkit
  
     public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
@@ -46,7 +46,7 @@
        this.m_6034_(p_149664_, p_149665_, p_149666_);
        this.m_20334_(p_149668_, p_149669_, p_149670_);
        this.m_32045_(p_149667_);
-+      this.lifespan = (p_149667_.m_41720_() == null ? 6000 : p_149667_.getEntityLifespan(p_149663_));
++      this.lifespan = (p_149667_.m_41720_() == null ? (p_149663_ == null ? ItemEntity.f_149659_ : f_19853_.spigotConfig.itemDespawnRate) : p_149667_.getEntityLifespan(p_149663_));
     }
  
     private ItemEntity(ItemEntity p_31994_) {
@@ -100,7 +100,7 @@
  
 -         if (!this.f_19853_.f_46443_ && this.f_31985_ >= 6000) {
 +         ItemStack item = this.m_32055_();
-+         if (!this.f_19853_.f_46443_ && this.f_31985_ >= f_19853_.spigotConfig.itemDespawnRate) { // Spigot
++         if (!this.f_19853_.f_46443_ && this.f_31985_ >= lifespan) {
 +             int hook = net.minecraftforge.event.ForgeEventFactory.onItemExpire(this, item);
 +             if (hook < 0) this.m_146870_();
 +             else          this.lifespan += hook;
@@ -128,7 +128,7 @@
 +      if (this.f_31985_ != -32768) this.f_31985_ += elapsedTicks;
 +      this.lastTick = MinecraftServer.currentTick;
 +      // CraftBukkit end
-+      if (!this.f_19853_.f_46443_ && this.f_31985_ >= f_19853_.spigotConfig.itemDespawnRate) { // Spigot
++      if (!this.f_19853_.f_46443_ && this.f_31985_ >= lifespan) { //Magma
 +         // CraftBukkit start - fire ItemDespawnEvent
 +         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callItemDespawnEvent(this).isCancelled()) {
 +            this.f_31985_ = 0;
