@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/DetectorRailBlock.java
 +++ b/net/minecraft/world/level/block/DetectorRailBlock.java
-@@ -23,6 +_,7 @@
+@@ -23,6 +_,8 @@
  import net.minecraft.world.level.block.state.properties.Property;
  import net.minecraft.world.level.block.state.properties.RailShape;
  import net.minecraft.world.phys.AABB;
 +import org.bukkit.event.block.BlockRedstoneEvent;
++import org.magmafoundation.magma.configuration.MagmaConfig;
  
  public class DetectorRailBlock extends BaseRailBlock {
     public static final EnumProperty<RailShape> f_52427_ = BlockStateProperties.f_61404_;
@@ -37,6 +38,18 @@
           if (flag1 && !flag) {
              BlockState blockstate = p_52435_.m_61124_(f_52428_, Boolean.valueOf(true));
              p_52433_.m_7731_(p_52434_, blockstate, 3);
+@@ -106,7 +_,10 @@
+ 
+       for(BlockPos blockpos : railstate.m_55424_()) {
+          BlockState blockstate = p_52473_.m_8055_(blockpos);
+-         blockstate.m_60690_(p_52473_, blockpos, blockstate.m_60734_(), p_52474_, false);
++         if (MagmaConfig.instance.patchUpdateSuppression.getValues())
++            p_52473_.neighborChanged(blockstate, blockpos, blockstate.m_60734_(), p_52474_, false);
++         else
++            blockstate.m_60690_(p_52473_, blockpos, blockstate.m_60734_(), p_52474_, false);
+       }
+ 
+    }
 @@ -135,7 +_,9 @@
              return list.get(0).m_38534_().m_45436_();
           }

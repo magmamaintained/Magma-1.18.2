@@ -1,8 +1,10 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -20,7 +_,7 @@
+@@ -19,8 +_,9 @@
+ import net.minecraft.world.level.material.PushReaction;
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
++import org.magmafoundation.magma.configuration.MagmaConfig;
  
 -public abstract class BaseRailBlock extends Block implements SimpleWaterloggedBlock {
 +public abstract class BaseRailBlock extends Block implements SimpleWaterloggedBlock, net.minecraftforge.common.extensions.IForgeBaseRailBlock {
@@ -17,6 +19,18 @@
        return railshape != null && railshape.m_61745_() ? f_49356_ : f_49355_;
     }
  
+@@ -61,7 +_,10 @@
+    protected BlockState m_49389_(BlockState p_49390_, Level p_49391_, BlockPos p_49392_, boolean p_49393_) {
+       p_49390_ = this.m_49367_(p_49391_, p_49392_, p_49390_, true);
+       if (this.f_49357_) {
+-         p_49390_.m_60690_(p_49391_, p_49392_, this, p_49392_, p_49393_);
++         if (MagmaConfig.instance.patchUpdateSuppression.getValues())
++            p_49391_.neighborChanged(p_49390_, p_49392_, this, p_49392_, p_49393_);
++         else
++            p_49390_.m_60690_(p_49391_, p_49392_, this, p_49392_, p_49393_);
+       }
+ 
+       return p_49390_;
 @@ -69,7 +_,7 @@
  
     public void m_6861_(BlockState p_49377_, Level p_49378_, BlockPos p_49379_, Block p_49380_, BlockPos p_49381_, boolean p_49382_) {

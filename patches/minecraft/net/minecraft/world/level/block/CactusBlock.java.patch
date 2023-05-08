@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -20,8 +_,9 @@
+@@ -20,8 +_,10 @@
  import net.minecraft.world.level.pathfinder.PathComputationType;
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
 +import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
++import org.magmafoundation.magma.configuration.MagmaConfig;
  
 -public class CactusBlock extends Block {
 +public class CactusBlock extends Block implements net.minecraftforge.common.IPlantable {
@@ -19,7 +20,7 @@
        if (!p_51138_.m_60710_(p_51139_, p_51140_)) {
           p_51139_.m_46961_(p_51140_, true);
        }
-@@ -49,15 +_,17 @@
+@@ -49,15 +_,20 @@
  
           if (i < 3) {
              int j = p_51166_.m_61143_(f_51131_);
@@ -30,7 +31,11 @@
 +               CraftEventFactory.handleBlockGrowEvent(p_51167_, blockpos, this.m_49966_()); // CraftBukkit
                 BlockState blockstate = p_51166_.m_61124_(f_51131_, Integer.valueOf(0));
                 p_51167_.m_7731_(p_51168_, blockstate, 4);
-                blockstate.m_60690_(p_51167_, blockpos, this, p_51168_, false);
+-               blockstate.m_60690_(p_51167_, blockpos, this, p_51168_, false);
++               if (MagmaConfig.instance.patchUpdateSuppression.getValues())
++                  p_51167_.neighborChanged(blockstate, blockpos, this, p_51168_, false);
++               else
++                  blockstate.m_60690_(p_51167_, blockpos, this, p_51168_, false);
              } else {
                 p_51167_.m_7731_(p_51168_, p_51166_.m_61124_(f_51131_, Integer.valueOf(j + 1)), 4);
              }
