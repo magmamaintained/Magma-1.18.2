@@ -43,6 +43,11 @@ public class MagmaConfig extends ConfigBase {
 
     public static MagmaConfig instance = new MagmaConfig();
 
+    /* PATCHES */
+    public final BooleanValue patchUpdateSuppression = new BooleanValue(this, "patch.update-suppression.enable", true, "Changes the way that blocks update their neighbours, this fixes update suppression crashes");
+    public final IntValue updateSuppressionMaxUpdates = new IntValue(this, "patch.update-suppression.max-updates", 1_000_000, "The maximum number of chained updates that can occur before skipping the rest");
+    /* PATCHES */
+
     public final BooleanValue forgeBukkitPermissionHandlerEnable = new BooleanValue(this, "forge.bukkitPermissionHandler.enable", true, "Let's Bukkit permission plugins handle forge/modded commands");
     public final BooleanValue forgeCommandsIgnoreBukkitPerms = new BooleanValue(this, "forge.commandsIgnoreBukkitPerms", true, "If true, forge/modded commands will ignore Bukkit permission plugins and use Forge permissions instead, disable this to control forge commands with permission plugins like LuckPerms");
     public final BooleanValue magmaAutoUpdater = new BooleanValue(this, "magma.auto-update", true, "Auto updates the Magma jar");

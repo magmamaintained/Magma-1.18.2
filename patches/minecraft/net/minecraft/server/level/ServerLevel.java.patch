@@ -128,7 +128,7 @@
  import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
  import net.minecraft.world.level.levelgen.structure.BoundingBox;
  import net.minecraft.world.level.levelgen.structure.StructureCheck;
-@@ -136,17 +_,38 @@
+@@ -136,17 +_,39 @@
  import net.minecraft.world.level.portal.PortalForcer;
  import net.minecraft.world.level.saveddata.maps.MapIndex;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
@@ -149,6 +149,7 @@
 +import org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID;
 +import org.bukkit.event.entity.CreatureSpawnEvent;
 +import org.bukkit.event.weather.LightningStrikeEvent;
++import org.magmafoundation.magma.configuration.MagmaConfig;
 +import org.magmafoundation.magma.forge.ForgeInject;
 +import org.magmafoundation.magma.helpers.DelegateWorldInfo;
  import org.slf4j.Logger;
@@ -700,6 +701,42 @@
        this.m_151513_(p_143268_, p_143269_, p_143270_, p_143269_.m_157827_());
     }
  
+@@ -875,6 +_,35 @@
+       }
+    }
+ 
++   public void m_46672_(BlockPos p_215045_, Block p_215046_) {
++      if (!MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++         super.m_46672_(p_215045_, p_215046_);
++         return;
++      }
++      net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215045_, this.m_8055_(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
++      this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215045_, p_215046_, (Direction)null);
++   }
++
++   public void m_46590_(BlockPos p_215052_, Block p_215053_, Direction p_215054_) {
++      if (!MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++         super.m_46590_(p_215052_, p_215053_, p_215054_);
++         return;
++      }
++      java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf(Direction.class);
++      directions.remove(p_215054_);
++      if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215052_, this.m_8055_(p_215052_), directions, false).isCanceled())
++         return;
++      this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
++   }
++
++   public void neighborChanged(BlockState p_215035_, BlockPos p_215036_, Block p_215037_, BlockPos p_215038_, boolean p_215039_) {
++      if (!MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++         super.neighborChanged(p_215035_, p_215036_, p_215037_, p_215038_, p_215039_);
++         return;
++      }
++      this.neighborUpdater.neighborChanged(p_215035_, p_215036_, p_215037_, p_215038_, p_215039_);
++   }
++
+    public void m_7605_(Entity p_8650_, byte p_8651_) {
+       this.m_7726_().m_8394_(p_8650_, new ClientboundEntityEventPacket(p_8650_, p_8651_));
+    }
 @@ -885,6 +_,7 @@
  
     public Explosion m_7703_(@Nullable Entity p_8653_, @Nullable DamageSource p_8654_, @Nullable ExplosionDamageCalculator p_8655_, double p_8656_, double p_8657_, double p_8658_, float p_8659_, boolean p_8660_, Explosion.BlockInteraction p_8661_) {

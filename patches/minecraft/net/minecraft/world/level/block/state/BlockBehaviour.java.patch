@@ -48,11 +48,14 @@
  import net.minecraft.world.level.pathfinder.PathComputationType;
  import net.minecraft.world.level.storage.loot.BuiltInLootTables;
  import net.minecraft.world.level.storage.loot.LootContext;
-@@ -66,7 +_,18 @@
+@@ -65,8 +_,20 @@
+ import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
- 
+-
 -public abstract class BlockBehaviour {
++import org.magmafoundation.magma.configuration.MagmaConfig;
++
 +import javax.annotation.Nullable;
 +import java.util.Arrays;
 +import java.util.Collections;
@@ -162,6 +165,24 @@
 +      @Deprecated
        public BlockState m_60717_(Rotation p_60718_) {
           return this.m_60734_().m_6843_(this.m_7160_(), p_60718_);
+       }
+@@ -636,9 +_,14 @@
+ 
+          for(Direction direction : BlockBehaviour.f_60441_) {
+             blockpos$mutableblockpos.m_122159_(p_60707_, direction);
+-            BlockState blockstate = p_60706_.m_8055_(blockpos$mutableblockpos);
+-            BlockState blockstate1 = blockstate.m_60728_(direction.m_122424_(), this.m_7160_(), p_60706_, blockpos$mutableblockpos, p_60707_);
+-            Block.m_49908_(blockstate, blockstate1, p_60706_, blockpos$mutableblockpos, p_60708_, p_60709_);
++
++            if (MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++               p_60706_.neighborShapeChanged(direction.m_122424_(), this.m_7160_(), blockpos$mutableblockpos, p_60707_, p_60708_, p_60709_);
++            } else {
++               BlockState blockstate = p_60706_.m_8055_(blockpos$mutableblockpos);
++               BlockState blockstate1 = blockstate.m_60728_(direction.m_122424_(), this.m_7160_(), p_60706_, blockpos$mutableblockpos, p_60707_);
++               Block.m_49908_(blockstate, blockstate1, p_60706_, blockpos$mutableblockpos, p_60708_, p_60709_);
++            }
+          }
+ 
        }
 @@ -873,8 +_,9 @@
        ResourceLocation f_60894_;
