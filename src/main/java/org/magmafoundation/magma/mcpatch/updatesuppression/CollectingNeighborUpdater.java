@@ -1,4 +1,4 @@
-package org.magmafoundation.magma.mcpatch.updatesupression;
+package org.magmafoundation.magma.mcpatch.updatesuppression;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;

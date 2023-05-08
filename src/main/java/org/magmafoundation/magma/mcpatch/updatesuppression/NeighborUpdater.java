@@ -1,4 +1,4 @@
-package org.magmafoundation.magma.mcpatch.updatesupression;
+package org.magmafoundation.magma.mcpatch.updatesuppression;
 
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
