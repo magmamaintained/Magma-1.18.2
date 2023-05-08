@@ -43,7 +43,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1241 @@
+@@ -45,859 +_,1240 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -387,7 +387,7 @@
 +        this.f_46423_ = Thread.currentThread();
 +        this.f_46420_ = new BiomeManager( this, p_204155_ );
 +        this.f_46424_ = p_204154_;
-+        this.neighborUpdater = new CollectingNeighborUpdater(this, MagmaConfig.instance.updateSupressionMaxUpdates.getValues());
++        this.neighborUpdater = new CollectingNeighborUpdater(this, MagmaConfig.instance.updateSuppressionMaxUpdates.getValues());
 +        // CraftBukkit start
 +        m_6857_().world = this; //Magma - fix ClassCastException
 +        // From PlayerList.setPlayerFileData
@@ -1022,8 +1022,7 @@
 +    }
 +
 +    public void m_46672_(BlockPos p_46673_, Block p_46674_) {
-+        if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify( this, p_46673_, this.m_8055_( p_46673_ ), java.util.EnumSet.allOf( Direction.class ), false ).isCanceled())
-+            return;
++        net.minecraftforge.event.ForgeEventFactory.onNeighborNotify( this, p_46673_, this.m_8055_( p_46673_ ), java.util.EnumSet.allOf( Direction.class ), false ).isCanceled();
 +        if (MagmaConfig.instance.patchUpdateSuppression.getValues())
 +            return;
 +        this.m_46586_( p_46673_.m_142125_(), p_46674_, p_46673_ );
@@ -1070,9 +1069,6 @@
 +    }
 +
 +    public void m_46586_(BlockPos p_46587_, Block p_46588_, BlockPos p_46589_) {
-+        if (MagmaConfig.instance.patchUpdateSuppression.getValues())
-+            return;
-+
 +        if (!this.f_46443_) {
 +            BlockState blockstate = this.m_8055_( p_46587_ );
 +
@@ -1088,7 +1084,10 @@
 +                    }
 +                }
 +                // CraftBukkit end
-+                blockstate.m_60690_( this, p_46587_, p_46588_, p_46589_, false );
++                if (MagmaConfig.instance.patchUpdateSuppression.getValues())
++                    this.neighborChanged(blockstate, p_46587_, p_46588_, p_46589_, false);
++                else
++                    blockstate.m_60690_(this, p_46587_, p_46588_, p_46589_, false);
 +                // Spigot Start
 +            } catch (StackOverflowError ex) {
 +                lastPhysicsProblem = new BlockPos(p_46587_);

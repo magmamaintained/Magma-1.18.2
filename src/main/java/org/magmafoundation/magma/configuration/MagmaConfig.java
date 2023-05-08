@@ -44,8 +44,8 @@ public class MagmaConfig extends ConfigBase {
     public static MagmaConfig instance = new MagmaConfig();
 
     /* PATCHES */
-    public final BooleanValue patchUpdateSuppression = new BooleanValue(this, "patch.update-suppression", true, "Changes the way that blocks update their neighbours, this fixes update suppression crashes");
-    public final IntValue updateSupressionMaxUpdates = new IntValue(this, "patch.update-suppression.max-updates", 1_000_000, "The maximum number of chained updates that can occur before skipping the rest");
+    public final BooleanValue patchUpdateSuppression = new BooleanValue(this, "patch.update-suppression.enable", true, "Changes the way that blocks update their neighbours, this fixes update suppression crashes");
+    public final IntValue updateSuppressionMaxUpdates = new IntValue(this, "patch.update-suppression.max-updates", 1_000_000, "The maximum number of chained updates that can occur before skipping the rest");
     /* PATCHES */
 
     public final BooleanValue forgeBukkitPermissionHandlerEnable = new BooleanValue(this, "forge.bukkitPermissionHandler.enable", true, "Let's Bukkit permission plugins handle forge/modded commands");

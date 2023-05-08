@@ -701,12 +701,12 @@
        this.m_151513_(p_143268_, p_143269_, p_143270_, p_143269_.m_157827_());
     }
  
-@@ -875,6 +_,43 @@
+@@ -875,6 +_,35 @@
        }
     }
  
 +   public void m_46672_(BlockPos p_215045_, Block p_215046_) {
-+      if (MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++      if (!MagmaConfig.instance.patchUpdateSuppression.getValues()) {
 +         super.m_46672_(p_215045_, p_215046_);
 +         return;
 +      }
@@ -715,7 +715,7 @@
 +   }
 +
 +   public void m_46590_(BlockPos p_215052_, Block p_215053_, Direction p_215054_) {
-+      if (MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++      if (!MagmaConfig.instance.patchUpdateSuppression.getValues()) {
 +         super.m_46590_(p_215052_, p_215053_, p_215054_);
 +         return;
 +      }
@@ -724,14 +724,6 @@
 +      if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215052_, this.m_8055_(p_215052_), directions, false).isCanceled())
 +         return;
 +      this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
-+   }
-+
-+   public void m_46586_(BlockPos p_215048_, Block p_215049_, BlockPos p_215050_) {
-+      if (!MagmaConfig.instance.patchUpdateSuppression.getValues()) {
-+         super.m_46586_(p_215048_, p_215049_, p_215050_);
-+         return;
-+      }
-+      this.neighborUpdater.neighborChanged(p_215048_, p_215049_, p_215050_);
 +   }
 +
 +   public void neighborChanged(BlockState p_215035_, BlockPos p_215036_, Block p_215037_, BlockPos p_215038_, boolean p_215039_) {
