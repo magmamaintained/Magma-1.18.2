@@ -23,7 +23,7 @@
  import net.minecraft.world.ticks.LevelTickAccess;
  import net.minecraft.world.ticks.ScheduledTick;
  import net.minecraft.world.ticks.TickPriority;
-+import org.magmafoundation.magma.mcpatch.updatesupression.NeighborUpdater;
++import org.magmafoundation.magma.mcpatch.updatesuppression.NeighborUpdater;
  
  public interface LevelAccessor extends CommonLevelAccessor, LevelTimeAccess {
     default long m_8044_() {

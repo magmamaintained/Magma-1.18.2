@@ -240,8 +240,8 @@
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.configuration.MagmaConfig;
 +import org.magmafoundation.magma.forge.ForgeInject;
-+import org.magmafoundation.magma.mcpatch.updatesupression.CollectingNeighborUpdater;
-+import org.magmafoundation.magma.mcpatch.updatesupression.NeighborUpdater;
++import org.magmafoundation.magma.mcpatch.updatesuppression.CollectingNeighborUpdater;
++import org.magmafoundation.magma.mcpatch.updatesuppression.NeighborUpdater;
 +
 +import javax.annotation.Nullable;
 +import java.io.IOException;
