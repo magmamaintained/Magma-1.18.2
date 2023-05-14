@@ -77,7 +77,7 @@
 -               SoundType soundtype = blockstate1.m_60827_();
 -               level.m_5594_(player, blockpos, this.m_40587_(blockstate1), SoundSource.BLOCKS, (soundtype.m_56773_() + 1.0F) / 2.0F, soundtype.m_56774_() * 0.8F);
 +               SoundType soundtype = blockstate1.getSoundType(level, blockpos, p_40577_.m_43723_());
-+               level.m_5594_(player, blockpos, this.getPlaceSound(blockstate1, level, blockpos, p_40577_.m_43723_()), SoundSource.BLOCKS, (soundtype.m_56773_() + 1.0F) / 2.0F, soundtype.m_56774_() * 0.8F);
++               //level.playSound(player, blockpos, this.getPlaceSound(blockstate1, level, blockpos, p_40577_.getPlayer()), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                 level.m_142346_(player, GameEvent.f_157797_, blockpos);
 -               if (player == null || !player.m_150110_().f_35937_) {
 +               if (player == null || !player.m_150110_().f_35937_ && itemstack != ItemStack.f_41583_) { // CraftBukkit
