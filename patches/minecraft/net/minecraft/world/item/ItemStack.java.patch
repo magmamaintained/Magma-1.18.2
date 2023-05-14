@@ -374,8 +374,8 @@
 +                  }
 +               }
 +               // SPIGOT-1288 - play sound stripped from ItemBlock
-+               if (item instanceof BlockItem) {
-+                  SoundType soundeffecttype = ((BlockItem) item).m_40614_().m_49962_(null);
++               if (item instanceof BlockItem blockItem) {
++                  SoundType soundeffecttype = blockItem.m_40614_().m_49962_(blockinworld.m_61168_()); //Magma - pass block state instead of null
 +                  world.m_5594_(player, blockpos, soundeffecttype.m_56777_(), SoundSource.BLOCKS, (soundeffecttype.m_56773_() + 1.0F) / 2.0F, soundeffecttype.m_56774_() * 0.8F);
 +               }
 +               player.m_36246_(Stats.f_12982_.m_12902_(item));
