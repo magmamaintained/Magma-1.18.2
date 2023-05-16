@@ -777,7 +777,7 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,62 @@
+@@ -1286,32 +_,72 @@
        }
     }
  
@@ -787,6 +787,14 @@
 +   protected Inventory getForgeCaptures() {
 +      Inventory temp = forgeCaptures;
 +      forgeCaptures = null;
++      return temp;
++   }
++
++   private Collection<org.bukkit.inventory.ItemStack> tempDrops = null;
++
++   protected @Nullable Collection<org.bukkit.inventory.ItemStack> getAndClearDrops() {
++      Collection<org.bukkit.inventory.ItemStack> temp = tempDrops;
++      tempDrops = null;
 +      return temp;
 +   }
 +
@@ -816,7 +824,9 @@
 +      ForgeInventoryHelper.capturePlayerInventory(this);
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
 +         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
-+         CraftEventFactory.callEntityDeathEvent(this, this.drops);
++         EntityDeathEvent event = CraftEventFactory.callEntityDeathEvent(this, this.drops);
++         if (this instanceof ServerPlayer)
++            tempDrops = event.getDrops(); //Magma - capture drops for players
 +      }
 +      forgeCaptures = ForgeInventoryHelper.restorePlayerInventory(this);
     }
