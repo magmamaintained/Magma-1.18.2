@@ -1026,7 +1026,7 @@
 +         portalinfo.setCBPortalEvent(serverLevel.get(), null);
 +         //CraftBukkit start
 +         serverLevel.set( portalinfo.world );
-+         if (serverLevel.get() == null) {
++         if (serverLevel.get() == f_19853_) {
 +            //SPIGOT-6782: Just move the entity if a plugin changed the world to the one the entity is already in
 +            m_7678_( portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, portalinfo.f_77679_ );
 +            m_20256_( portalinfo.f_77677_ );
@@ -1048,7 +1048,7 @@
 -                  ServerLevel.m_8617_(p_20118_);
 +               serverLevel.get().m_143334_( entity );
 +               if (spawnPortal && serverLevel.get().m_46472_() == Level.f_46430_) {
-+                  ServerLevel.m_8617_( serverLevel.get() ); //Magma TODO: add argument Entity to makeObsidianPlatform in {@link ServerLevel#makeObsidianPlatform(ServerLevel)}
++                  ServerLevel.makeObsidianPlatform( serverLevel.get(), this );
                 }
 -            }
 +               // CraftBukkit start - Forward the CraftEntity to the new entity
