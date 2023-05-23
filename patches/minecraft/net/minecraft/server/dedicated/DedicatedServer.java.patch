@@ -131,7 +131,7 @@
 +         }
 +      }
 +
-+      //new TerminalConsoleWriterThread(System.out, this.reader).start();//Magma - this does nothing.
++      new TerminalConsoleWriterThread(System.out, this.reader).start();
 +
 +      System.setOut(IoBuilder.forLogger(logger).setLevel( org.apache.logging.log4j.Level.INFO).buildPrintStream());
 +      System.setErr(IoBuilder.forLogger(logger).setLevel( org.apache.logging.log4j.Level.WARN).buildPrintStream());
