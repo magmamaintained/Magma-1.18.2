@@ -7,7 +7,7 @@
  import com.mojang.brigadier.CommandDispatcher;
  import com.mojang.brigadier.arguments.IntegerArgumentType;
  import net.minecraft.commands.CommandSourceStack;
-@@ -7,6 +_,8 @@
+@@ -7,11 +_,13 @@
  import net.minecraft.commands.arguments.TimeArgument;
  import net.minecraft.network.chat.TranslatableComponent;
  import net.minecraft.server.level.ServerLevel;
@@ -16,6 +16,12 @@
  
  public class TimeCommand {
     public static void m_139071_(CommandDispatcher<CommandSourceStack> p_139072_) {
+       p_139072_.register(Commands.m_82127_("time").requires((p_139076_) -> {
+-         return p_139076_.m_6761_(2);
++         return p_139076_.hasPermission(2,"minecraft.command.time");
+       }).then(Commands.m_82127_("set").then(Commands.m_82127_("day").executes((p_139101_) -> {
+          return m_139077_(p_139101_.getSource(), 1000);
+       })).then(Commands.m_82127_("noon").executes((p_139099_) -> {
 @@ -43,8 +_,16 @@
     }
  

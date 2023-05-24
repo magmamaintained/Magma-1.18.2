@@ -1,0 +1,23 @@
+--- a/net/minecraft/server/commands/MsgCommand.java
++++ b/net/minecraft/server/commands/MsgCommand.java
+@@ -18,11 +_,17 @@
+ 
+ public class MsgCommand {
+    public static void m_138060_(CommandDispatcher<CommandSourceStack> p_138061_) {
+-      LiteralCommandNode<CommandSourceStack> literalcommandnode = p_138061_.register(Commands.m_82127_("msg").then(Commands.m_82129_("targets", EntityArgument.m_91470_()).then(Commands.m_82129_("message", MessageArgument.m_96832_()).executes((p_138063_) -> {
++      LiteralCommandNode<CommandSourceStack> literalcommandnode = p_138061_.register(Commands.m_82127_("msg")
++                      .requires(commandSourceStack -> commandSourceStack.hasPermission(0,"minecraft.command.msg"))
++              .then(Commands.m_82129_("targets", EntityArgument.m_91470_()).then(Commands.m_82129_("message", MessageArgument.m_96832_()).executes((p_138063_) -> {
+          return m_138064_(p_138063_.getSource(), EntityArgument.m_91477_(p_138063_, "targets"), MessageArgument.m_96835_(p_138063_, "message"));
+       }))));
+-      p_138061_.register(Commands.m_82127_("tell").redirect(literalcommandnode));
+-      p_138061_.register(Commands.m_82127_("w").redirect(literalcommandnode));
++      p_138061_.register(Commands.m_82127_("tell")
++              .requires(commandSourceStack -> commandSourceStack.hasPermission(0,"minecraft.command.msg"))
++              .redirect(literalcommandnode));
++      p_138061_.register(Commands.m_82127_("w")
++              .requires(commandSourceStack -> commandSourceStack.hasPermission(0,"minecraft.command.msg"))
++              .redirect(literalcommandnode));
+    }
+ 
+    private static int m_138064_(CommandSourceStack p_138065_, Collection<ServerPlayer> p_138066_, Component p_138067_) {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/BanIpCommands.java
++++ b/net/minecraft/server/commands/BanIpCommands.java
+@@ -26,7 +_,7 @@
+ 
+    public static void m_136527_(CommandDispatcher<CommandSourceStack> p_136528_) {
+       p_136528_.register(Commands.m_82127_("ban-ip").requires((p_136532_) -> {
+-         return p_136532_.m_6761_(3);
++         return p_136532_.hasPermission(3,"minecraft.command.ban-ip");
+       }).then(Commands.m_82129_("target", StringArgumentType.word()).executes((p_136538_) -> {
+          return m_136533_(p_136538_.getSource(), StringArgumentType.getString(p_136538_, "target"), (Component)null);
+       }).then(Commands.m_82129_("reason", MessageArgument.m_96832_()).executes((p_136530_) -> {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/DeOpCommands.java
++++ b/net/minecraft/server/commands/DeOpCommands.java
+@@ -17,7 +_,7 @@
+ 
+    public static void m_136888_(CommandDispatcher<CommandSourceStack> p_136889_) {
+       p_136889_.register(Commands.m_82127_("deop").requires((p_136896_) -> {
+-         return p_136896_.m_6761_(3);
++         return p_136896_.hasPermission(3,"minecraft.command.deop");
+       }).then(Commands.m_82129_("targets", GameProfileArgument.m_94584_()).suggests((p_136893_, p_136894_) -> {
+          return SharedSuggestionProvider.m_82967_(p_136893_.getSource().m_81377_().m_6846_().m_11308_(), p_136894_);
+       }).executes((p_136891_) -> {
