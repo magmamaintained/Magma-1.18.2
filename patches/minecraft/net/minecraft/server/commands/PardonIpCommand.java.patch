@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/PardonIpCommand.java
++++ b/net/minecraft/server/commands/PardonIpCommand.java
+@@ -17,7 +_,7 @@
+ 
+    public static void m_138108_(CommandDispatcher<CommandSourceStack> p_138109_) {
+       p_138109_.register(Commands.m_82127_("pardon-ip").requires((p_138116_) -> {
+-         return p_138116_.m_6761_(3);
++         return p_138116_.hasPermission(3,"minecraft.command.pardon-ip");
+       }).then(Commands.m_82129_("target", StringArgumentType.word()).suggests((p_138113_, p_138114_) -> {
+          return SharedSuggestionProvider.m_82967_(p_138113_.getSource().m_81377_().m_6846_().m_11299_().m_5875_(), p_138114_);
+       }).executes((p_138111_) -> {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/FillCommand.java
++++ b/net/minecraft/server/commands/FillCommand.java
+@@ -36,7 +_,7 @@
+ 
+    public static void m_137379_(CommandDispatcher<CommandSourceStack> p_137380_) {
+       p_137380_.register(Commands.m_82127_("fill").requires((p_137384_) -> {
+-         return p_137384_.m_6761_(2);
++         return p_137384_.hasPermission(2,"minecraft.command.fill");
+       }).then(Commands.m_82129_("from", BlockPosArgument.m_118239_()).then(Commands.m_82129_("to", BlockPosArgument.m_118239_()).then(Commands.m_82129_("block", BlockStateArgument.m_116120_()).executes((p_137405_) -> {
+          return m_137385_(p_137405_.getSource(), BoundingBox.m_162375_(BlockPosArgument.m_118242_(p_137405_, "from"), BlockPosArgument.m_118242_(p_137405_, "to")), BlockStateArgument.m_116123_(p_137405_, "block"), FillCommand.Mode.REPLACE, (Predicate<BlockInWorld>)null);
+       }).then(Commands.m_82127_("replace").executes((p_137403_) -> {

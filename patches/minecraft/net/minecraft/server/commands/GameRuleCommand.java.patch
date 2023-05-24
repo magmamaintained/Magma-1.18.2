@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/commands/GameRuleCommand.java
 +++ b/net/minecraft/server/commands/GameRuleCommand.java
+@@ -11,7 +_,7 @@
+ public class GameRuleCommand {
+    public static void m_137744_(CommandDispatcher<CommandSourceStack> p_137745_) {
+       final LiteralArgumentBuilder<CommandSourceStack> literalargumentbuilder = Commands.m_82127_("gamerule").requires((p_137750_) -> {
+-         return p_137750_.m_6761_(2);
++         return p_137750_.hasPermission(2,"minecraft.command.gamerule");
+       });
+       GameRules.m_46164_(new GameRules.GameRuleTypeVisitor() {
+          public <T extends GameRules.Value<T>> void m_6889_(GameRules.Key<T> p_137764_, GameRules.Type<T> p_137765_) {
 @@ -27,14 +_,14 @@
  
     static <T extends GameRules.Value<T>> int m_137754_(CommandContext<CommandSourceStack> p_137755_, GameRules.Key<T> p_137756_) {

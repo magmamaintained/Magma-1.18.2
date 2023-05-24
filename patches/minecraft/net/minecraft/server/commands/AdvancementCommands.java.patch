@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/AdvancementCommands.java
++++ b/net/minecraft/server/commands/AdvancementCommands.java
+@@ -25,7 +_,7 @@
+ 
+    public static void m_136310_(CommandDispatcher<CommandSourceStack> p_136311_) {
+       p_136311_.register(Commands.m_82127_("advancement").requires((p_136318_) -> {
+-         return p_136318_.m_6761_(2);
++         return p_136318_.hasPermission(2,"minecraft.command.advancement");
+       }).then(Commands.m_82127_("grant").then(Commands.m_82129_("targets", EntityArgument.m_91470_()).then(Commands.m_82127_("only").then(Commands.m_82129_("advancement", ResourceLocationArgument.m_106984_()).suggests(f_136308_).executes((p_136363_) -> {
+          return m_136319_(p_136363_.getSource(), EntityArgument.m_91477_(p_136363_, "targets"), AdvancementCommands.Action.GRANT, m_136333_(ResourceLocationArgument.m_106987_(p_136363_, "advancement"), AdvancementCommands.Mode.ONLY));
+       }).then(Commands.m_82129_("criterion", StringArgumentType.greedyString()).suggests((p_136339_, p_136340_) -> {
