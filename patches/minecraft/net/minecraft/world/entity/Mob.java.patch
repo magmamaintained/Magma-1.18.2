@@ -193,14 +193,16 @@
 +         }
           if (entity != null) {
              double d0 = entity.m_20280_(this);
-             int i = this.m_6095_().m_20674_().m_21611_();
+-            int i = this.m_6095_().m_20674_().m_21611_();
++            int i = this.f_19853_.paperConfig.hardDespawnDistances.getInt(this.m_6095_().m_20674_()); // Paper - custom despawn distances
              int j = i * i;
 -            if (d0 > (double)j && this.m_6785_(d0)) {
 +            if (d0 > (double) j && this.m_6785_(d0)) {
                 this.m_146870_();
              }
  
-             int k = this.m_6095_().m_20674_().m_21612_();
+-            int k = this.m_6095_().m_20674_().m_21612_();
++            int k = this.f_19853_.paperConfig.softDespawnDistances.getInt(this.m_6095_().m_20674_()); // Paper - custom despawn distances
              int l = k * k;
 -            if (this.f_20891_ > 600 && this.f_19796_.nextInt(800) == 0 && d0 > (double)l && this.m_6785_(d0)) {
 +            if (this.f_20891_ > 600 && this.f_19796_.nextInt(800) == 0 && d0 > (double) l && this.m_6785_(d0)) {
