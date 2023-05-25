@@ -677,7 +677,7 @@ public final class CraftServer implements Server {
     @Override
     public long getConnectionThrottle() {
         // Spigot Start - Automatically set connection throttle for bungee configurations
-        if (org.spigotmc.SpigotConfig.bungee) {
+        if (org.spigotmc.SpigotConfig.bungee || com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport) { // Paper - Velocity support
             return -1;
         } else {
             return this.configuration.getInt("settings.connection-throttle");
