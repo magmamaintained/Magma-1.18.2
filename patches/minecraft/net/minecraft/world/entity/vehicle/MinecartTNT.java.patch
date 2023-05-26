@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/entity/vehicle/MinecartTNT.java
++++ b/net/minecraft/world/entity/vehicle/MinecartTNT.java
+@@ -42,6 +_,12 @@
+    public void m_8119_() {
+       super.m_8119_();
+       if (this.f_38647_ > 0) {
++         // Paper start - Configurable TNT entity height nerf
++         if (this.f_19853_.paperConfig.entityTNTHeightNerf != 0 && this.m_20186_() > this.f_19853_.paperConfig.entityTNTHeightNerf) {
++             this.m_146870_();
++             return;
++         }
++         // Paper end
+          --this.f_38647_;
+          this.f_19853_.m_7106_(ParticleTypes.f_123762_, this.m_20185_(), this.m_20186_() + 0.5D, this.m_20189_(), 0.0D, 0.0D, 0.0D);
+       } else if (this.f_38647_ == 0) {
