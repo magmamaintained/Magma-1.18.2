@@ -529,6 +529,15 @@
           this.m_5496_(soundtype.m_56776_(), soundtype.m_56773_() * 0.15F, soundtype.m_56774_());
        }
     }
+@@ -1035,6 +_,8 @@
+       return this.m_20069_() || this.m_20285_();
+    }
+ 
++   @Deprecated public final boolean isInWaterOrRainOrBubble() { return m_20071_(); } // Paper - OBFHELPER
++
+    public boolean m_20071_() {
+       return this.m_20069_() || this.m_20285_() || this.m_20305_();
+    }
 @@ -1144,9 +_,10 @@
        int k = Mth.m_14107_(this.m_20189_());
        BlockPos blockpos = new BlockPos(i, j, k);

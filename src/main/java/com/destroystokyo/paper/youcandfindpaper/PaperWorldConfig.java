@@ -138,6 +138,11 @@ public class PaperWorldConfig {
         log("Fishing time ranges are between " + fishingMinTicks +" and " + fishingMaxTicks + " ticks");
     }
 
+    public boolean nerfedMobsShouldJump;
+    private void nerfedMobsShouldJump() {
+        nerfedMobsShouldJump = getBoolean("spawner-nerfed-mobs-should-jump", false);
+    }
+
     public final Reference2IntMap<MobCategory> softDespawnDistances = new Reference2IntOpenHashMap<>(MobCategory.values().length);
     public final Reference2IntMap<MobCategory> hardDespawnDistances = new Reference2IntOpenHashMap<>(MobCategory.values().length);
     private void despawnDistances() {
