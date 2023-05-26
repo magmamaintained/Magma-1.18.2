@@ -9,7 +9,7 @@
  import org.slf4j.Logger;
  
  public class FishingHook extends Projectile {
-@@ -64,6 +_,12 @@
+@@ -64,11 +_,21 @@
     private final int f_37096_;
     private final int f_37097_;
  
@@ -22,6 +22,15 @@
     private FishingHook(EntityType<? extends FishingHook> p_150141_, Level p_150142_, int p_150143_, int p_150144_) {
        super(p_150141_, p_150142_);
        this.f_19811_ = true;
+       this.f_37096_ = Math.max(0, p_150143_);
+       this.f_37097_ = Math.max(0, p_150144_);
++      // Paper start
++      minWaitTime = p_150142_.paperConfig.fishingMinTicks;
++      maxWaitTime = p_150142_.paperConfig.fishingMaxTicks;
++      // Paper end
+    }
+ 
+    public FishingHook(EntityType<? extends FishingHook> p_150138_, Level p_150139_) {
 @@ -240,7 +_,7 @@
  
     private void m_37171_() {
@@ -82,7 +91,7 @@
 -         this.f_37090_ -= this.f_37097_ * 20 * 5;
 +         // CraftBukkit start - logic to modify fishing wait time
 +         this.f_37090_ = Mth.m_14072_(this.f_19796_, this.minWaitTime, this.maxWaitTime);
-+         this.f_37090_ -= (this.applyLure) ? this.f_37097_ * 20 * 5 : 0;
++         this.f_37090_ -= (this.applyLure) ? (this.f_37097_ * 20 * 5 >= this.maxWaitTime ? this.f_37090_ - 1 : this.f_37097_ * 20 * 5) : 0; // Paper - Fix Lure infinite loop
 +         // CraftBukkit end
        }
  
