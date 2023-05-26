@@ -16,7 +16,7 @@
  
     public PrimedTnt(EntityType<? extends PrimedTnt> p_32076_, Level p_32077_) {
        super(p_32076_, p_32077_);
-@@ -53,6 +_,7 @@
+@@ -53,11 +_,18 @@
     }
  
     public void m_8119_() {
@@ -24,6 +24,17 @@
        if (!this.m_20068_()) {
           this.m_20256_(this.m_20184_().m_82520_(0.0D, -0.04D, 0.0D));
        }
+ 
+       this.m_6478_(MoverType.SELF, this.m_20184_());
++      // Paper start - Configurable TNT entity height nerf
++      if (this.f_19853_.paperConfig.entityTNTHeightNerf != 0 && this.m_20186_() > this.f_19853_.paperConfig.entityTNTHeightNerf) {
++          this.m_146870_();
++          return;
++      }
++      // Paper end
+       this.m_20256_(this.m_20184_().m_82490_(0.98D));
+       if (this.f_19861_) {
+          this.m_20256_(this.m_20184_().m_82542_(0.7D, -0.5D, 0.7D));
 @@ -66,10 +_,13 @@
        int i = this.m_32100_() - 1;
        this.m_32085_(i);
