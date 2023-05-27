@@ -249,7 +249,7 @@
                 });
                 if (j > 10) {
                    mutablecomponent1.m_130946_("...");
-@@ -269,19 +_,92 @@
+@@ -269,19 +_,100 @@
           return 0;
        } finally {
           p_82118_.m_81377_().m_129905_().m_7238_();
@@ -330,13 +330,21 @@
 +      forgeRoot.getChildren().forEach(rootcommandnode::addChild);
 +      //ambassador support start
 +      ClientboundCommandsPacket packet = new ClientboundCommandsPacket(rootcommandnode);
-+      ConnectionData connectionData = (ConnectionData) p_82096_.f_8906_.f_9742_.channel().attr(AttributeKey.valueOf("fml:conndata")).get();
-+      if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
-+         FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
-+         packet.write(byteBuf, true);
-+         p_82096_.f_8906_.m_141995_(new ClientboundCustomPayloadPacket(new ResourceLocation("ambassador:commands"), byteBuf));
-+      } else {
-+         p_82096_.f_8906_.m_141995_(packet);
++      try{
++         ConnectionData connectionData = (ConnectionData) p_82096_.f_8906_.f_9742_.channel().attr(AttributeKey.valueOf("fml:conndata")).get();
++         if (connectionData == null){
++            f_82089_.info("Failed to get a channel with the attribute of fml:conndata.");
++            p_82096_.f_8906_.m_141995_(packet);
++         } else if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
++            FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
++            packet.write(byteBuf, true);
++            p_82096_.f_8906_.m_141995_(new ClientboundCustomPayloadPacket(new ResourceLocation("ambassador:commands"), byteBuf));
++         } else {
++            p_82096_.f_8906_.m_141995_(packet);
++         }
++      }catch (ClassCastException e){
++            f_82089_.error("Failed to get connection data for player " + p_82096_.m_7755_().getString() + ". Someone registered a channel with the fml:conndata key that isn't a ConnectionData object.");
++            p_82096_.f_8906_.m_141995_(packet);
 +      }
 +      //ambassador support end
     }
