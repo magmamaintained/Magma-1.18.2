@@ -8,6 +8,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.StandardOpenOption;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Project: Magma
@@ -19,11 +22,17 @@ import java.nio.file.StandardOpenOption;
  */
 public class NetworkUtils {
 
+    private static final ExecutorService downloadSrvc = java.util.concurrent.Executors.newFixedThreadPool(4);
+
     public static URLConnection getConnection(String URL) {
         URLConnection conn = null;
         try {
             conn = new URL(URL).openConnection();
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
+
+            int timeout = (int) TimeUnit.SECONDS.toMillis(20);
+            conn.setConnectTimeout(timeout);
+            conn.setReadTimeout(timeout);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,8 +48,15 @@ public class NetworkUtils {
         ReadableByteChannel rbc = Channels.newChannel(conn.getInputStream());
         FileChannel fc = FileChannel.open(f.toPath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
         int fS = conn.getContentLength();
-        fc.transferFrom(rbc, 0, Long.MAX_VALUE);
-        fc.close();
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                fc.transferFrom(rbc, 0, fS);
+                fc.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }, downloadSrvc).get(20, TimeUnit.SECONDS);
         rbc.close();
         String MD5 = org.magmafoundation.magma.common.utils.MD5.getMd5(f);
         if(md5 != null && MD5 != null && !MD5.equals(md5.toLowerCase())) {
