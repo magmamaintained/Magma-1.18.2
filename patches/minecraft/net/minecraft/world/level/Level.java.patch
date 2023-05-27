@@ -43,7 +43,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.crafting.RecipeManager;
-@@ -45,859 +_,1240 @@
+@@ -45,859 +_,1241 @@
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.entity.TickingBlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
@@ -427,6 +427,7 @@
 +        } );
 +        // CraftBukkit end
 +        timings = new co.aikar.timings.WorldTimingsHandler(init_levelName); // Paper - code below can generate new world and access timings
++        this.keepSpawnInMemory = this.paperConfig.keepSpawnInMemory; // Paper
 +        this.entityLimiter = new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime);
 +        this.tileLimiter = new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime);
 +    }

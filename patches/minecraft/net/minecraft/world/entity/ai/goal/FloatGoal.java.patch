@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/entity/ai/goal/FloatGoal.java
++++ b/net/minecraft/world/entity/ai/goal/FloatGoal.java
+@@ -9,6 +_,7 @@
+ 
+    public FloatGoal(Mob p_25230_) {
+       this.f_25228_ = p_25230_;
++      if (f_25228_.m_20193_().paperConfig.nerfedMobsShouldJump) f_25228_.goalFloat = this; // Paper
+       this.m_7021_(EnumSet.of(Goal.Flag.JUMP));
+       p_25230_.m_21573_().m_7008_(true);
+    }

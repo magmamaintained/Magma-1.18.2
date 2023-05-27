@@ -677,7 +677,7 @@ public final class CraftServer implements Server {
     @Override
     public long getConnectionThrottle() {
         // Spigot Start - Automatically set connection throttle for bungee configurations
-        if (org.spigotmc.SpigotConfig.bungee) {
+        if (org.spigotmc.SpigotConfig.bungee || com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport) { // Paper - Velocity support
             return -1;
         } else {
             return this.configuration.getInt("settings.connection-throttle");
@@ -2179,6 +2179,18 @@ public final class CraftServer implements Server {
     public UnsafeValues getUnsafe() {
         return CraftMagicNumbers.INSTANCE;
     }
+
+    // Paper - Add getTPS API - Further improve tick loop
+    @Override
+    public double[] getTPS() {
+        return new double[] {
+                net.minecraft.server.MinecraftServer.getServer().tps1.getAverage(),
+                net.minecraft.server.MinecraftServer.getServer().tps5.getAverage(),
+                net.minecraft.server.MinecraftServer.getServer().tps15.getAverage()
+        };
+    }
+    // Paper end
+
 
     // Spigot start
     private final org.bukkit.Server.Spigot spigot = new org.bukkit.Server.Spigot()

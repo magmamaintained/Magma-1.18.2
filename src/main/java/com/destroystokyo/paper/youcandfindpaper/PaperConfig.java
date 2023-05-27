@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.spigotmc.SpigotConfig;
 
 public class PaperConfig {
 
@@ -223,4 +225,24 @@ public class PaperConfig {
               " - Length: " + timeSummary(Timings.getHistoryLength() / 20) +
               " - Server Name: " + timingsServerName);
    }
+
+   public static boolean isProxyOnlineMode() {
+        return Bukkit.getOnlineMode() || (SpigotConfig.bungee /*&& bungeeOnlineMode*/) || (velocitySupport && velocityOnlineMode);
+   }
+
+    public static boolean velocitySupport;
+    public static boolean velocityOnlineMode;
+    public static byte[] velocitySecretKey;
+    private static void velocitySupport() {
+        velocitySupport = getBoolean("settings.velocity-support.enabled", false);
+        velocityOnlineMode = getBoolean("settings.velocity-support.online-mode", false);
+        String secret = getString("settings.velocity-support.secret", "");
+        if (velocitySupport && secret.isEmpty()) {
+            fatal("Velocity support is enabled, but no secret key was specified. A secret key is required!");
+        } else {
+            velocitySecretKey = secret.getBytes(StandardCharsets.UTF_8);
+        }
+    }
+
+
 }
