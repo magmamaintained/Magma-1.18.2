@@ -75,6 +75,15 @@
           m_121601_("test_argument", TestFunctionArgument.class, new EmptyArgumentSerializer<>(TestFunctionArgument::m_128088_));
           m_121601_("test_class", TestClassNameArgument.class, new EmptyArgumentSerializer<>(TestClassNameArgument::m_127917_));
        }
+@@ -139,7 +_,7 @@
+    }
+ 
+    @Nullable
+-   private static ArgumentTypes.Entry<?> m_121616_(ArgumentType<?> p_121617_) {
++   public static ArgumentTypes.Entry<?> m_121616_(ArgumentType<?> p_121617_) {
+       return f_121583_.get(p_121617_.getClass());
+    }
+ 
 @@ -254,7 +_,7 @@
        }
     }

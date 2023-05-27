@@ -3,6 +3,9 @@ package com.destroystokyo.paper.youcandfindpaper;
 import java.util.List;
 
 import java.util.stream.Collectors;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.minecraft.world.entity.MobCategory;
 
 import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
@@ -64,6 +67,12 @@ public class PaperWorldConfig {
 
    public void removeOldValues() {
       boolean needsSave = false;
+        if (PaperConfig.version < 24) {
+            needsSave = true;
+
+            set("despawn-ranges.soft", null);
+            set("despawn-ranges.hard", null);
+        }
 
       if (needsSave) {
          saveConfig();
@@ -121,4 +130,59 @@ public class PaperWorldConfig {
       config.addDefault("world-settings.default." + path, def.stream().map(Enum::name).collect(Collectors.toList()));
       return ((List<String>) (config.getList("world-settings." + worldName + "." + path, config.getList("world-settings.default." + path)))).stream().map(s -> Enum.valueOf(type, s)).collect(Collectors.toList());
    }
+    public int fishingMinTicks;
+    public int fishingMaxTicks;
+    private void fishingTickRange() {
+        fishingMinTicks = getInt("fishing-time-range.MinimumTicks", 100);
+        fishingMaxTicks = getInt("fishing-time-range.MaximumTicks", 600);
+        log("Fishing time ranges are between " + fishingMinTicks +" and " + fishingMaxTicks + " ticks");
+    }
+
+    public boolean nerfedMobsShouldJump;
+    private void nerfedMobsShouldJump() {
+        nerfedMobsShouldJump = getBoolean("spawner-nerfed-mobs-should-jump", false);
+    }
+
+    public final Reference2IntMap<MobCategory> softDespawnDistances = new Reference2IntOpenHashMap<>(MobCategory.values().length);
+    public final Reference2IntMap<MobCategory> hardDespawnDistances = new Reference2IntOpenHashMap<>(MobCategory.values().length);
+    private void despawnDistances() {
+        if (PaperConfig.version < 24) {
+            int softDistance = getInt("despawn-ranges.soft", 32, false); // 32^2 = 1024, Minecraft Default
+            int hardDistance = getInt("despawn-ranges.hard", 128, false); // 128^2 = 16384, Minecraft Default
+            for (MobCategory value : MobCategory.values()) {
+                if (softDistance != 32) {
+                    softDespawnDistances.put(value, softDistance);
+                }
+                if (hardDistance != 128) {
+                    hardDespawnDistances.put(value, hardDistance);
+                }
+            }
+        }
+        for (MobCategory category : MobCategory.values()) {
+            int softDistance = getInt("despawn-ranges." + category.getName() + ".soft", softDespawnDistances.getOrDefault(category, category.getNoDespawnDistance()));
+            int hardDistance = getInt("despawn-ranges." + category.getName() + ".hard", hardDespawnDistances.getOrDefault(category, category.getDespawnDistance()));
+            if (softDistance > hardDistance) {
+                softDistance = hardDistance;
+            }
+            log("Mobs in " + category.getName() + " Despawn Ranges: Soft" + softDistance + " Hard: " + hardDistance);
+            softDespawnDistances.put(category, softDistance);
+            hardDespawnDistances.put(category, hardDistance);
+        }
+    }
+
+    public boolean keepSpawnInMemory;
+    private void keepSpawnInMemory() {
+        keepSpawnInMemory = getBoolean("keep-spawn-loaded", true);
+        log("Keep spawn chunk loaded: " + keepSpawnInMemory);
+    }
+
+    public int fallingBlockHeightNerf;
+    public int entityTNTHeightNerf;
+    private void heightNerfs() {
+        fallingBlockHeightNerf = getInt("falling-block-height-nerf", 0);
+        entityTNTHeightNerf = getInt("tnt-entity-height-nerf", 0);
+
+        if (fallingBlockHeightNerf != 0) log("Falling Block Height Limit set to Y: " + fallingBlockHeightNerf);
+        if (entityTNTHeightNerf != 0) log("TNT Entity Height Limit set to Y: " + entityTNTHeightNerf);
+    }
 }

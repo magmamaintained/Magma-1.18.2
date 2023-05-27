@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
-@@ -10,19 +_,23 @@
+@@ -10,19 +_,24 @@
  import com.mojang.brigadier.tree.CommandNode;
  import com.mojang.brigadier.tree.LiteralCommandNode;
  import com.mojang.brigadier.tree.RootCommandNode;
@@ -22,6 +22,7 @@
 +import org.spigotmc.SpigotConfig;
 +
 +import javax.annotation.Nullable;
++import java.util.Arrays;
 +import java.util.List;
 +import java.util.Map;
 +import java.util.Queue;
@@ -36,11 +37,194 @@
     public ClientboundCommandsPacket(RootCommandNode<SharedSuggestionProvider> p_131861_) {
        this.f_131858_ = p_131861_;
     }
-@@ -167,7 +_,24 @@
-       if (p_131873_ instanceof ArgumentCommandNode) {
-          ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
-          p_131872_.m_130070_(argumentcommandnode.getName());
+@@ -54,6 +_,96 @@
+       p_131886_.m_130130_(object2intmap.get(this.f_131858_));
+    }
+ 
++   //Magma - ambassador command support
++   public void write(FriendlyByteBuf byteBuf, boolean wrap) {
++      Object2IntMap<CommandNode<SharedSuggestionProvider>> object2intmap = m_131862_(this.f_131858_);
++      List<CommandNode<SharedSuggestionProvider>> list = m_178806_(object2intmap);
++      byteBuf.m_178352_(list, (p_178810_, p_178811_) -> {
++         writeNodeNoArgumentTypes(p_178810_, p_178811_, object2intmap);
++         if (p_178811_ instanceof ArgumentCommandNode argumentCommandNode) {
++            serialize(byteBuf, argumentCommandNode.getType(), wrap);
++            if (argumentCommandNode.getCustomSuggestions() != null) {
++               byteBuf.m_130085_(SuggestionProviders.m_121654_(argumentCommandNode.getCustomSuggestions()));
++            }
++         }
++      });
++      byteBuf.m_130130_(object2intmap.get(this.f_131858_));
++   }
++   private static final List<String> integratedArgumentTypes = Arrays.asList(
++           "brigadier:bool",
++           "brigadier:float",
++           "brigadier:double",
++           "brigadier:integer",
++           "brigadier:long",
++           "brigadier:string",
++
++           "minecraft:entity",
++           "minecraft:game_profile",
++           "minecraft:block_pos",
++           "minecraft:column_pos",
++           "minecraft:vec3",
++           "minecraft:vec2",
++           "minecraft:block_state",
++           "minecraft:block_predicate",
++           "minecraft:item_stack",
++           "minecraft:item_predicate",
++           "minecraft:color",
++           "minecraft:component",
++           "minecraft:message",
++           "minecraft:nbt_compound_tag",
++           "minecraft:nbt_tag",
++           "minecraft:nbt_path",
++           "minecraft:objective",
++           "minecraft:objective_criteria",
++           "minecraft:operation",
++           "minecraft:particle",
++           "minecraft:angle",
++           "minecraft:rotation",
++           "minecraft:scoreboard_slot",
++           "minecraft:score_holder",
++           "minecraft:swizzle",
++           "minecraft:team",
++           "minecraft:item_slot",
++           "minecraft:resource_location",
++           "minecraft:mob_effect",
++           "minecraft:function",
++           "minecraft:entity_anchor",
++           "minecraft:int_range",
++           "minecraft:float_range",
++           "minecraft:item_enchantment",
++           "minecraft:entity_summon",
++           "minecraft:dimension",
++
++           "minecraft:time",
++
++           "minecraft:resource_or_tag",
++           "minecraft:resource",
++
++           "minecraft:uuid",
++
++           "minecraft:nbt"
++   );
++
++   private static <T extends ArgumentType<?>> void serialize(FriendlyByteBuf buf, T type, boolean wrap) {
++      ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)ArgumentTypes.m_121616_(type);
++
++      if (entry == null) {
++         buf.m_130085_(MOD_ARGUMENT_INDICATOR);
++         buf.m_130085_(new ResourceLocation("")); //"minecraft:"
++         buf.m_130130_(0);
++         return;
++      }
++
++      if (!wrap || integratedArgumentTypes.contains(entry.f_121620_.toString())) {
++         ArgumentTypes.m_121611_(buf, type);
++         return;
++      }
++
++      // Not a standard Minecraft argument type - so we need to wrap it
++      serializeWrappedArgumentType(buf, type, entry);
++   }
++   //Magma - end
++
+    private static void m_178812_(List<ClientboundCommandsPacket.Entry> p_178813_) {
+       List<ClientboundCommandsPacket.Entry> list = Lists.newArrayList(p_178813_);
+ 
+@@ -128,54 +_,152 @@
+       }
+    }
+ 
+-   private static void m_131871_(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_) {
+-      byte b0 = 0;
+-      if (p_131873_.getRedirect() != null) {
+-         b0 = (byte)(b0 | 8);
+-      }
+-
+-      if (p_131873_.getCommand() != null) {
+-         b0 = (byte)(b0 | 4);
+-      }
+-
+-      if (p_131873_ instanceof RootCommandNode) {
+-         b0 = (byte)(b0 | 0);
+-      } else if (p_131873_ instanceof ArgumentCommandNode) {
+-         b0 = (byte)(b0 | 2);
+-         if (((ArgumentCommandNode)p_131873_).getCustomSuggestions() != null) {
+-            b0 = (byte)(b0 | 16);
+-         }
+-      } else {
+-         if (!(p_131873_ instanceof LiteralCommandNode)) {
+-            throw new UnsupportedOperationException("Unknown node type " + p_131873_);
+-         }
+-
+-         b0 = (byte)(b0 | 1);
+-      }
+-
+-      p_131872_.writeByte(b0);
+-      p_131872_.m_130130_(p_131873_.getChildren().size());
+-
+-      for(CommandNode<SharedSuggestionProvider> commandnode : p_131873_.getChildren()) {
+-         p_131872_.m_130130_(p_131874_.get(commandnode));
+-      }
+-
+-      if (p_131873_.getRedirect() != null) {
+-         p_131872_.m_130130_(p_131874_.get(p_131873_.getRedirect()));
+-      }
+-
+-      if (p_131873_ instanceof ArgumentCommandNode) {
+-         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
+-         p_131872_.m_130070_(argumentcommandnode.getName());
 -         ArgumentTypes.m_121611_(p_131872_, argumentcommandnode.getType());
+-         if (argumentcommandnode.getCustomSuggestions() != null) {
+-            p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
+-         }
+-      } else if (p_131873_ instanceof LiteralCommandNode) {
+-         p_131872_.m_130070_(((LiteralCommandNode)p_131873_).getLiteral());
+-      }
+-
+-   }
++   private static void m_131871_(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_){
++      byte b0 = 0;
++      if (p_131873_.getRedirect() != null) {
++         b0 = (byte)(b0 | 8);
++      }
++
++      if (p_131873_.getCommand() != null) {
++         b0 = (byte)(b0 | 4);
++      }
++
++      if (p_131873_ instanceof RootCommandNode) {
++         b0 = (byte)(b0 | 0);
++      } else if (p_131873_ instanceof ArgumentCommandNode) {
++         b0 = (byte)(b0 | 2);
++         if (((ArgumentCommandNode)p_131873_).getCustomSuggestions() != null) {
++            b0 = (byte)(b0 | 16);
++         }
++      } else {
++         if (!(p_131873_ instanceof LiteralCommandNode)) {
++            throw new UnsupportedOperationException("Unknown node type " + p_131873_);
++         }
++
++         b0 = (byte)(b0 | 1);
++      }
++
++      p_131872_.writeByte(b0);
++      p_131872_.m_130130_(p_131873_.getChildren().size());
++
++      for(CommandNode<SharedSuggestionProvider> commandnode : p_131873_.getChildren()) {
++         p_131872_.m_130130_(p_131874_.get(commandnode));
++      }
++
++      if (p_131873_.getRedirect() != null) {
++         p_131872_.m_130130_(p_131874_.get(p_131873_.getRedirect()));
++      }
++
++      if (p_131873_ instanceof ArgumentCommandNode) {
++         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
++         p_131872_.m_130070_(argumentcommandnode.getName());
 +         //Magma start
 +         if(SpigotConfig.bungee){
 +            ArgumentTypes.Entry entry = ArgumentTypes.f_121583_.get(argumentcommandnode.getType().getClass());
@@ -59,14 +243,81 @@
 +         }
 +         //Magma end
 +
-          if (argumentcommandnode.getCustomSuggestions() != null) {
-             p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
-          }
-@@ -176,6 +_,21 @@
-       }
- 
-    }
++         if (argumentcommandnode.getCustomSuggestions() != null) {
++            p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
++         }
++      } else if (p_131873_ instanceof LiteralCommandNode) {
++         p_131872_.m_130070_(((LiteralCommandNode)p_131873_).getLiteral());
++      }
++   }
++//Magma start - ambassador command support
++   private static void writeNodeNoArgumentTypes(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_) {
++      byte b0 = 0;
++      if (p_131873_.getRedirect() != null) {
++         b0 = (byte)(b0 | 8);
++      }
 +
++      if (p_131873_.getCommand() != null) {
++         b0 = (byte)(b0 | 4);
++      }
++
++      if (p_131873_ instanceof RootCommandNode) {
++         b0 = (byte)(b0 | 0);
++      } else if (p_131873_ instanceof ArgumentCommandNode) {
++         b0 = (byte)(b0 | 2);
++         if (((ArgumentCommandNode)p_131873_).getCustomSuggestions() != null) {
++            b0 = (byte)(b0 | 16);
++         }
++      } else {
++         if (!(p_131873_ instanceof LiteralCommandNode)) {
++            throw new UnsupportedOperationException("Unknown node type " + p_131873_);
++         }
++
++         b0 = (byte)(b0 | 1);
++      }
++
++      p_131872_.writeByte(b0);
++      p_131872_.m_130130_(p_131873_.getChildren().size());
++
++      for(CommandNode<SharedSuggestionProvider> commandnode : p_131873_.getChildren()) {
++         p_131872_.m_130130_(p_131874_.get(commandnode));
++      }
++
++      if (p_131873_.getRedirect() != null) {
++         p_131872_.m_130130_(p_131874_.get(p_131873_.getRedirect()));
++      }
++
++      if (p_131873_ instanceof ArgumentCommandNode) {
++         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
++         p_131872_.m_130070_(argumentcommandnode.getName());
++         //Magma start
++         if(SpigotConfig.bungee){
++            ArgumentTypes.Entry entry = ArgumentTypes.f_121583_.get(argumentcommandnode.getType().getClass());
++            if (entry == null) {
++               p_131872_.m_130085_(new ResourceLocation(""));
++               return;
++            }
++            if (entry.f_121620_.m_135827_().equals("minecraft") || entry.f_121620_.m_135827_().equals("brigadier")) {
++               p_131872_.m_130085_(entry.f_121620_);
++               entry.f_121619_.m_6017_(argumentcommandnode.getType(), p_131872_);
++            } else {
++               serializeWrappedArgumentType(p_131872_, argumentcommandnode.getType(), entry);
++            }
++         } else {
++            return;
++//            ArgumentTypes.serialize(p_131872_, argumentcommandnode.getType());
++         }
++         //Magma end
++
++         if (argumentcommandnode.getCustomSuggestions() != null) {
++            p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
++         }
++      } else if (p_131873_ instanceof LiteralCommandNode) {
++         p_131872_.m_130070_(((LiteralCommandNode)p_131873_).getLiteral());
++      }
++
++   }
++//Magma end
 +   //Magma start
 +   private static final ResourceLocation MOD_ARGUMENT_INDICATOR  = new ResourceLocation("crossstitch", "mod_argument");
 +

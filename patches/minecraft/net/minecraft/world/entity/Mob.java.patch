@@ -26,6 +26,14 @@
  
  public abstract class Mob extends LivingEntity {
     private static final EntityDataAccessor<Byte> f_21340_ = SynchedEntityData.m_135353_(Mob.class, EntityDataSerializers.f_135027_);
+@@ -90,6 +_,7 @@
+    private final BodyRotationControl f_21361_;
+    protected PathNavigation f_21344_;
+    public GoalSelector f_21345_;
++   @Nullable public net.minecraft.world.entity.ai.goal.FloatGoal goalFloat; // Paper
+    public GoalSelector f_21346_;
+    @Nullable
+    private LivingEntity f_21362_;
 @@ -112,6 +_,8 @@
     private BlockPos f_21360_ = BlockPos.f_121853_;
     private float f_21341_ = -1.0F;
@@ -193,25 +201,37 @@
 +         }
           if (entity != null) {
              double d0 = entity.m_20280_(this);
-             int i = this.m_6095_().m_20674_().m_21611_();
+-            int i = this.m_6095_().m_20674_().m_21611_();
++            int i = this.f_19853_.paperConfig.hardDespawnDistances.getInt(this.m_6095_().m_20674_()); // Paper - custom despawn distances
              int j = i * i;
 -            if (d0 > (double)j && this.m_6785_(d0)) {
 +            if (d0 > (double) j && this.m_6785_(d0)) {
                 this.m_146870_();
              }
  
-             int k = this.m_6095_().m_20674_().m_21612_();
+-            int k = this.m_6095_().m_20674_().m_21612_();
++            int k = this.f_19853_.paperConfig.softDespawnDistances.getInt(this.m_6095_().m_20674_()); // Paper - custom despawn distances
              int l = k * k;
 -            if (this.f_20891_ > 600 && this.f_19796_.nextInt(800) == 0 && d0 > (double)l && this.m_6785_(d0)) {
 +            if (this.f_20891_ > 600 && this.f_19796_.nextInt(800) == 0 && d0 > (double) l && this.m_6785_(d0)) {
                 this.m_146870_();
              } else if (d0 < (double)l) {
                 this.f_20891_ = 0;
-@@ -670,6 +_,7 @@
+@@ -670,6 +_,17 @@
  
     protected final void m_6140_() {
        ++this.f_20891_;
-+      if (!this.aware) return; // CraftBukkit
++      if (!this.aware) { // Paper start - Allow nerfed mobs to jump, float and take water damage
++          if (goalFloat != null) {
++              if (goalFloat.m_8036_()) goalFloat.m_8037_();
++              this.m_21569_().m_8124_();
++          }
++          if (this.m_6126_() && m_20071_()) {
++              m_6469_(DamageSource.f_19312_, 1.0F);
++          }
++          return;
++      }
++      // Paper end
        this.f_19853_.m_46473_().m_6180_("sensing");
        this.f_21349_.m_26789_();
        this.f_19853_.m_46473_().m_7238_();

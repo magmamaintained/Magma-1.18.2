@@ -25,6 +25,23 @@
        p_201972_.m_7967_(fallingblockentity);
        return fallingblockentity;
     }
+@@ -114,6 +_,16 @@
+          }
+ 
+          this.m_6478_(MoverType.SELF, this.m_20184_());
++
++         // Paper start - Configurable EntityFallingBlock height nerf
++         if (this.f_19853_.paperConfig.fallingBlockHeightNerf != 0 && this.m_20186_() > this.f_19853_.paperConfig.fallingBlockHeightNerf) {
++             if (this.f_31943_ && this.f_19853_.m_46469_().m_46207_(GameRules.f_46137_)) {
++                 this.m_19998_(block);
++             }
++             this.m_146870_();
++             return;
++         }
++         // Paper end
+          if (!this.f_19853_.f_46443_) {
+             BlockPos blockpos = this.m_142538_();
+             boolean flag = this.f_31946_.m_60734_() instanceof ConcretePowderBlock;
 @@ -148,6 +_,13 @@
                             this.f_31946_ = this.f_31946_.m_61124_(BlockStateProperties.f_61362_, Boolean.valueOf(true));
                          }
