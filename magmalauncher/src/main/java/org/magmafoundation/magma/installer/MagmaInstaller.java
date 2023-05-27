@@ -25,10 +25,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Project: Magma
@@ -291,10 +288,10 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     private static List<URL> loadInternalDependencies() throws Exception {
         var dependencies = new InternalDependency[] {
-                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-common/1.3.0/dependencydownload-common-1.3.0.jar", "b6d32a6d0c4d4407f54e601cfa3f0a5a", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-common/1.3.0/dependencydownload-common-1.3.0.jar"),
-                new InternalDependency(LIB_PATH + "dev/vankka/dependencydownload-runtime/1.3.0/dependencydownload-runtime-1.3.0.jar", "ec35cf4906c6151111d9eabe4f4ea949", "https://repo1.maven.org/maven2/dev/vankka/dependencydownload-runtime/1.3.0/dependencydownload-runtime-1.3.0.jar"),
-                new InternalDependency(LIB_PATH + "org/jline/jline/3.21.0/jline-3.21.0.jar", "859778f9cdd3bd42bbaaf0f6f7fe5e6a", "https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.jar"),
-                new InternalDependency(LIB_PATH + "me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar", "25d3101d2ca7f0847a804208d5411d78", "https://repo1.maven.org/maven2/me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar")
+                new InternalDependency("dev/vankka/dependencydownload-common/1.3.0/dependencydownload-common-1.3.0.jar", "b6d32a6d0c4d4407f54e601cfa3f0a5a"),
+                new InternalDependency("dev/vankka/dependencydownload-runtime/1.3.0/dependencydownload-runtime-1.3.0.jar", "ec35cf4906c6151111d9eabe4f4ea949"),
+                new InternalDependency("org/jline/jline/3.21.0/jline-3.21.0.jar", "859778f9cdd3bd42bbaaf0f6f7fe5e6a"),
+                new InternalDependency("me/tongfei/progressbar/0.9.3/progressbar-0.9.3.jar", "25d3101d2ca7f0847a804208d5411d78")
         };
         var urls = new ArrayList<URL>();
         for (var dependency : dependencies) {
@@ -307,13 +304,24 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
         return urls;
     }
 
-    private record InternalDependency(File file, String signature, String link) {
-        private InternalDependency(String path, String signature, String link) {
-            this(new File(path), signature, link);
+    private record InternalDependency(File file, String path, String signature) {
+        private InternalDependency(String path, String signature) {
+            this(new File(LIB_PATH + (path.startsWith("/") ? path.substring(1) : path)), (path.startsWith("/") ? path.substring(1) : path), signature);
         }
 
         private void download() throws Exception {
-            NetworkUtils.downloadFile(this.link(), this.file(), this.signature());
+            try {
+                NetworkUtils.downloadFile("https://nexus.c0d3m4513r.com/repository/Magma-1.18/" + path, file, this.signature());
+            } catch (Throwable e) {
+                System.err.println("Failed to download https://nexus.c0d3m4513r.com/repository/Magma-1.18/" + path + " to " + file.getAbsolutePath());
+                try {
+                    NetworkUtils.downloadFile("https://repo1.maven.org/maven2/" + path, file, this.signature());
+                } catch (Throwable e2) {
+                    System.err.println("Failed to download internal depencency https://repo1.maven.org/maven2/" + path + " to " + file.getAbsolutePath() + ", check your internet connection and try again.");
+                    e2.addSuppressed(e);
+                    throw e2;
+                }
+            }
         }
 
         private URL url() {
@@ -327,9 +335,9 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
     protected class Dependencies {
 
-        private String mcVersion;
-        private String mcpVersion;
-        private File minecraft_server;
+        private final String mcVersion;
+        private final String mcpVersion;
+        private final File minecraft_server;
 
         public Dependencies(String mcVersion, String mcpVersion, File minecraft_server) throws Exception {
             this.mcVersion = mcVersion;
@@ -363,6 +371,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             manager.loadFromResource(new URL("jar:file:" + JarTool.getJarPath() + "!/data/magma_libraries.txt"));
 
             List<Repository> standardRepositories = new ArrayList<>();
+            standardRepositories.add(new StandardRepository("https://nexus.c0d3m4513r.com/repository/Magma-1.18/"));
             standardRepositories.add(new StandardRepository("https://maven.minecraftforge.net"));
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2"));
             standardRepositories.add(new StandardRepository("https://raw.github.com/Hexeption/Magma-Repo/master"));
@@ -380,7 +389,6 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             System.out.println("[INITIAL SETUP] Loading libraries...");
             unmute();
 
-            //AtomicReference<Throwable> error = new AtomicReference<>(null);
             ProgressBar.wrap(dependencies.stream(), builder).forEach(dep -> {
                 try {
                     mute();
@@ -413,7 +421,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             }
         }
 
-        public void downloadMinecraftServer(File minecraft_server) throws IOException {
+        public void downloadMinecraftServer(File minecraft_server) {
             if (Files.exists(minecraft_server.toPath()))
                 return;
             minecraft_server.getParentFile().mkdirs();
