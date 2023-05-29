@@ -142,14 +142,12 @@
  
     private void m_32067_() {
        Vec3 vec3 = this.m_20184_();
-@@ -165,7 +_,9 @@
+@@ -165,7 +_,7 @@
  
     private void m_32069_() {
        if (this.m_32070_()) {
 -         for(ItemEntity itementity : this.f_19853_.m_6443_(ItemEntity.class, this.m_142469_().m_82377_(0.5D, 0.0D, 0.5D), (p_186268_) -> {
-+         // Spigot start
-+         double radius = f_19853_.spigotConfig.itemMerge;
-+         for(ItemEntity itementity : this.f_19853_.m_6443_(ItemEntity.class, this.m_142469_().m_82377_(radius, radius - 0.5D, radius), (p_186268_) -> {
++         for(ItemEntity itementity : this.f_19853_.m_6443_(ItemEntity.class, this.m_142469_().m_82377_(f_19853_.spigotConfig.itemMerge, f_19853_.spigotConfig.itemMerge - 0.5D, f_19853_.spigotConfig.itemMerge), (p_186268_) -> {
              return p_186268_ != this && p_186268_.m_32070_();
           })) {
              if (itementity.m_32070_()) {
