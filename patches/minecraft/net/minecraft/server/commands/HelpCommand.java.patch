@@ -1,0 +1,14 @@
+--- a/net/minecraft/server/commands/HelpCommand.java
++++ b/net/minecraft/server/commands/HelpCommand.java
+@@ -16,7 +_,10 @@
+    private static final SimpleCommandExceptionType f_137785_ = new SimpleCommandExceptionType(new TranslatableComponent("commands.help.failed"));
+ 
+    public static void m_137787_(CommandDispatcher<CommandSourceStack> p_137788_) {
+-      p_137788_.register(Commands.m_82127_("help").executes((p_137794_) -> {
++      p_137788_.register(Commands.m_82127_("help")
++              .requires(commandSourceStack -> {
++                 return commandSourceStack.hasPermission(0, "minecraft.command.help");
++              }).executes((p_137794_) -> {
+          Map<CommandNode<CommandSourceStack>, String> map = p_137788_.getSmartUsage(p_137788_.getRoot(), p_137794_.getSource());
+ 
+          for(String s : map.values()) {

@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/commands/SpreadPlayersCommand.java
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
+@@ -45,7 +_,7 @@
+ 
+    public static void m_138696_(CommandDispatcher<CommandSourceStack> p_138697_) {
+       p_138697_.register(Commands.m_82127_("spreadplayers").requires((p_201852_) -> {
+-         return p_201852_.m_6761_(2);
++         return p_201852_.hasPermission(2,"minecraft.command.spreadplayers");
+       }).then(Commands.m_82129_("center", Vec2Argument.m_120822_()).then(Commands.m_82129_("spreadDistance", FloatArgumentType.floatArg(0.0F)).then(Commands.m_82129_("maxRange", FloatArgumentType.floatArg(1.0F)).then(Commands.m_82129_("respectTeams", BoolArgumentType.bool()).then(Commands.m_82129_("targets", EntityArgument.m_91460_()).executes((p_138699_) -> {
+          return m_138702_(p_138699_.getSource(), Vec2Argument.m_120825_(p_138699_, "center"), FloatArgumentType.getFloat(p_138699_, "spreadDistance"), FloatArgumentType.getFloat(p_138699_, "maxRange"), p_138699_.getSource().m_81372_().m_151558_(), BoolArgumentType.getBool(p_138699_, "respectTeams"), EntityArgument.m_91461_(p_138699_, "targets"));
+       }))).then(Commands.m_82127_("under").then(Commands.m_82129_("maxHeight", IntegerArgumentType.integer()).then(Commands.m_82129_("respectTeams", BoolArgumentType.bool()).then(Commands.m_82129_("targets", EntityArgument.m_91460_()).executes((p_201850_) -> {
 @@ -173,7 +_,8 @@
              spreadplayerscommand$position = p_138732_[i++];
           }

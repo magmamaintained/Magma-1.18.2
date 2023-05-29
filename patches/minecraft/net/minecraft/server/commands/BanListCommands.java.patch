@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/BanListCommands.java
++++ b/net/minecraft/server/commands/BanListCommands.java
+@@ -13,7 +_,7 @@
+ public class BanListCommands {
+    public static void m_136543_(CommandDispatcher<CommandSourceStack> p_136544_) {
+       p_136544_.register(Commands.m_82127_("banlist").requires((p_136548_) -> {
+-         return p_136548_.m_6761_(3);
++         return p_136548_.hasPermission(3,"minecraft.command.banlist");
+       }).executes((p_136555_) -> {
+          PlayerList playerlist = p_136555_.getSource().m_81377_().m_6846_();
+          return m_136549_(p_136555_.getSource(), Lists.newArrayList(Iterables.concat(playerlist.m_11295_().m_11395_(), playerlist.m_11299_().m_11395_())));
