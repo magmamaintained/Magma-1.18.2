@@ -1372,18 +1372,19 @@
           this.f_19853_.m_7106_(new ItemParticleOption(ParticleTypes.f_123752_, p_21061_), vec31.f_82479_, vec31.f_82480_, vec31.f_82481_, vec3.f_82479_, vec3.f_82480_ + 0.05D, vec3.f_82481_);
        }
  
-@@ -2903,7 +_,27 @@
+@@ -2902,8 +_,28 @@
+             this.m_21253_();
           } else {
              if (!this.f_20935_.m_41619_() && this.m_6117_()) {
++               ItemStack copy = this.f_20935_.m_41777_();
                 this.m_21137_(this.f_20935_, 16);
 -               ItemStack itemstack = this.f_20935_.m_41671_(this.f_19853_, this);
-+               ItemStack copy = this.f_20935_.m_41777_();
 +               ItemStack stack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, m_21212_(), this.f_20935_.m_41671_(this.f_19853_, this));
 +
 +               // CraftBukkit start - fire PlayerItemConsumeEvent
 +               ItemStack itemstack;
 +               if (this instanceof ServerPlayer) {
-+                  org.bukkit.inventory.ItemStack craftItem = CraftItemStack.asBukkitCopy(this.f_20935_);
++                  org.bukkit.inventory.ItemStack craftItem = CraftItemStack.asBukkitCopy(copy);
 +                  PlayerItemConsumeEvent event = new PlayerItemConsumeEvent((org.bukkit.entity.Player) this.getBukkitEntity(), craftItem);
 +                  f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +                  if (event.isCancelled()) {
