@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/EnchantCommand.java
++++ b/net/minecraft/server/commands/EnchantCommand.java
+@@ -35,7 +_,7 @@
+ 
+    public static void m_137008_(CommandDispatcher<CommandSourceStack> p_137009_) {
+       p_137009_.register(Commands.m_82127_("enchant").requires((p_137013_) -> {
+-         return p_137013_.m_6761_(2);
++         return p_137013_.hasPermission(2,"minecraft.command.enchant");
+       }).then(Commands.m_82129_("targets", EntityArgument.m_91460_()).then(Commands.m_82129_("enchantment", ItemEnchantmentArgument.m_95260_()).executes((p_137025_) -> {
+          return m_137014_(p_137025_.getSource(), EntityArgument.m_91461_(p_137025_, "targets"), ItemEnchantmentArgument.m_95263_(p_137025_, "enchantment"), 1);
+       }).then(Commands.m_82129_("level", IntegerArgumentType.integer(0)).executes((p_137011_) -> {

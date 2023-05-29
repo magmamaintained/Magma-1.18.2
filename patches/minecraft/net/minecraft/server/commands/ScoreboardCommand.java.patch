@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/ScoreboardCommand.java
++++ b/net/minecraft/server/commands/ScoreboardCommand.java
+@@ -45,7 +_,7 @@
+ 
+    public static void m_138468_(CommandDispatcher<CommandSourceStack> p_138469_) {
+       p_138469_.register(Commands.m_82127_("scoreboard").requires((p_138552_) -> {
+-         return p_138552_.m_6761_(2);
++         return p_138552_.hasPermission(2,"minecraft.command.scoreboard");
+       }).then(Commands.m_82127_("objectives").then(Commands.m_82127_("list").executes((p_138585_) -> {
+          return m_138538_(p_138585_.getSource());
+       })).then(Commands.m_82127_("add").then(Commands.m_82129_("objective", StringArgumentType.word()).then(Commands.m_82129_("criteria", ObjectiveCriteriaArgument.m_102555_()).executes((p_138583_) -> {

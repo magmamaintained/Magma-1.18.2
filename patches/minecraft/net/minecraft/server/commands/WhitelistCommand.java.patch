@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/WhitelistCommand.java
++++ b/net/minecraft/server/commands/WhitelistCommand.java
+@@ -23,7 +_,7 @@
+ 
+    public static void m_139201_(CommandDispatcher<CommandSourceStack> p_139202_) {
+       p_139202_.register(Commands.m_82127_("whitelist").requires((p_139234_) -> {
+-         return p_139234_.m_6761_(3);
++         return p_139234_.hasPermission(3,"minecraft.command.whitelist");
+       }).then(Commands.m_82127_("on").executes((p_139236_) -> {
+          return m_139218_(p_139236_.getSource());
+       })).then(Commands.m_82127_("off").executes((p_139232_) -> {

@@ -13,7 +13,7 @@
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
  import net.minecraft.commands.arguments.EntityAnchorArgument;
-@@ -32,6 +_,13 @@
+@@ -32,13 +_,20 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
@@ -27,6 +27,14 @@
  
  public class TeleportCommand {
     private static final SimpleCommandExceptionType f_139006_ = new SimpleCommandExceptionType(new TranslatableComponent("commands.teleport.invalidPosition"));
+ 
+    public static void m_139008_(CommandDispatcher<CommandSourceStack> p_139009_) {
+       LiteralCommandNode<CommandSourceStack> literalcommandnode = p_139009_.register(Commands.m_82127_("teleport").requires((p_139039_) -> {
+-         return p_139039_.m_6761_(2);
++         return p_139039_.hasPermission(2,"minecraft.command.teleport");
+       }).then(Commands.m_82129_("location", Vec3Argument.m_120841_()).executes((p_139051_) -> {
+          return m_139025_(p_139051_.getSource(), Collections.singleton(p_139051_.getSource().m_81374_()), p_139051_.getSource().m_81372_(), Vec3Argument.m_120849_(p_139051_, "location"), WorldCoordinates.m_120898_(), (TeleportCommand.LookAt)null);
+       })).then(Commands.m_82129_("destination", EntityArgument.m_91449_()).executes((p_139049_) -> {
 @@ -126,6 +_,9 @@
     }
  
