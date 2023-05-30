@@ -787,7 +787,7 @@
        this.f_36078_ += p_36276_;
        if (this.f_36078_ < 0) {
           this.f_36078_ = 0;
-@@ -1581,14 +_,32 @@
+@@ -1581,14 +_,28 @@
        }
     }
  
@@ -807,13 +807,8 @@
 +      // CraftBukkit end
        if (!this.f_36077_.f_35934_) {
           if (!this.f_19853_.f_46443_) {
--            this.f_36097_.m_38703_(p_36400_);
-+            // CraftBukkit start
-+            EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(this, reason, p_36400_);
-+            if (!event.isCancelled()) {
-+               this.f_36097_.m_38703_(event.getExhaustion());
-+            }
-+            // CraftBukkit end
++            this.f_36097_.prepareExhaustion(this, reason); //Magma
+             this.f_36097_.m_38703_(p_36400_);
           }
 -
        }
