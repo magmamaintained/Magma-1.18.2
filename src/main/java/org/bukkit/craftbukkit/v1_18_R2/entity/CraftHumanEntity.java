@@ -625,6 +625,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public void setSaturatedRegenRate(int i) {
+        getHandle().getFoodData().saturatedRegenRateModified = true;
         getHandle().getFoodData().saturatedRegenRate = i;
     }
 
@@ -635,6 +636,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public void setUnsaturatedRegenRate(int i) {
+        getHandle().getFoodData().unsaturatedRegenRateModified = true;
         getHandle().getFoodData().unsaturatedRegenRate = i;
     }
 
@@ -645,6 +647,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public void setStarvationRate(int i) {
+        getHandle().getFoodData().starvationRateModified = true;
         getHandle().getFoodData().starvationRate = i;
     }
 }
