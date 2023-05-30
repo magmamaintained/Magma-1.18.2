@@ -2129,45 +2129,45 @@
 +    }
 +
 +    public void m_6371_(ServerboundUseItemOnPacket p_9930_) {
-+        PacketUtils.m_131359_( p_9930_, this, this.f_9743_.m_183503_() );
++        PacketUtils.m_131359_(p_9930_, this, this.f_9743_.m_183503_());
 +        if (this.f_9743_.m_6107_()) return; // CraftBukkit
 +        if (!checkLimit(p_9930_.timestamp)) return; // Spigot - check limit
 +        ServerLevel serverlevel = this.f_9743_.m_183503_();
 +        InteractionHand interactionhand = p_9930_.m_134703_();
-+        ItemStack itemstack = this.f_9743_.m_21120_( interactionhand );
++        ItemStack itemstack = this.f_9743_.m_21120_(interactionhand);
 +        BlockHitResult blockhitresult = p_9930_.m_134706_();
 +        Vec3 vec3 = blockhitresult.m_82450_();
 +        BlockPos blockpos = blockhitresult.m_82425_();
-+        Vec3 vec31 = vec3.m_82546_( Vec3.m_82512_( blockpos ) );
-+        if (this.f_9743_.f_19853_.m_142572_() != null && this.f_9743_.m_146902_().m_45594_( new ChunkPos( blockpos ) ) < this.f_9743_.f_19853_.spigotConfig.viewDistance) { // Spigot
++        Vec3 vec31 = vec3.m_82546_(Vec3.m_82512_(blockpos));
++        if (this.f_9743_.f_19853_.m_142572_() != null && this.f_9743_.m_146902_().m_45594_(new ChunkPos(blockpos)) < this.f_9743_.f_19853_.spigotConfig.viewDistance) { // Spigot
 +            double d0 = 1.0000001D;
-+            if (Math.abs( vec31.m_7096_() ) < 1.0000001D && Math.abs( vec31.m_7098_() ) < 1.0000001D && Math.abs( vec31.m_7094_() ) < 1.0000001D) {
++            if (Math.abs(vec31.m_7096_()) < 1.0000001D && Math.abs(vec31.m_7098_()) < 1.0000001D && Math.abs(vec31.m_7094_()) < 1.0000001D) {
 +                Direction direction = blockhitresult.m_82434_();
 +                this.f_9743_.m_9243_();
 +                int i = this.f_9743_.f_19853_.m_151558_();
 +                if (blockpos.m_123342_() < i) {
 +                    if (this.f_9766_ == null && this.f_9743_.m_20275_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.5D, (double)blockpos.m_123343_() + 0.5D) < 64.0D && serverlevel.m_7966_(this.f_9743_, blockpos)) {
 +                        //this.player.stopUsingItem(); // CraftBukkit - SPIGOT-4706 //Magma - NO! This breaks item holding with specific mods
-+                        InteractionResult interactionresult = this.f_9743_.f_8941_.m_7179_( this.f_9743_, serverlevel, itemstack, interactionhand, blockhitresult );
-+                        if (direction == Direction.UP && !interactionresult.m_19077_() && blockpos.m_123342_() >= i - 1 && m_9790_( this.f_9743_, itemstack )) {
-+                            Component component = (new TranslatableComponent( "build.tooHigh", i - 1 )).m_130940_( ChatFormatting.RED );
-+                            this.f_9743_.m_9146_( component, ChatType.GAME_INFO, Util.f_137441_ );
++                        InteractionResult interactionresult = this.f_9743_.f_8941_.m_7179_(this.f_9743_, serverlevel, itemstack, interactionhand, blockhitresult);
++                        if (direction == Direction.UP && !interactionresult.m_19077_() && blockpos.m_123342_() >= i - 1 && m_9790_(this.f_9743_, itemstack)) {
++                            Component component = (new TranslatableComponent("build.tooHigh", i - 1)).m_130940_(ChatFormatting.RED);
++                            this.f_9743_.m_9146_(component, ChatType.GAME_INFO, Util.f_137441_);
 +                        } else if (interactionresult.m_19080_()) {
-+                            this.f_9743_.m_21011_( interactionhand, true );
++                            this.f_9743_.m_21011_(interactionhand, true);
 +                        }
 +                    }
 +                } else {
-+                    Component component1 = (new TranslatableComponent( "build.tooHigh", i - 1 )).m_130940_( ChatFormatting.RED );
-+                    this.f_9743_.m_9146_( component1, ChatType.GAME_INFO, Util.f_137441_ );
++                    Component component1 = (new TranslatableComponent("build.tooHigh", i - 1)).m_130940_(ChatFormatting.RED);
++                    this.f_9743_.m_9146_(component1, ChatType.GAME_INFO, Util.f_137441_);
 +                }
 +
-+                this.f_9743_.f_8906_.m_141995_( new ClientboundBlockUpdatePacket( serverlevel, blockpos ) );
-+                this.f_9743_.f_8906_.m_141995_( new ClientboundBlockUpdatePacket( serverlevel, blockpos.m_142300_( direction ) ) );
++                this.f_9743_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(serverlevel, blockpos));
++                this.f_9743_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(serverlevel, blockpos.m_142300_(direction)));
 +            } else {
-+                f_9744_.warn( "Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.f_9743_.m_36316_().getName(), vec3, blockpos );
++                f_9744_.warn("Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.f_9743_.m_36316_().getName(), vec3, blockpos);
 +            }
 +        } else {
-+            f_9744_.warn( "Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.", this.f_9743_.m_36316_().getName(), blockpos, this.f_9743_.m_142538_() );
++            f_9744_.warn("Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.", this.f_9743_.m_36316_().getName(), blockpos, this.f_9743_.m_142538_());
 +        }
 +    }
 +
