@@ -347,7 +347,7 @@
 +                  ((JukeboxBlock) Blocks.f_50131_).m_54269_(world, blockpos, world.m_8055_(blockpos), this);
 +                  world.m_5898_((Player) null, 1010, blockpos, Item.m_41393_(this.f_41589_));
 +                  this.m_41774_(1);
-+                  player.m_36220_(Stats.f_12965_);
++                  //player.awardStat(Stats.PLAY_RECORD); //Magma - moved back to RecordItem
 +               }
 +               if (item == Items.f_42679_) { // Special case skulls to allow wither spawns to be cancelled
 +                  BlockPos bp = blockpos;
