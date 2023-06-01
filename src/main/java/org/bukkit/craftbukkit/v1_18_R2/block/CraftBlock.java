@@ -216,7 +216,9 @@ public class CraftBlock implements Block {
 
     @Override
     public Material getType() {
-        return CraftMagicNumbers.getMaterial(world.getBlockState(position).getBlock());
+        final Material material = CraftMagicNumbers.getMaterial(world.getBlockState(position).getBlock());
+        if (material!=null) return material;
+        return Material.AIR;
     }
 
     @Override
