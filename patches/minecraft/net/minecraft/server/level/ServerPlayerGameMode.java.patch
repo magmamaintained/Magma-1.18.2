@@ -196,7 +196,7 @@
           }
  
        }
-@@ -217,45 +_,152 @@
+@@ -217,45 +_,154 @@
        if (this.m_9280_(p_9287_)) {
           this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9287_, this.f_9244_.m_8055_(p_9287_), p_9288_, true, p_9289_));
        } else {
@@ -287,6 +287,8 @@
 +            if (flag && destroyBlock_event != null) {
 +               blockState.m_60734_().m_49805_(this.f_9244_, p_9281_, destroyBlock_event.get().getExpToDrop());
 +            }
++
++            org.magmafoundation.magma.util.LogUtils.removeHolder(p_9281_);
 +
 +            return true;
 +            // CraftBukkit end

@@ -9,12 +9,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
+import org.magmafoundation.magma.util.LogUtils;
 
 public final class CraftBlockStates {
 
@@ -336,7 +338,13 @@ public final class CraftBlockStates {
         } else {
             factory = getFactory(material);
         }
-        return factory.createBlockState(world, blockPosition, blockData, tileEntity);
+        //Magma start - handle class cast exceptions correctly
+        try {
+            return factory.createBlockState(world, blockPosition, blockData, tileEntity);
+        } catch (ClassCastException cce) {
+            LogUtils.warnOnce(CraftBlockStates.class, "BlockStateFactory for " + material + " returned an invalid block state. Using default factory.", blockPosition);
+            return DEFAULT_FACTORY.createBlockState(world, blockPosition, blockData, tileEntity);
+        }
     }
 
     public static boolean isTileEntityOptional(Material material) {

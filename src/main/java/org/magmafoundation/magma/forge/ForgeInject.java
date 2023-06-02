@@ -247,15 +247,7 @@ public class ForgeInject {
 
             if (block instanceof EntityBlock entityBlock) {
                 debug("Registering " + material.name() + " as " + craftClass.getSimpleName());
-                CraftBlockStates.register(material, craftClass, blockStateConstructor, (pos, state) -> {
-                    final BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
-                    try {
-                        return entityClass.cast(blockEntity);
-                    } catch (ClassCastException cce) {
-                        Magma.LOGGER.error("Could not register " + material.name() + " as " + craftClass.getSimpleName(), cce);
-                        return null;
-                    }
-                });
+                CraftBlockStates.register(material, craftClass, blockStateConstructor, (pos, state) -> entityClass.cast(entityBlock.newBlockEntity(pos, state)));
             }
         }
     }
@@ -278,15 +270,7 @@ public class ForgeInject {
 
             if (block instanceof EntityBlock entityBlock) {
                 debug("Registering " + material.name() + " as " + CraftSign.class.getSimpleName());
-                CraftBlockStates.register(material, CraftSign.class, CraftSign::new, (pos, state) -> {
-                    final BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
-                    try {
-                        return SignBlockEntity.class.cast(blockEntity);
-                    } catch (ClassCastException cce) {
-                        Magma.LOGGER.error("Could not register " + material.name() + " as " + CraftSign.class.getSimpleName(), cce);
-                        return null;
-                    }
-                });
+                CraftBlockStates.register(material, CraftSign.class, CraftSign::new, (pos, state) -> (SignBlockEntity) entityBlock.newBlockEntity(pos, state));
             }
         }
     }
@@ -302,15 +286,7 @@ public class ForgeInject {
 
             if (block instanceof EntityBlock entityBlock) {
                 debug("Registering " + material.name() + " as " + CraftChest.class.getSimpleName());
-                CraftBlockStates.register(material, CraftChest.class, CraftChest::new, (pos, state) -> {
-                    final BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
-                    try {
-                        return (block instanceof TrappedChestBlock ? TrappedChestBlockEntity.class : ChestBlockEntity.class).cast(blockEntity);
-                    } catch (ClassCastException cce) {
-                        Magma.LOGGER.error("Could not register " + material.name() + " as " + CraftChest.class.getSimpleName(), cce);
-                        return null;
-                    }
-                });
+                CraftBlockStates.register(material, CraftChest.class, CraftChest::new, (pos, state) -> (block instanceof TrappedChestBlock ? TrappedChestBlockEntity.class : ChestBlockEntity.class).cast(entityBlock.newBlockEntity(pos, state)));
             }
         }
     }
