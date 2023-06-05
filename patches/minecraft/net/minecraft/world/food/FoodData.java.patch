@@ -138,7 +138,7 @@
              if (p_38711_.m_21223_() > 10.0F || difficulty == Difficulty.HARD || p_38711_.m_21223_() > 1.0F && difficulty == Difficulty.NORMAL) {
                 p_38711_.m_6469_(DamageSource.f_19313_, 1.0F);
              }
-@@ -104,9 +_,26 @@
+@@ -104,9 +_,29 @@
        return this.f_38696_ < 20;
     }
  
@@ -152,12 +152,15 @@
 +
     public void m_38703_(float p_38704_) {
 -      this.f_38698_ = Math.min(this.f_38698_ + p_38704_, 40.0F);
-+      // CraftBukkit start
-+      EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(addExhaustion_player, addExhaustion_reason, p_38704_);
-+      if (!event.isCancelled()) {
-+         this.f_38698_ = Math.min(this.f_38698_ + event.getExhaustion(), 40.0F);
-+      }
-+      // CraftBukkit end
++
++      if (addExhaustion_player != null) {
++         // CraftBukkit start
++         EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(addExhaustion_player, addExhaustion_reason, p_38704_);
++         if (!event.isCancelled()) {
++            this.f_38698_ = Math.min(this.f_38698_ + event.getExhaustion(), 40.0F);
++         }
++         // CraftBukkit end
++      } else this.f_38698_ = Math.min(this.f_38698_ + p_38704_, 40.0F);
 +
 +      this.addExhaustion_player = null;
 +      this.addExhaustion_reason = null;
