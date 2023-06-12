@@ -30,11 +30,6 @@ public class TerminalConsoleWriterThread extends Thread {
         while (true) {
             message = LogQueues.getNextLogEvent("TerminalConsole");
             if (message == null) {
-                //MAGMA START -- Add a timeout, if there is nothing to log
-                try{
-                    Thread.sleep(50L);
-                }catch (Throwable ignored){}
-                //MAGMA END
                 continue;
             }
 
