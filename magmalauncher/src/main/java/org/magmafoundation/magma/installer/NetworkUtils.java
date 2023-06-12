@@ -56,7 +56,7 @@ public class NetworkUtils {
                 e.printStackTrace();
             }
             return null;
-        }, downloadSrvc).get(20, TimeUnit.SECONDS);
+        }, downloadSrvc).get(60, TimeUnit.SECONDS);
         rbc.close();
         String MD5 = org.magmafoundation.magma.common.utils.MD5.getMd5(f);
         if(md5 != null && MD5 != null && !MD5.equals(md5.toLowerCase())) {

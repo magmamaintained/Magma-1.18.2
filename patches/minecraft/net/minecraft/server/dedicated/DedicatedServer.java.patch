@@ -173,7 +173,7 @@
        f_139598_.info("Default game type: {}", (Object)dedicatedserverproperties.f_139740_);
        InetAddress inetaddress = null;
        if (!this.m_130009_().isEmpty()) {
-@@ -149,10 +_,22 @@
+@@ -149,10 +_,29 @@
           return false;
        }
  
@@ -182,14 +182,21 @@
 +      server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
 +      // CraftBukkit end
 +
++      // Paper start
++      boolean usingProxy = org.spigotmc.SpigotConfig.bungee || PaperConfig.velocitySupport;
++      String proxyFlavor = (PaperConfig.velocitySupport) ? "Velocity" : "BungeeCord";
++      String proxyLink = (PaperConfig.velocitySupport) ? "https://docs.papermc.io/velocity/security" : "http://www.spigotmc.org/wiki/firewall-guide/";
++      // Paper end
        if (!this.m_129797_()) {
           f_139598_.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
           f_139598_.warn("The server will make no attempt to authenticate usernames. Beware.");
 -         f_139598_.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
 +         // Spigot start
-+         if (org.spigotmc.SpigotConfig.bungee) {
-+            DedicatedServer.f_139598_.warn("Whilst this makes it possible to use BungeeCord, unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
-+            DedicatedServer.f_139598_.warn("Please see http://www.spigotmc.org/wiki/firewall-guide/ for further information.");
++         // Paper start
++         if (usingProxy) {
++            DedicatedServer.f_139598_.warn("Whilst this makes it possible to use "+proxyFlavor+", unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
++            DedicatedServer.f_139598_.warn("Please see "+proxyLink+" for further information.");
++            // Paper end
 +         } else {
 +            DedicatedServer.f_139598_.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
 +         }
