@@ -2,6 +2,7 @@ package org.magmafoundation.magma.installer;
 
 import dev.vankka.dependencydownload.DependencyManager;
 import dev.vankka.dependencydownload.dependency.Dependency;
+import dev.vankka.dependencydownload.dependency.StandardDependency;
 import dev.vankka.dependencydownload.path.CleanupPathProvider;
 import dev.vankka.dependencydownload.path.DependencyPathProvider;
 import dev.vankka.dependencydownload.repository.Repository;
@@ -9,6 +10,8 @@ import dev.vankka.dependencydownload.repository.StandardRepository;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.magmafoundation.magma.MagmaStart;
 import org.magmafoundation.magma.common.MagmaConstants;
 import org.magmafoundation.magma.common.utils.JarTool;
@@ -403,18 +406,33 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                 }
             });
 
-            downloadMcp(mcVersion, mcpVersion);
+            downloadMcp(mcVersion, mcpVersion, standardRepositories, manager);
             downloadMinecraftServer(minecraft_server);
         }
 
-        public void downloadMcp(String mc_version, String mcp_version) {
+        public void downloadMcp(String mc_version, String mcp_version, List<Repository> standardRepositories, DependencyManager manager) {
             File mcp_config = new File(LIB_PATH + "de/oceanlabs/mcp/mcp_config/" + mc_version + "-" + mcp_version + "/mcp_config-" + mc_version + "-" + mcp_version + ".zip");
             if (Files.exists(mcp_config.toPath()))
                 return;
             mcp_config.getParentFile().mkdirs();
+            Dependency dep = new StandardDependency(
+                    "de.oceanlabs.mcp",
+                    "mcp_config",
+                    mc_version + "-" + mcp_version,
+                    "zip",
+                    "b670fc1d3c3cfd73c34493258d9226210108ce87b1fed9f685df8aa80600816e2fb8b574e7ec1a6eb947165c8b9f0731d58926cb88623ce4c0e872c255c27f6f",
+                    "SHA-512"
+            ){
+                @Override
+                public String getFileName() {
+                    String classifier = getClassifier();
+                    return getArtifactId() + '-' + getVersion() + ".zip";
+                }
+            };
             try {
-                NetworkUtils.downloadFile("https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp_config/"+ mc_version + "-"+ mcp_version + "/mcp_config-"+ mc_version + "-"+ mcp_version +".zip",
-                        mcp_config);
+                LibHelper.downloadDependency(manager, dep, standardRepositories);
+                //NetworkUtils.downloadFile("https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp_config/"+ mc_version + "-"+ mcp_version + "/mcp_config-"+ mc_version + "-"+ mcp_version +".zip",
+                //       mcp_config);
             } catch (Exception e) {
                 System.out.println("Can't find mcp_config");
                 e.printStackTrace();
