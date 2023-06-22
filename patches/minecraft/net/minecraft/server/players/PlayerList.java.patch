@@ -388,7 +388,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,134 +_,379 @@
+@@ -332,43 +_,92 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -499,22 +499,10 @@
     public ServerPlayer m_11300_(GameProfile p_11301_) {
        UUID uuid = Player.m_36198_(p_11301_);
        List<ServerPlayer> list = Lists.newArrayList();
- 
--      for(int i = 0; i < this.f_11196_.size(); ++i) {
--         ServerPlayer serverplayer = this.f_11196_.get(i);
--         if (serverplayer.m_142081_().equals(uuid)) {
--            list.add(serverplayer);
-+      for (ServerPlayer value : this.f_11196_) {
-+         if (value.m_142081_().equals(uuid)) {
-+            list.add(value);
-          }
+@@ -385,81 +_,283 @@
+          list.add(serverplayer2);
        }
  
--      ServerPlayer serverplayer2 = this.f_11197_.get(p_11301_.getId());
--      if (serverplayer2 != null && !list.contains(serverplayer2)) {
--         list.add(serverplayer2);
--      }
--
 -      for(ServerPlayer serverplayer1 : list) {
 -         serverplayer1.f_8906_.m_9942_(new TranslatableComponent("multiplayer.disconnect.duplicate_login"));
 +      for (ServerPlayer serverPlayer : list) {
