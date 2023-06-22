@@ -87,21 +87,27 @@
                    this.m_142131_(p_40704_, p_40703_, itemstack, blockpos2);
                    if (p_40704_ instanceof ServerPlayer) {
                       CriteriaTriggers.f_10591_.m_59469_((ServerPlayer)p_40704_, blockpos2, itemstack);
-@@ -98,6 +_,10 @@
+@@ -98,7 +_,15 @@
     public void m_142131_(@Nullable Player p_150711_, Level p_150712_, ItemStack p_150713_, BlockPos p_150714_) {
     }
  
++   @Deprecated //Forge: use the ItemStack sensitive version
+    public boolean m_142073_(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_) {
++      return this.emptyContents(p_150716_, p_150717_, p_150718_, p_150719_, null);
++   }
++
 +   //Magma start - move emptyContents back to original method and change how bukkit implements it
 +   @Nullable private Direction emptyContents_direction;
 +   @Nullable private BlockPos emptyContents_clicked;
-+   @Nullable private ItemStack emptyContents_itemstack;
-    public boolean m_142073_(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_) {
++   public boolean emptyContents(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_, @Nullable ItemStack container) {
        if (!(this.f_40687_ instanceof FlowingFluid)) {
           return false;
-@@ -107,6 +_,29 @@
+       } else {
+@@ -107,8 +_,34 @@
           Material material = blockstate.m_60767_();
           boolean flag = blockstate.m_60722_(this.f_40687_);
           boolean flag1 = blockstate.m_60795_() || flag || block instanceof LiquidBlockContainer && ((LiquidBlockContainer)block).m_6044_(p_150717_, p_150718_, blockstate, this.f_40687_);
++         var containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.minecraftforge.fluids.FluidUtil::getFluidContained);
 +
 +         // CraftBukkit start
 +         if (flag1 && p_150716_ != null) {
@@ -109,14 +115,13 @@
 +            PlayerBucketEmptyEvent event = null;
 +            try {
 +               ServerLevel serverLevel = (ServerLevel) p_150717_;
-+               event = CraftEventFactory.callPlayerBucketEmptyEvent(serverLevel, p_150716_, p_150718_, emptyContents_clicked, emptyContents_direction, emptyContents_itemstack);
++               event = CraftEventFactory.callPlayerBucketEmptyEvent(serverLevel, p_150716_, p_150718_, emptyContents_clicked, emptyContents_direction, container);
 +            } catch (ClassCastException ignored) {}
 +            //Magma end
 +
 +            //Magma - set these back to null after use
 +            this.emptyContents_direction = null;
 +            this.emptyContents_clicked = null;
-+            this.emptyContents_itemstack = null;
 +            if (event != null && event.isCancelled()) { //Magma - null check
 +               ((ServerPlayer) p_150716_).f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_150717_, p_150718_)); // SPIGOT-4238: needed when looking through entity
 +               ((ServerPlayer) p_150716_).getBukkitEntity().updateInventory(); // SPIGOT-4541
@@ -126,8 +131,14 @@
 +         // CraftBukkit end
 +
           if (!flag1) {
-             return p_150719_ != null && this.m_142073_(p_150716_, p_150717_, p_150719_.m_82425_().m_142300_(p_150719_.m_82434_()), (BlockHitResult)null);
+-            return p_150719_ != null && this.m_142073_(p_150716_, p_150717_, p_150719_.m_82425_().m_142300_(p_150719_.m_82434_()), (BlockHitResult)null);
++            return p_150719_ != null && this.emptyContents(p_150716_, p_150717_, p_150719_.m_82425_().m_142300_(p_150719_.m_82434_()), (BlockHitResult)null, container);
++         } else if (p_150717_.m_6042_().m_63951_() && containedFluidStack.isPresent() && this.f_40687_.getAttributes().doesVaporize(p_150717_, p_150718_, containedFluidStack.get())) {
++            this.f_40687_.getAttributes().vaporize(p_150716_, p_150717_, p_150718_, containedFluidStack.get());
++            return true;
           } else if (p_150717_.m_6042_().m_63951_() && this.f_40687_.m_205067_(FluidTags.f_13131_)) {
+             int i = p_150718_.m_123341_();
+             int j = p_150718_.m_123342_();
 @@ -120,7 +_,7 @@
              }
  
@@ -137,15 +148,14 @@
              ((LiquidBlockContainer)block).m_7361_(p_150717_, p_150718_, blockstate, ((FlowingFluid)this.f_40687_).m_76068_(false));
              this.m_7718_(p_150716_, p_150717_, p_150718_);
              return true;
-@@ -139,9 +_,39 @@
+@@ -139,9 +_,38 @@
        }
     }
  
 +   public boolean emptyContents(@Nullable Player p_150716_, Level p_150717_, BlockPos p_150718_, @Nullable BlockHitResult p_150719_, Direction direction, BlockPos clicked, ItemStack itemstack) {
 +      this.emptyContents_direction = direction;
 +      this.emptyContents_clicked = clicked;
-+      this.emptyContents_itemstack = itemstack;
-+      return this.m_142073_(p_150716_, p_150717_, p_150718_, p_150719_);
++      return this.emptyContents(p_150716_, p_150717_, p_150718_, p_150719_, itemstack);
 +   }
 +   //Magma end
 +
