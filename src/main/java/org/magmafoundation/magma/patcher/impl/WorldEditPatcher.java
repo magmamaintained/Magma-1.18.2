@@ -70,7 +70,7 @@ public class WorldEditPatcher extends Patcher {
         return writer.toByteArray();
     }
 
-    private static void handleBukkitAdapter(ClassNode node) {
+    public static void handleBukkitAdapter(ClassNode node) {
         MethodNode standardize = new MethodNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC, "patcher$standardize",
                 Type.getMethodDescriptor(Type.getType(String.class), Type.getType(String.class)), null, null);
         try {
