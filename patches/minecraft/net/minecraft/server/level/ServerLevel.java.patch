@@ -404,7 +404,13 @@
        p_8648_.m_146867_();
        ProfilerFiller profilerfiller = this.m_46473_();
        ++p_8648_.f_19797_;
-@@ -646,7 +_,7 @@
+@@ -641,12 +_,13 @@
+       });
+       profilerfiller.m_6174_("tickNonPassenger");
+       p_8648_.m_8119_();
++      p_8648_.postTick(); // CraftBukkit
+       this.m_46473_().m_7238_();
+ 
        for(Entity entity : p_8648_.m_20197_()) {
           this.m_8662_(p_8648_, entity);
        }
