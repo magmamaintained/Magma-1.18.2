@@ -1001,7 +1001,7 @@
     }
  
     public boolean m_7306_(Entity p_20356_) {
-@@ -2237,37 +_,86 @@
+@@ -2237,37 +_,87 @@
  
     @Nullable
     public Entity m_5489_(ServerLevel p_20118_) {
@@ -1032,6 +1032,7 @@
 -         } else {
 +         PortalInfo portalinfo = (blockPos == null) ? teleporter.getPortalInfo( this, serverLevel.get(), this::m_7937_ ) :
 +                 new PortalInfo( new Vec3( blockPos.m_123341_(), blockPos.m_123342_(), blockPos.m_123343_() ), Vec3.f_82478_, this.f_19858_, this.f_19858_ );
++         if(portalinfo == null) return null; //Magma - fix dead entites
 +         portalinfo.setCBPortalEvent(serverLevel.get(), null);
 +         //CraftBukkit start
 +         serverLevel.set( portalinfo.world );
