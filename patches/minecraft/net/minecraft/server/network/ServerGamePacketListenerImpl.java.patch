@@ -113,7 +113,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2513 @@
+@@ -118,1340 +_,2516 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -2855,6 +2855,8 @@
 +            if (this.f_9743_.m_20280_( entity ) < 36.0D) {
 +                p_9866_.m_179617_( new ServerboundInteractPacket.Handler() {
 +                    private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_, PlayerInteractEntityEvent event) { // CraftBukkit
++                        if(!ServerGamePacketListenerImpl.this.f_9743_.canInteractWith(entity, 1.5D)) return; //Forge: If the entity cannot be reached, do nothing. Original check was dist < 6, range is 4.5, so vanilla used padding=1.5
++
 +                        ItemStack itemstack = ServerGamePacketListenerImpl.this.f_9743_.m_21120_( p_143679_ ).m_41777_();
 +                        // CraftBukkit start
 +                        ItemStack itemInHand = ServerGamePacketListenerImpl.this.f_9743_.m_21120_(p_143679_);
@@ -2884,7 +2886,6 @@
 +                        }
 +                        // CraftBukkit end
 +                        InteractionResult interactionresult = p_143680_.m_143694_( ServerGamePacketListenerImpl.this.f_9743_, entity, p_143679_ );
-+                        if (net.minecraftforge.common.ForgeHooks.onInteractEntityAt(f_9743_, entity, entity.m_20182_(), p_143679_) != null) return;
 +
 +                        // CraftBukkit start
 +                        if (!itemInHand.m_41619_() && itemInHand.m_41613_() <= -1) {
@@ -2905,8 +2906,10 @@
 +                    }
 +
 +                    public void m_142143_(InteractionHand p_143682_, Vec3 p_143683_) {
-+                        this.performInteraction( p_143682_, (p_143686_, p_143687_, p_143688_) -> {
-+                            return p_143687_.m_7111_( p_143686_, p_143683_, p_143688_ );
++                        this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
++                            InteractionResult onInteractEntityAtResult = net.minecraftforge.common.ForgeHooks.onInteractEntityAt(f_9743_, entity, p_143683_, p_143682_);
++                            if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
++                            return p_143687_.m_7111_(p_143686_, p_143683_, p_143688_);
 +                        }, new PlayerInteractAtEntityEvent(getCraftPlayer(), entity.getBukkitEntity(), new org.bukkit.util.Vector(p_143683_.f_82479_, p_143683_.f_82480_, p_143683_.f_82481_), (p_143682_ == InteractionHand.OFF_HAND) ? org.bukkit.inventory.EquipmentSlot.OFF_HAND : org.bukkit.inventory.EquipmentSlot.HAND)); // CraftBukkit
 +                    }
 +
