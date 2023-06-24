@@ -1074,17 +1074,6 @@
 +            BlockState blockstate = this.m_8055_( p_46587_ );
 +
 +            try {
-+                // CraftBukkit start
-+                CraftWorld world = ((ServerLevel) this).getWorld();
-+                if (world != null) {
-+                    BlockPhysicsEvent event = new BlockPhysicsEvent( world.getBlockAt( p_46587_.m_123341_(), p_46587_.m_123342_(), p_46587_.m_123343_() ), CraftBlockData.fromData( blockstate ), world.getBlockAt( p_46589_.m_123341_(), p_46589_.m_123342_(), p_46589_.m_123343_() ) );
-+                    this.getCraftServer().getPluginManager().callEvent( event );
-+
-+                    if (event.isCancelled()) {
-+                        return;
-+                    }
-+                }
-+                // CraftBukkit end
 +                if (MagmaConfig.instance.patchUpdateSuppression.getValues())
 +                    this.neighborChanged(blockstate, p_46587_, p_46588_, p_46589_, false);
 +                else
@@ -1110,6 +1099,17 @@
 +    }
 +
 +    public void neighborChanged(BlockState p_220379_, BlockPos p_220380_, Block p_220381_, BlockPos p_220382_, boolean p_220383_) {
++        // CraftBukkit start
++        CraftWorld world = ((ServerLevel) this).getWorld();
++        if (world != null) {
++            BlockPhysicsEvent event = new BlockPhysicsEvent( world.getBlockAt( p_220380_.m_123341_(), p_220380_.m_123342_(), p_220380_.m_123343_() ), CraftBlockData.fromData( p_220379_ ), world.getBlockAt( p_220382_.m_123341_(), p_220382_.m_123342_(), p_220382_.m_123343_() ) );
++            this.getCraftServer().getPluginManager().callEvent( event );
++
++            if (event.isCancelled()) {
++                return;
++            }
++        }
++        // CraftBukkit end
 +    }
 +
 +    public void neighborShapeChanged(Direction p_220385_, BlockState p_220386_, BlockPos p_220387_, BlockPos p_220388_, int p_220389_, int p_220390_) {
