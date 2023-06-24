@@ -48,12 +48,15 @@
  import net.minecraft.world.level.pathfinder.PathComputationType;
  import net.minecraft.world.level.storage.loot.BuiltInLootTables;
  import net.minecraft.world.level.storage.loot.LootContext;
-@@ -65,8 +_,20 @@
+@@ -65,8 +_,23 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
 -
 -public abstract class BlockBehaviour {
++import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
++import org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData;
++import org.bukkit.event.block.BlockPhysicsEvent;
 +import org.magmafoundation.magma.configuration.MagmaConfig;
 +
 +import javax.annotation.Nullable;
@@ -166,6 +169,24 @@
        public BlockState m_60717_(Rotation p_60718_) {
           return this.m_60734_().m_6843_(this.m_7160_(), p_60718_);
        }
+@@ -623,6 +_,17 @@
+       }
+ 
+       public void m_60690_(Level p_60691_, BlockPos p_60692_, Block p_60693_, BlockPos p_60694_, boolean p_60695_) {
++         // CraftBukkit start
++         CraftWorld world = ((ServerLevel) p_60691_).getWorld();
++         if (world != null) {
++            BlockPhysicsEvent event = new BlockPhysicsEvent( world.getBlockAt( p_60692_.m_123341_(), p_60692_.m_123342_(), p_60692_.m_123343_() ), CraftBlockData.fromData( p_60691_.m_8055_(p_60692_)), world.getBlockAt( p_60694_.m_123341_(), p_60694_.m_123342_(), p_60694_.m_123343_() ) );
++            p_60691_.getCraftServer().getPluginManager().callEvent( event );
++
++            if (event.isCancelled()) {
++               return;
++            }
++         }
++         // CraftBukkit end
+          this.m_60734_().m_6861_(this.m_7160_(), p_60691_, p_60692_, p_60693_, p_60694_, p_60695_);
+       }
+ 
 @@ -636,9 +_,14 @@
  
           for(Direction direction : BlockBehaviour.f_60441_) {
