@@ -36,13 +36,14 @@
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.NonNullList;
-@@ -57,8 +_,32 @@
+@@ -57,8 +_,33 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.entity.SkullBlockEntity;
  import net.minecraft.world.level.storage.LevelStorageSource;
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
++import org.bukkit.craftbukkit.Main;
 +import org.bukkit.craftbukkit.v1_18_R2.command.CraftRemoteConsoleCommandSender;
 +import org.bukkit.craftbukkit.v1_18_R2.util.ForwardLogHandler;
 +import org.bukkit.craftbukkit.v1_18_R2.util.TerminalConsoleWriterThread;
@@ -69,7 +70,7 @@
  public class DedicatedServer extends MinecraftServer implements ServerInterface {
     static final Logger f_139598_ = LogUtils.getLogger();
     private static final int f_142864_ = 5000;
-@@ -89,12 +_,35 @@
+@@ -89,12 +_,39 @@
     public boolean m_7038_() throws IOException {
        Thread thread = new Thread("Server console handler") {
           public void run() {
@@ -93,7 +94,11 @@
 +            try {
 +               // CraftBukkit start - JLine disabling compatibility
 +               while (!DedicatedServer.this.m_129918_() && DedicatedServer.this.m_130010_()) {
-+                  s = bufferedreader.readLine();
++                  if (Main.useJline) {
++                     s = bufferedreader.readLine(">", null);
++                  } else {
++                     s = bufferedreader.readLine();
++                  }
 +
 +                  // SPIGOT-5220: Throttle if EOF (ctrl^d) or stdin is /dev/null
 +                  if (s == null) {

@@ -225,6 +225,7 @@ def sharedDeps = {
     installer 'net.minecrell:terminalconsoleappender:1.2.0'
     installer 'org.jline:jline-reader:3.21.0'   //Dep of TerminalConsoleAppender
     installer 'org.jline:jline-terminal:3.21.0' //Dep of TerminalConsoleAppender
+    installer 'org.jline:jline-terminal-jansi:3.21.0' //Dep of TerminalConsoleAppender
     installer "org.spongepowered:mixin:${MIXIN_VERSION}"
     installer 'org.openjdk.nashorn:nashorn-core:15.3'
     installer "net.minecraftforge:JarJarSelector:${JARJAR_VERSION}"
@@ -244,7 +245,7 @@ def sharedDeps = {
     installer 'org.yaml:snakeyaml:1.30'
     compileOnly 'org.jetbrains:annotations:21.0.1'
     installer 'org.fusesource.jansi:jansi:1.18'
-    installer 'jline:jline:2.12.1'
+    installer 'jline:jline:2.13'
     installer 'com.googlecode.json-simple:json-simple:1.1.1'
     installer 'org.xerial:sqlite-jdbc:3.36.0.3'
     installer 'mysql:mysql-connector-java:8.0.27'
