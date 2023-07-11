@@ -138,6 +138,10 @@ subprojects {
             name = 'forge'
             url = 'https://maven.minecraftforge.net/'
         }
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
         maven { url 'https://hub.spigotmc.org/nexus/content/groups/public/' }
         maven {
              url = "https://raw.github.com/Hexeption/Magma-Repo/master/"
@@ -258,6 +262,7 @@ def sharedDeps = {
 
     // Paper
     installer 'it.unimi.dsi:fastutil:8.5.6'
+    installer 'net.fabricmc:mapping-io:0.3.0'
 
 
     autolibraries BIN_PATCHER
