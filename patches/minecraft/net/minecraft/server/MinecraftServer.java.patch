@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2173 @@
+@@ -144,1693 +_,2178 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -158,6 +158,8 @@
 +import org.bukkit.plugin.PluginLoadOrder;
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.Metrics;
++import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
++import org.magmafoundation.magma.error.StackTraceDeobfuscator;
 +import org.magmafoundation.magma.forge.ForgeInject;
 +import org.magmafoundation.magma.helpers.ServerInitHelper;
 +import org.magmafoundation.magma.patcher.PatcherManager;
@@ -577,6 +579,9 @@
 +            //init patcher
 +            magma.setPatcherManager(new PatcherManager());
 +            magma.getPatcherManager().init();
++
++            //init stacktrace deobfuscator
++            DeobfRewritePolicy.setDeobfuscator(new StackTraceDeobfuscator());
 +        //Magma end
 +
 +        try {

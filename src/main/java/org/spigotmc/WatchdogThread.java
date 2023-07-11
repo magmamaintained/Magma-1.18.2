@@ -2,6 +2,7 @@ package org.spigotmc;
 
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
@@ -131,7 +132,7 @@ public class WatchdogThread extends Thread
         }
         log.log( Level.SEVERE, "\tStack:" );
         //
-        for ( StackTraceElement stack : thread.getStackTrace() )
+        for ( StackTraceElement stack : DeobfRewritePolicy.getDeobfuscator().deobf(thread.getStackTrace()) )
         {
             log.log( Level.SEVERE, "\t\t" + stack );
         }

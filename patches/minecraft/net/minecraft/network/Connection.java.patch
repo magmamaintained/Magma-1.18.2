@@ -45,7 +45,20 @@
  public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
     private static final float f_178299_ = 0.75F;
     private static final Logger f_129465_ = LogUtils.getLogger();
-@@ -75,8 +_,13 @@
+@@ -65,18 +_,23 @@
+    });
+    public static final AttributeKey<ConnectionProtocol> f_129461_ = AttributeKey.valueOf("protocol");
+    public static final LazyLoadedValue<NioEventLoopGroup> f_129462_ = new LazyLoadedValue<>(() -> {
+-      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build());
++      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(f_129465_)).build()); // Paper
+    });
+    public static final LazyLoadedValue<EpollEventLoopGroup> f_129463_ = new LazyLoadedValue<>(() -> {
+-      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build());
++      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(f_129465_)).build()); // Paper
+    });
+    public static final LazyLoadedValue<DefaultEventLoopGroup> f_129464_ = new LazyLoadedValue<>(() -> {
+-      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).build());
++      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(f_129465_)).build()); // Paper
     });
     private final PacketFlow f_129466_;
     private final Queue<Connection.PacketHolder> f_129467_ = Queues.newConcurrentLinkedQueue();

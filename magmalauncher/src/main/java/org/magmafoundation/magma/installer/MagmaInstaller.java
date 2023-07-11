@@ -10,9 +10,6 @@ import dev.vankka.dependencydownload.repository.StandardRepository;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.magmafoundation.magma.MagmaStart;
 import org.magmafoundation.magma.common.MagmaConstants;
 import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.common.utils.MD5;
@@ -376,6 +373,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             List<Repository> standardRepositories = new ArrayList<>();
             standardRepositories.add(new StandardRepository("https://nexus.c0d3m4513r.com/repository/Magma/"));
             standardRepositories.add(new StandardRepository("https://maven.minecraftforge.net"));
+            standardRepositories.add(new StandardRepository("https://maven.fabricmc.net/"));
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2"));
             standardRepositories.add(new StandardRepository("https://git.magmafoundation.org/magmafoundation/magma-maven-repo/-/raw/repository/"));
             standardRepositories.add(new StandardRepository("https://maven.izzel.io/releases"));
