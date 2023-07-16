@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2178 @@
+@@ -144,1693 +_,2181 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -158,6 +158,7 @@
 +import org.bukkit.plugin.PluginLoadOrder;
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.Metrics;
++import org.magmafoundation.magma.configuration.MagmaConfig;
 +import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
 +import org.magmafoundation.magma.error.StackTraceDeobfuscator;
 +import org.magmafoundation.magma.forge.ForgeInject;
@@ -2168,6 +2169,8 @@
 +                Holder<DimensionType> holder1 = entry.getValue().m_204521_();
 +                ChunkGenerator chunkgenerator1 = entry.getValue().m_63990_();
 +                DerivedLevelData derivedleveldata = new DerivedLevelData(this.f_129749_, serverleveldata);
++                if (MagmaConfig.instance.forceRandomizedUUIDForDimensions.getValues())
++                    derivedleveldata.setLevelName(derivedleveldata.m_5462_() + "_" + resourcekey.m_135782_().m_135815_());
 +                ServerLevel serverlevel1 = new ServerLevel(this, this.f_129738_, this.f_129744_, derivedleveldata, resourcekey1, holder1, p_129816_, chunkgenerator1, flag, j, ImmutableList.of(), false);
 +                worldborder.m_61929_(new BorderChangeListener.DelegateBorderChangeListener(serverlevel1.m_6857_()));
 +                this.f_129762_.put(resourcekey1, bukkitInit(serverlevel1)); //Magma - bukkitInit

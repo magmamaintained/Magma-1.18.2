@@ -171,7 +171,7 @@
  public class ServerLevel extends Level implements WorldGenLevel {
     public static final BlockPos f_8562_ = new BlockPos(100, 50, 0);
     private static final int f_184049_ = 12000;
-@@ -181,23 +_,42 @@
+@@ -181,23 +_,44 @@
     private final List<CustomSpawner> f_8558_;
     @Nullable
     private final EndDragonFight f_8559_;
@@ -197,7 +197,9 @@
 +      convertable = p_203764_;
 +      setGeneratorAndEnv(generator, ForgeInject.environments.getOrDefault(getTypeKey(), World.Environment.CUSTOM));
 +      this.pvpMode = p_203762_.m_129799_();
-+      uuid = WorldUUID.getUUID(p_203764_.f_78271_.toFile());
++      if (MagmaConfig.instance.forceRandomizedUUIDForDimensions.getValues() && p_203765_ instanceof DerivedLevelData)
++         uuid = WorldUUID.getUUID(p_203764_.m_197394_(p_203766_).toFile());
++      else uuid = WorldUUID.getUUID(p_203764_.f_78271_.toFile());
 +      // CraftBukkit end
        this.f_8561_ = p_203773_;
        this.f_8548_ = p_203762_;

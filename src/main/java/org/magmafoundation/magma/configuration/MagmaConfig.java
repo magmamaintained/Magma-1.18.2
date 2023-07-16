@@ -46,6 +46,7 @@ public class MagmaConfig extends ConfigBase {
     /* PATCHES */
     public final BooleanValue patchUpdateSuppression = new BooleanValue(this, "patch.update-suppression.enable", true, "Changes the way that blocks update their neighbours, this fixes update suppression crashes");
     public final IntValue updateSuppressionMaxUpdates = new IntValue(this, "patch.update-suppression.max-updates", 1_000_000, "The maximum number of chained updates that can occur before skipping the rest");
+    public final BooleanValue forceRandomizedUUIDForDimensions = new BooleanValue(this, "patch.force-randomized-uuid-for-dimensions", false, "Forces the server to use randomized UUIDs for dimensions, this will make bukkit recognize dimensions as different worlds. THIS WILL BREAK EXISTING WORLDS, USE AT YOUR OWN RISK!!!");
     /* PATCHES */
 
     public final BooleanValue forgeBukkitPermissionHandlerEnable = new BooleanValue(this, "forge.bukkitPermissionHandler.enable", true, "Let's Bukkit permission plugins handle forge/modded commands");

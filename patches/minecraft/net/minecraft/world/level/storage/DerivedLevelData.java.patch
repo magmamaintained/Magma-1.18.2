@@ -1,13 +1,39 @@
 --- a/net/minecraft/world/level/storage/DerivedLevelData.java
 +++ b/net/minecraft/world/level/storage/DerivedLevelData.java
-@@ -20,6 +_,10 @@
-       this.f_78077_ = p_78080_;
-    }
+@@ -15,9 +_,19 @@
+    private final WorldData f_78076_;
+    private final ServerLevelData f_78077_;
  
-+   public ServerLevelData getWrapped() {
-+      return f_78077_;
++   //Magma start - add level name
++   private String levelName;
++
+    public DerivedLevelData(WorldData p_78079_, ServerLevelData p_78080_) {
+       this.f_78076_ = p_78079_;
+       this.f_78077_ = p_78080_;
++
++      this.levelName = f_78076_.m_5462_();
++      //Magma end
 +   }
 +
-    public int m_6789_() {
-       return this.f_78077_.m_6789_();
++   public ServerLevelData getWrapped() {
++      return f_78077_;
     }
+ 
+    public int m_6789_() {
+@@ -44,9 +_,15 @@
+       return this.f_78077_.m_6792_();
+    }
+ 
++   //Magma start - add level name
++   public void setLevelName(String levelName) {
++      this.levelName = levelName;
++   }
++
+    public String m_5462_() {
+-      return this.f_78076_.m_5462_();
++      return levelName;
+    }
++   //Magma end
+ 
+    public int m_6537_() {
+       return this.f_78077_.m_6537_();
