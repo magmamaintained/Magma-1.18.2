@@ -507,7 +507,11 @@ public class CraftInventory implements Inventory {
 
     @Override
     public void setMaxStackSize(int size) {
-        inventory.setMaxStackSize(size);
+        try{
+            inventory.setMaxStackSize(size);
+        }catch (AbstractMethodError ignored){
+            // Magma - Forge modded inventories don't necessarily have locations
+        }
     }
 
     @Override
@@ -522,6 +526,10 @@ public class CraftInventory implements Inventory {
 
     @Override
     public Location getLocation() {
-        return inventory.getLocation();
+        try{
+            return inventory.getLocation();
+        }catch (AbstractMethodError ignored){
+            return null; // Magma - Forge modded inventories don't necessarily have locations
+        }
     }
 }
