@@ -1495,7 +1495,7 @@ public final class CraftServer implements Server {
             // Spigot Start
             GameProfile profile = null;
             // Only fetch an online UUID in online mode
-            if ( getOnlineMode() || org.spigotmc.SpigotConfig.bungee )
+            if ( getOnlineMode() || org.spigotmc.SpigotConfig.bungee || (PaperConfig.velocitySupport && PaperConfig.velocityOnlineMode) )
             {
                 profile = console.getProfileCache().get(name).orElse(null);
             }
