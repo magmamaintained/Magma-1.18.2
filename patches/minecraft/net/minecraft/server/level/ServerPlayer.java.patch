@@ -733,7 +733,7 @@
           }
        }
  
-@@ -535,36 +_,67 @@
+@@ -535,36 +_,68 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -765,7 +765,8 @@
 +      }
 +
 +      Collection<org.bukkit.inventory.ItemStack> captured = getAndClearDrops();
-+      List<org.bukkit.inventory.ItemStack> capturedDrops = captured == null ? new ArrayList<>() : captured.stream().toList();
++      List<org.bukkit.inventory.ItemStack> capturedDrops = new ArrayList<>();
++      if (captured != null) capturedDrops.addAll(captured);
 +      this.drops.clear();
 +
 +      Component defaultMessage = this.m_21231_().m_19293_();
