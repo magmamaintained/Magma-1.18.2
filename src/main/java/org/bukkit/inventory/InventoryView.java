@@ -5,6 +5,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Represents a view linking two inventories and a single player (whose
@@ -237,8 +239,17 @@ public abstract class InventoryView {
         if (rawSlot == OUTSIDE || rawSlot == -1) {
             return null;
         }
-        Preconditions.checkArgument(rawSlot >= 0, "Negative, non outside slot %s", rawSlot);
-        Preconditions.checkArgument(rawSlot < countSlots(), "Slot %s greater than inventory slot count", rawSlot);
+        //Magma start - don't throw an exception here, just return null
+        if (rawSlot < 0 ){
+            LoggerFactory.getLogger(InventoryView.class).error("Negative, non outside slot: "+rawSlot,new IllegalArgumentException());
+            return null;
+        } else if (rawSlot >= countSlots()) {
+            LoggerFactory.getLogger(InventoryView.class).error("Slot "+rawSlot+" greater than inventory slot count", new IllegalArgumentException());
+            return null;
+        }
+//        Preconditions.checkArgument(rawSlot >= 0, "Negative, non outside slot %s", rawSlot);
+//        Preconditions.checkArgument(rawSlot < countSlots(), "Slot %s greater than inventory slot count", rawSlot);
+        //Magma end
 
         if (rawSlot < getTopInventory().getSize()) {
             return getTopInventory();
