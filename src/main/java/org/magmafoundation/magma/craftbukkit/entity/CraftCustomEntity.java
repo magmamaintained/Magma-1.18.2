@@ -48,6 +48,6 @@ public class CraftCustomEntity extends CraftEntity {
             return entityName;
         }
         final String name = component.getString();
-        return name.length() == 0 ? this.entity.getName().getString() : name;
+        return name.length() == 0 ? entityName : name;
     }
 }
