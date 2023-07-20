@@ -43,8 +43,9 @@ public class CraftCustomEntity extends CraftEntity {
     @Override
     public String getCustomName() {
         final Component component = this.getHandle().getCustomName();
+        final String entityName = this.entity.getName().getString();
         if (component == null) {
-            return null;
+            return entityName;
         }
         final String name = component.getString();
         return name.length() == 0 ? this.entity.getName().getString() : name;
