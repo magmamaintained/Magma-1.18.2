@@ -1,5 +1,6 @@
 package org.magmafoundation.magma.craftbukkit.entity;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
@@ -41,7 +42,11 @@ public class CraftCustomEntity extends CraftEntity {
 
     @Override
     public String getCustomName() {
-        String name = this.getHandle().getCustomName().getString();
-        return name == null || name.length() == 0 ? this.entity.getName().getString() : name;
+        final Component component = this.getHandle().getCustomName();
+        if (component == null) {
+            return null;
+        }
+        final String name = component.getString();
+        return name.length() == 0 ? this.entity.getName().getString() : name;
     }
 }
