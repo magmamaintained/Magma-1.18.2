@@ -26,9 +26,9 @@ public class ForgeInventoryHelper {
         if (entity instanceof ServerPlayer player) {
             Inventory capture = player.getInventory();
 
-            if (captures.containsKey(capture)) {
-                Inventory inventory = captures.get(capture);
-                captures.remove(capture);
+            Inventory inventory = captures.get(capture);
+            captures.remove(capture);
+            if (inventory != null) {
                 player.setInventory(inventory);
                 return capture;
             }
