@@ -592,19 +592,23 @@
           this.m_5810_();
           this.f_19853_.m_7605_(this, (byte)30);
        }
-@@ -1246,6 +_,12 @@
-       return this.f_36093_;
+@@ -1243,8 +_,14 @@
     }
  
+    public Inventory m_150109_() {
+-      return this.f_36093_;
+-   }
++      return this.f_36093_==null?this.f_36093_=new Inventory(this):this.f_36093_;
++   }
++
 +   //Magma start - set inventory
 +   public void setInventory(Inventory inventory) {
 +      this.f_36093_ = inventory;
 +   }
 +   //Magma end
-+
+ 
     public Abilities m_150110_() {
        return this.f_36077_;
-    }
 @@ -1253,6 +_,14 @@
     public void m_141945_(ItemStack p_150098_, ItemStack p_150099_, ClickAction p_150100_) {
     }
