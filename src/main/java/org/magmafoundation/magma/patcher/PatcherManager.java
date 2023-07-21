@@ -44,8 +44,9 @@ public class PatcherManager {
 
     private void initPatches() {
         //TODO: find a way to fix Reflections not working with Magma 1.18
-        patcherList.add(new WorldEditPatcher());
+        patcherList.add(new EssentialsPatcher());
         patcherList.add(new FAWEPatcher());
+        patcherList.add(new WorldEditPatcher());
     }
 
     public List<Patcher> getPatcherList() {
