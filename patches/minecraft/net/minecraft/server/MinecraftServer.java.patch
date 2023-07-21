@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2181 @@
+@@ -144,1693 +_,2182 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -2628,6 +2628,7 @@
 +        try {
 +            if (this.m_7038_()) {
 +                net.minecraftforge.server.ServerLifecycleHooks.handleServerStarted(this);
++                this.server.checkForUnknownCommands(m_129892_()); //Magma - force a command sync
 +                this.f_129726_ = Util.m_137550_();
 +                this.f_129757_.m_134908_(new TextComponent(this.f_129709_));
 +                this.f_129757_.m_134912_(new ServerStatus.Version(SharedConstants.m_183709_().getName(), SharedConstants.m_183709_().getProtocolVersion()));

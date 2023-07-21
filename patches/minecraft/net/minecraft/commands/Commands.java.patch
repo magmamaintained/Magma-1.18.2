@@ -7,7 +7,7 @@
  import com.google.common.collect.Maps;
  import com.mojang.brigadier.CommandDispatcher;
  import com.mojang.brigadier.ParseResults;
-@@ -9,104 +_,40 @@
+@@ -9,104 +_,41 @@
  import com.mojang.brigadier.builder.LiteralArgumentBuilder;
  import com.mojang.brigadier.builder.RequiredArgumentBuilder;
  import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -120,6 +120,7 @@
 +import net.minecraftforge.server.command.CommandHelper;
 +import org.bukkit.event.player.PlayerCommandSendEvent;
 +import org.bukkit.event.server.ServerCommandEvent;
++import org.magmafoundation.magma.commands.DispatcherRedirector;
 +import org.magmafoundation.magma.util.Wrapped;
  import org.slf4j.Logger;
  
@@ -356,7 +357,12 @@
           if (commandnode.canUse(p_82115_)) {
              ArgumentBuilder<SharedSuggestionProvider, ?> argumentbuilder = (ArgumentBuilder)commandnode.createBuilder();
              argumentbuilder.requires((p_82126_) -> {
-@@ -338,6 +_,11 @@
+@@ -335,9 +_,16 @@
+    }
+ 
+    public CommandDispatcher<CommandSourceStack> m_82094_() {
++      if (DispatcherRedirector.shouldBypass())
++         return this.forgeDispatcher;
        return this.f_82090_;
     }
  
