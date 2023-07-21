@@ -385,7 +385,18 @@ public enum EntityType implements Keyed {
         if (name == null) {
             return null;
         }
-        return NAME_MAP.get(name.toLowerCase(java.util.Locale.ENGLISH));
+
+        //Magma start - Allow partial matches
+        EntityType type = NAME_MAP.get(name.toLowerCase(java.util.Locale.ENGLISH));
+        if (type == null) {
+            String search = NAME_MAP.keySet().stream().filter(key -> key.endsWith(name.toLowerCase(java.util.Locale.ENGLISH))).findFirst().orElse(null);
+            if (search != null) {
+                type = NAME_MAP.get(search);
+            }
+        }
+
+        return type;
+        //Magma end
     }
 
     /**

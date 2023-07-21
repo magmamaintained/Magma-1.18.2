@@ -9,13 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Statistic;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_18_R2.CraftStatistic;
 import org.bukkit.craftbukkit.v1_18_R2.block.*;
@@ -75,6 +73,8 @@ public class ForgeInject {
         registerForgeMaterials();
         debug("Injecting Forge Enchantments into Bukkit");
         addForgeEnchantments();
+        debug("Injecting Forge Art into Bukkit");
+        addForgeArt();
         debug("Injecting Forge Potions into Bukkit");
         addForgePotions();
         debug("Injecting Forge Biomes into Bukkit");
@@ -302,6 +302,32 @@ public class ForgeInject {
             }
         });
         debug("Injecting Forge Enchantments into Bukkit: DONE");
+    }
+
+    private static void addForgeArt() {
+        int ordinal = Art.values().length;
+        List<Art> values = new ArrayList<>();
+        for (var entry : ForgeRegistries.PAINTING_TYPES.getEntries()) {
+            var location = entry.getKey().location();
+            Motive motive = entry.getValue();
+            if (location.getNamespace().equals(NamespacedKey.MINECRAFT))
+                continue;
+
+            var enumName = ResourceLocationUtil.standardize(location);
+            try {
+                var art = EnumJ17Helper.makeEnum(Art.class, enumName, ordinal,
+                        List.of(int.class, int.class, int.class),
+                        List.of(ordinal, motive.getWidth(), motive.getHeight()));
+                ordinal++;
+                values.add(art);
+                debug("Injecting Forge Art into Bukkit: " + art.name());
+            } catch (Throwable e) {
+                error("Could not inject Forge Art into Bukkit: " + enumName + ". " + e.getMessage());
+            }
+        }
+        EnumJ17Helper.addEnums(Art.class, values);
+        Art.sync();
+        debug("Injecting Forge Art into Bukkit: DONE");
     }
 
     private static void addForgePotions() {
