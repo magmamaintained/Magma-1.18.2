@@ -114,13 +114,29 @@ public enum Art implements Keyed {
     public static Art getByName(@NotNull String name) {
         Validate.notNull(name, "Name cannot be null");
 
-        return BY_NAME.get(name.toLowerCase(java.util.Locale.ENGLISH));
+        //Magma start - Allow partial matches
+        Art art = BY_NAME.get(name.toLowerCase(java.util.Locale.ENGLISH));
+        if (art == null) {
+            String search = BY_NAME.keySet().stream().filter(key -> key.endsWith(name.toLowerCase(java.util.Locale.ENGLISH))).findFirst().orElse(null);
+            if (search != null) {
+                art = BY_NAME.get(search);
+            }
+        }
+
+        return art;
+        //Magma end
     }
 
     static {
+        //Magma start - move to method
+        sync();
+    }
+
+    public static void sync() {
         for (Art art : values()) {
             BY_ID.put(art.id, art);
             BY_NAME.put(art.toString().toLowerCase(java.util.Locale.ENGLISH), art);
         }
     }
+    //Magma end
 }
