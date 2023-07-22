@@ -19,7 +19,8 @@ public final class DispatcherRedirector {
     };
 
     private static final String[] BYPASSED_CLASSES = {
-            "org.popcraft.chunky.ChunkyForge"
+            "org.popcraft.chunky.ChunkyForge",
+            "team.creative.playerrevive.PlayerRevive",
     };
 
     public static boolean shouldBypass() {
