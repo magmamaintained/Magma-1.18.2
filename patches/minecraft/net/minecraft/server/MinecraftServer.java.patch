@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2182 @@
+@@ -144,1693 +_,2187 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -159,6 +159,7 @@
 +import org.magmafoundation.magma.Magma;
 +import org.magmafoundation.magma.Metrics;
 +import org.magmafoundation.magma.configuration.MagmaConfig;
++import org.magmafoundation.magma.craftbukkit.ItemMetaTransformer;
 +import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
 +import org.magmafoundation.magma.error.StackTraceDeobfuscator;
 +import org.magmafoundation.magma.forge.ForgeInject;
@@ -583,6 +584,9 @@
 +
 +            //init stacktrace deobfuscator
 +            DeobfRewritePolicy.setDeobfuscator(new StackTraceDeobfuscator());
++
++            //init meta transformer
++            ItemMetaTransformer.loadPrefixes();
 +        //Magma end
 +
 +        try {
@@ -3402,6 +3406,7 @@
 +        }).thenAcceptAsync((p_212919_) -> {
 +            this.f_129740_.close();
 +            this.f_129740_ = p_212919_;
++            ItemMetaTransformer.loadPrefixes(); //Magma - reload prefixes
 +            this.server.doSync(p_212919_.f_206585_().f_206847_); //Magma - sync forge commands
 +            this.f_129730_.m_10509_(p_129862_);
 +            this.f_129749_.m_6645_(m_129817_(this.f_129730_));
