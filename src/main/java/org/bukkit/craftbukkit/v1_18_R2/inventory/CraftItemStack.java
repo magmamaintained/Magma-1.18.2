@@ -20,6 +20,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.magmafoundation.magma.craftbukkit.ItemMetaTransformer;
+
 import static org.bukkit.craftbukkit.v1_18_R2.inventory.CraftMetaItem.*;
 
 @DelegateDeserialization(ItemStack.class)
@@ -381,6 +383,10 @@ public final class CraftItemStack extends ItemStack {
         if (item == null) {
             return false;
         }
+        //Magma start - Don't transform items that shouldn't be transformed
+        if (!ItemMetaTransformer.isTransformable(item))
+            return false;
+        //Magma end
         if (CraftItemFactory.instance().equals(itemMeta, null)) {
             item.setTag(null);
             return true;
