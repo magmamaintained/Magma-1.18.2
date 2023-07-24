@@ -6,6 +6,7 @@ import com.google.common.collect.*;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +39,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.magmafoundation.magma.craftbukkit.ItemMetaTransformer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -418,10 +420,15 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         return forgeCaps;
     }
 
-    public void offerUnhandledTags(CompoundTag nbt) { //Code copied from Arclight
+    public void offerUnhandledTags(ItemStack stack) { //Code based on Arclight's implementation
+        CompoundTag nbt = stack.getTag();
+        if (nbt == null)
+            return;
+
         if (getClass().equals(CraftMetaItem.class)) {
+            boolean transformable = ItemMetaTransformer.isTransformable(stack);
             for (String s : nbt.getAllKeys()) {
-                if (EXTEND_TAGS.contains(s)) {
+                if (EXTEND_TAGS.contains(s) || !transformable) {
                     this.unhandledTags.put(s, nbt.get(s));
                 }
             }
