@@ -362,9 +362,7 @@ public final class CraftItemStack extends ItemStack {
             case BUNDLE -> new CraftMetaBundle(item.getTag());
             default -> new CraftMetaItem(item.getTag());
         };
-        CompoundTag tag = item.getTag();
-        if (tag != null)
-            meta.offerUnhandledTags(tag);
+        meta.offerUnhandledTags(item);
         meta.setForgeCaps(item.getForgeCaps());
         return meta;
         //Magma end
@@ -383,11 +381,7 @@ public final class CraftItemStack extends ItemStack {
         if (item == null) {
             return false;
         }
-        //Magma start - Don't transform items that shouldn't be transformed
-        if (!ItemMetaTransformer.isTransformable(item))
-            return false;
-        //Magma end
-        if (CraftItemFactory.instance().equals(itemMeta, null)) {
+        if (CraftItemFactory.instance().equals(itemMeta, null) && ItemMetaTransformer.isTransformable(item)) { //Magma - Don't remove the tag if it's not transformable
             item.setTag(null);
             return true;
         }
