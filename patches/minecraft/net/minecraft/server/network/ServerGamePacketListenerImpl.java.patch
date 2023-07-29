@@ -113,7 +113,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2516 @@
+@@ -118,1340 +_,2522 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -177,6 +177,7 @@
 +import org.bukkit.inventory.InventoryView;
 +import org.bukkit.inventory.SmithingInventory;
 +import org.magmafoundation.magma.Magma;
++import org.magmafoundation.magma.helpers.BorderHelper;
 +import org.magmafoundation.magma.helpers.InventoryViewHelper;
  import org.slf4j.Logger;
  
@@ -2568,6 +2569,8 @@
 +            this.f_9743_.compassTarget = new Location(this.getCraftPlayer().getWorld(), packet6.f_133111_.m_123341_(), packet6.f_133111_.m_123342_(), packet6.f_133111_.m_123343_());
 +        }
 +        // CraftBukkit end
++        //Magma start - capture dimension packets
++        BorderHelper.captureBorderPacket(p_9832_, this.f_9743_);
 +        try {
 +            this.f_9742_.m_129514_( p_9832_, p_9833_ );
 +        } catch (Throwable throwable) {
@@ -2577,6 +2580,9 @@
 +                return p_9832_.getClass().getCanonicalName();
 +            } );
 +            throw new ReportedException( crashreport );
++        } finally {
++            BorderHelper.clearCapture(p_9832_);
++            //Magma end
 +        }
 +    }
 +
