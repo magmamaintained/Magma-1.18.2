@@ -24,19 +24,18 @@
     public final ItemStack m_6115_(BlockSource p_123391_, ItemStack p_123392_) {
        ItemStack itemstack = this.m_7498_(p_123391_, p_123392_);
        this.m_6823_(p_123391_);
-@@ -16,15 +_,30 @@
+@@ -16,15 +_,31 @@
        return itemstack;
     }
  
 +   //Magma start - fix mixin inject
     protected ItemStack m_7498_(BlockSource p_123385_, ItemStack p_123386_) {
        Direction direction = p_123385_.m_6414_().m_61143_(DispenserBlock.f_52659_);
--      Position position = DispenserBlock.m_52720_(p_123385_);
+       Position position = DispenserBlock.m_52720_(p_123385_);
        ItemStack itemstack = p_123386_.m_41620_(1);
--      m_123378_(p_123385_.m_7727_(), itemstack, 6, direction, position);
 +      // CraftBukkit start
 +      spawnItem_source = p_123385_;
-+      m_123378_(p_123385_.m_7727_(), itemstack, 6, direction, DispenserBlock.m_52720_(p_123385_));
+       m_123378_(p_123385_.m_7727_(), itemstack, 6, direction, position);
 +      if (!spawnItem_return) {
 +         itemstack.m_41769_(1);
 +      }
