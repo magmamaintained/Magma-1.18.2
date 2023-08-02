@@ -842,7 +842,7 @@
 +    public volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> f_140130_ = this.f_140129_.clone();
 +    private final Long2ObjectLinkedOpenHashMap<ChunkHolder> f_140131_ = new Long2ObjectLinkedOpenHashMap<>();
 +    private final LongSet f_140132_ = new LongOpenHashSet();
-+    final ServerLevel f_140133_;
++    public final ServerLevel f_140133_;
 +    private final ThreadedLevelLightEngine f_140134_;
 +    private final BlockableEventLoop<Runnable> f_140135_;
 +    private ChunkGenerator f_140136_;
