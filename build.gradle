@@ -133,6 +133,7 @@ subprojects {
 
     repositories {
         mavenLocal()
+        maven { url = 'https://nexus.c0d3m4513r.com/repository/Magma/' }
         mavenCentral()
         maven {
             name = 'forge'
