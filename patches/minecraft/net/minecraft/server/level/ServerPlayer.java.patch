@@ -21,9 +21,11 @@
  import net.minecraft.advancements.CriteriaTriggers;
  import net.minecraft.commands.arguments.EntityAnchorArgument;
  import net.minecraft.core.BlockPos;
-@@ -25,45 +_,9 @@
+@@ -24,46 +_,11 @@
+ import net.minecraft.core.NonNullList;
  import net.minecraft.core.SectionPos;
  import net.minecraft.nbt.CompoundTag;
++import net.minecraft.nbt.ListTag;
  import net.minecraft.nbt.NbtOps;
 -import net.minecraft.network.chat.ChatType;
 -import net.minecraft.network.chat.Component;
@@ -222,7 +224,7 @@
 +   public String locale = "en_us"; // CraftBukkit - add, lowercase
 +
 +   //Magma start - capture inventory
-+   private Inventory captureInventory;
++   private @Nullable ListTag captureInventory;
 +   //Magma end
 +
 +   @Override
@@ -737,7 +739,7 @@
           }
        }
  
-@@ -535,36 +_,69 @@
+@@ -535,36 +_,70 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -763,7 +765,8 @@
 +         return;
 +      }
 +      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_);
-+      captureInventory = m_150109_();
++      captureInventory = new ListTag();
++      m_150109_().m_36026_(captureInventory);
 +
 +      if(!this.m_5833_()){
 +         this.m_6668_(p_9035_);
@@ -826,7 +829,7 @@
           }
        } else {
           this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
-@@ -575,11 +_,23 @@
+@@ -575,11 +_,25 @@
           this.m_9215_();
        }
  
@@ -838,7 +841,9 @@
 +      if (!event.getKeepInventory()) {
 +         this.m_150109_().m_6211_();
 +      } else { //Magma - if keepInventory is modified by a plugin, reset the inventory and clear the evidence
-+         this.setInventory(captureInventory);
++         this.setInventory(new Inventory(this));
++         this.m_150109_().m_36035_(captureInventory);
++         captureInventory = null;
 +         getForgeCaptures(); // Clear forge captures
        }
  
