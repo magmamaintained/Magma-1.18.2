@@ -777,24 +777,16 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,72 @@
+@@ -1286,32 +_,62 @@
        }
     }
  
 +   //Magma start - rewrite
-+   private Inventory forgeCaptures = null;
++   private @Nullable Inventory forgeCaptures = null;
 +
-+   protected Inventory getForgeCaptures() {
++   protected @Nullable Inventory getForgeCaptures() {
 +      Inventory temp = forgeCaptures;
 +      forgeCaptures = null;
-+      return temp;
-+   }
-+
-+   private Collection<org.bukkit.inventory.ItemStack> tempDrops = null;
-+
-+   protected @Nullable Collection<org.bukkit.inventory.ItemStack> getAndClearDrops() {
-+      Collection<org.bukkit.inventory.ItemStack> temp = tempDrops;
-+      tempDrops = null;
 +      return temp;
 +   }
 +
@@ -808,7 +800,7 @@
 -      }
 +
 +      int i = net.minecraftforge.common.ForgeHooks.getLootingLevel(this, entity, p_21192_);
-+      this.captureDrops(new java.util.ArrayList<>());
++      this.captureDrops(Lists.newArrayList());
  
        boolean flag = this.f_20889_ > 0;
 +      this.m_5907_(); // CraftBukkit - from below
@@ -824,9 +816,7 @@
 +      ForgeInventoryHelper.capturePlayerInventory(this);
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
 +         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
-+         EntityDeathEvent event = CraftEventFactory.callEntityDeathEvent(this, this.drops);
-+         if (this instanceof ServerPlayer)
-+            tempDrops = event.getDrops(); //Magma - capture drops for players
++         CraftEventFactory.callEntityDeathEvent(this, this.drops);
 +      }
 +      forgeCaptures = ForgeInventoryHelper.restorePlayerInventory(this);
     }
