@@ -735,7 +735,7 @@
           }
        }
  
-@@ -535,36 +_,67 @@
+@@ -535,36 +_,69 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -760,12 +760,14 @@
 +      if (this.f_20890_) {
 +         return;
 +      }
-+      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_) || this.m_5833_();
++      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_);
 +
 +      Inventory copy = new Inventory(this);
 +      copy.m_36006_(m_150109_()); // Create a deep copy
 +
-+      this.m_6668_(p_9035_);
++      if (!this.m_5833_()) {
++         this.m_6668_(p_9035_);
++      }
 +
 +      List<org.bukkit.inventory.ItemStack> capturedDrops = new ArrayList<>(this.drops);
 +      this.drops.clear();
