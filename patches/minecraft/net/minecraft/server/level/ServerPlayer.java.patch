@@ -821,7 +821,7 @@
           }
        } else {
           this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
-@@ -575,11 +_,22 @@
+@@ -575,11 +_,20 @@
           this.m_9215_();
        }
  
@@ -829,10 +829,8 @@
 -         this.m_6668_(p_9035_);
 +      // SPIGOT-5478 must be called manually now
 +      this.m_21226_();
-+
 +      // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
 +      if (!event.getKeepInventory()) {
-+         this.m_5907_(); // Magma - Drop Equipment is no longer called in dropAllDeathLoot for the ServerPlayer class
 +         this.m_150109_().m_6211_();
        }
  

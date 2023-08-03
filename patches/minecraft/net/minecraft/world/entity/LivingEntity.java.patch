@@ -777,7 +777,7 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,74 @@
+@@ -1286,32 +_,72 @@
        }
     }
  
@@ -811,7 +811,7 @@
 +      this.captureDrops(new java.util.ArrayList<>());
  
        boolean flag = this.f_20889_ > 0;
-+//      this.dropEquipment(); // CraftBukkit - from below //Magma - This causes issues with players dying and setting KeepInventory in the PlayerDeathEvent. Moved down.
++      this.m_5907_(); // CraftBukkit - from below
        if (this.m_6125_() && this.f_19853_.m_46469_().m_46207_(GameRules.f_46135_)) {
           this.m_7625_(p_21192_, flag);
           this.m_7472_(p_21192_, i, flag);
@@ -826,9 +826,7 @@
 +         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
 +         EntityDeathEvent event = CraftEventFactory.callEntityDeathEvent(this, this.drops);
 +         if (this instanceof ServerPlayer)
-+            tempDrops = event.getDrops(); //Magma - capture drops for players. Captured drops are handled in the ServerPlayer#die(DamageSource) method
-+         else
-+            m_5907_(); //Magma - drop equipment for non-players. This is default behaviour
++            tempDrops = event.getDrops(); //Magma - capture drops for players
 +      }
 +      forgeCaptures = ForgeInventoryHelper.restorePlayerInventory(this);
     }
