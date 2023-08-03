@@ -1263,7 +1263,7 @@
  
     }
  
-@@ -3062,11 +_,82 @@
+@@ -3062,11 +_,84 @@
        return true;
     }
  
@@ -1278,13 +1278,15 @@
 +   public boolean canUpdate() {
 +      return this.canUpdate;
 +   }
-+   private java.util.Collection<ItemEntity> captureDrops = null;
++   private @Nullable java.util.Collection<ItemEntity> captureDrops = null;
 +   @Override
++   @Nullable
 +   public java.util.Collection<ItemEntity> captureDrops() {
 +      return captureDrops;
 +   }
 +   @Override
-+   public java.util.Collection<ItemEntity> captureDrops(java.util.Collection<ItemEntity> value) {
++   @Nullable
++   public java.util.Collection<ItemEntity> captureDrops(@Nullable java.util.Collection<ItemEntity> value) {
 +      java.util.Collection<ItemEntity> ret = captureDrops;
 +      this.captureDrops = value;
 +      return ret;

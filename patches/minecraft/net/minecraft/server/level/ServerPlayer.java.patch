@@ -204,7 +204,7 @@
              }
  
           }
-@@ -227,22 +_,92 @@
+@@ -227,22 +_,88 @@
     public int f_8943_;
     public boolean f_8944_;
  
@@ -222,10 +222,6 @@
 +   public Integer clientViewDistance;
 +   public String kickLeaveMessage = null; // SPIGOT-3034: Forward leave message to PlayerQuitEvent
 +   public String locale = "en_us"; // CraftBukkit - add, lowercase
-+
-+   //Magma start - capture inventory
-+   private @Nullable ListTag captureInventory;
-+   //Magma end
 +
 +   @Override
 +   public CraftPlayer getBukkitEntity() {
@@ -739,7 +735,7 @@
           }
        }
  
-@@ -535,36 +_,70 @@
+@@ -535,36 +_,67 @@
     }
  
     private void m_9104_(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -764,17 +760,14 @@
 +      if (this.f_20890_) {
 +         return;
 +      }
-+      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_);
-+      captureInventory = new ListTag();
-+      m_150109_().m_36026_(captureInventory);
++      boolean keepInventory = this.f_19853_.m_46469_().m_46207_(GameRules.f_46133_) || this.m_5833_();
 +
-+      if(!this.m_5833_()){
-+         this.m_6668_(p_9035_);
-+      }
++      Inventory copy = new Inventory(this);
++      copy.m_36006_(m_150109_()); // Create a deep copy
 +
-+      Collection<org.bukkit.inventory.ItemStack> captured = getAndClearDrops();
-+      List<org.bukkit.inventory.ItemStack> capturedDrops = new ArrayList<>();
-+      if (captured != null) capturedDrops.addAll(captured);
++      this.m_6668_(p_9035_);
++
++      List<org.bukkit.inventory.ItemStack> capturedDrops = new ArrayList<>(this.drops);
 +      this.drops.clear();
 +
 +      Component defaultMessage = this.m_21231_().m_19293_();
@@ -829,7 +822,7 @@
           }
        } else {
           this.f_8906_.m_141995_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), TextComponent.f_131282_));
-@@ -575,11 +_,25 @@
+@@ -575,11 +_,23 @@
           this.m_9215_();
        }
  
@@ -840,11 +833,9 @@
 +      // we clean the player's inventory after the EntityDeathEvent is called so plugins can get the exact state of the inventory.
 +      if (!event.getKeepInventory()) {
 +         this.m_150109_().m_6211_();
-+      } else { //Magma - if keepInventory is modified by a plugin, reset the inventory and clear the evidence
-+         this.setInventory(new Inventory(this));
-+         this.m_150109_().m_36035_(captureInventory);
-+         captureInventory = null;
-+         getForgeCaptures(); // Clear forge captures
++      } else { //Magma - if keepInventory is modified by a plugin, reset the inventory and clear the forge captures
++         this.m_150109_().m_36006_(copy);
++         getForgeCaptures();
        }
  
 -      this.m_36329_().m_83427_(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);

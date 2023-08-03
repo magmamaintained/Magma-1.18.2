@@ -51,6 +51,7 @@ public interface IForgeEntity extends ICapabilitySerializable<CompoundTag>
 
     @Nullable
     Collection<ItemEntity> captureDrops();
+    @Nullable
     Collection<ItemEntity> captureDrops(@Nullable Collection<ItemEntity> captureDrops);
 
 
