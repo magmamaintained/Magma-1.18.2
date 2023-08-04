@@ -105,7 +105,7 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.material.Fluid;
-@@ -115,14 +_,30 @@
+@@ -115,14 +_,28 @@
  import net.minecraft.world.phys.HitResult;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
@@ -117,8 +117,6 @@
 +import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 +import org.bukkit.event.entity.*;
 +import org.bukkit.event.player.PlayerItemConsumeEvent;
-+import org.lwjgl.system.CallbackI;
-+import org.magmafoundation.magma.forge.ForgeInventoryHelper;
  import org.slf4j.Logger;
  
 +import javax.annotation.Nullable;
@@ -777,7 +775,7 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,62 @@
+@@ -1286,32 +_,78 @@
        }
     }
  
@@ -813,12 +811,28 @@
  
 -      this.m_5907_();
 -      this.m_21226_();
-+      ForgeInventoryHelper.capturePlayerInventory(this);
++      //Magma - ForgeCaptures will store the inventory temporarily, until the after the death event
++      if (this instanceof ServerPlayer player){
++         forgeCaptures = new Inventory(player);
++         forgeCaptures.m_36006_(player.m_150109_());
++         player.m_150109_().m_6211_();
++      }
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
 +         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
 +         CraftEventFactory.callEntityDeathEvent(this, this.drops);
 +      }
-+      forgeCaptures = ForgeInventoryHelper.restorePlayerInventory(this);
++      //Magma - swap the player inventory with forge Captures
++      if(this instanceof ServerPlayer player){
++         //Magma - get player inventory
++         Inventory temp = new Inventory(player);
++         temp.m_36006_(player.m_150109_());
++         //Magma - restore player inventory to the state before the capture
++         player.m_150109_().m_6211_();
++         player.m_150109_().m_36006_(forgeCaptures);
++         //Magma - set the captures to the added items during the death event
++         forgeCaptures.m_6211_();
++         forgeCaptures.m_36006_(temp);
++      }
     }
 +   //Magma end
  
