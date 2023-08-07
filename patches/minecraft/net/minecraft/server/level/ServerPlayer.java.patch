@@ -344,7 +344,7 @@
           }
        }
  
-@@ -284,74 +_,122 @@
+@@ -284,74 +_,131 @@
     }
  
     public void m_7378_(CompoundTag p_9131_) {
@@ -397,6 +397,11 @@
 +            this.f_8935_ = Level.f_46427_.parse( NbtOps.f_128958_, p_9131_.m_128423_( "SpawnDimension" ) ).resultOrPartial( f_8907_::error ).orElse( Level.f_46428_ );
           }
        }
++
++      //Magma start - load forge captures
++      ListTag forgeCaptures = p_9131_.m_128437_("ForgeCaptures", 10);
++      setForgeCaptures(this, forgeCaptures);
++      //Magma end
  
     }
  
@@ -476,6 +481,10 @@
 +
 +      this.getBukkitEntity().setExtraData( p_9197_ ); // CraftBukkit
 +
++      //Magma start - save forge captures
++      Inventory forgeCaptures = getForgeCaptures();
++      if (forgeCaptures != null) p_9197_.m_128365_("ForgeCaptures", forgeCaptures.m_36026_(new ListTag()));
++      //Magma end
 +   }
 +
 +   // CraftBukkit start - World fallback code, either respawn location or global spawn
@@ -837,7 +846,7 @@
 +         this.m_150109_().m_6211_();
 +      } else { //Magma - if keepInventory is modified by a plugin, reset the inventory and clear the forge captures
 +         this.m_150109_().m_36006_(copy);
-+         getForgeCaptures();
++         getForgeCapturesAndClear();
        }
  
 -      this.m_36329_().m_83427_(ObjectiveCriteria.f_83590_, this.m_6302_(), Score::m_83392_);
@@ -1766,7 +1775,7 @@
 +         this.m_36397_( p_9016_.m_36344_() );
        }
 +
-+      Inventory forgeCaptures = p_9016_.getForgeCaptures();
++      Inventory forgeCaptures = p_9016_.getForgeCapturesAndClear();
 +      if (forgeCaptures != null)
 +         forgeCaptures.f_35974_.stream().filter(item -> !item.m_41619_()).forEach(item -> this.m_150109_().m_36054_(item));
 +
