@@ -43,13 +43,11 @@
     public static final String f_150081_ = "OfflinePlayer:";
     public static final int f_150082_ = 16;
     public static final int f_150083_ = 20;
-@@ -132,11 +_,11 @@
-    protected static final EntityDataAccessor<CompoundTag> f_36091_ = SynchedEntityData.m_135353_(Player.class, EntityDataSerializers.f_135042_);
+@@ -133,10 +_,10 @@
     protected static final EntityDataAccessor<CompoundTag> f_36092_ = SynchedEntityData.m_135353_(Player.class, EntityDataSerializers.f_135042_);
     private long f_36109_;
--   private final Inventory f_36093_ = new Inventory(this);
+    private final Inventory f_36093_ = new Inventory(this);
 -   protected PlayerEnderChestContainer f_36094_ = new PlayerEnderChestContainer();
-+   private Inventory f_36093_ = new Inventory(this); //Magma - not final
 +   protected PlayerEnderChestContainer f_36094_ = new PlayerEnderChestContainer(this); // CraftBukkit - add "this" to constructor
     public final InventoryMenu f_36095_;
     public AbstractContainerMenu f_36096_;
@@ -592,23 +590,6 @@
           this.m_5810_();
           this.f_19853_.m_7605_(this, (byte)30);
        }
-@@ -1243,8 +_,14 @@
-    }
- 
-    public Inventory m_150109_() {
--      return this.f_36093_;
--   }
-+      return this.f_36093_==null?this.f_36093_=new Inventory(this):this.f_36093_;
-+   }
-+
-+   //Magma start - set inventory
-+   public void setInventory(Inventory inventory) {
-+      this.f_36093_ = inventory;
-+   }
-+   //Magma end
- 
-    public Abilities m_150110_() {
-       return this.f_36077_;
 @@ -1253,6 +_,14 @@
     public void m_141945_(ItemStack p_150098_, ItemStack p_150099_, ClickAction p_150100_) {
     }
