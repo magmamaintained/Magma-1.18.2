@@ -775,7 +775,7 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,78 @@
+@@ -1286,32 +_,88 @@
        }
     }
  
@@ -783,9 +783,19 @@
 +   private @Nullable Inventory forgeCaptures = null;
 +
 +   protected @Nullable Inventory getForgeCaptures() {
++      return forgeCaptures;
++   }
++
++   protected @Nullable Inventory getForgeCapturesAndClear() {
 +      Inventory temp = forgeCaptures;
 +      forgeCaptures = null;
 +      return temp;
++   }
++
++   protected void setForgeCaptures(ServerPlayer player, ListTag tag) {
++      if (forgeCaptures == null) forgeCaptures = new Inventory(player);
++      else forgeCaptures.m_6211_();
++      forgeCaptures.m_36035_(tag);
 +   }
 +
     protected void m_6668_(DamageSource p_21192_) {
