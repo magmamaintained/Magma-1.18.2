@@ -387,7 +387,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,43 +_,92 @@
+@@ -332,43 +_,93 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -431,7 +431,7 @@
 -   public Component m_6418_(SocketAddress p_11257_, GameProfile p_11258_) {
 -      if (this.f_11198_.m_11406_(p_11258_)) {
 +   // CraftBukkit start - Whole method, SocketAddress to LoginListener, added hostname to signature, return ServerPlayer
-+   public ServerPlayer canPlayerLogin(ServerLoginPacketListenerImpl serverLoginPacketListener, GameProfile p_11258_, String hostname) {
++   public ServerPlayer canPlayerLogin(ServerLoginPacketListenerImpl serverLoginPacketListener, GameProfile p_11258_, String hostname, ServerPlayer entity) {
 +      TranslatableComponent chatmessage;
 +
 +      // Instead of kicking then returning, we need to store the kick reason
@@ -439,7 +439,6 @@
 +      // depending on the outcome.
 +      SocketAddress socketaddress = serverLoginPacketListener.f_10013_.m_129523_();
 +
-+      ServerPlayer entity = m_11300_(p_11258_); //Magma
 +      org.bukkit.entity.Player player = entity.getBukkitEntity();
 +      PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress(), ((java.net.InetSocketAddress) serverLoginPacketListener.f_10013_.getRawAddress()).getAddress());
 +
@@ -484,7 +483,9 @@
 +
 +      cserver.getPluginManager().callEvent(event);
 +      if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-+         serverLoginPacketListener.disconnect(event.getKickMessage());
++         entity.kickLeaveMessage = event.getKickMessage();
++         m_11286_(entity); //Magma - Now called after the player actually joins.
++//         serverLoginPacketListener.disconnect(event.getKickMessage());
 +         return null;
 +      }
 +      return entity;

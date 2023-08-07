@@ -67,7 +67,7 @@
     public Connection m_6198_() {
        return this.f_10013_;
     }
-@@ -91,15 +_,52 @@
+@@ -91,15 +_,53 @@
  
     }
  
@@ -117,7 +117,8 @@
 -      if (component != null) {
 -         this.m_10053_(component);
 +      // CraftBukkit start - fire PlayerLoginEvent
-+      ServerPlayer s = this.f_10018_.m_6846_().canPlayerLogin(this, this.f_10021_, hostname);
++      // Magma - don't. Just move out the player creation, and call the playerJoinEvent after Forge
++      ServerPlayer s = this.f_10018_.m_6846_().m_11300_(this.f_10021_);
 +      if (s == null) {
 +         // CraftBukkit end
        } else {
@@ -134,6 +135,14 @@
              if (serverplayer != null) {
                 this.f_10019_ = ServerLoginPacketListenerImpl.State.DELAY_ACCEPT;
                 this.f_10024_ = serverplayer1;
+@@ -130,6 +_,7 @@
+ 
+    private void m_143699_(ServerPlayer p_143700_) {
+       this.f_10018_.m_6846_().m_11261_(this.f_10013_, p_143700_);
++      this.f_10018_.m_6846_().canPlayerLogin(this, this.f_10021_, hostname, p_143700_);
+    }
+ 
+    public void m_7026_(Component p_10043_) {
 @@ -148,7 +_,31 @@
           this.f_10019_ = ServerLoginPacketListenerImpl.State.KEY;
           this.f_10013_.m_129512_(new ClientboundHelloPacket("", this.f_10018_.m_129790_().getPublic().getEncoded(), this.f_10017_));
