@@ -9,3 +9,12 @@
           return StringTag.m_129297_(s);
        }
  
+@@ -52,7 +_,7 @@
+    }
+ 
+    public static StringTag m_129297_(String p_129298_) {
+-      return p_129298_.isEmpty() ? f_129289_ : new StringTag(p_129298_);
++      return (p_129298_ == null || p_129298_.isEmpty()) ? f_129289_ : new StringTag(p_129298_);
+    }
+ 
+    public void m_6434_(DataOutput p_129296_) throws IOException {
