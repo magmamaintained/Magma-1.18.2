@@ -578,7 +578,7 @@
              if (!p_21016_.m_19360_()) {
                 Entity entity = p_21016_.m_7640_();
                 if (entity instanceof LivingEntity) {
-@@ -1014,30 +_,61 @@
+@@ -1014,30 +_,63 @@
  
              flag = true;
           }
@@ -595,7 +595,8 @@
 -            this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
 +            //Magma start - calculate player hurt damage in their class
 +            if (this instanceof Player) {
-+               this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
++               if (!this.actuallyHurt(p_21016_, p_21017_ - this.f_20898_))
++                  return false;
 +            } else {
 +               // CraftBukkit start
 +               if (!this.damageEntity0(p_21016_, p_21017_ - this.f_20898_))
@@ -608,7 +609,8 @@
           } else {
 +            //Magma start - calculate player hurt damage in their class
 +            if (this instanceof Player) {
-+               this.m_6475_(p_21016_, f);
++               if (!this.actuallyHurt(p_21016_, f))
++                  return false;
 +            } else {
 +               // CraftBukkit start
 +               if (!this.damageEntity0(p_21016_, f))
@@ -985,11 +987,13 @@
                 }
              }
           }
-@@ -1514,24 +_,161 @@
+@@ -1513,25 +_,162 @@
+       }
     }
  
-    protected void m_6475_(DamageSource p_21240_, float p_21241_) {
-+      damageEntity0(p_21240_, p_21241_);
+-   protected void m_6475_(DamageSource p_21240_, float p_21241_) {
++   protected boolean actuallyHurt(DamageSource p_21240_, float p_21241_) { // void -> boolean
++      return damageEntity0(p_21240_, p_21241_);
 +   }
 +
 +   // CraftBukkit start
