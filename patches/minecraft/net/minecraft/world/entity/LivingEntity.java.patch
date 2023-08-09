@@ -134,7 +134,7 @@
     public static final int f_147166_ = 2;
     public static final int f_147167_ = 4;
     public static final int f_147168_ = 98;
-@@ -226,10 +_,27 @@
+@@ -226,10 +_,29 @@
     private float f_20932_;
     protected Brain<?> f_20939_;
  
@@ -152,6 +152,8 @@
 +      return m_6080_();
 +   }
 +   // CraftBukkit end
++
++   protected boolean cancelDamage = false; //Magma
 +
     protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
        super(p_20966_, p_20967_);
@@ -578,7 +580,7 @@
              if (!p_21016_.m_19360_()) {
                 Entity entity = p_21016_.m_7640_();
                 if (entity instanceof LivingEntity) {
-@@ -1014,30 +_,63 @@
+@@ -1014,30 +_,69 @@
  
              flag = true;
           }
@@ -595,8 +597,11 @@
 -            this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
 +            //Magma start - calculate player hurt damage in their class
 +            if (this instanceof Player) {
-+               if (!this.actuallyHurt(p_21016_, p_21017_ - this.f_20898_))
++               this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
++               if (cancelDamage){
++                  cancelDamage = false;
 +                  return false;
++               }
 +            } else {
 +               // CraftBukkit start
 +               if (!this.damageEntity0(p_21016_, p_21017_ - this.f_20898_))
@@ -609,8 +614,11 @@
           } else {
 +            //Magma start - calculate player hurt damage in their class
 +            if (this instanceof Player) {
-+               if (!this.actuallyHurt(p_21016_, f))
++               this.m_6475_(p_21016_, f);
++               if (cancelDamage){
++                  cancelDamage = false;
 +                  return false;
++               }
 +            } else {
 +               // CraftBukkit start
 +               if (!this.damageEntity0(p_21016_, f))
@@ -987,13 +995,11 @@
                 }
              }
           }
-@@ -1513,25 +_,162 @@
-       }
+@@ -1514,24 +_,162 @@
     }
  
--   protected void m_6475_(DamageSource p_21240_, float p_21241_) {
-+   protected boolean actuallyHurt(DamageSource p_21240_, float p_21241_) { // void -> boolean
-+      return damageEntity0(p_21240_, p_21241_);
+    protected void m_6475_(DamageSource p_21240_, float p_21241_) {
++      damageEntity0(p_21240_, p_21241_);
 +   }
 +
 +   // CraftBukkit start
@@ -1064,6 +1070,7 @@
 +            ((Player) p_21240_.m_7639_()).m_36334_(); // Moved from Player in order to make the cooldown reset get called after the damage event is fired
 +         }
 +         if (event.isCancelled()) {
++            cancelDamage = true;
 +            return false;
 +         }
 +

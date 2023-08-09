@@ -8,19 +8,6 @@
        return false;
     }
  
-@@ -284,10 +_,11 @@
-       this.f_108617_.m_104955_(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
-    }
- 
--   protected void m_6475_(DamageSource p_108729_, float p_108730_) {
-+   protected boolean actuallyHurt(DamageSource p_108729_, float p_108730_) { // void -> boolean
-       if (!this.m_6673_(p_108729_)) {
-          this.m_21153_(this.m_21223_() - p_108730_);
-       }
-+      return true;
-    }
- 
-    public void m_6915_() {
 @@ -461,6 +_,11 @@
     }
  
