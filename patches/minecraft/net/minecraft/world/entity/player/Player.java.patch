@@ -335,18 +335,16 @@
              });
              if (this.f_20935_.m_41619_()) {
                 if (interactionhand == InteractionHand.MAIN_HAND) {
-@@ -875,28 +_,40 @@
-       }
+@@ -876,21 +_,28 @@
     }
  
--   protected void m_6475_(DamageSource p_36312_, float p_36313_) {
-+   protected boolean actuallyHurt(DamageSource p_36312_, float p_36313_) { // void -> boolean
+    protected void m_6475_(DamageSource p_36312_, float p_36313_) {
 +      if (true) {
-+         return this.damageEntity0(p_36312_, p_36313_);
++         this.damageEntity0(p_36312_, p_36313_);
 +      }
        if (!this.m_6673_(p_36312_)) {
 +         p_36313_ = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, p_36312_, p_36313_);
-+         if (p_36313_ <= 0) return false;
++         if (p_36313_ <= 0) return;
           p_36313_ = this.m_21161_(p_36312_, p_36313_);
           p_36313_ = this.m_6515_(p_36312_, p_36313_);
           float f2 = Math.max(p_36313_ - this.m_6103_(), 0.0F);
@@ -367,17 +365,17 @@
              if (f2 < 3.4028235E37F) {
                 this.m_36222_(Stats.f_12931_, Math.round(f2 * 10.0F));
              }
- 
-          }
+@@ -899,6 +_,10 @@
        }
-+      return true;
-+   }
-+
-+   protected boolean damageEntity0(DamageSource p_36312_, float p_36313_) {
-+      return super.damageEntity0(p_36312_, p_36313_);
     }
  
++   protected boolean damageEntity0(DamageSource p_36312_, float p_36313_) {
++      return super.damageEntity0(p_36312_, p_36313_);
++   }
++
     protected boolean m_6046_() {
+       return !this.f_36077_.f_35935_ && super.m_6046_();
+    }
 @@ -939,6 +_,8 @@
  
           return InteractionResult.PASS;
