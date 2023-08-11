@@ -113,7 +113,7 @@
  import net.minecraft.world.entity.animal.horse.AbstractHorse;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2522 @@
+@@ -118,1340 +_,2527 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.entity.projectile.AbstractArrow;
  import net.minecraft.world.entity.vehicle.Boat;
@@ -573,7 +573,12 @@
 +        }
 +        this.f_9743_.kickLeaveMessage = event.getLeaveMessage(); // CraftBukkit - SPIGOT-3034: Forward leave message to PlayerQuitEvent
 +        // Send the possibly modified leave message
-+        s = event.getReason();
++        doDisconnect(event.getReason());//Magma extract actual disconnect into seperate method
++    }
++    public void doDisconnect(String s){
++        if (this.processedDisconnect) {
++            return;
++        }
 +        final Component p_9943_ = CraftChatMessage.fromString(s, true)[0];
 +        // CraftBukkit end
 +
