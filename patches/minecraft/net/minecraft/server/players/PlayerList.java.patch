@@ -387,7 +387,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,43 +_,93 @@
+@@ -332,43 +_,91 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -483,9 +483,7 @@
 +
 +      cserver.getPluginManager().callEvent(event);
 +      if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-+         entity.kickLeaveMessage = event.getKickMessage();
-+         m_11286_(entity); //Magma - Now called after the player actually joins.
-+//         serverLoginPacketListener.disconnect(event.getKickMessage());
++         serverLoginPacketListener.disconnect(event.getKickMessage());
 +         return null;
 +      }
 +      return entity;
