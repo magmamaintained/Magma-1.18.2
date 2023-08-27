@@ -242,7 +242,7 @@
        if (this.m_6673_(p_36154_)) {
           return false;
        } else if (this.f_36077_.f_35934_ && !p_36154_.m_19378_()) {
-@@ -796,12 +_,12 @@
+@@ -796,7 +_,7 @@
              return false;
           } else {
              if (!this.f_19853_.f_46443_) {
@@ -251,18 +251,18 @@
              }
  
              if (p_36154_.m_7986_()) {
-                if (this.f_19853_.m_46791_() == Difficulty.PEACEFUL) {
--                  p_36155_ = 0.0F;
-+                  return false; // CraftBukkit - f = 0.0f -> return false
-                }
- 
-                if (this.f_19853_.m_46791_() == Difficulty.EASY) {
-@@ -813,14 +_,20 @@
+@@ -813,14 +_,26 @@
                 }
              }
  
 -            return p_36155_ == 0.0F ? false : super.m_6469_(p_36154_, p_36155_);
++            // CraftBukkit - f = 0.0f -> return false
++            if (p_36155_ == 0.0F) {
++               return false;
++            }
++
 +            // CraftBukkit start - Don't filter out 0 damage
++
 +            boolean damaged = super.m_6469_(p_36154_, p_36155_);
 +            if (damaged) {
 +               this.m_36328_();
