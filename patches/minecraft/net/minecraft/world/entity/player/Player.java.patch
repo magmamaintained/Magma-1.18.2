@@ -251,15 +251,17 @@
              }
  
              if (p_36154_.m_7986_()) {
-@@ -813,14 +_,26 @@
+@@ -813,14 +_,28 @@
                 }
              }
  
 -            return p_36155_ == 0.0F ? false : super.m_6469_(p_36154_, p_36155_);
++            // Magma: move check down because of mixins
 +            // CraftBukkit - f = 0.0f -> return false
-+            if (p_36155_ == 0.0F) {
++            if (p_36154_.m_7986_() && this.f_19853_.m_46791_() == Difficulty.PEACEFUL && p_36155_ == 0.0F) {
 +               return false;
 +            }
++            // Magma end
 +
 +            // CraftBukkit start - Don't filter out 0 damage
 +
