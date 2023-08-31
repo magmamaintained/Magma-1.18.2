@@ -1360,13 +1360,6 @@
 +                        this.f_9743_.m_183503_().m_7726_().m_8385_( this.f_9743_ );
 +                        this.allowedPlayerTicks = 20; // CraftBukkit
 +                    } else {
-+                        // CraftBukkit - Make sure the move is valid but then reset it for plugins to modify
-+                        double prevX = f_9743_.m_20185_();
-+                        double prevY = f_9743_.m_20186_();
-+                        double prevZ = f_9743_.m_20189_();
-+                        float prevYaw = f_9743_.m_146908_();
-+                        float prevPitch = f_9743_.m_146909_();
-+                        // CraftBukkit end
 +                        double d3 = this.f_9743_.m_20185_();
 +                        double d4 = this.f_9743_.m_20186_();
 +                        double d5 = this.f_9743_.m_20189_();
@@ -1376,6 +1369,13 @@
 +                        double d9 = d2 - this.f_9755_;
 +                        double d10 = this.f_9743_.m_20184_().m_82556_();
 +                        double d11 = d7 * d7 + d8 * d8 + d9 * d9;
++                        // CraftBukkit - Make sure the move is valid but then reset it for plugins to modify
++                        double prevX = f_9743_.m_20185_();
++                        double prevY = f_9743_.m_20186_();
++                        double prevZ = f_9743_.m_20189_();
++                        float prevYaw = f_9743_.m_146908_();
++                        float prevPitch = f_9743_.m_146909_();
++                        // CraftBukkit end
 +                        if (this.f_9743_.m_5803_()) {
 +                            if (d11 > 1.0D) {
 +                                this.m_9774_( this.f_9743_.m_20185_(), this.f_9743_.m_20186_(), this.f_9743_.m_20189_(), f, f1 );
