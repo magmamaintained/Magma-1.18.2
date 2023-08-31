@@ -69,7 +69,7 @@
     public BrewingStandBlockEntity(BlockPos p_155283_, BlockState p_155284_) {
        super(BlockEntityType.f_58927_, p_155283_, p_155284_);
     }
-@@ -92,19 +_,36 @@
+@@ -92,19 +_,37 @@
     public static void m_155285_(Level p_155286_, BlockPos p_155287_, BlockState p_155288_, BrewingStandBlockEntity p_155289_) {
        ItemStack itemstack = p_155289_.f_58975_.get(4);
        if (p_155289_.f_58979_ <= 0 && itemstack.m_150930_(Items.f_42593_)) {
@@ -107,7 +107,8 @@
 +         // CraftBukkit end
           if (flag2 && flag) {
 -            m_155290_(p_155286_, p_155287_, p_155289_.f_58975_);
-+            doBrew(p_155286_, p_155287_, p_155289_.f_58975_, p_155289_); // CraftBukkit
++            prepareBrew(p_155289_); // Magma
++            m_155290_(p_155286_, p_155287_, p_155289_.f_58975_); // CraftBukkit
              m_155232_(p_155286_, p_155287_, p_155288_);
           } else if (!flag || !itemstack1.m_150930_(p_155289_.f_58978_)) {
              p_155289_.f_58976_ = 0;
@@ -119,25 +120,31 @@
        if (itemstack.m_41619_()) {
           return false;
        } else if (!PotionBrewing.m_43506_(itemstack)) {
-@@ -164,22 +_,37 @@
+@@ -164,22 +_,44 @@
        }
     }
  
--   private static void m_155290_(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
-+   private static void doBrew(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_, BrewingStandBlockEntity brewingStandBlockEntity) {
++   // Magma start - Move BlockEntity to a different constructor
++   private static BrewingStandBlockEntity blockEntity;
++   public static void prepareBrew(BrewingStandBlockEntity brewingStandBlockEntity) {
++      blockEntity = brewingStandBlockEntity;
++   }
++   // Magma end
++
+    private static void m_155290_(Level p_155291_, BlockPos p_155292_, NonNullList<ItemStack> p_155293_) {
 +      if (net.minecraftforge.event.ForgeEventFactory.onPotionAttemptBrew(p_155293_)) return;
        ItemStack itemstack = p_155293_.get(3);
  
 -      for(int i = 0; i < 3; ++i) {
 -         p_155293_.set(i, PotionBrewing.m_43529_(itemstack, p_155293_.get(i)));
 -      }
-+      InventoryHolder owner = brewingStandBlockEntity.getOwner();
++      InventoryHolder owner = blockEntity.getOwner();
 +      List<org.bukkit.inventory.ItemStack> brewResults = new ArrayList<>(3);
 +      for (int i = 0; i < 3; ++i) {
 +         brewResults.add(i, CraftItemStack.asCraftMirror(PotionBrewing.m_43529_(itemstack, (ItemStack) p_155293_.get(i))));
 +      }
 +      if (owner != null) {
-+         BrewEvent event = new BrewEvent(CraftBlock.at(p_155291_, p_155292_), (org.bukkit.inventory.BrewerInventory) owner.getInventory(), brewResults, brewingStandBlockEntity.f_58979_);
++         BrewEvent event = new BrewEvent(CraftBlock.at(p_155291_, p_155292_), (org.bukkit.inventory.BrewerInventory) owner.getInventory(), brewResults, blockEntity.f_58979_);
 +         org.bukkit.Bukkit.getPluginManager().callEvent(event);
 +         if (event.isCancelled()) {
 +            return;

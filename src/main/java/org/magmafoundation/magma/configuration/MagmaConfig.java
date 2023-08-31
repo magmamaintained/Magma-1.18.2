@@ -62,8 +62,8 @@ public class MagmaConfig extends ConfigBase {
     public final BooleanValue debugWarnOnUnknownEntity = new BooleanValue(this, "debug.warn-on-unknown-entity", false, "Prints a warning when an entity unknown to bukkit is spawned");
     public final BooleanValue debugDeobfuscateStacktraces = new BooleanValue(this, "debug.deobfuscate-stacktraces", true, "Deobfuscates stacktraces to make them more readable");
 
-    public final IntValue forgePacketCompressionThreshold = new IntValue(this, "forge.packet-compression-threshold", 8388608, "Maximum packet size before compression is applied, Default: 8388608 (8MB)");
-    public final IntValue forgeMaxPacketSize = new IntValue(this, "forge.max-packet-size", 8388608, "Maximum packet size allowed, Default: 8388608 (8MB)");
+    public final IntValue forgePacketCompressionThreshold = new IntValue(this, "forge.packet-compression-threshold", 8388608, "Maximum packet size before compression is applied, Minimum+Default: 8388608 (8MB). Smaller Values will not give an error, but will also not have any effect.");
+    public final IntValue forgeMaxPacketSize = new IntValue(this, "forge.max-packet-size", 8388608, "Maximum packet size allowed, Minimum+Default: 8388608 (8MB). Smaller Values will not give an error, but will also not have any effect.");
 
     private final String HEADER = "This is the main configuration file for Magma.\n" +
         "\n" +
