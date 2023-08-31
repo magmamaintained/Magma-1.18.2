@@ -14,7 +14,7 @@
                 int j = friendlybytebuf.writerIndex() - i;
 -               if (j > 8388608) {
 -                  throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than 8388608): " + p_130546_);
-+               if (j > MagmaConfig.instance.forgeMaxPacketSize.getValues()) {
++               if (j > MagmaConfig.instance.forgeMaxPacketSize.getValues() || j > 8388608) {
 +                  throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than "+MagmaConfig.instance.forgeMaxPacketSize.getValues()+"): " + p_130546_);
                 } else {
                    int k = p_130545_.channel().attr(Connection.f_129461_).get().m_129582_();
