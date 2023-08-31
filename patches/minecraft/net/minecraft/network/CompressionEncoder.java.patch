@@ -22,7 +22,7 @@
           friendlybytebuf.writeBytes(p_129453_);
        } else {
 +         int maxSize = MagmaConfig.instance.forgePacketCompressionThreshold.getValues();
-+         if (!DISABLE_PACKET_DEBUG && i > maxSize) { //Magma - make packet size configurable
++         if (!DISABLE_PACKET_DEBUG && (i > maxSize || i > 2097152)) { //Magma - make packet size configurable
 +             p_129453_.markReaderIndex();
 +             LOGGER.error("Attempted to send packet over maximum protocol size: {} > {}", i, maxSize);
 +             LOGGER.error("[PACKET DUMP DISABLED BY MAGMA]"); //Magma - you're welcome
