@@ -785,7 +785,7 @@
                 this.f_19853_.m_7967_(itementity);
              }
           }
-@@ -1286,32 +_,88 @@
+@@ -1286,32 +_,89 @@
        }
     }
  
@@ -839,7 +839,8 @@
 +      }
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, f_20889_ > 0)) {
 +         drops.forEach(drop -> this.drops.add(CraftItemStack.asCraftMirror(drop.m_32055_())));
-+         CraftEventFactory.callEntityDeathEvent(this, this.drops);
++         if (!(this instanceof ServerPlayer))//Magma - in this situation the EntityDeathEvent would be called twice, because PlayerDeathEvent also inherits from EntityDeathEvent
++            CraftEventFactory.callEntityDeathEvent(this, this.drops);
 +      }
 +      //Magma - swap the player inventory with forge Captures
 +      if(this instanceof ServerPlayer player){
