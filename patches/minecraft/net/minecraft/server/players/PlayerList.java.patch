@@ -76,7 +76,7 @@
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.level.GameRules;
  import net.minecraft.world.level.Level;
-@@ -90,8 +_,29 @@
+@@ -90,8 +_,31 @@
  import net.minecraft.world.scores.Objective;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Team;
@@ -95,6 +95,8 @@
  
 +import javax.annotation.Nullable;
 +import java.io.File;
++import java.net.InetSocketAddress;
++import java.net.ServerSocket;
 +import java.net.SocketAddress;
 +import java.nio.file.Path;
 +import java.text.SimpleDateFormat;
@@ -387,7 +389,7 @@
        this.m_6765_(p_11287_);
        if (p_11287_.m_20159_()) {
           Entity entity = p_11287_.m_20201_();
-@@ -332,43 +_,91 @@
+@@ -332,43 +_,102 @@
        serverlevel.m_143261_(p_11287_, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
        p_11287_.m_8960_().m_135978_();
        this.f_11196_.remove(p_11287_);
@@ -402,6 +404,7 @@
 -      }
 -
 -      this.m_11268_(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, p_11287_));
+-   }
 +         // CraftBukkit start
 +         // this.stats.remove(uuid);
 +         this.f_11203_.remove(uuid); //Magma
@@ -424,23 +427,33 @@
 +      // CraftBukkit end
 +
 +      remove_quitMsg = playerQuitEvent.getQuitMessage(); // CraftBukkit //Magma
-    }
++   }
 +   //Magma end
++
++
++   // Magma start - Move hostname and ServerPlayer to a different constructor
++   private ServerLoginPacketListenerImpl serverLoginPacketListener = null;
++   private String hostname = null;
++   private ServerPlayer entity = null;
++
++   public void preparePlayerLogin(ServerLoginPacketListenerImpl serverLoginPacketListener, String hostname, ServerPlayer entity) {
++      this.serverLoginPacketListener = serverLoginPacketListener;
++      this.hostname = hostname;
++      this.entity = entity;
++   }
++   // Magma end
  
     @Nullable
--   public Component m_6418_(SocketAddress p_11257_, GameProfile p_11258_) {
--      if (this.f_11198_.m_11406_(p_11258_)) {
 +   // CraftBukkit start - Whole method, SocketAddress to LoginListener, added hostname to signature, return ServerPlayer
-+   public ServerPlayer canPlayerLogin(ServerLoginPacketListenerImpl serverLoginPacketListener, GameProfile p_11258_, String hostname, ServerPlayer entity) {
-+      TranslatableComponent chatmessage;
-+
+    public Component m_6418_(SocketAddress p_11257_, GameProfile p_11258_) {
+-      if (this.f_11198_.m_11406_(p_11258_)) {
++      MutableComponent chatmessage = null;
 +      // Instead of kicking then returning, we need to store the kick reason
 +      // in the event, check with plugins to see if it's ok, and THEN kick
 +      // depending on the outcome.
-+      SocketAddress socketaddress = serverLoginPacketListener.f_10013_.m_129523_();
 +
 +      org.bukkit.entity.Player player = entity.getBukkitEntity();
-+      PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress(), ((java.net.InetSocketAddress) serverLoginPacketListener.f_10013_.getRawAddress()).getAddress());
++      PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) p_11257_).getAddress(), ((InetSocketAddress) serverLoginPacketListener.f_10013_.getRawAddress()).getAddress());
 +
 +      if (m_11295_().m_11406_(p_11258_) && !m_11295_().m_11388_(p_11258_).m_7524_()) {
           UserBanListEntry userbanlistentry = this.f_11198_.m_11388_(p_11258_);
@@ -457,19 +470,20 @@
        } else if (!this.m_5764_(p_11258_)) {
 -         return new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
 -      } else if (this.f_11199_.m_11041_(p_11257_)) {
--         IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(p_11257_);
 +         chatmessage = new TranslatableComponent("multiplayer.disconnect.not_whitelisted");
 +         event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, org.spigotmc.SpigotConfig.whitelistMessage); // Spigot
-+      } else if (m_11299_().m_11041_(socketaddress) && !m_11299_().m_11043_(socketaddress).m_7524_()) {
-+         IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(socketaddress);
-          MutableComponent mutablecomponent = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.m_10962_());
++      } else if (m_11299_().m_11041_(p_11257_) && !m_11299_().m_11043_(p_11257_).m_7524_()) {
+          IpBanListEntry ipbanlistentry = this.f_11199_.m_11043_(p_11257_);
+-         MutableComponent mutablecomponent = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.m_10962_());
++         chatmessage = new TranslatableComponent("multiplayer.disconnect.banned_ip.reason", ipbanlistentry.m_10962_());
           if (ipbanlistentry.m_10961_() != null) {
-             mutablecomponent.m_7220_(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", f_11194_.format(ipbanlistentry.m_10961_())));
+-            mutablecomponent.m_7220_(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", f_11194_.format(ipbanlistentry.m_10961_())));
++            chatmessage.m_7220_(new TranslatableComponent("multiplayer.disconnect.banned_ip.expiration", f_11194_.format(ipbanlistentry.m_10961_())));
           }
  
 -         return mutablecomponent;
 +         // return mutablecomponent;
-+         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, CraftChatMessage.fromComponent(mutablecomponent));
++         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, CraftChatMessage.fromComponent(chatmessage));
        } else {
 -         return this.f_11196_.size() >= this.f_11193_ && !this.m_5765_(p_11258_) ? new TranslatableComponent("multiplayer.disconnect.server_full") : null;
 -      }
@@ -484,9 +498,9 @@
 +      cserver.getPluginManager().callEvent(event);
 +      if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
 +         serverLoginPacketListener.disconnect(event.getKickMessage());
-+         return null;
++         return chatmessage;
 +      }
-+      return entity;
++      return null;
 +   }
 +
 +   public ServerPlayer getPlayerForLogin(GameProfile profile, ServerPlayer player) {
