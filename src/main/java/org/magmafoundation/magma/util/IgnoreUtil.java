@@ -1,5 +1,7 @@
 package org.magmafoundation.magma.util;
 
+import java.util.Arrays;
+
 public final class IgnoreUtil {
 
     public static final String[] DO_NOT_CHECK = {
@@ -18,10 +20,6 @@ public final class IgnoreUtil {
     };
 
     public static boolean shouldCheck(String classpath) {
-        for (String doNotCheck : DO_NOT_CHECK) {
-            if (classpath.startsWith(doNotCheck))
-                return false;
-        }
-        return true;
+        return Arrays.stream(DO_NOT_CHECK).parallel().noneMatch(classpath::startsWith);
     }
 }

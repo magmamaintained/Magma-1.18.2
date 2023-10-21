@@ -3,6 +3,7 @@ package org.magmafoundation.magma.craftbukkit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModFileInfo;
+import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import net.minecraftforge.forgespi.locating.IModFile;
 import org.magmafoundation.magma.util.IgnoreUtil;
@@ -21,44 +22,30 @@ public final class ItemMetaTransformer {
         LOGGER.debug("Loading prefixes");
         NOT_TRANSFORMABLE.clear();
 
-        Map<String, List<String>> classesByMod = new HashMap<>();
-        ModList.get().getMods().forEach(mod -> {
+        //get the mod information synchronously, because IDK if there are any issues with async
+        for (IModInfo mod:ModList.get().getMods()){
             final IModFileInfo owningFile = mod.getOwningFile();
-            if (owningFile == null)
-                return;
+            if (owningFile == null) continue;
 
             final IModFile modFile = owningFile.getFile();
-            if (modFile == null)
-                return;
+            if (modFile == null) continue;
 
             final ModFileScanData scanData = modFile.getScanResult();
-            if (scanData == null)
-                return;
+            if (scanData == null) continue;
 
-            scanData.getClasses().forEach(cl -> {
-                final String className = cl.clazz().getClassName();
-                if (!IgnoreUtil.shouldCheck(className))
-                    return;
-                classesByMod.computeIfAbsent(mod.getModId(), s -> new ArrayList<>()).add(className);
-            });
-        });
-
-        classesByMod.forEach((modid, classes) -> {
+            List<String> classes = scanData.getClasses().parallelStream()
+                            .map(cl -> cl.clazz().getClassName())
+                            .filter(IgnoreUtil::shouldCheck)
+                            .toList();
             String prefix = getCommonPrefix(classes);
-            if (prefix.isEmpty())
-                return;
-
-            int dots = 0;
-            for (int i = 0; i < prefix.length(); i++) {
-                if (prefix.charAt(i) == '.')
-                    dots++;
-            }
-            if (dots <= 1) //ignore top level packages
-                return;
-
+            if (prefix.isEmpty()) continue;
+            long dots = prefix.chars().parallel()
+                    .filter(c -> c == '.')
+                    .count();
+            if (dots <= 1) continue; //ignore top level packages
             LOGGER.debug("Adding " + prefix + " to non-transformable list");
             NOT_TRANSFORMABLE.add(prefix);
-        });
+        }
 
         LOGGER.debug("Loaded {} prefixes", NOT_TRANSFORMABLE.size());
     }
