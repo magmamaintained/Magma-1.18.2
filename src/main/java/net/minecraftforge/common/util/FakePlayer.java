@@ -83,6 +83,7 @@ public class FakePlayer extends ServerPlayer
         this.connection = new FakePlayerNetHandler(level.getServer(), this);
     }
 
+    @Override
     public CraftFakePlayer getBukkitEntity() {
         return (CraftFakePlayer) super.getBukkitEntity();
     }
