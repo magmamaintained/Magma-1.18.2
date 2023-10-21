@@ -60,15 +60,18 @@
                 if (this.f_19796_.nextFloat() < 0.15F) {
                    serverlevel.m_8767_(ParticleTypes.f_123795_, d0, d1 - (double)0.1F, d2, 1, (double)f1, 0.1D, (double)f2, 0.0D);
                 }
-@@ -306,6 +_,13 @@
+@@ -306,6 +_,16 @@
                 serverlevel.m_8767_(ParticleTypes.f_123816_, d0, d1, d2, 0, (double)(-f4), 0.01D, (double)f3, 1.0D);
              }
           } else {
 +            // CraftBukkit start
-+            PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) this.m_37168_().getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.BITE);
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
-+            if (playerFishEvent.isCancelled()) {
-+               return;
++            Player playerOwner = this.m_37168_();
++            if (playerOwner != null) {
++               PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) playerOwner.getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.BITE);
++               this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
++               if (playerFishEvent.isCancelled()) {
++                  return;
++               }
 +            }
 +            // CraftBukkit end
              this.m_5496_(SoundEvents.f_11940_, 0.25F, 1.0F + (this.f_19796_.nextFloat() - this.f_19796_.nextFloat()) * 0.4F);
