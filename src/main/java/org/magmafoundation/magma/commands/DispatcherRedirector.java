@@ -14,7 +14,7 @@ public final class DispatcherRedirector {
 
 
     public static boolean shouldBypass() {
-        if (MagmaConfig.instance.debugOverrideDispatRedirector.getValues())
+        if (MagmaConfig.instance.debugOverrideDispatcherRedirector.getValues())
             return false;
         //use a StackWalker, in hopes it has better performance than
         //`Thread.currentThread().getStackTrace()` or `(new Exception()).getStackTrace()`.
