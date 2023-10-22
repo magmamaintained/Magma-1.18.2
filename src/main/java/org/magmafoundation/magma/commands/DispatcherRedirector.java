@@ -17,7 +17,7 @@ public final class DispatcherRedirector {
             return false;
         //use a StackWalker, in hopes it has better performance than
         //`Thread.currentThread().getStackTrace()` or `(new Exception()).getStackTrace()`.
-        StackWalker walker = StackWalker.getInstance(Collections.emptySet());
+        StackWalker walker = StackWalker.getInstance(Collections.emptySet(),17);
         return walker.walk(stackFrameStream ->
             stackFrameStream.map(StackWalker.StackFrame::getClassName)
                     //ideally the order of checking BYPASSED_CLASSES and IgnoreUtil.shouldCheck should not matter
