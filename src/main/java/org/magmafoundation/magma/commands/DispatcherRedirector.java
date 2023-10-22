@@ -21,15 +21,20 @@ public final class DispatcherRedirector {
         StackWalker walker = StackWalker.getInstance(Collections.emptySet(), 17);
         return walker.walk(stackFrameStream -> {
                     Spliterator<StackWalker.StackFrame> stackFrameIterator = stackFrameStream.spliterator();
-                    final boolean[] cont = {true};
+                    final boolean[] failFast = {false};
                     do {
                     } while (
                             stackFrameIterator.tryAdvance(element -> {
                                 final String className = element.getClassName();
-                                cont[0] = !(BYPASSED_CLASSES.contains(className) && IgnoreUtil.shouldCheck(className));
-                            }) && cont[0]
+                                //ideally the order of checking BYPASSED_CLASSES and IgnoreUtil.shouldCheck should not matter
+                                //and also BYPASSED_CLASSES should ideally be distinct from the classes in IgnoreUtil.DO_NOT_CHECK
+                                //
+                                //at the time of writing this, this should be the case, and BYPASSED_CLASSES is substantially smaller than IgnoreUtil.DO_NOT_CHECK.
+                                //so I reversed the order of checking to make it faster.
+                                failFast[0] = BYPASSED_CLASSES.contains(className) && IgnoreUtil.shouldCheck(className);
+                            }) && !failFast[0]
                     );
-                    return !cont[0];
+                    return failFast[0];
                 }
         );
     }
