@@ -22,14 +22,13 @@
  import net.minecraft.world.item.crafting.Recipe;
  import net.minecraft.world.item.enchantment.EnchantmentHelper;
  import net.minecraft.world.item.trading.MerchantOffers;
-@@ -109,9 +_,18 @@
+@@ -109,9 +_,17 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.PlayerTeam;
  import net.minecraft.world.scores.Scoreboard;
 -import net.minecraft.world.scores.Team;
 +import net.minecraftforge.common.ForgeMod;
 +import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 +import org.bukkit.craftbukkit.v1_18_R2.util.CraftVector;
 +import org.bukkit.entity.Item;
 +import org.bukkit.event.entity.EntityCombustByEntityEvent;

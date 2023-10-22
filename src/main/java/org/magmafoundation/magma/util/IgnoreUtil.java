@@ -1,10 +1,10 @@
 package org.magmafoundation.magma.util;
 
-import java.util.Arrays;
+import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
 
 public final class IgnoreUtil {
 
-    public static final String[] DO_NOT_CHECK = {
+    private static final ObjectImmutableList<String> DO_NOT_CHECK = ObjectImmutableList.of(
             "java.",
             "net.minecraft.",
             "net.minecraftforge.",
@@ -17,9 +17,14 @@ public final class IgnoreUtil {
             "com.destroystokyo.",
             "jdk.internal.",
             "cpw.mods."
-    };
+    );
 
-    public static boolean shouldCheck(String classpath) {
-        return Arrays.stream(DO_NOT_CHECK).parallel().noneMatch(classpath::startsWith);
+    //Don't parallelize this, because it's already used in a parallel stream
+    public static boolean shouldCheck(final String classpath) {
+        for (final String clazz : DO_NOT_CHECK){
+            if (classpath.startsWith(clazz))
+                return false;
+        }
+        return true;
     }
 }
