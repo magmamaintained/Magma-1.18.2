@@ -5,6 +5,7 @@ import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.util.IgnoreUtil;
 
 import java.util.Collections;
+import java.util.Iterator;
 
 public final class DispatcherRedirector {
 
@@ -13,19 +14,20 @@ public final class DispatcherRedirector {
 
 
     public static boolean shouldBypass() {
-        if(MagmaConfig.instance.debugOverrideDispatRedirector.getValues())
+        if (MagmaConfig.instance.debugOverrideDispatRedirector.getValues())
             return false;
         //use a StackWalker, in hopes it has better performance than
         //`Thread.currentThread().getStackTrace()` or `(new Exception()).getStackTrace()`.
-        StackWalker walker = StackWalker.getInstance(Collections.emptySet(),17);
-        return walker.walk(stackFrameStream ->
-            stackFrameStream.map(StackWalker.StackFrame::getClassName)
-                    //ideally the order of checking BYPASSED_CLASSES and IgnoreUtil.shouldCheck should not matter
-                    //and also BYPASSED_CLASSES should ideally be distinct from the classes in IgnoreUtil.DO_NOT_CHECK
-                    //
-                    //at the time of writing this, this should be the case, and BYPASSED_CLASSES is substancially smaller than IgnoreUtil.DO_NOT_CHECK.
-                    //so I reversed the order of checking to make it faster.
-                    .anyMatch(className -> BYPASSED_CLASSES.contains(className) && IgnoreUtil.shouldCheck(className))
+        StackWalker walker = StackWalker.getInstance(Collections.emptySet(), 17);
+        return walker.walk(stackFrameStream -> {
+                    Iterator<StackWalker.StackFrame> stackFrameIterator = stackFrameStream.iterator();
+                    while (stackFrameIterator.hasNext()) {
+                        final String className = stackFrameIterator.next().getClassName();
+                        if (BYPASSED_CLASSES.contains(className) && IgnoreUtil.shouldCheck(className))
+                            return true;
+                    }
+                    return false;
+                }
         );
     }
 }
