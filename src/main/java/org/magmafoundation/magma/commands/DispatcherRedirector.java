@@ -5,7 +5,7 @@ import org.magmafoundation.magma.configuration.MagmaConfig;
 import org.magmafoundation.magma.util.IgnoreUtil;
 
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.Spliterator;
 
 public final class DispatcherRedirector {
 
@@ -20,13 +20,16 @@ public final class DispatcherRedirector {
         //`Thread.currentThread().getStackTrace()` or `(new Exception()).getStackTrace()`.
         StackWalker walker = StackWalker.getInstance(Collections.emptySet(), 17);
         return walker.walk(stackFrameStream -> {
-                    Iterator<StackWalker.StackFrame> stackFrameIterator = stackFrameStream.iterator();
-                    while (stackFrameIterator.hasNext()) {
-                        final String className = stackFrameIterator.next().getClassName();
-                        if (BYPASSED_CLASSES.contains(className) && IgnoreUtil.shouldCheck(className))
-                            return true;
-                    }
-                    return false;
+                    Spliterator<StackWalker.StackFrame> stackFrameIterator = stackFrameStream.spliterator();
+                    final boolean[] cont = {true};
+                    do {
+                    } while (
+                            stackFrameIterator.tryAdvance(element -> {
+                                final String className = element.getClassName();
+                                cont[0] = !(BYPASSED_CLASSES.contains(className) && IgnoreUtil.shouldCheck(className));
+                            }) && cont[0]
+                    );
+                    return !cont[0];
                 }
         );
     }
