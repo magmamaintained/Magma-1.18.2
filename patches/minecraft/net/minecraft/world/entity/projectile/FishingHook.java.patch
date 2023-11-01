@@ -40,13 +40,16 @@
     }
  
     protected boolean m_5603_(Entity p_37135_) {
-@@ -283,6 +_,10 @@
+@@ -283,6 +_,13 @@
              this.f_37090_ = 0;
              this.f_37091_ = 0;
              this.m_20088_().m_135381_(f_37102_, false);
 +            // CraftBukkit start
-+            PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) this.m_37168_().getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.FAILED_ATTEMPT);
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
++            Player playerOwner = this.m_37168_();
++            if (playerOwner != null) {
++               PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) playerOwner.getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.FAILED_ATTEMPT);
++               this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
++            }
 +            // CraftBukkit end
           }
        } else if (this.f_37091_ > 0) {
