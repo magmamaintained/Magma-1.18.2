@@ -47,7 +47,7 @@ public class MagmaUpdater {
             JsonObject root = gson.fromJson(reader, JsonObject.class);
 
             newSha = root.get("tag_name").getAsString();
-            assetURL = root.get("assets").getAsJsonObject().get("browser_download_url").getAsString();
+            assetURL = root.get("assets").getAsJsonArray().get(0).getAsJsonObject().get("browser_download_url").getAsString();
             currentSha = MagmaConstants.VERSION.split("-")[1];
 
             if(currentSha.equals(newSha)) {
