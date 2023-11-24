@@ -1,11 +1,10 @@
 <div align="center">
 <img src="https://i.imgur.com/zTCTCWG.png" alt="Magma logo" align="middle"></img>
 
-[![](https://img.shields.io/badge/Minecraft%20Forge-1.20.1%20--%2047.2.0%20--%2012d24df4-orange.svg)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.20.1.html)
-[![](https://img.shields.io/badge/Bukkit-1.20%203635fe1-blue)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse)
-[![](https://img.shields.io/badge/CraftBukkit-Build%2078796c9de6c-orange)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse?at=refs%2Fheads%2Fversion%2F1.20)
-[![](https://img.shields.io/badge/Spigot-Build%20d2eba2c820b-yellow)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
-
+[![](https://img.shields.io/badge/Minecraft%20Forge-1.18.2%20--%2040.2.14%20--%209b2c52b3-orange.svg)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.18.2.html)
+[![](https://img.shields.io/badge/Bukkit-1.18%20r2-blue)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse)
+[![](https://img.shields.io/badge/CraftBukkit-Build%20b02801aa-orange)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse)
+[![](https://img.shields.io/badge/Spigot-Build%20b0819150-yellow)](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
 [![](https://img.shields.io/discord/1175785262475923556.svg?logo=discord&logoWidth=18&colorB=7289DA)](https://discord.gg/STZjCzRZn9)
 </div> 
 
