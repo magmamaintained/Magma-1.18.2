@@ -42,7 +42,7 @@ Magma 1.18.2 is **not** compatible with **vanilla** [Velocity](https://velocityp
 
 - Clone the Project
     - You can use Git GUI (like GitHub Desktop/GitKraken) or clone using the terminal using:
-        - `git clone https://github.com/TonimatasDEV/Magma-1.20.1.git`
+        - `git clone https://github.com/magmamaintained/Magma-1.18.2.git`
 - Building
     - First you want to run the build command
         - `./gradlew setup magmaJar`
@@ -58,13 +58,6 @@ Please read the [CONTRIBUTING.md](https://git.magmafoundation.org/magmafoundatio
 
 ## 💬 Chat
 
-You are welcome to visit Magma's Discord server [here](https://discord.gg/Magma) (recommended).
+You are welcome to visit Magma's Discord server [here](https://discord.gg/STZjCzRZn9) (recommended).
 
-You could also go to Magma's subreddit [here](https://www.reddit.com/r/Magma).
-
-## 👥 Partners
-
-![YourKit-Logo](https://www.yourkit.com/images/yklogo.png)
-
-[YourKit](http://www.yourkit.com/), makers of the outstanding java profiler, support open source projects of all kinds with their full featured [Java](https://www.yourkit.com/java/profiler/index.jsp) and [.NET](https://www.yourkit.com/.net/profiler/index.jsp) application profilers.
-
+You could also go to Magma's subreddit [here](https://discord.gg/STZjCzRZn9).
