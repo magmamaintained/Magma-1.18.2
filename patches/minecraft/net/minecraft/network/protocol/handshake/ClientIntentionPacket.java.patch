@@ -40,7 +40,7 @@
        this.f_134722_ = p_179801_.readUnsignedShort();
        this.f_134723_ = ConnectionProtocol.m_129583_(p_179801_.m_130242_());
 +      this.fmlVersion = NetworkHooks.getFMLVersion(f_134721_);
-+      //this.hostName = hostName.split("\0")[0]; //Magma moved to [ServerHandshakePacketListenerImpl.java#L93]
++      //this.hostName = hostName.split("\0")[0]; // Magma moved to [ServerHandshakePacketListenerImpl.java#L93]
 +      //Magma start - add Velocity support
 +      if (SpigotConfig.bungee && !Objects.equals(this.fmlVersion, NetworkConstants.NETVERSION)) {
 +         String[] split = this.f_134721_.split("\0");

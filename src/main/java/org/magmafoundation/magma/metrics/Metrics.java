@@ -16,13 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.magmafoundation.magma;
+package org.magmafoundation.magma.metrics;
 
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.magmafoundation.magma.Magma;
 import org.magmafoundation.magma.api.ServerAPI;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -56,7 +58,7 @@ public class Metrics {
     private static String serverUUID;
     // A list with all custom charts
     private final List<CustomChart> charts = new ArrayList<>();
-    private final String pluginName = "Magma";
+    private final String pluginName = "Magma Maintained";
     private final String pluginVersion = Magma.getVersion();
     // Is bStats enabled on this server?
     private boolean enabled;
@@ -106,7 +108,30 @@ public class Metrics {
             version = version.substring(version.indexOf("MC: ") + 4, version.length() - 1);
             return version;
         }));
-        addCustomChart(new Metrics.SimplePie("number_of_mods", () -> String.valueOf(ServerAPI.getModSize()))); // Report how many mods are running // MAGMA TODO: Add Server API
+        addCustomChart(new DrilldownPie("mods_vs_plugins", () -> {
+            Map<String, Map<String, Integer>> map = new HashMap<>();
+
+            Map<String, Integer> modslist = new HashMap<>();
+            String[] mods = ServerAPI.getModList().replace("[", "").replace("]", "").split(", ");
+            for (String x : mods) {
+                if (x.equals("minecraft") || x.equals("forge")) {
+                    continue;
+                }
+                modslist.put(x, 1);
+            }
+
+            Map<String, Integer> pluginlist = new HashMap<>();
+            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                if (plugin.isEnabled()) {
+                    pluginlist.put(plugin.getDescription().getName(), 1);
+                }
+            }
+
+            map.put("mods", modslist);
+            map.put("plugins", pluginlist);
+
+            return map;
+        }));
         addCustomChart(new Metrics.SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
         addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ?  "online": "offline"));
         addCustomChart(new Metrics.SimplePie("server_version", Magma::getVersion));
