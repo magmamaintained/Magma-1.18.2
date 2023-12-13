@@ -157,7 +157,7 @@
 +import org.bukkit.event.world.WorldLoadEvent;
 +import org.bukkit.plugin.PluginLoadOrder;
 +import org.magmafoundation.magma.Magma;
-+import org.magmafoundation.magma.Metrics;
++import org.magmafoundation.magma.metrics.Metrics;
 +import org.magmafoundation.magma.configuration.MagmaConfig;
 +import org.magmafoundation.magma.craftbukkit.ItemMetaTransformer;
 +import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
