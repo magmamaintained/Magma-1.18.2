@@ -36,10 +36,11 @@
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.NonNullList;
-@@ -57,8 +_,33 @@
+@@ -57,8 +_,35 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.entity.SkullBlockEntity;
  import net.minecraft.world.level.storage.LevelStorageSource;
++import net.minecrell.terminalconsole.TerminalConsoleAppender;
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.io.IoBuilder;
 +import org.bukkit.command.CommandSender;
@@ -61,6 +62,7 @@
 +import java.net.Proxy;
 +import java.nio.file.Files;
 +import java.nio.file.Path;
++import java.util.ArrayList;
 +import java.util.Collections;
 +import java.util.List;
 +import java.util.Locale;
@@ -255,15 +257,40 @@
        }
     }
  
-@@ -316,6 +_,11 @@
+@@ -316,6 +_,36 @@
           this.f_139601_.m_7530_();
        }
  
-+      //Magma start - injectprotect
-+      InjectProtect.shutdownCalled();
-+      //Magma end
++      // Magma start - Add ArcLight stop
++      try {
++         TerminalConsoleAppender.close();
++      } catch (IOException e) {
++         e.printStackTrace();
++      }
 +
-+      Runtime.getRuntime().halt(0);
++      InjectProtect.shutdownCalled();
++
++      Thread exitThread = new Thread(() -> {
++         try {
++            Thread.sleep(5000L);
++         } catch (InterruptedException e) {
++            e.printStackTrace();
++         }
++         List<String> threads = new ArrayList<>();
++         for (Thread thread : Thread.getAllStackTraces().keySet()) {
++            if (!thread.isDaemon() && !thread.getName().equals("DestroyJavaVM")) {
++               threads.add(thread.getName());
++            }
++         }
++         if (!threads.isEmpty()) {
++            f_139598_.debug("Threads {} not shutting down", String.join(", ", threads));
++            f_139598_.info("{} threads not shutting down correctly, force exiting", threads.size());
++         }
++         System.exit(0);
++      }, "Exit Thread");
++      exitThread.setDaemon(true);
++      exitThread.start();
++      // Magma end
     }
  
     public void m_5703_(BooleanSupplier p_139661_) {

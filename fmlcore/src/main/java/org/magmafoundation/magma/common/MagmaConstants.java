@@ -1,6 +1,5 @@
 package org.magmafoundation.magma.common;
 
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModInfo;
 
 import java.util.*;
