@@ -126,7 +126,7 @@
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2186 @@
+@@ -144,1693 +_,2189 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
@@ -2469,6 +2469,9 @@
 +            hasStopped = true;
 +        }
 +        // CraftBukkit end
++        if (this.f_177872_.m_142763_()) {
++            this.m_177928_();
++        }
 +        f_129750_.info("Stopping server");
 +        MinecraftTimings.stopServer(); // Paper
 +        // CraftBukkit start
