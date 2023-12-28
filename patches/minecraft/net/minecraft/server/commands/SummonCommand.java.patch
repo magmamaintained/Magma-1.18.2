@@ -17,13 +17,11 @@
        }).then(Commands.m_82129_("entity", EntitySummonArgument.m_93335_()).suggests(SuggestionProviders.f_121645_).executes((p_138832_) -> {
           return m_138820_(p_138832_.getSource(), EntitySummonArgument.m_93338_(p_138832_, "entity"), p_138832_.getSource().m_81371_(), new CompoundTag(), true);
        }).then(Commands.m_82129_("pos", Vec3Argument.m_120841_()).executes((p_138830_) -> {
-@@ -58,7 +_,8 @@
+@@ -58,6 +_,7 @@
                 ((Mob)entity).m_6518_(p_138821_.m_81372_(), p_138821_.m_81372_().m_6436_(entity.m_142538_()), MobSpawnType.COMMAND, (SpawnGroupData)null, (CompoundTag)null);
              }
  
--            if (!serverlevel.m_8860_(entity)) {
-+            serverlevel.prepareEntity(entity, CreatureSpawnEvent.SpawnReason.COMMAND); //Magma - add spawn reason
-+            if (!serverlevel.m_7967_(entity)) {
++            serverlevel.prepareEntity(entity, CreatureSpawnEvent.SpawnReason.COMMAND); // Magma - add spawn reason
+             if (!serverlevel.m_8860_(entity)) {
                 throw f_138811_.create();
              } else {
-                p_138821_.m_81354_(new TranslatableComponent("commands.summon.success", entity.m_5446_()), true);

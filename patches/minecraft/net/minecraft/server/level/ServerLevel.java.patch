@@ -128,7 +128,7 @@
  import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
  import net.minecraft.world.level.levelgen.structure.BoundingBox;
  import net.minecraft.world.level.levelgen.structure.StructureCheck;
-@@ -136,17 +_,39 @@
+@@ -136,17 +_,40 @@
  import net.minecraft.world.level.portal.PortalForcer;
  import net.minecraft.world.level.saveddata.maps.MapIndex;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
@@ -162,6 +162,7 @@
 +import java.nio.file.Path;
 +import java.util.*;
 +import java.util.concurrent.Executor;
++import java.util.concurrent.atomic.AtomicReference;
 +import java.util.function.BooleanSupplier;
 +import java.util.function.Function;
 +import java.util.function.Predicate;
@@ -563,7 +564,7 @@
        Entity entity = this.m_142646_().m_142694_(p_8854_.m_142081_());
        if (entity != null) {
           f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_142081_().toString());
-@@ -775,28 +_,68 @@
+@@ -775,28 +_,73 @@
           this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
@@ -607,24 +608,29 @@
 +            return false;
 +         }
        }
++   }
++
++   public AtomicReference<CreatureSpawnEvent.SpawnReason> trySpawnReason = new AtomicReference<>(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++
++   public void prepareTryAddFreshEntityWithPassengers(CreatureSpawnEvent.SpawnReason spawnReason) {
++      trySpawnReason.set(spawnReason);
     }
  
     public boolean m_8860_(Entity p_8861_) {
-+      // CraftBukkit start
-+      return this.tryAddFreshEntityWithPassengers(p_8861_, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
-+   }
-+
-+   public boolean tryAddFreshEntityWithPassengers(Entity p_8861_, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
-+      // CraftBukkit end
        if (p_8861_.m_142428_().map(Entity::m_142081_).anyMatch(this.f_143244_::m_157550_)) {
           return false;
        } else {
-+         this.prepareEntity(p_8861_, reason); //Magma - add spawn reason
++         this.prepareEntity(p_8861_, trySpawnReason.getAndSet(CreatureSpawnEvent.SpawnReason.DEFAULT)); // Magma - add spawn reason
           this.m_47205_(p_8861_);
           return true;
        }
     }
  
++   public boolean tryAddFreshEntityWithPassengers(Entity p_8861_, CreatureSpawnEvent.SpawnReason reason) {
++      trySpawnReason.set(reason);
++      return m_8860_(p_8861_);
++   }
++
     public void m_8712_(LevelChunk p_8713_) {
 +      // Spigot Start
 +      for (net.minecraft.world.level.block.entity.BlockEntity tileentity : p_8713_.m_62954_().values()) {
