@@ -148,6 +148,7 @@ subprojects {
             url = "https://raw.github.com/Hexeption/Magma-Repo/master/"
         }
         maven { url 'https://maven.izzel.io/releases' }
+        maven { url = 'https://maven.mohistmc.com/' }
     }
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -243,6 +244,10 @@ def sharedDeps = {
     installer 'org.lwjgl:lwjgl-stb:3.2.2'
     */
 
+    // Magma
+    installer 'org.magma:magma-common:2.6'
+    installer 'com.mohistmc:json:0.2'
+
     // Bukkit
     installer 'org.apache.maven:maven-resolver-provider:3.8.4'
     installer 'org.apache.maven.resolver:maven-resolver-connector-basic:1.7.2'
@@ -260,7 +265,6 @@ def sharedDeps = {
 
     // Spigot
     installer 'net.md-5:bungeecord-chat:1.16-R0.4'
-    installer 'org.magma:magma-common:2.6'
     installer 'io.izzel:tools:1.3.0'
 
     installer 'com.google.guava:failureaccess:1.0.1'
