@@ -241,10 +241,8 @@ public abstract class InventoryView {
         }
         //Magma start - don't throw an exception here, just return null
         if (rawSlot < 0 ){
-            LoggerFactory.getLogger(InventoryView.class).error("Negative, non outside slot: " + rawSlot);
             return null;
         } else if (rawSlot >= countSlots()) {
-            LoggerFactory.getLogger(InventoryView.class).error("Slot " + rawSlot + " greater than inventory slot count");
             return null;
         }
         // Magma stop
