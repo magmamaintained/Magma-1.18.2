@@ -996,15 +996,12 @@
                 }
              }
           }
-@@ -1514,24 +_,162 @@
+@@ -1513,25 +_,175 @@
+       }
     }
  
++   private boolean damageEntity0;
     protected void m_6475_(DamageSource p_21240_, float p_21241_) {
-+      damageEntity0(p_21240_, p_21241_);
-+   }
-+
-+   // CraftBukkit start
-+   protected boolean damageEntity0(final DamageSource p_21240_, float p_21241_) { // void -> boolean, add final
        if (!this.m_6673_(p_21240_)) {
 -         p_21241_ = this.m_21161_(p_21240_, p_21241_);
 -         p_21241_ = this.m_6515_(p_21240_, p_21241_);
@@ -1022,7 +1019,10 @@
 +         // Cauldron start - apply forge damage hook
 +         p_21241_ = ForgeHooks.onLivingHurt(this, p_21240_, p_21241_);
 +         // If the damage is negative return true
-+         if (p_21241_ < 0) return true;
++         if (p_21241_ < 0) {
++            damageEntity0 = true;
++            return;
++         }
 +         //Magma - Infinity check
 +         if (Float.isInfinite(p_21241_))
 +            p_21241_ = originalDamage; // Restore original damage to prevent issues with damage calculation
@@ -1072,12 +1072,16 @@
 +         }
 +         if (event.isCancelled()) {
 +            cancelDamage = true;
-+            return false;
++            damageEntity0 = false;
++            return;
 +         }
 +
 +         p_21241_ = (float) event.getFinalDamage();
 +
-+         if (nulldmg) return true; // Preclude any stupidity with null head items
++         if (nulldmg) { // Preclude any stupidity with null head items
++            damageEntity0 = true;
++            return;
++         }
 +
 +         // Resistance
 +         if (event.getDamage(EntityDamageEvent.DamageModifier.RESISTANCE) < 0) {
@@ -1147,7 +1151,8 @@
 +            }
              this.m_146852_(GameEvent.f_157808_, p_21240_.m_7639_());
 +
-+            return true;
++            damageEntity0 = true;
++            return;
 +         } else {
 +            // Duplicate triggers if blocking
 +            if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0) {
@@ -1161,14 +1166,22 @@
 +               if (p_21240_.m_7639_() instanceof ServerPlayer) {
 +                  CriteriaTriggers.f_10573_.m_60112_((ServerPlayer) p_21240_.m_7639_(), this, p_21240_, p_21241_, originalDamage, true);
 +               }
-+               return false;
++               damageEntity0 = false;
++               return;
 +            } else {
-+               return originalDamage > 0;
++               damageEntity0 = originalDamage > 0;
++               return;
 +            }
 +            // CraftBukkit end
           }
        }
-+      return false;
++      damageEntity0 = false;
++   }
++
++   // CraftBukkit start
++   protected boolean damageEntity0(final DamageSource p_21240_, float p_21241_) { // void -> boolean, add final
++      m_6475_(p_21240_, p_21241_);
++      return damageEntity0;
     }
  
     public CombatTracker m_21231_() {
