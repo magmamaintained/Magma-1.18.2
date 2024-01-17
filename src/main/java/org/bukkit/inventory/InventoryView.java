@@ -241,15 +241,13 @@ public abstract class InventoryView {
         }
         //Magma start - don't throw an exception here, just return null
         if (rawSlot < 0 ){
-            LoggerFactory.getLogger(InventoryView.class).error("Negative, non outside slot: "+rawSlot,new IllegalArgumentException());
+            LoggerFactory.getLogger(InventoryView.class).error("Negative, non outside slot: " + rawSlot);
             return null;
         } else if (rawSlot >= countSlots()) {
-            LoggerFactory.getLogger(InventoryView.class).error("Slot "+rawSlot+" greater than inventory slot count", new IllegalArgumentException());
+            LoggerFactory.getLogger(InventoryView.class).error("Slot " + rawSlot + " greater than inventory slot count");
             return null;
         }
-//        Preconditions.checkArgument(rawSlot >= 0, "Negative, non outside slot %s", rawSlot);
-//        Preconditions.checkArgument(rawSlot < countSlots(), "Slot %s greater than inventory slot count", rawSlot);
-        //Magma end
+        // Magma stop
 
         if (rawSlot < getTopInventory().getSize()) {
             return getTopInventory();
