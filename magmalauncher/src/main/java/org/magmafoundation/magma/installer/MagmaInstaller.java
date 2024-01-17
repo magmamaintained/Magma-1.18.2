@@ -377,7 +377,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2"));
             standardRepositories.add(new StandardRepository("https://git.magmafoundation.org/magmafoundation/magma-maven-repo/-/raw/repository"));
             standardRepositories.add(new StandardRepository("https://maven.izzel.io/releases"));
-
+            standardRepositories.add(new StandardRepository("https://maven.mohistmc.com/"));
             List<Dependency> dependencies = manager.getDependencies();
 
             ProgressBarBuilder builder = new ProgressBarBuilder()
