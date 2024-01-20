@@ -580,7 +580,7 @@
              if (!p_21016_.m_19360_()) {
                 Entity entity = p_21016_.m_7640_();
                 if (entity instanceof LivingEntity) {
-@@ -1014,30 +_,69 @@
+@@ -1014,30 +_,71 @@
  
              flag = true;
           }
@@ -604,7 +604,8 @@
 +               }
 +            } else {
 +               // CraftBukkit start
-+               if (!this.damageEntity0(p_21016_, p_21017_ - this.f_20898_))
++               this.m_6475_(p_21016_, p_21017_ - this.f_20898_);
++               if (!damageEntity0)
 +                  return false;
 +               // CraftBukkit end
 +            }
@@ -621,7 +622,8 @@
 +               }
 +            } else {
 +               // CraftBukkit start
-+               if (!this.damageEntity0(p_21016_, f))
++               this.m_6475_(p_21016_, f);
++               if (!damageEntity0)
 +                  return false;
 +               // CraftBukkit end
 +            }
@@ -996,11 +998,11 @@
                 }
              }
           }
-@@ -1513,25 +_,175 @@
+@@ -1513,25 +_,169 @@
        }
     }
  
-+   private boolean damageEntity0;
++   public boolean damageEntity0;
     protected void m_6475_(DamageSource p_21240_, float p_21241_) {
        if (!this.m_6673_(p_21240_)) {
 -         p_21241_ = this.m_21161_(p_21240_, p_21241_);
@@ -1176,12 +1178,6 @@
           }
        }
 +      damageEntity0 = false;
-+   }
-+
-+   // CraftBukkit start
-+   protected boolean damageEntity0(final DamageSource p_21240_, float p_21241_) { // void -> boolean, add final
-+      m_6475_(p_21240_, p_21241_);
-+      return damageEntity0;
     }
  
     public CombatTracker m_21231_() {
