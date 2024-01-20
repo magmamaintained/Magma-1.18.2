@@ -966,13 +966,22 @@
              this.m_5496_(soundtype.m_56779_(), soundtype.m_56773_() * 0.5F, soundtype.m_56774_() * 0.75F);
           }
  
-@@ -1473,7 +_,8 @@
+@@ -1471,9 +_,17 @@
+    protected void m_7909_(float p_21316_) {
+    }
  
++   public boolean isDamageAfterArmorabsorbHurt = false; // Magma
     protected float m_21161_(DamageSource p_21162_, float p_21163_) {
        if (!p_21162_.m_19376_()) {
 -         this.m_6472_(p_21162_, p_21163_);
 +         if (ModList.get().isLoaded("the_vault")) //Magma - prevent mixin inject, just don't use the bukkit hurt event if the_vault is loaded
-+            this.m_6472_(p_21162_, p_21163_);
++            // Magma start - Fix mixin issues
++            if (isDamageAfterArmorabsorbHurt) {
++               this.m_6472_(p_21162_, p_21163_);
++               isDamageAfterArmorabsorbHurt = false;
++               return 0.0F;
++            }
++            // Magma end
           p_21163_ = CombatRules.m_19272_(p_21163_, (float)this.m_21230_(), (float)this.m_21133_(Attributes.f_22285_));
        }
  
@@ -998,7 +1007,7 @@
                 }
              }
           }
-@@ -1513,25 +_,169 @@
+@@ -1513,25 +_,170 @@
        }
     }
  
@@ -1105,7 +1114,8 @@
 +         // Apply damage to armor
 +         if (!p_21240_.m_19376_() && !ModList.get().isLoaded("the_vault")) { //Magma - skip armor damage if the_vault is loaded
 +            float armorDamage = (float) (event.getDamage() + event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) + event.getDamage(EntityDamageEvent.DamageModifier.HARD_HAT));
-+            this.m_6472_(p_21240_, armorDamage);
++            this.isDamageAfterArmorabsorbHurt = true; // Magma
++            this.m_21161_(p_21240_, armorDamage); // Magma
 +         }
 +
 +         // Apply blocking code // PAIL: steal from above
