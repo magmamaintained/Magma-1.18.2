@@ -16,20 +16,6 @@ package org.magmafoundation.magma;/*
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import static org.magmafoundation.magma.common.MagmaConstants.BRAND;
-import static org.magmafoundation.magma.common.MagmaConstants.BUKKIT_VERSION;
-import static org.magmafoundation.magma.common.MagmaConstants.FORGE_VERSION;
-import static org.magmafoundation.magma.common.MagmaConstants.NAME;
-import static org.magmafoundation.magma.common.MagmaConstants.VERSION;
-
-import java.io.File;
-import java.lang.reflect.Array;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 import org.magmafoundation.magma.common.betterui.BetterUI;
 import org.magmafoundation.magma.common.utils.JarTool;
 import org.magmafoundation.magma.common.utils.SystemType;
@@ -37,6 +23,21 @@ import org.magmafoundation.magma.installer.MagmaInstaller;
 import org.magmafoundation.magma.updater.MagmaUpdater;
 import org.magmafoundation.magma.utils.BootstrapLauncher;
 import org.magmafoundation.magma.utils.ServerInitHelper;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.magmafoundation.magma.common.MagmaConstants.*;
 
 
 /**
@@ -79,7 +80,20 @@ public class MagmaStart {
         });
 
         MagmaInstaller.run();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("jar:file:" + JarTool.getJarPath() + "!/data/magma_libraries.txt").openStream()));
+        StringBuilder content = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.equalsIgnoreCase("===ALGORITHM SHA-256")) continue;
+            content.append(line).append("\n");
+        }
+        reader.close();
 
+        FileWriter writer = new FileWriter("libraries/libraries.txt");
+        writer.write(content.toString());
+        writer.close();
+        
+        
         ServerInitHelper.init(launchArgs);
 
         ServerInitHelper.addToPath(new File("libraries/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar").toPath());
