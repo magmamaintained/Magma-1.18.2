@@ -1,31 +1,27 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -6,6 +_,7 @@
+@@ -6,6 +_,6 @@
  import com.mojang.authlib.minecraft.MinecraftSessionService;
  import com.mojang.datafixers.util.Pair;
  import com.mojang.logging.LogUtils;
-+import com.mojang.serialization.DynamicOps;
  import com.mojang.serialization.Lifecycle;
  import java.net.Proxy;
  import java.util.Collection;
-@@ -15,10 +_,12 @@
+@@ -15,10 +_,10 @@
  import net.minecraft.CrashReport;
  import net.minecraft.SystemReport;
  import net.minecraft.Util;
-+import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Registry;
  import net.minecraft.core.RegistryAccess;
-+import net.minecraft.nbt.Tag;
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.WorldStem;
  import net.minecraft.server.level.ServerLevel;
-@@ -42,6 +_,7 @@
+@@ -42,6 +_,6 @@
  import net.minecraft.world.level.storage.LevelStorageSource;
  import net.minecraft.world.level.storage.PrimaryLevelData;
  import net.minecraft.world.level.storage.WorldData;
-+import org.bukkit.command.CommandSender;
  import org.slf4j.Logger;
  
  public class GameTestServer extends MinecraftServer {
@@ -61,7 +57,7 @@
 +   }
 +
 +   @Override
-+   public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++   public org.bukkit.command.CommandSender getBukkitSender(net.minecraft.commands.CommandSourceStack wrapper) {
 +      return console;
     }
  

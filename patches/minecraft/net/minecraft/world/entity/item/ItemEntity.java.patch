@@ -1,32 +1,25 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -1,8 +_,5 @@
+@@ -1,8 +_,8 @@
  package net.minecraft.world.entity.item;
  
--import java.util.Objects;
--import java.util.UUID;
--import javax.annotation.Nullable;
+ import java.util.Objects;
+ import java.util.UUID;
+ import javax.annotation.Nullable;
  import net.minecraft.core.BlockPos;
  import net.minecraft.nbt.CompoundTag;
  import net.minecraft.network.chat.Component;
-@@ -12,6 +_,7 @@
+@@ -12,6 +_,6 @@
  import net.minecraft.network.syncher.EntityDataAccessor;
  import net.minecraft.network.syncher.EntityDataSerializers;
  import net.minecraft.network.syncher.SynchedEntityData;
-+import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.sounds.SoundSource;
  import net.minecraft.stats.Stats;
-@@ -29,6 +_,12 @@
+@@ -29,6 +_,6 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.EntityPickupItemEvent;
-+import org.bukkit.event.player.PlayerPickupItemEvent;
-+
-+import javax.annotation.Nullable;
-+import java.util.Objects;
-+import java.util.UUID;
  
  public class ItemEntity extends Entity {
     private static final EntityDataAccessor<ItemStack> f_31984_ = SynchedEntityData.m_135353_(ItemEntity.class, EntityDataSerializers.f_135033_);
@@ -38,7 +31,7 @@
 +    * The maximum age of this EntityItem.  The item is expired once this is reached.
 +    */
 +   public int lifespan = ItemEntity.f_149659_;
-+   private int lastTick = MinecraftServer.currentTick - 1; // CraftBukkit
++   private int lastTick = net.minecraft.server.MinecraftServer.currentTick - 1; // CraftBukkit
  
     public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
        super(p_31991_, p_31992_);
@@ -63,10 +56,10 @@
 -            --this.f_31986_;
 -         }
 +         // CraftBukkit start - Use wall time for pickup and despawn timers
-+         int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
++         int elapsedTicks = net.minecraft.server.MinecraftServer.currentTick - this.lastTick;
 +         if (this.f_31986_ != 32767) this.f_31986_ -= elapsedTicks;
 +         if (this.f_31985_ != -32768) this.f_31985_ += elapsedTicks;
-+         this.lastTick = MinecraftServer.currentTick;
++         this.lastTick = net.minecraft.server.MinecraftServer.currentTick;
 +         // CraftBukkit end
  
           this.f_19854_ = this.m_20185_();
@@ -123,10 +116,10 @@
 +   @Override
 +   public void inactiveTick() {
 +      // CraftBukkit start - Use wall time for pickup and despawn timers
-+      int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
++      int elapsedTicks = net.minecraft.server.MinecraftServer.currentTick - this.lastTick;
 +      if (this.f_31986_ != 32767) this.f_31986_ -= elapsedTicks;
 +      if (this.f_31985_ != -32768) this.f_31985_ += elapsedTicks;
-+      this.lastTick = MinecraftServer.currentTick;
++      this.lastTick = net.minecraft.server.MinecraftServer.currentTick;
 +      // CraftBukkit end
 +      if (!this.f_19853_.f_46443_ && this.f_31985_ >= lifespan) { //Magma
 +         // CraftBukkit start - fire ItemDespawnEvent
@@ -241,7 +234,7 @@
 +         if (this.f_31986_ <= 0 && canHold > 0) {
 +            itemstack.m_41764_(canHold);
 +            // Call legacy event
-+            PlayerPickupItemEvent playerEvent = new PlayerPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
++            org.bukkit.event.player.PlayerPickupItemEvent playerEvent = new org.bukkit.event.player.PlayerPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
 +            playerEvent.setCancelled(!playerEvent.getPlayer().getCanPickupItems());
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerEvent);
 +            if (playerEvent.isCancelled()) {
@@ -250,7 +243,7 @@
 +            }
 +
 +            // Call newer event afterwards
-+            EntityPickupItemEvent entityEvent = new EntityPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
++            org.bukkit.event.entity.EntityPickupItemEvent entityEvent = new org.bukkit.event.entity.EntityPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
 +            entityEvent.setCancelled(!entityEvent.getEntity().getCanPickupItems());
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(entityEvent);
 +            if (entityEvent.isCancelled()) {

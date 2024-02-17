@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/item/DyeItem.java
 +++ b/net/minecraft/world/item/DyeItem.java
-@@ -9,6 +_,7 @@
+@@ -9,6 +_,6 @@
  import net.minecraft.world.entity.LivingEntity;
  import net.minecraft.world.entity.animal.Sheep;
  import net.minecraft.world.entity.player.Player;
-+import org.bukkit.event.entity.SheepDyeWoolEvent;
  
  public class DyeItem extends Item {
     private static final Map<DyeColor, DyeItem> f_41076_ = Maps.newEnumMap(DyeColor.class);
@@ -16,7 +15,7 @@
 +
 +               // CraftBukkit start
 +               byte bColor = (byte) this.f_41077_.m_41060_();
-+               SheepDyeWoolEvent event = new SheepDyeWoolEvent((org.bukkit.entity.Sheep) sheep.getBukkitEntity(), org.bukkit.DyeColor.getByWoolData(bColor), (org.bukkit.entity.Player) p_41086_.getBukkitEntity());
++               org.bukkit.event.entity.SheepDyeWoolEvent event = new org.bukkit.event.entity.SheepDyeWoolEvent((org.bukkit.entity.Sheep) sheep.getBukkitEntity(), org.bukkit.DyeColor.getByWoolData(bColor), (org.bukkit.entity.Player) p_41086_.getBukkitEntity());
 +               sheep.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +               if (event.isCancelled()) {
 +                  return InteractionResult.PASS;

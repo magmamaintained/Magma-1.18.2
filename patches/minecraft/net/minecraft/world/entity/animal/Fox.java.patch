@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/entity/animal/Fox.java
 +++ b/net/minecraft/world/entity/animal/Fox.java
-@@ -88,6 +_,8 @@
+@@ -88,6 +_,6 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.pathfinder.BlockPathTypes;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
-+import org.magmafoundation.magma.helpers.InterfaceHelper;
  
  public class Fox extends Animal {
     private static final EntityDataAccessor<Integer> f_28437_ = SynchedEntityData.m_135353_(Fox.class, EntityDataSerializers.f_135028_);
@@ -79,7 +77,7 @@
              this.f_25115_.m_27594_();
 -            fox.m_146762_(-24000);
 -            fox.m_7678_(this.f_25113_.m_20185_(), this.f_25113_.m_20186_(), this.f_25113_.m_20189_(), 0.0F, 0.0F);
-+            serverlevel.prepareEntity(fox, CreatureSpawnEvent.SpawnReason.BREEDING); //Magma - add spawn reason
++            serverlevel.prepareEntity(fox, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING); //Magma - add spawn reason
              serverlevel.m_47205_(fox);
              this.f_25114_.m_7605_(this.f_25113_, (byte)18);
              if (this.f_25114_.m_46469_().m_46207_(GameRules.f_46135_)) {
@@ -106,7 +104,7 @@
  
        private void m_148926_(BlockState p_148927_) {
 -         CaveVines.m_152953_(p_148927_, Fox.this.f_19853_, this.f_25602_);
-+         InterfaceHelper.tempNMSEntity.set(Fox.this); //Magma - set the entity to be used by the event
++         org.magmafoundation.magma.helpers.InterfaceHelper.tempNMSEntity.set(Fox.this); //Magma - set the entity to be used by the event
 +         CaveVines.m_152953_(p_148927_, Fox.this.f_19853_, this.f_25602_); // CraftBukkit
        }
  

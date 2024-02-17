@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/monster/ElderGuardian.java
 +++ b/net/minecraft/world/entity/monster/ElderGuardian.java
-@@ -14,6 +_,7 @@
+@@ -14,6 +_,6 @@
  import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
  import net.minecraft.world.entity.ai.attributes.Attributes;
  import net.minecraft.world.level.Level;
-+import org.bukkit.event.entity.EntityPotionEffectEvent;
  
  public class ElderGuardian extends Guardian {
     public static final float f_32457_ = EntityType.f_20563_.m_20678_() / EntityType.f_20455_.m_20678_();
@@ -13,7 +12,7 @@
              if (!serverplayer.m_21023_(mobeffect) || serverplayer.m_21124_(mobeffect).m_19564_() < 2 || serverplayer.m_21124_(mobeffect).m_19557_() < 1200) {
                 serverplayer.f_8906_.m_141995_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132163_, this.m_20067_() ? 0.0F : 1.0F));
 -               serverplayer.m_147207_(new MobEffectInstance(mobeffect, 6000, 2), this);
-+               serverplayer.prepare(EntityPotionEffectEvent.Cause.ATTACK); //Magma
++               serverplayer.prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
 +               serverplayer.m_147207_(new MobEffectInstance(mobeffect, 6000, 2), this); // CraftBukkit
              }
           }

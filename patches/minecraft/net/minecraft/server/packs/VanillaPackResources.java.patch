@@ -39,9 +39,8 @@
     public Resource m_142591_(final ResourceLocation p_143764_) throws IOException {
        return new Resource() {
           @Nullable
-@@ -334,4 +_,5 @@
+@@ -334,4 +_,4 @@
           }
        };
     }
-+
  }

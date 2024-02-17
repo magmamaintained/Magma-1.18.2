@@ -1,22 +1,16 @@
 --- a/net/minecraft/world/level/Explosion.java
 +++ b/net/minecraft/world/level/Explosion.java
-@@ -21,6 +_,8 @@
+@@ -21,6 +_,6 @@
  import net.minecraft.world.damagesource.DamageSource;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.entity.LivingEntity;
-+import net.minecraft.world.entity.boss.EnderDragonPart;
-+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
  import net.minecraft.world.entity.item.ItemEntity;
  import net.minecraft.world.entity.item.PrimedTnt;
  import net.minecraft.world.entity.player.Player;
-@@ -39,6 +_,10 @@
+@@ -39,6 +_,6 @@
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.HitResult;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.Location;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.block.BlockExplodeEvent;
-+import org.bukkit.event.entity.EntityExplodeEvent;
  
  public class Explosion {
     private static final ExplosionDamageCalculator f_46008_ = new ExplosionDamageCalculator();
@@ -73,21 +67,21 @@
 -                  entity.m_6469_(this.m_46077_(), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f2 + 1.0D)));
 +
 +                  // CraftBukkit start
-+                  CraftEventFactory.entityDamage = f_46016_;
++                  org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.entityDamage = f_46016_;
 +                  entity.lastDamageCancelled = false;
 +
 +                  // Special case ender dragon only give knockback if no damage is cancelled
 +                  // Thinks to note:
-+                  // - Setting a velocity to a EnderDragonPart is ignored (and therefore not needed)
-+                  // - Damaging EnderDragonPart while forward the damage to EnderDragon
-+                  // - Damaging EnderDragon does nothing
-+                  // - EnderDragon hitbock always covers the other parts and is therefore always present
-+                  if (entity instanceof EnderDragonPart) {
++                  // - Setting a velocity to a net.minecraft.world.entity.boss.EnderDragonPart is ignored (and therefore not needed)
++                  // - Damaging net.minecraft.world.entity.boss.EnderDragonPart while forward the damage to EnderDragon
++                  // - Damaging net.minecraft.world.entity.boss.enderdragon.EnderDragon does nothing
++                  // - net.minecraft.world.entity.boss.enderdragon.EnderDragon hitbock always covers the other parts and is therefore always present
++                  if (entity instanceof net.minecraft.world.entity.boss.EnderDragonPart) {
 +                     continue;
 +                  }
 +
-+                  if (entity instanceof EnderDragon) {
-+                     for (EnderDragonPart entityComplexPart : ((EnderDragon) entity).f_31089_) {
++                  if (entity instanceof net.minecraft.world.entity.boss.enderdragon.EnderDragon) {
++                     for (net.minecraft.world.entity.boss.EnderDragonPart entityComplexPart : ((net.minecraft.world.entity.boss.enderdragon.EnderDragon) entity).f_31089_) {
 +                        if (list.contains(entityComplexPart)) {
 +                           entityComplexPart.m_6469_(this.m_46077_(), (float) ((int) ((d10 * d10 + d10) / 2.0D * 7.0D * (double) f2 + 1.0D)));
 +                        }
@@ -96,7 +90,7 @@
 +                     entity.m_6469_(this.m_46077_(), (float) ((int) ((d10 * d10 + d10) / 2.0D * 7.0D * (double) f2 + 1.0D)));
 +                  }
 +
-+                  CraftEventFactory.entityDamage = null;
++                  org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.entityDamage = null;
 +                  if (entity.lastDamageCancelled) { // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Skip entity if damage event was cancelled
 +                     continue;
 +                  }
@@ -112,7 +106,7 @@
 +         // CraftBukkit start
 +         org.bukkit.World bworld = this.f_46012_.getWorld();
 +         org.bukkit.entity.Entity explode = this.f_46016_ == null ? null : this.f_46016_.getBukkitEntity();
-+         Location location = new Location(bworld, this.f_46013_, this.f_46014_, this.f_46015_);
++         org.bukkit.Location location = new org.bukkit.Location(bworld, this.f_46013_, this.f_46014_, this.f_46015_);
 +
 +         List<org.bukkit.block.Block> blockList = Lists.newArrayList();
 +         for (int i1 = this.f_46020_.size() - 1; i1 >= 0; i1--) {
@@ -128,13 +122,13 @@
 +         float yield;
 +
 +         if (explode != null) {
-+            EntityExplodeEvent event = new EntityExplodeEvent(explode, location, blockList, this.f_46010_ == Explosion.BlockInteraction.DESTROY ? 1.0F / this.f_46017_ : 1.0F);
++            org.bukkit.event.entity.EntityExplodeEvent event = new org.bukkit.event.entity.EntityExplodeEvent(explode, location, blockList, this.f_46010_ == Explosion.BlockInteraction.DESTROY ? 1.0F / this.f_46017_ : 1.0F);
 +            this.f_46012_.getCraftServer().getPluginManager().callEvent(event);
 +            cancelled = event.isCancelled();
 +            bukkitBlocks = event.blockList();
 +            yield = event.getYield();
 +         } else {
-+            BlockExplodeEvent event = new BlockExplodeEvent(location.getBlock(), blockList, this.f_46010_ == Explosion.BlockInteraction.DESTROY ? 1.0F / this.f_46017_ : 1.0F);
++            org.bukkit.event.block.BlockExplodeEvent event = new org.bukkit.event.block.BlockExplodeEvent(location.getBlock(), blockList, this.f_46010_ == Explosion.BlockInteraction.DESTROY ? 1.0F / this.f_46017_ : 1.0F);
 +            this.f_46012_.getCraftServer().getPluginManager().callEvent(event);
 +            cancelled = event.isCancelled();
 +            bukkitBlocks = event.blockList();

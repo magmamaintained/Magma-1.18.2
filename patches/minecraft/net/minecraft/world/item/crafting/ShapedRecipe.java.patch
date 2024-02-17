@@ -1,15 +1,11 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipe.java
-@@ -21,8 +_,25 @@
+@@ -21,8 +_,21 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.Items;
  import net.minecraft.world.level.Level;
 -
 -public class ShapedRecipe implements CraftingRecipe {
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftShapedRecipe;
-+import org.bukkit.inventory.RecipeChoice;
 +
 +public class ShapedRecipe implements CraftingRecipe, net.minecraftforge.common.crafting.IShapedRecipe<CraftingContainer> {
 +   static int MAX_WIDTH = 3;
@@ -34,8 +30,8 @@
  
 +   // CraftBukkit start
 +   public org.bukkit.inventory.ShapedRecipe toBukkitRecipe() {
-+      CraftItemStack result = CraftItemStack.asCraftMirror(this.f_44149_);
-+      CraftShapedRecipe recipe = new CraftShapedRecipe(result, this);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.f_44149_);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftShapedRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftShapedRecipe(result, this);
 +      recipe.setGroup(this.f_44151_);
 +      switch (this.f_44147_) {
 +         case 1:
@@ -80,7 +76,7 @@
 +      }
 +      char c = 'a';
 +      for (Ingredient list : this.f_44148_) {
-+         RecipeChoice choice = CraftRecipe.toBukkit(list);
++         org.bukkit.inventory.RecipeChoice choice = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(list);
 +         if (choice != null) {
 +            recipe.setIngredient(c, choice);
 +         }

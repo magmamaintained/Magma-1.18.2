@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/item/ArmorItem.java
 +++ b/net/minecraft/world/item/ArmorItem.java
-@@ -25,6 +_,8 @@
+@@ -25,6 +_,6 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.DispenserBlock;
  import net.minecraft.world.phys.AABB;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.event.block.BlockDispenseArmorEvent;
  
  public class ArmorItem extends Item implements Wearable {
     private static final UUID[] f_40380_ = new UUID[]{UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
@@ -18,8 +16,8 @@
 +         // CraftBukkit start
 +         Level world = p_40399_.m_7727_();
 +         org.bukkit.block.Block block = world.getWorld().getBlockAt(p_40399_.m_7961_().m_123341_(), p_40399_.m_7961_().m_123342_(), p_40399_.m_7961_().m_123343_());
-+         CraftItemStack craftItem = CraftItemStack.asCraftMirror(p_40400_);
-+         BlockDispenseArmorEvent event = new BlockDispenseArmorEvent(block, craftItem.clone(), (org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity) livingentity.getBukkitEntity());
++         org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack craftItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(p_40400_);
++         org.bukkit.event.block.BlockDispenseArmorEvent event = new org.bukkit.event.block.BlockDispenseArmorEvent(block, craftItem.clone(), (org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity) livingentity.getBukkitEntity());
 +         if (!DispenserBlock.eventFired) {
 +            world.getCraftServer().getPluginManager().callEvent(event);
 +         }
@@ -30,7 +28,7 @@
 +         if (!event.getItem().equals(craftItem)) {
 +            itemstack.m_41769_(1);
 +            // Chain to handler for new item
-+            ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++            ItemStack eventStack = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(event.getItem());
 +            DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.f_52661_.get(eventStack.m_41720_());
 +            if (idispensebehavior != DispenseItemBehavior.f_123393_ && idispensebehavior != ArmorItem.f_40376_) {
 +               idispensebehavior.m_6115_(p_40399_, eventStack);
@@ -38,7 +36,7 @@
 +            }
 +         }
 +
-+         livingentity.m_8061_(equipmentslot, CraftItemStack.asNMSCopy(event.getItem()));
++         livingentity.m_8061_(equipmentslot, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(event.getItem()));
 +         // CraftBukkit end
           if (livingentity instanceof Mob) {
              ((Mob)livingentity).m_21409_(equipmentslot, 2.0F);

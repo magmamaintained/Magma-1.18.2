@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/level/ServerLevelAccessor.java
 +++ b/net/minecraft/world/level/ServerLevelAccessor.java
-@@ -2,11 +_,29 @@
+@@ -2,11 +_,27 @@
  
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.world.entity.Entity;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
-+import org.jetbrains.annotations.Nullable;
  
  public interface ServerLevelAccessor extends LevelAccessor {
     ServerLevel m_6018_();
  
-+   default void prepareEntity(Entity entity, @Nullable CreatureSpawnEvent.SpawnReason spawnReason) {
-+      entity.spawnReason = (spawnReason != null ? spawnReason : CreatureSpawnEvent.SpawnReason.DEFAULT);
++   default void prepareEntity(Entity entity, @org.jetbrains.annotations.Nullable org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
++      entity.spawnReason = (spawnReason != null ? spawnReason : org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
 +   }
 +
     default void m_47205_(Entity p_47206_) {

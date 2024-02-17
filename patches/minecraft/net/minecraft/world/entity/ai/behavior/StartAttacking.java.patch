@@ -1,17 +1,13 @@
 --- a/net/minecraft/world/entity/ai/behavior/StartAttacking.java
 +++ b/net/minecraft/world/entity/ai/behavior/StartAttacking.java
-@@ -5,10 +_,14 @@
+@@ -5,10 +_,10 @@
  import java.util.function.Function;
  import java.util.function.Predicate;
  import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.world.entity.LivingEntity;
  import net.minecraft.world.entity.Mob;
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
  import net.minecraft.world.entity.ai.memory.MemoryStatus;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.EntityTargetEvent;
  
  public class StartAttacking<E extends Mob> extends Behavior<E> {
     private final Predicate<E> f_24190_;
@@ -22,11 +18,11 @@
 -      p_24214_.m_6274_().m_21879_(MemoryModuleType.f_26372_, p_24215_);
 -      p_24214_.m_6274_().m_21936_(MemoryModuleType.f_26326_);
 +      // CraftBukkit start
-+      EntityTargetEvent event = CraftEventFactory.callEntityTargetLivingEvent(p_24214_, p_24215_, (p_24215_ instanceof ServerPlayer) ? EntityTargetEvent.TargetReason.CLOSEST_PLAYER : EntityTargetEvent.TargetReason.CLOSEST_ENTITY);
++      org.bukkit.event.entity.EntityTargetEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTargetLivingEvent(p_24214_, p_24215_, (p_24215_ instanceof net.minecraft.server.level.ServerPlayer) ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER : org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY);
 +      if (event.isCancelled()) {
 +         return;
 +      }
-+      p_24215_ = (event.getTarget() != null) ? ((CraftLivingEntity) event.getTarget()).getHandle() : null;
++      p_24215_ = (event.getTarget() != null) ? ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity) event.getTarget()).getHandle() : null;
 +      // CraftBukkit end
 +
 +      net.minecraftforge.event.entity.living.LivingChangeTargetEvent changeTargetEvent = net.minecraftforge.common.ForgeHooks.onLivingChangeTarget(p_24214_, p_24215_, net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.BEHAVIOR_TARGET);

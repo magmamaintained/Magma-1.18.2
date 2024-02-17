@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/BeehiveBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BeehiveBlockEntity.java
-@@ -25,6 +_,7 @@
+@@ -25,6 +_,6 @@
  import net.minecraft.world.level.block.CampfireBlock;
  import net.minecraft.world.level.block.FireBlock;
  import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  
  public class BeehiveBlockEntity extends BlockEntity {
     public static final String f_155121_ = "FlowerPos";
@@ -100,7 +99,7 @@
 +                     double d3 = (double) p_155138_.m_123343_() + 0.5D + d0 * (double) direction.m_122431_();
 +                     entity.m_7678_(d1, d2, d3, entity.m_146908_(), entity.m_146909_());
 +                  }
-+                  p_155137_.prepareEntity(entity, CreatureSpawnEvent.SpawnReason.BEEHIVE); //Magma - add spawn reason
++                  p_155137_.prepareEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BEEHIVE); //Magma - add spawn reason
 +                  if (!p_155137_.m_7967_(entity)) return false;
 +                  // CraftBukkit end
                    if (entity instanceof Bee) {

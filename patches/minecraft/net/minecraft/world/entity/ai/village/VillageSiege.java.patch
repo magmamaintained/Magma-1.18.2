@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/ai/village/VillageSiege.java
 +++ b/net/minecraft/world/entity/ai/village/VillageSiege.java
-@@ -16,6 +_,7 @@
+@@ -16,6 +_,6 @@
  import net.minecraft.world.level.biome.Biome;
  import net.minecraft.world.level.levelgen.Heightmap;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  import org.slf4j.Logger;
  
  public class VillageSiege implements CustomSpawner {
@@ -32,7 +31,7 @@
           }
  
           zombie.m_7678_(vec3.f_82479_, vec3.f_82480_, vec3.f_82481_, p_27017_.f_46441_.nextFloat() * 360.0F, 0.0F);
-+         p_27017_.prepareEntity(zombie, CreatureSpawnEvent.SpawnReason.VILLAGE_INVASION); //Magma - add spawn reason
++         p_27017_.prepareEntity(zombie, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_INVASION); //Magma - add spawn reason
           p_27017_.m_47205_(zombie);
        }
     }

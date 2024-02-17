@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -19,8 +_,9 @@
+@@ -19,8 +_,8 @@
  import net.minecraft.world.level.material.PushReaction;
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.magmafoundation.magma.configuration.MagmaConfig;
  
 -public abstract class BaseRailBlock extends Block implements SimpleWaterloggedBlock {
 +public abstract class BaseRailBlock extends Block implements SimpleWaterloggedBlock, net.minecraftforge.common.extensions.IForgeBaseRailBlock {
@@ -24,7 +23,7 @@
        p_49390_ = this.m_49367_(p_49391_, p_49392_, p_49390_, true);
        if (this.f_49357_) {
 -         p_49390_.m_60690_(p_49391_, p_49392_, this, p_49392_, p_49393_);
-+         if (MagmaConfig.instance.patchUpdateSuppression.getValues())
++         if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues())
 +            p_49391_.neighborChanged(p_49390_, p_49392_, this, p_49392_, p_49393_);
 +         else
 +            p_49390_.m_60690_(p_49391_, p_49392_, this, p_49392_, p_49393_);

@@ -1,33 +1,23 @@
 --- a/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BrewingStandBlockEntity.java
-@@ -1,6 +_,8 @@
+@@ -1,6 +_,6 @@
  package net.minecraft.world.level.block.entity;
  
-+import java.util.ArrayList;
  import java.util.Arrays;
-+import java.util.List;
  import javax.annotation.Nullable;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
-@@ -8,6 +_,7 @@
+@@ -8,6 +_,6 @@
  import net.minecraft.nbt.CompoundTag;
  import net.minecraft.network.chat.Component;
  import net.minecraft.network.chat.TranslatableComponent;
-+import net.minecraft.server.MinecraftServer;
  import net.minecraft.world.ContainerHelper;
  import net.minecraft.world.Containers;
  import net.minecraft.world.WorldlyContainer;
-@@ -23,6 +_,13 @@
+@@ -23,6 +_,6 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.BrewingStandBlock;
  import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.entity.HumanEntity;
-+import org.bukkit.event.inventory.BrewEvent;
-+import org.bukkit.event.inventory.BrewingStandFuelEvent;
-+import org.bukkit.inventory.InventoryHolder;
  
  public class BrewingStandBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     private static final int f_155280_ = 3;
@@ -36,23 +26,23 @@
     };
  
 +   // CraftBukkit start - add fields and methods
-+   private int lastTick = MinecraftServer.currentTick;
-+   public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++   private int lastTick = net.minecraft.server.MinecraftServer.currentTick;
++   public java.util.List<org.bukkit.entity.HumanEntity> transaction = new java.util.ArrayList<org.bukkit.entity.HumanEntity>();
 +   private int maxStack = 64;
 +
-+   public void onOpen(CraftHumanEntity who) {
++   public void onOpen(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.add(who);
 +   }
 +
-+   public void onClose(CraftHumanEntity who) {
++   public void onClose(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.remove(who);
 +   }
 +
-+   public List<HumanEntity> getViewers() {
++   public java.util.List<org.bukkit.entity.HumanEntity> getViewers() {
 +      return transaction;
 +   }
 +
-+   public List<ItemStack> getContents() {
++   public java.util.List<ItemStack> getContents() {
 +      return this.f_58975_;
 +   }
 +
@@ -76,7 +66,7 @@
 -         p_155289_.f_58979_ = 20;
 -         itemstack.m_41774_(1);
 +         // CraftBukkit start
-+         BrewingStandFuelEvent event = new BrewingStandFuelEvent(CraftBlock.at(p_155286_, p_155287_), CraftItemStack.asCraftMirror(itemstack), 20);
++         org.bukkit.event.inventory.BrewingStandFuelEvent event = new org.bukkit.event.inventory.BrewingStandFuelEvent(org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(p_155286_, p_155287_), org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(itemstack), 20);
 +         p_155286_.getCraftServer().getPluginManager().callEvent(event);
 +
 +         if (event.isCancelled()) {
@@ -96,8 +86,8 @@
        ItemStack itemstack1 = p_155289_.f_58975_.get(3);
 +
 +      // CraftBukkit start - Use wall time instead of ticks for brewing
-+      int elapsedTicks = MinecraftServer.currentTick - p_155289_.lastTick;
-+      p_155289_.lastTick = MinecraftServer.currentTick;
++      int elapsedTicks = net.minecraft.server.MinecraftServer.currentTick - p_155289_.lastTick;
++      p_155289_.lastTick = net.minecraft.server.MinecraftServer.currentTick;
 +
        if (flag1) {
 -         --p_155289_.f_58976_;
@@ -138,13 +128,13 @@
 -      for(int i = 0; i < 3; ++i) {
 -         p_155293_.set(i, PotionBrewing.m_43529_(itemstack, p_155293_.get(i)));
 -      }
-+      InventoryHolder owner = blockEntity.getOwner();
-+      List<org.bukkit.inventory.ItemStack> brewResults = new ArrayList<>(3);
++      org.bukkit.inventory.InventoryHolder owner = blockEntity.getOwner();
++      java.util.List<org.bukkit.inventory.ItemStack> brewResults = new java.util.ArrayList<>(3);
 +      for (int i = 0; i < 3; ++i) {
-+         brewResults.add(i, CraftItemStack.asCraftMirror(PotionBrewing.m_43529_(itemstack, (ItemStack) p_155293_.get(i))));
++         brewResults.add(i, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(PotionBrewing.m_43529_(itemstack, (ItemStack) p_155293_.get(i))));
 +      }
 +      if (owner != null) {
-+         BrewEvent event = new BrewEvent(CraftBlock.at(p_155291_, p_155292_), (org.bukkit.inventory.BrewerInventory) owner.getInventory(), brewResults, blockEntity.f_58979_);
++         org.bukkit.event.inventory.BrewEvent event = new org.bukkit.event.inventory.BrewEvent(org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(p_155291_, p_155292_), (org.bukkit.inventory.BrewerInventory) owner.getInventory(), brewResults, blockEntity.f_58979_);
 +         org.bukkit.Bukkit.getPluginManager().callEvent(event);
 +         if (event.isCancelled()) {
 +            return;

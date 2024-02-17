@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/ambient/Bat.java
 +++ b/net/minecraft/world/entity/ambient/Bat.java
-@@ -27,6 +_,7 @@
+@@ -27,6 +_,6 @@
  import net.minecraft.world.level.LevelAccessor;
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  
  public class Bat extends AmbientCreature {
     public static final float f_148698_ = 74.48451F;
@@ -13,7 +12,7 @@
  
              if (this.f_19853_.m_45946_(f_27408_, this) != null) {
 +               // CraftBukkit Start - Call BatToggleSleepEvent
-+               if (CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
++               if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
 +                  this.m_27456_(false);
 +                  if (!flag) {
 +                     this.f_19853_.m_5898_((Player) null, 1025, blockpos, 0);
@@ -23,7 +22,7 @@
 +            }
 +         } else {
 +            // CraftBukkit Start - Call BatToggleSleepEvent
-+            if (CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
++            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
                 this.m_27456_(false);
                 if (!flag) {
                    this.f_19853_.m_5898_((Player)null, 1025, blockpos, 0);
@@ -44,7 +43,7 @@
           if (this.f_19796_.nextInt(100) == 0 && this.f_19853_.m_8055_(blockpos1).m_60796_(this.f_19853_, blockpos1)) {
 -            this.m_27456_(true);
 +            // CraftBukkit Start - Call BatToggleSleepEvent
-+            if (CraftEventFactory.handleBatToggleSleepEvent(this, false)) {
++            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, false)) {
 +               this.m_27456_(true);
 +            }
 +            // CraftBukkit End
@@ -57,7 +56,7 @@
           if (!this.f_19853_.f_46443_ && this.m_27452_()) {
 -            this.m_27456_(false);
 +            // CraftBukkit Start - Call BatToggleSleepEvent
-+            if (CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
++            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
 +               this.m_27456_(false);
 +            }
 +            // CraftBukkit End - Call BatToggleSleepEvent

@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/item/MapItem.java
 +++ b/net/minecraft/world/item/MapItem.java
-@@ -31,6 +_,8 @@
+@@ -31,6 +_,6 @@
  import net.minecraft.world.level.material.FluidState;
  import net.minecraft.world.level.material.MaterialColor;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-+import org.bukkit.Bukkit;
-+import org.bukkit.event.server.MapInitializeEvent;
  
  public class MapItem extends ComplexItem {
     public static final int f_151104_ = 128;
@@ -41,8 +39,8 @@
        int i = p_151121_.m_7354_();
        p_151121_.m_142325_(m_42848_(i), mapitemsaveddata);
 +      // CraftBukkit start
-+      MapInitializeEvent event = new MapInitializeEvent(mapitemsaveddata.mapView);
-+      Bukkit.getServer().getPluginManager().callEvent(event);
++      org.bukkit.event.server.MapInitializeEvent event = new org.bukkit.event.server.MapInitializeEvent(mapitemsaveddata.mapView);
++      org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
 +      // CraftBukkit end
        return i;
     }

@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-@@ -67,6 +_,7 @@
+@@ -67,6 +_,6 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.EntityRegainHealthEvent;
  
  public abstract class AbstractHorse extends Animal implements ContainerListener, PlayerRideableJumping, Saddleable {
     public static final int f_149486_ = 400;
@@ -58,7 +57,7 @@
        }
  
        if (this.m_21223_() < this.m_21233_() && f > 0.0F) {
-+         this.setRegainReason(EntityRegainHealthEvent.RegainReason.EATING);
++         this.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING);
           this.m_5634_(f);
           flag = true;
        }
@@ -66,7 +65,7 @@
        super.m_8107_();
        if (!this.f_19853_.f_46443_ && this.m_6084_()) {
           if (this.f_19796_.nextInt(900) == 0 && this.f_20919_ == 0) {
-+            this.setRegainReason(EntityRegainHealthEvent.RegainReason.REGEN);
++            this.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.REGEN);
              this.m_5634_(1.0F);
           }
  

@@ -1,12 +1,9 @@
 --- a/net/minecraft/world/inventory/CartographyTableMenu.java
 +++ b/net/minecraft/world/inventory/CartographyTableMenu.java
-@@ -11,6 +_,9 @@
+@@ -11,6 +_,6 @@
  import net.minecraft.world.item.MapItem;
  import net.minecraft.world.level.block.Blocks;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-+import org.bukkit.Location;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCartography;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
  
  public class CartographyTableMenu extends AbstractContainerMenu {
     public static final int f_150501_ = 0;
@@ -30,17 +27,17 @@
 +   private final ResultContainer f_39138_;
 +
 +   // CraftBukkit start
-+   private CraftInventoryView bukkitEntity = null;
++   private org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView bukkitEntity = null;
 +   private org.bukkit.entity.Player player;
 +
 +   @Override
-+   public CraftInventoryView getBukkitView() {
++   public org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView getBukkitView() {
 +      if (bukkitEntity != null) {
 +         return bukkitEntity;
 +      }
 +
-+      CraftInventoryCartography inventory = new CraftInventoryCartography(this.f_39135_, this.f_39138_);
-+      bukkitEntity = new CraftInventoryView(this.player, inventory, this);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCartography inventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCartography(this.f_39135_, this.f_39138_);
++      bukkitEntity = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView(this.player, inventory, this);
 +      return bukkitEntity;
 +   }
 +   // CraftBukkit end
@@ -60,7 +57,7 @@
 +
 +         // CraftBukkit start
 +         @Override
-+         public Location getLocation() {
++         public org.bukkit.Location getLocation() {
 +            return p_39145_.getLocation();
 +         }
 +         // CraftBukkit end
@@ -73,7 +70,7 @@
 +
 +         // CraftBukkit start
 +         @Override
-+         public Location getLocation() {
++         public org.bukkit.Location getLocation() {
 +            return p_39145_.getLocation();
 +         }
 +         // CraftBukkit end

@@ -1,24 +1,20 @@
 --- a/net/minecraft/world/entity/animal/Animal.java
 +++ b/net/minecraft/world/entity/animal/Animal.java
-@@ -14,10 +_,7 @@
+@@ -14,10 +_,10 @@
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.damagesource.DamageSource;
--import net.minecraft.world.entity.AgeableMob;
--import net.minecraft.world.entity.EntityType;
--import net.minecraft.world.entity.ExperienceOrb;
--import net.minecraft.world.entity.MobSpawnType;
-+import net.minecraft.world.entity.*;
+ import net.minecraft.world.entity.AgeableMob;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.ExperienceOrb;
+ import net.minecraft.world.entity.MobSpawnType;
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.Items;
-@@ -29,12 +_,16 @@
+@@ -29,12 +_,13 @@
  import net.minecraft.world.level.block.Blocks;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.pathfinder.BlockPathTypes;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
-+import org.bukkit.event.entity.EntityEnterLoveModeEvent;
  
  public abstract class Animal extends AgeableMob {
     static final int f_148714_ = 6000;
@@ -57,7 +53,7 @@
  
     public void m_27595_(@Nullable Player p_27596_) {
 +      // CraftBukkit start
-+      EntityEnterLoveModeEvent entityEnterLoveModeEvent = CraftEventFactory.callEntityEnterLoveModeEvent(p_27596_, this, 600);
++      org.bukkit.event.entity.EntityEnterLoveModeEvent entityEnterLoveModeEvent = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityEnterLoveModeEvent(p_27596_, this, 600);
 +      if (entityEnterLoveModeEvent.isCancelled()) {
 +         return;
 +      }
@@ -111,7 +107,7 @@
           p_27565_.m_27594_();
 -         ageablemob.m_6863_(true);
 -         ageablemob.m_7678_(this.m_20185_(), this.m_20186_(), this.m_20189_(), 0.0F, 0.0F);
-+         p_27564_.prepareEntity(ageablemob, CreatureSpawnEvent.SpawnReason.BREEDING); //Magma - add spawn reason
++         p_27564_.prepareEntity(ageablemob, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING); //Magma - add spawn reason
           p_27564_.m_47205_(ageablemob);
           p_27564_.m_7605_(this, (byte)18);
           if (p_27564_.m_46469_().m_46207_(GameRules.f_46135_)) {

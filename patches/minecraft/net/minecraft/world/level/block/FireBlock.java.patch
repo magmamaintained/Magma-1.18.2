@@ -1,23 +1,16 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
-@@ -11,6 +_,7 @@
+@@ -11,6 +_,6 @@
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.world.entity.LivingEntity;
  import net.minecraft.world.item.context.BlockPlaceContext;
  import net.minecraft.world.level.BlockGetter;
  import net.minecraft.world.level.GameRules;
-@@ -26,6 +_,12 @@
+@@ -26,6 +_,6 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockStates;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.block.BlockBurnEvent;
-+import org.bukkit.event.block.BlockFadeEvent;
-+import org.jetbrains.annotations.Nullable;
  
  public class FireBlock extends BaseFireBlock {
     public static final int f_153264_ = 15;
@@ -32,9 +25,9 @@
 +         if (!(p_53461_ instanceof Level)) {
 +            return Blocks.f_50016_.m_49966_();
 +         }
-+         CraftBlockState blockState = CraftBlockStates.getBlockState(p_53461_, p_53462_);
++         org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockState blockState = org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockStates.getBlockState(p_53461_, p_53462_);
 +         blockState.setData(Blocks.f_50016_.m_49966_());
-+         BlockFadeEvent event = new BlockFadeEvent(blockState.getBlock(), blockState);
++         org.bukkit.event.block.BlockFadeEvent event = new org.bukkit.event.block.BlockFadeEvent(blockState.getBlock(), blockState);
 +         ((Level) p_53461_).getCraftServer().getPluginManager().callEvent(event);
 +         if (!event.isCancelled()) {
 +            return blockState.getHandle();
@@ -133,10 +126,10 @@
 -                              p_53450_.m_7731_(blockpos$mutableblockpos, this.m_53437_(p_53450_, blockpos$mutableblockpos, j2), 3);
 +                              // CraftBukkit start - Call to stop spread of fire
 +                              if (p_53450_.m_8055_(blockpos$mutableblockpos).m_60734_() != Blocks.f_50083_) {
-+                                 if (CraftEventFactory.callBlockIgniteEvent(p_53450_, blockpos$mutableblockpos, p_53451_).isCancelled()) {
++                                 if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(p_53450_, blockpos$mutableblockpos, p_53451_).isCancelled()) {
 +                                    continue;
 +                                 }
-+                                 CraftEventFactory.handleBlockSpreadEvent(p_53450_, p_53451_, blockpos$mutableblockpos, this.m_53437_(p_53450_, blockpos$mutableblockpos, j2), 3); // CraftBukkit
++                                 org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_53450_, p_53451_, blockpos$mutableblockpos, this.m_53437_(p_53450_, blockpos$mutableblockpos, j2), 3); // CraftBukkit
 +                              }
 +                              // CraftBukkit end
                             }
@@ -171,7 +164,7 @@
 +         // CraftBukkit start
 +         org.bukkit.block.Block theBlock = p_53432_.getWorld().getBlockAt(p_53433_.getX(), p_53433_.getY(), p_53433_.getZ());
 +         org.bukkit.block.Block sourceBlock = p_53432_.getWorld().getBlockAt(source.getX(), source.getY(), source.getZ());
-+         BlockBurnEvent event = new BlockBurnEvent(theBlock, sourceBlock);
++         org.bukkit.event.block.BlockBurnEvent event = new org.bukkit.event.block.BlockBurnEvent(theBlock, sourceBlock);
 +         p_53432_.getCraftServer().getPluginManager().callEvent(event);
 +         if (event.isCancelled()) {
 +            return;
@@ -190,7 +183,7 @@
 +   }*/
 +
 +   //Magma start - add constructor without source block position
-+   @Nullable private BlockPos tryCatchFire_source;
++   @org.jetbrains.annotations.Nullable private BlockPos tryCatchFire_source;
 +   private void tryCatchFire(Level p_53432_, BlockPos p_53433_, int p_53434_, Random p_53435_, int p_53436_, Direction face) {
 +      BlockPos source = tryCatchFire_source;
 +      //unset
@@ -203,7 +196,7 @@
 +         org.bukkit.block.Block theBlock = p_53432_.getWorld().getBlockAt(p_53433_.m_123341_(), p_53433_.m_123342_(), p_53433_.m_123343_());
 +         //Magma - had to add a null check to the source, this could be a potential problem for plugins interacting with mods but there was no other way
 +         org.bukkit.block.Block sourceBlock = source == null ? null : p_53432_.getWorld().getBlockAt(source.m_123341_(), source.m_123342_(), source.m_123343_());
-+         BlockBurnEvent event = new BlockBurnEvent(theBlock, sourceBlock);
++         org.bukkit.event.block.BlockBurnEvent event = new org.bukkit.event.block.BlockBurnEvent(theBlock, sourceBlock);
 +         p_53432_.getCraftServer().getPluginManager().callEvent(event);
 +         if (event.isCancelled()) {
 +            return;

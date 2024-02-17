@@ -1,11 +1,9 @@
 --- a/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
 +++ b/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
-@@ -9,6 +_,8 @@
+@@ -9,6 +_,6 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.context.DirectionalPlaceContext;
  import net.minecraft.world.level.block.DispenserBlock;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.event.block.BlockDispenseEvent;
  import org.slf4j.Logger;
  
  public class ShulkerBoxDispenseBehavior extends OptionalDispenseItemBehavior {
@@ -16,9 +14,9 @@
 +
 +         // CraftBukkit start
 +         org.bukkit.block.Block bukkitBlock = p_123587_.m_7727_().getWorld().getBlockAt(p_123587_.m_7961_().m_123341_(), p_123587_.m_7961_().m_123342_(), p_123587_.m_7961_().m_123343_());
-+         CraftItemStack craftItem = CraftItemStack.asCraftMirror(p_123588_);
++         org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack craftItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(p_123588_);
 +
-+         BlockDispenseEvent event = new BlockDispenseEvent(bukkitBlock, craftItem.clone(), new org.bukkit.util.Vector(blockpos.m_123341_(), blockpos.m_123342_(), blockpos.m_123343_()));
++         org.bukkit.event.block.BlockDispenseEvent event = new org.bukkit.event.block.BlockDispenseEvent(bukkitBlock, craftItem.clone(), new org.bukkit.util.Vector(blockpos.m_123341_(), blockpos.m_123342_(), blockpos.m_123343_()));
 +         if (!DispenserBlock.eventFired) {
 +            p_123587_.m_7727_().getCraftServer().getPluginManager().callEvent(event);
 +         }
@@ -29,7 +27,7 @@
 +
 +         if (!event.getItem().equals(craftItem)) {
 +            // Chain to handler for new item
-+            ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++            ItemStack eventStack = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(event.getItem());
 +            DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.f_52661_.get(eventStack.m_41720_());
 +            if (idispensebehavior != DispenseItemBehavior.f_123393_ && idispensebehavior != this) {
 +               idispensebehavior.m_6115_(p_123587_, eventStack);

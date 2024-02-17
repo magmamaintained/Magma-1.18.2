@@ -1,15 +1,9 @@
 --- a/net/minecraft/world/entity/vehicle/Boat.java
 +++ b/net/minecraft/world/entity/vehicle/Boat.java
-@@ -47,6 +_,12 @@
+@@ -47,6 +_,6 @@
  import net.minecraft.world.phys.shapes.BooleanOp;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.Location;
-+import org.bukkit.entity.Vehicle;
-+import org.bukkit.event.vehicle.VehicleDamageEvent;
-+import org.bukkit.event.vehicle.VehicleDestroyEvent;
-+import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
-+import org.bukkit.event.vehicle.VehicleMoveEvent;
  
  public class Boat extends Entity {
     private static final EntityDataAccessor<Integer> f_38282_ = SynchedEntityData.m_135353_(Boat.class, EntityDataSerializers.f_135028_);
@@ -33,10 +27,10 @@
           return false;
        } else if (!this.f_19853_.f_46443_ && !this.m_146910_()) {
 +         // CraftBukkit start
-+         Vehicle vehicle = (Vehicle) this.getBukkitEntity();
++         org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
 +         org.bukkit.entity.Entity attacker = (p_38319_.m_7639_() == null) ? null : p_38319_.m_7639_().getBukkitEntity();
 +
-+         VehicleDamageEvent event = new VehicleDamageEvent(vehicle, attacker, (double) p_38320_);
++         org.bukkit.event.vehicle.VehicleDamageEvent event = new org.bukkit.event.vehicle.VehicleDamageEvent(vehicle, attacker, (double) p_38320_);
 +         this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +
 +         if (event.isCancelled()) {
@@ -53,7 +47,7 @@
           boolean flag = p_38319_.m_7639_() instanceof Player && ((Player)p_38319_.m_7639_()).m_150110_().f_35937_;
           if (flag || this.m_38384_() > 40.0F) {
 +            // CraftBukkit start
-+            VehicleDestroyEvent destroyEvent = new VehicleDestroyEvent(vehicle, attacker);
++            org.bukkit.event.vehicle.VehicleDestroyEvent destroyEvent = new org.bukkit.event.vehicle.VehicleDestroyEvent(vehicle, attacker);
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(destroyEvent);
 +
 +            if (destroyEvent.isCancelled()) {
@@ -70,7 +64,7 @@
           if (p_38373_.m_142469_().f_82289_ < this.m_142469_().f_82292_) {
 +            // CraftBukkit start
 +            if (!this.m_20365_(p_38373_)) {
-+               VehicleEntityCollisionEvent event = new VehicleEntityCollisionEvent((Vehicle) this.getBukkitEntity(), p_38373_.getBukkitEntity());
++               org.bukkit.event.vehicle.VehicleEntityCollisionEvent event = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent((org.bukkit.entity.Vehicle) this.getBukkitEntity(), p_38373_.getBukkitEntity());
 +               this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +
 +               if (event.isCancelled()) {
@@ -83,7 +77,7 @@
        } else if (p_38373_.m_142469_().f_82289_ <= this.m_142469_().f_82289_) {
 +         // CraftBukkit start
 +         if (!this.m_20365_(p_38373_)) {
-+            VehicleEntityCollisionEvent event = new VehicleEntityCollisionEvent((Vehicle) this.getBukkitEntity(), p_38373_.getBukkitEntity());
++            org.bukkit.event.vehicle.VehicleEntityCollisionEvent event = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent((org.bukkit.entity.Vehicle) this.getBukkitEntity(), p_38373_.getBukkitEntity());
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +
 +            if (event.isCancelled()) {
@@ -131,7 +125,7 @@
        return this.m_6350_().m_122427_();
     }
  
-+   private Location lastLocation; // CraftBukkit
++   private org.bukkit.Location lastLocation; // CraftBukkit
     public void m_8119_() {
        this.f_38280_ = this.f_38279_;
        this.f_38279_ = this.m_38392_();
@@ -143,13 +137,13 @@
 +      org.bukkit.Server server = this.f_19853_.getCraftServer();
 +      org.bukkit.World bworld = this.f_19853_.getWorld();
 +
-+      Location to = new Location(bworld, this.m_20185_(), this.m_20186_(), this.m_20189_(), this.m_146908_(), this.m_146909_());
-+      Vehicle vehicle = (Vehicle) this.getBukkitEntity();
++      org.bukkit.Location to = new org.bukkit.Location(bworld, this.m_20185_(), this.m_20186_(), this.m_20189_(), this.m_146908_(), this.m_146909_());
++      org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
 +
 +      server.getPluginManager().callEvent(new org.bukkit.event.vehicle.VehicleUpdateEvent(vehicle));
 +
 +      if (lastLocation != null && !lastLocation.equals(to)) {
-+         VehicleMoveEvent event = new VehicleMoveEvent(vehicle, lastLocation, to);
++         org.bukkit.event.vehicle.VehicleMoveEvent event = new org.bukkit.event.vehicle.VehicleMoveEvent(vehicle, lastLocation, to);
 +         server.getPluginManager().callEvent(event);
 +      }
 +      lastLocation = vehicle.getLocation();
@@ -202,8 +196,8 @@
 -                        this.m_19998_(this.m_38387_().m_38434_());
 -                     }
 +                  // CraftBukkit start
-+                  Vehicle vehicle = (Vehicle) this.getBukkitEntity();
-+                  VehicleDestroyEvent destroyEvent = new VehicleDestroyEvent(vehicle, null);
++                  org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
++                  org.bukkit.event.vehicle.VehicleDestroyEvent destroyEvent = new org.bukkit.event.vehicle.VehicleDestroyEvent(vehicle, null);
 +                  this.f_19853_.getCraftServer().getPluginManager().callEvent(destroyEvent);
 +                  if (!destroyEvent.isCancelled()) {
 +                     this.m_6074_();

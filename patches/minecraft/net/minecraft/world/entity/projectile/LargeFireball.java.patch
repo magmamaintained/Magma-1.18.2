@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/projectile/LargeFireball.java
 +++ b/net/minecraft/world/entity/projectile/LargeFireball.java
-@@ -10,24 +_,35 @@
+@@ -10,24 +_,34 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.phys.EntityHitResult;
  import net.minecraft.world.phys.HitResult;
-+import org.bukkit.event.entity.ExplosionPrimeEvent;
  
  public class LargeFireball extends Fireball {
     public int f_37197_ = 1;
@@ -27,7 +26,7 @@
 -         this.f_19853_.m_46518_((Entity)null, this.m_20185_(), this.m_20186_(), this.m_20189_(), (float)this.f_37197_, flag, flag ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.NONE);
 +         boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.f_19853_, this.m_37282_());
 +         // CraftBukkit start - fire ExplosionPrimeEvent
-+         ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) this.getBukkitEntity());
++         org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) this.getBukkitEntity());
 +         this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +
 +         if (!event.isCancelled()) {

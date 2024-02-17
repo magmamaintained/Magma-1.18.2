@@ -1,15 +1,12 @@
 --- a/net/minecraft/world/entity/monster/Creeper.java
 +++ b/net/minecraft/world/entity/monster/Creeper.java
-@@ -38,9 +_,11 @@
+@@ -38,9 +_,9 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.Items;
  import net.minecraft.world.level.Explosion;
--import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.GameRules;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.gameevent.GameEvent;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
-+import org.bukkit.event.entity.ExplosionPrimeEvent;
  
  public class Creeper extends Monster implements PowerableMob {
     private static final EntityDataAccessor<Integer> f_32268_ = SynchedEntityData.m_135353_(Creeper.class, EntityDataSerializers.f_135028_);
@@ -20,7 +17,7 @@
 -      this.f_19804_.m_135381_(f_32274_, true);
 -   }
 +      // CraftBukkit start
-+      if (CraftEventFactory.callCreeperPowerEvent(this, p_32287_, org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING).isCancelled()) {
++      if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callCreeperPowerEvent(this, p_32287_, org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING).isCancelled()) {
 +         return;
 +      }
 +
@@ -46,7 +43,7 @@
 -         this.m_146870_();
 -         this.m_32316_();
 +         // CraftBukkit start
-+         ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), this.f_32272_ * f, false);
++         org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent(this.getBukkitEntity(), this.f_32272_ * f, false);
 +         this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +         if (!event.isCancelled()) {
 +            this.f_20890_ = true;
@@ -72,7 +69,7 @@
              areaeffectcloud.m_19716_(new MobEffectInstance(mobeffectinstance));
           }
  
-+         this.f_19853_.prepareEntity(areaeffectcloud, CreatureSpawnEvent.SpawnReason.EXPLOSION); //Magma - add spawn reason
++         this.f_19853_.prepareEntity(areaeffectcloud, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EXPLOSION); //Magma - add spawn reason
           this.f_19853_.m_7967_(areaeffectcloud);
        }
  

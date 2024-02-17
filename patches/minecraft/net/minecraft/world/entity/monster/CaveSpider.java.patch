@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/monster/CaveSpider.java
 +++ b/net/minecraft/world/entity/monster/CaveSpider.java
-@@ -17,6 +_,7 @@
+@@ -17,6 +_,6 @@
  import net.minecraft.world.entity.ai.attributes.Attributes;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.ServerLevelAccessor;
-+import org.bukkit.event.entity.EntityPotionEffectEvent;
  
  public class CaveSpider extends Spider {
     public CaveSpider(EntityType<? extends CaveSpider> p_32254_, Level p_32255_) {
@@ -13,7 +12,7 @@
  
              if (i > 0) {
 -               ((LivingEntity)p_32257_).m_147207_(new MobEffectInstance(MobEffects.f_19614_, i * 20, 0), this);
-+               ((LivingEntity)p_32257_).prepare(EntityPotionEffectEvent.Cause.ATTACK); //Magma
++               ((LivingEntity)p_32257_).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
 +               ((LivingEntity)p_32257_).m_147207_(new MobEffectInstance(MobEffects.f_19614_, i * 20, 0), this); // CraftBukkit
              }
           }

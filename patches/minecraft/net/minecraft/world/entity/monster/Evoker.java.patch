@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/monster/Evoker.java
 +++ b/net/minecraft/world/entity/monster/Evoker.java
-@@ -37,6 +_,7 @@
+@@ -37,6 +_,6 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  
  public class Evoker extends SpellcasterIllager {
     @Nullable
@@ -12,7 +11,7 @@
              vex.m_33994_(Evoker.this);
              vex.m_34033_(blockpos);
              vex.m_33987_(20 * (30 + Evoker.this.f_19796_.nextInt(90)));
-+            serverlevel.prepareEntity(vex, CreatureSpawnEvent.SpawnReason.SPELL); //Magma - added spawn reason
++            serverlevel.prepareEntity(vex, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPELL); //Magma - added spawn reason
              serverlevel.m_47205_(vex);
           }
  

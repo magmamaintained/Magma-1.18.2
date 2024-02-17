@@ -1,55 +1,34 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -1,31 +_,47 @@
+@@ -1,31 +_,31 @@
  package net.minecraft.server.level;
  
  import com.mojang.logging.LogUtils;
--import java.util.Objects;
--import javax.annotation.Nullable;
+ import java.util.Objects;
+ import javax.annotation.Nullable;
  import net.minecraft.advancements.CriteriaTriggers;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.network.protocol.game.ClientboundBlockBreakAckPacket;
-+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
  import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
  import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-+import net.minecraft.server.MinecraftServer;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.InteractionResultHolder;
  import net.minecraft.world.MenuProvider;
-+import net.minecraft.world.entity.EquipmentSlot;
-+import net.minecraft.world.item.DoubleHighBlockItem;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.context.UseOnContext;
  import net.minecraft.world.level.ChunkPos;
  import net.minecraft.world.level.GameType;
  import net.minecraft.world.level.Level;
--import net.minecraft.world.level.block.Block;
--import net.minecraft.world.level.block.Blocks;
--import net.minecraft.world.level.block.GameMasterBlock;
-+import net.minecraft.world.level.block.*;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.GameMasterBlock;
  import net.minecraft.world.level.block.entity.BlockEntity;
  import net.minecraft.world.level.block.state.BlockState;
-+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
  import net.minecraft.world.phys.BlockHitResult;
-+import net.minecraftforge.common.ForgeHooks;
-+import org.bukkit.GameMode;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.entity.Player;
-+import org.bukkit.event.Event;
-+import org.bukkit.event.block.Action;
-+import org.bukkit.event.block.BlockBreakEvent;
-+import org.bukkit.event.player.PlayerGameModeChangeEvent;
-+import org.bukkit.event.player.PlayerInteractEvent;
  import org.slf4j.Logger;
  
-+import javax.annotation.Nullable;
-+import java.util.ArrayList;
-+import java.util.Objects;
-+import java.util.Optional;
-+
  public class ServerPlayerGameMode {
     private static final Logger f_9246_ = LogUtils.getLogger();
     protected ServerLevel f_9244_;
@@ -58,7 +37,7 @@
           return false;
        } else {
 +         // CraftBukkit start
-+         PlayerGameModeChangeEvent event = new PlayerGameModeChangeEvent(f_9245_.getBukkitEntity(), GameMode.getByValue(p_143474_.m_46392_()));
++         org.bukkit.event.player.PlayerGameModeChangeEvent event = new org.bukkit.event.player.PlayerGameModeChangeEvent(f_9245_.getBukkitEntity(), org.bukkit.GameMode.getByValue(p_143474_.m_46392_()));
 +         f_9244_.getCraftServer().getPluginManager().callEvent(event);
 +         if (event.isCancelled()) {
 +            return false;
@@ -81,7 +60,7 @@
  
     public void m_7712_() {
 -      ++this.f_9252_;
-+      this.f_9252_ = MinecraftServer.currentTick; // CraftBukkit;
++      this.f_9252_ = net.minecraft.server.MinecraftServer.currentTick; // CraftBukkit;
        if (this.f_9253_) {
           BlockState blockstate = this.f_9244_.m_8055_(this.f_9254_);
           if (blockstate.m_60795_()) {
@@ -105,7 +84,7 @@
           if (p_9283_ == ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK) {
              if (!this.f_9244_.m_7966_(this.f_9245_, p_9282_)) {
 +               // CraftBukkit start - fire PlayerInteractEvent
-+               CraftEventFactory.callPlayerInteractEvent(this.f_9245_, Action.LEFT_CLICK_BLOCK, p_9282_, p_9284_, this.f_9245_.m_150109_().m_36056_(), InteractionHand.MAIN_HAND);
++               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent(this.f_9245_, org.bukkit.event.block.Action.LEFT_CLICK_BLOCK, p_9282_, p_9284_, this.f_9245_.m_150109_().m_36056_(), InteractionHand.MAIN_HAND);
                 this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9282_, this.f_9244_.m_8055_(p_9282_), p_9283_, false, "may not interact"));
 -               return;
 -            }
@@ -119,10 +98,10 @@
 +            }
 +
 +            // CraftBukkit start
-+            PlayerInteractEvent eventCB = CraftEventFactory.callPlayerInteractEvent(this.f_9245_, Action.LEFT_CLICK_BLOCK, p_9282_, p_9284_, this.f_9245_.m_150109_().m_36056_(), InteractionHand.MAIN_HAND);
++            org.bukkit.event.player.PlayerInteractEvent eventCB = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent(this.f_9245_, org.bukkit.event.block.Action.LEFT_CLICK_BLOCK, p_9282_, p_9284_, this.f_9245_.m_150109_().m_36056_(), InteractionHand.MAIN_HAND);
 +            if (eventCB.isCancelled()) {
 +               // Let the client know the block still exists
-+               this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
++               this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
 +               // Update any tile entity data for this block
 +               BlockEntity tileentity = this.f_9244_.m_7702_(p_9282_);
 +               if (tileentity != null) {
@@ -140,16 +119,16 @@
              BlockState blockstate = this.f_9244_.m_8055_(p_9282_);
 -            if (!blockstate.m_60795_()) {
 +            // CraftBukkit start - Swings at air do *NOT* exist.
-+            if (eventCB.useInteractedBlock() == Event.Result.DENY) {
++            if (eventCB.useInteractedBlock() == org.bukkit.event.Event.Result.DENY) {
 +               // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
 +               BlockState data = this.f_9244_.m_8055_(p_9282_);
-+               if (data.m_60734_() instanceof DoorBlock) {
++               if (data.m_60734_() instanceof net.minecraft.world.level.block.DoorBlock) {
 +                  // For some reason *BOTH* the bottom/top part have to be marked updated.
-+                  boolean bottom = data.m_61143_(DoorBlock.f_52730_) == DoubleBlockHalf.LOWER;
-+                  this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
-+                  this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, bottom ? p_9282_.m_7494_() : p_9282_.m_7495_()));
-+               } else if (data.m_60734_() instanceof TrapDoorBlock) {
-+                  this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
++                  boolean bottom = data.m_61143_(net.minecraft.world.level.block.DoorBlock.f_52730_) == net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
++                  this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
++                  this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, bottom ? p_9282_.m_7494_() : p_9282_.m_7495_()));
++               } else if (data.m_60734_() instanceof net.minecraft.world.level.block.TrapDoorBlock) {
++                  this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
 +               }
 +            } else if (!blockstate.m_60795_()) {
 +               if (event.getUseBlock() != net.minecraftforge.eventbus.api.Event.Result.DENY)
@@ -157,18 +136,18 @@
                 f = blockstate.m_60625_(this.f_9245_, this.f_9245_.f_19853_, p_9282_);
              }
  
-+            if (eventCB.useItemInHand() == Event.Result.DENY) {
++            if (eventCB.useItemInHand() == org.bukkit.event.Event.Result.DENY) {
 +               // If we 'insta destroyed' then the client needs to be informed.
 +               if (f > 1.0f) {
-+                  this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
++                  this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
 +               }
 +               return;
 +            }
-+            org.bukkit.event.block.BlockDamageEvent blockEvent = CraftEventFactory.callBlockDamageEvent(this.f_9245_, p_9282_, this.f_9245_.m_150109_().m_36056_(), f >= 1.0f);
++            org.bukkit.event.block.BlockDamageEvent blockEvent = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockDamageEvent(this.f_9245_, p_9282_, this.f_9245_.m_150109_().m_36056_(), f >= 1.0f);
 +
 +            if (blockEvent.isCancelled()) {
 +               // Let the client know the block still exists
-+               this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
++               this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9282_));
 +               return;
 +            }
 +
@@ -192,7 +171,7 @@
  
              this.f_9244_.m_6801_(this.f_9245_.m_142049_(), p_9282_, -1);
              this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9282_, this.f_9244_.m_8055_(p_9282_), p_9283_, true, "aborted destroying"));
-+            CraftEventFactory.callBlockDamageAbortEvent(this.f_9245_, p_9282_, this.f_9245_.m_150109_().m_36056_()); // CraftBukkit
++            org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockDamageAbortEvent(this.f_9245_, p_9282_, this.f_9245_.m_150109_().m_36056_()); // CraftBukkit
           }
  
        }
@@ -201,21 +180,21 @@
           this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9287_, this.f_9244_.m_8055_(p_9287_), p_9288_, true, p_9289_));
        } else {
 -         this.f_9245_.f_8906_.m_141995_(new ClientboundBlockBreakAckPacket(p_9287_, this.f_9244_.m_8055_(p_9287_), p_9288_, false, p_9289_));
-+         this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9287_)); // CraftBukkit - SPIGOT-5196
++         this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9287_)); // CraftBukkit - SPIGOT-5196
        }
  
     }
  
 +   //Magma start - fix mixin inject
 +   private @Nullable org.bukkit.block.Block destroyBlock_bblock;
-+   private @Nullable Optional<BlockBreakEvent> destroyBlock_event;
++   private @Nullable java.util.Optional<org.bukkit.event.block.BlockBreakEvent> destroyBlock_event;
 +   private @Nullable org.bukkit.block.BlockState destroyBlock_state;
     public boolean m_9280_(BlockPos p_9281_) {
 -      BlockState blockstate = this.f_9244_.m_8055_(p_9281_);
 -      if (!this.f_9245_.m_21205_().m_41720_().m_6777_(blockstate, this.f_9244_, p_9281_, this.f_9245_)) {
 +      BlockState blockState = this.f_9244_.m_8055_(p_9281_);
 +      // CraftBukkit start - fire BlockBreakEvent
-+      destroyBlock_bblock = CraftBlock.at(f_9244_, p_9281_);
++      destroyBlock_bblock = org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(f_9244_, p_9281_);
 +      destroyBlock_event = isSwordNoBreak(p_9281_, blockState, destroyBlock_bblock);
 +
 +      if (destroyBlock_event.isEmpty())
@@ -245,7 +224,7 @@
 -            boolean flag = this.f_9244_.m_7471_(p_9281_, false);
 +            // CraftBukkit start
 +            destroyBlock_state = destroyBlock_bblock.getState();
-+            f_9244_.captureDrops = new ArrayList<>();
++            f_9244_.captureDrops = new java.util.ArrayList<>();
 +            // CraftBukkit end
 +            boolean flag = removeBlock(p_9281_, false);
 +
@@ -279,7 +258,7 @@
 +            }
 +            // CraftBukkit start
 +            if (destroyBlock_event.get().isDropItems()) {
-+               CraftEventFactory.handleBlockDropItemEvent(destroyBlock_bblock, destroyBlock_state, this.f_9245_, f_9244_.captureDrops);
++               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockDropItemEvent(destroyBlock_bblock, destroyBlock_state, this.f_9245_, f_9244_.captureDrops);
 +            }
 +            f_9244_.captureDrops = null;
 +
@@ -296,8 +275,8 @@
 +      }
 +   }
 +
-+   private Optional<BlockBreakEvent> isSwordNoBreak(BlockPos p_9281_, BlockState blockState, org.bukkit.block.Block bblock) {
-+      BlockBreakEvent event = null;
++   private java.util.Optional<org.bukkit.event.block.BlockBreakEvent> isSwordNoBreak(BlockPos p_9281_, BlockState blockState, org.bukkit.block.Block bblock) {
++      org.bukkit.event.block.BlockBreakEvent event = null;
 +      if (this.f_9245_ instanceof ServerPlayer) {
 +         // Sword + Creative mode pre-cancel
 +         boolean isSwordNoBreak = !this.f_9245_.m_21205_().m_41720_().m_6777_(blockState, this.f_9244_, p_9281_, this.f_9245_);
@@ -305,20 +284,20 @@
 +         // Tell client the block is gone immediately then process events
 +         // Don't tell the client if its a creative sword break because its not broken!
 +         if (f_9244_.m_7702_(p_9281_) == null && !isSwordNoBreak) {
-+            ClientboundBlockUpdatePacket packet = new ClientboundBlockUpdatePacket(p_9281_, Blocks.f_50016_.m_49966_());
++            net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket packet = new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(p_9281_, Blocks.f_50016_.m_49966_());
 +            this.f_9245_.f_8906_.m_141995_(packet);
 +         }
 +
-+         event = new BlockBreakEvent(bblock, this.f_9245_.getBukkitEntity());
++         event = new org.bukkit.event.block.BlockBreakEvent(bblock, this.f_9245_.getBukkitEntity());
 +
 +         //Magma start
 +         int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(f_9244_, f_9247_, f_9245_, p_9281_);
 +
 +         if (exp == -1) {
-+            return Optional.empty();
++            return java.util.Optional.empty();
 +         }
 +
-+         if(this.f_9245_.m_7500_() && ((Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("SWORD") || ((Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("TRIDENT")){
++         if(this.f_9245_.m_7500_() && ((org.bukkit.entity.Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("SWORD") || ((org.bukkit.entity.Player) this.f_9245_.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("TRIDENT")){
 +            event.setCancelled(true);
 +            isSwordNoBreak = true;
 +         }
@@ -328,7 +307,7 @@
 +         BlockState nmsData = this.f_9244_.m_8055_(p_9281_);
 +         Block nmsBlock = nmsData.m_60734_();
 +
-+         ItemStack itemstack = this.f_9245_.m_6844_(EquipmentSlot.MAINHAND);
++         ItemStack itemstack = this.f_9245_.m_6844_(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 +
 +         if (nmsBlock != null && !event.isCancelled() && !this.m_9295_() && this.f_9245_.m_36298_(nmsBlock.m_49966_())) {
 +            event.setExpToDrop(nmsBlock.getExpDrop(nmsData, this.f_9244_, p_9281_, itemstack));
@@ -338,14 +317,14 @@
 +
 +         if (event.isCancelled()) {
 +            if (isSwordNoBreak) {
-+               return Optional.empty();
++               return java.util.Optional.empty();
 +            }
 +            // Let the client know the block still exists
-+            this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(this.f_9244_, p_9281_));
++            this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(this.f_9244_, p_9281_));
 +
 +            // Brute force all possible updates
 +            for (Direction dir : Direction.values()) {
-+               this.f_9245_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(f_9244_, p_9281_.m_142300_(dir)));
++               this.f_9245_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(f_9244_, p_9281_.m_142300_(dir)));
 +            }
 +
 +            // Update any tile entity data for this block
@@ -353,10 +332,10 @@
 +            if (tileentity != null) {
 +               this.f_9245_.f_8906_.m_141995_(tileentity.m_183216_());
 +            }
-+            return Optional.empty();
++            return java.util.Optional.empty();
 +         }
 +      }
-+      return Optional.of(event);
++      return java.util.Optional.of(event);
 +   }
 +   //Magma end
 +
@@ -385,7 +364,7 @@
 +   //Magma start - rewrote method to be mixin friendly
 +   private InteractionResult useItemOn_result = InteractionResult.PASS;
 +   private boolean useItemOn_cancelledBlock = false;
-+   private PlayerInteractEvent eventCB;
++   private org.bukkit.event.player.PlayerInteractEvent eventCB;
 +   public boolean interactResult = false;
 +   public boolean firedInteract = false;
 +   public BlockPos interactPosition;
@@ -415,7 +394,7 @@
 +         BlockPos blockpos = p_9270_.m_82425_();
 +         BlockState blockstate = p_9267_.m_8055_(blockpos);
 +
-+         net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
++         net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks.onRightClickBlock(p_9266_, p_9269_, blockpos, p_9270_);
 +         if (event.isCanceled())
 +            return event.getCancellationResult();
 +
@@ -425,13 +404,13 @@
 +         if (p_9266_.m_36335_().m_41519_(p_9268_.m_41720_()))
 +            useItemOn_cancelledBlock = true;
 +
-+         eventCB = CraftEventFactory.callPlayerInteractEvent(p_9266_, Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.m_82434_(), p_9268_, useItemOn_cancelledBlock, p_9269_);
++         eventCB = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent(p_9266_, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.m_82434_(), p_9268_, useItemOn_cancelledBlock, p_9269_);
 +         firedInteract = true;
-+         interactResult = eventCB.useItemInHand() == Event.Result.DENY;
++         interactResult = eventCB.useItemInHand() == org.bukkit.event.Event.Result.DENY;
 +         interactPosition = blockpos.m_7949_();
 +         interactHand = p_9269_;
 +         interactItemStack = p_9268_.m_41777_();
-+         if (eventCB.useInteractedBlock() == Event.Result.DENY)
++         if (eventCB.useInteractedBlock() == org.bukkit.event.Event.Result.DENY)
 +            bukkit_useItemOn(p_9266_, p_9267_, p_9268_, p_9269_, p_9270_, blockpos, blockstate);
 +         else if (this.f_9247_ == GameType.SPECTATOR) {
 +            MenuProvider menuprovider = blockstate.m_60750_(p_9267_, blockpos);
@@ -507,19 +486,19 @@
 +
 +   private void bukkit_useItemOn(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_, BlockPos blockpos, BlockState blockstate) {
 +      // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
-+      if (blockstate.m_60734_() instanceof DoorBlock) {
-+         boolean bottom = blockstate.m_61143_(DoorBlock.f_52730_) == DoubleBlockHalf.LOWER;
-+         p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, bottom ? blockpos.m_7494_() : blockpos.m_7495_()));
-+      } else if (blockstate.m_60734_() instanceof CakeBlock) {
++      if (blockstate.m_60734_() instanceof net.minecraft.world.level.block.DoorBlock) {
++         boolean bottom = blockstate.m_61143_(net.minecraft.world.level.block.DoorBlock.f_52730_) == net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER;
++         p_9266_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(p_9267_, bottom ? blockpos.m_7494_() : blockpos.m_7495_()));
++      } else if (blockstate.m_60734_() instanceof net.minecraft.world.level.block.CakeBlock) {
 +         p_9266_.getBukkitEntity().sendHealthUpdate(); // SPIGOT-1341 - reset health for cake
-+      } else if (interactItemStack.m_41720_() instanceof DoubleHighBlockItem) {
++      } else if (interactItemStack.m_41720_() instanceof net.minecraft.world.item.DoubleHighBlockItem) {
 +         // send a correcting update to the client, as it already placed the upper half of the bisected item
-+         p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, blockpos.m_142300_(p_9270_.m_82434_()).m_7494_()));
++         p_9266_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(p_9267_, blockpos.m_142300_(p_9270_.m_82434_()).m_7494_()));
 +         // send a correcting update to the client for the block above as well, this because of replaceable blocks (such as grass, sea grass etc)
-+         p_9266_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(p_9267_, blockpos.m_7494_()));
++         p_9266_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(p_9267_, blockpos.m_7494_()));
 +      }
 +      p_9266_.getBukkitEntity().updateInventory(); // SPIGOT-2867
-+      useItemOn_result = (eventCB.useItemInHand() != Event.Result.ALLOW) ? InteractionResult.SUCCESS : InteractionResult.PASS;
++      useItemOn_result = (eventCB.useItemInHand() != org.bukkit.event.Event.Result.ALLOW) ? InteractionResult.SUCCESS : InteractionResult.PASS;
 +   }
 +   //Magma end
  

@@ -1,12 +1,9 @@
 --- a/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
 +++ b/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
-@@ -9,6 +_,9 @@
+@@ -9,6 +_,6 @@
  import net.minecraft.world.entity.Mob;
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
  import net.minecraft.world.entity.ai.memory.MemoryStatus;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.EntityTargetEvent;
  
  public class StopAttackingIfTargetInvalid<E extends Mob> extends Behavior<E> {
     private static final int f_147978_ = 200;
@@ -16,12 +13,12 @@
     protected void m_24255_(E p_24256_) {
 +      // CraftBukkit start
 +      LivingEntity old = p_24256_.m_6274_().m_21952_(MemoryModuleType.f_26372_).orElse(null);
-+      EntityTargetEvent event = CraftEventFactory.callEntityTargetLivingEvent(p_24256_, null, (old != null && !old.m_6084_()) ? EntityTargetEvent.TargetReason.TARGET_DIED : EntityTargetEvent.TargetReason.FORGOT_TARGET);
++      org.bukkit.event.entity.EntityTargetEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTargetLivingEvent(p_24256_, null, (old != null && !old.m_6084_()) ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_DIED : org.bukkit.event.entity.EntityTargetEvent.TargetReason.FORGOT_TARGET);
 +      if (event.isCancelled()) {
 +         return;
 +      }
 +      if (event.getTarget() != null) {
-+         p_24256_.m_6274_().m_21879_(MemoryModuleType.f_26372_, ((CraftLivingEntity) event.getTarget()).getHandle());
++         p_24256_.m_6274_().m_21879_(MemoryModuleType.f_26372_, ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity) event.getTarget()).getHandle());
 +         return;
 +      }
 +      // CraftBukkit end

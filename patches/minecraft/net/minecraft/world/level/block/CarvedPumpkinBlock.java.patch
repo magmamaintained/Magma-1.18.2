@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/level/block/CarvedPumpkinBlock.java
 +++ b/net/minecraft/world/level/block/CarvedPumpkinBlock.java
-@@ -23,6 +_,8 @@
+@@ -23,6 +_,6 @@
  import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
  import net.minecraft.world.level.block.state.properties.DirectionProperty;
  import net.minecraft.world.level.material.Material;
-+import org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  
  public class CarvedPumpkinBlock extends HorizontalDirectionalBlock implements Wearable {
     public static final DirectionProperty f_51367_ = HorizontalDirectionalBlock.f_54117_;
@@ -13,7 +11,7 @@
  
     private void m_51378_(Level p_51379_, BlockPos p_51380_) {
        BlockPattern.BlockPatternMatch blockpattern$blockpatternmatch = this.m_51393_().m_61184_(p_51379_, p_51380_);
-+      BlockStateListPopulator blockList = new BlockStateListPopulator(p_51379_); // CraftBukkit - Use BlockStateListPopulator
++      org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator(p_51379_); // CraftBukkit - Use BlockStateListPopulator
        if (blockpattern$blockpatternmatch != null) {
           for(int i = 0; i < this.m_51393_().m_61202_(); ++i) {
              BlockInWorld blockinworld = blockpattern$blockpatternmatch.m_61229_(0, i, 0);
@@ -29,7 +27,7 @@
 -         p_51379_.m_7967_(snowgolem);
 +
 +         // CraftBukkit start
-+         p_51379_.prepareEntity(snowgolem, CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
++         p_51379_.prepareEntity(snowgolem, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
 +         if (!p_51379_.m_7967_(snowgolem)) {
 +            return;
 +         }
@@ -58,7 +56,7 @@
              irongolem.m_7678_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.05D, (double)blockpos.m_123343_() + 0.5D, 0.0F, 0.0F);
 -            p_51379_.m_7967_(irongolem);
 +            // CraftBukkit start
-+            p_51379_.prepareEntity(irongolem, CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM); //Magma - add spawn reason
++            p_51379_.prepareEntity(irongolem, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM); //Magma - add spawn reason
 +            if (!p_51379_.m_7967_(irongolem)) {
 +               return;
 +            }

@@ -1,19 +1,16 @@
 --- a/net/minecraft/world/entity/animal/Sheep.java
 +++ b/net/minecraft/world/entity/animal/Sheep.java
-@@ -46,6 +_,7 @@
+@@ -46,6 +_,6 @@
  import net.minecraft.world.inventory.AbstractContainerMenu;
  import net.minecraft.world.inventory.CraftingContainer;
  import net.minecraft.world.inventory.MenuType;
-+import net.minecraft.world.inventory.ResultContainer;
  import net.minecraft.world.item.DyeColor;
  import net.minecraft.world.item.DyeItem;
  import net.minecraft.world.item.ItemStack;
-@@ -59,8 +_,10 @@
+@@ -59,8 +_,8 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-+import org.bukkit.event.entity.SheepRegrowWoolEvent;
-+import org.bukkit.inventory.InventoryView;
  
 -public class Sheep extends Animal implements Shearable {
 +public class Sheep extends Animal implements Shearable, net.minecraftforge.common.IForgeShearable {
@@ -44,7 +41,7 @@
  
     public void m_8035_() {
 +      // CraftBukkit start
-+      SheepRegrowWoolEvent event = new SheepRegrowWoolEvent((org.bukkit.entity.Sheep) this.getBukkitEntity());
++      org.bukkit.event.entity.SheepRegrowWoolEvent event = new org.bukkit.event.entity.SheepRegrowWoolEvent((org.bukkit.entity.Sheep) this.getBukkitEntity());
 +      this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +      if (event.isCancelled()) return;
 +      // CraftBukkit end
@@ -57,7 +54,7 @@
        CraftingContainer craftingcontainer = new CraftingContainer(new AbstractContainerMenu((MenuType)null, -1) {
 +         // CraftBukkit start
 +         @Override
-+         public InventoryView getBukkitView() {
++         public org.bukkit.inventory.InventoryView getBukkitView() {
 +            return null; // TODO: O.O
 +         }
 +         // CraftBukkit end
@@ -68,7 +65,7 @@
        }, 2, 1);
        craftingcontainer.m_6836_(0, new ItemStack(DyeItem.m_41082_(p_29832_)));
        craftingcontainer.m_6836_(1, new ItemStack(DyeItem.m_41082_(p_29833_)));
-+      craftingcontainer.resultInventory = new ResultContainer(); // CraftBukkit - add result slot for event
++      craftingcontainer.resultInventory = new net.minecraft.world.inventory.ResultContainer(); // CraftBukkit - add result slot for event
        return craftingcontainer;
     }
  

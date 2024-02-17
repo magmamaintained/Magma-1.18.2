@@ -1,7 +1,6 @@
 --- a/net/minecraft/world/level/block/DoublePlantBlock.java
 +++ b/net/minecraft/world/level/block/DoublePlantBlock.java
-@@ -1,3 +_,4 @@
-+
+@@ -1,3 +_,3 @@
  package net.minecraft.world.level.block;
  
  import javax.annotation.Nullable;

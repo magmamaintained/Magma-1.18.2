@@ -1,13 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -28,6 +_,10 @@
+@@ -28,6 +_,6 @@
  import net.minecraft.world.level.levelgen.feature.configurations.EndGatewayConfiguration;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.Bukkit;
-+import org.bukkit.Location;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
-+import org.bukkit.event.player.PlayerTeleportEvent;
  import org.slf4j.Logger;
  
  public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
@@ -18,12 +14,12 @@
 +
 +            // CraftBukkit start - Fire PlayerTeleportEvent
 +            if (entity instanceof ServerPlayer) {
-+               org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer player = (CraftPlayer) entity.getBukkitEntity();
-+               org.bukkit.Location location = new Location(p_155829_.getWorld(), (double) blockpos1.m_123341_() + 0.5D, (double) blockpos1.m_123342_() + 0.5D, (double) blockpos1.m_123343_() + 0.5D);
++               org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer player = (org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) entity.getBukkitEntity();
++               org.bukkit.Location location = new org.bukkit.Location(p_155829_.getWorld(), (double) blockpos1.m_123341_() + 0.5D, (double) blockpos1.m_123342_() + 0.5D, (double) blockpos1.m_123343_() + 0.5D);
 +               location.setPitch(player.getLocation().getPitch());
 +               location.setYaw(player.getLocation().getYaw());
-+               PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.END_GATEWAY);
-+               Bukkit.getPluginManager().callEvent(teleEvent);
++               org.bukkit.event.player.PlayerTeleportEvent teleEvent = new org.bukkit.event.player.PlayerTeleportEvent(player, player.getLocation(), location, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.END_GATEWAY);
++               org.bukkit.Bukkit.getPluginManager().callEvent(teleEvent);
 +               if (teleEvent.isCancelled()) {
 +                  return;
 +               }

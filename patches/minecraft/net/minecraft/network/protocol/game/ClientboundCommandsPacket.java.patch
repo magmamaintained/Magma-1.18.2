@@ -1,39 +1,29 @@
 --- a/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
-@@ -10,19 +_,24 @@
+@@ -10,19 +_,19 @@
  import com.mojang.brigadier.tree.CommandNode;
  import com.mojang.brigadier.tree.LiteralCommandNode;
  import com.mojang.brigadier.tree.RootCommandNode;
-+import io.netty.buffer.Unpooled;
  import it.unimi.dsi.fastutil.objects.Object2IntMap;
  import it.unimi.dsi.fastutil.objects.Object2IntMaps;
  import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  import it.unimi.dsi.fastutil.objects.ObjectArrayList;
--import java.util.List;
--import java.util.Map;
--import java.util.Queue;
--import javax.annotation.Nullable;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Queue;
+ import javax.annotation.Nullable;
  import net.minecraft.commands.SharedSuggestionProvider;
  import net.minecraft.commands.synchronization.ArgumentTypes;
  import net.minecraft.commands.synchronization.SuggestionProviders;
  import net.minecraft.network.FriendlyByteBuf;
  import net.minecraft.network.protocol.Packet;
-+import net.minecraft.resources.ResourceLocation;
-+import org.spigotmc.SpigotConfig;
-+
-+import javax.annotation.Nullable;
-+import java.util.Arrays;
-+import java.util.List;
-+import java.util.Map;
-+import java.util.Queue;
  
  public class ClientboundCommandsPacket implements Packet<ClientGamePacketListener> {
     private static final byte f_178797_ = 3;
-@@ -34,6 +_,7 @@
+@@ -34,6 +_,6 @@
     private static final byte f_178803_ = 2;
     private final RootCommandNode<SharedSuggestionProvider> f_131858_;
  
-+
     public ClientboundCommandsPacket(RootCommandNode<SharedSuggestionProvider> p_131861_) {
        this.f_131858_ = p_131861_;
     }
@@ -56,7 +46,7 @@
 +      });
 +      byteBuf.m_130130_(object2intmap.get(this.f_131858_));
 +   }
-+   private static final List<String> integratedArgumentTypes = Arrays.asList(
++   private static final List<String> integratedArgumentTypes = java.util.Arrays.asList(
 +           "brigadier:bool",
 +           "brigadier:float",
 +           "brigadier:double",
@@ -116,7 +106,7 @@
 +
 +      if (entry == null) {
 +         buf.m_130085_(MOD_ARGUMENT_INDICATOR);
-+         buf.m_130085_(new ResourceLocation("")); //"minecraft:"
++         buf.m_130085_(new net.minecraft.resources.ResourceLocation("")); //"minecraft:"
 +         buf.m_130130_(0);
 +         return;
 +      }
@@ -226,10 +216,10 @@
 +         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
 +         p_131872_.m_130070_(argumentcommandnode.getName());
 +         //Magma start
-+         if(SpigotConfig.bungee){
++         if(org.spigotmc.SpigotConfig.bungee){
 +            ArgumentTypes.Entry entry = ArgumentTypes.f_121583_.get(argumentcommandnode.getType().getClass());
 +            if (entry == null) {
-+               p_131872_.m_130085_(new ResourceLocation(""));
++               p_131872_.m_130085_(new net.minecraft.resources.ResourceLocation(""));
 +               return;
 +            }
 +            if (entry.f_121620_.m_135827_().equals("minecraft") || entry.f_121620_.m_135827_().equals("brigadier")) {
@@ -291,10 +281,10 @@
 +         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
 +         p_131872_.m_130070_(argumentcommandnode.getName());
 +         //Magma start
-+         if(SpigotConfig.bungee){
++         if(org.spigotmc.SpigotConfig.bungee){
 +            ArgumentTypes.Entry entry = ArgumentTypes.f_121583_.get(argumentcommandnode.getType().getClass());
 +            if (entry == null) {
-+               p_131872_.m_130085_(new ResourceLocation(""));
++               p_131872_.m_130085_(new net.minecraft.resources.ResourceLocation(""));
 +               return;
 +            }
 +            if (entry.f_121620_.m_135827_().equals("minecraft") || entry.f_121620_.m_135827_().equals("brigadier")) {
@@ -319,13 +309,13 @@
 +   }
 +//Magma end
 +   //Magma start
-+   private static final ResourceLocation MOD_ARGUMENT_INDICATOR  = new ResourceLocation("crossstitch", "mod_argument");
++   private static final net.minecraft.resources.ResourceLocation MOD_ARGUMENT_INDICATOR  = new net.minecraft.resources.ResourceLocation("crossstitch", "mod_argument");
 +
 +   private static void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentType argumentType, ArgumentTypes.Entry entry) {
 +      packetByteBuf.m_130085_(MOD_ARGUMENT_INDICATOR);
 +      packetByteBuf.m_130085_(entry.f_121620_);
 +
-+      FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
++      FriendlyByteBuf extraData = new FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
 +      entry.f_121619_.m_6017_(argumentType, extraData);
 +
 +      packetByteBuf.m_130130_(extraData.readableBytes());

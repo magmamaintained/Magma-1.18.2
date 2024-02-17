@@ -1,20 +1,16 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -22,6 +_,7 @@
+@@ -22,6 +_,6 @@
  import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
  import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
  import net.minecraft.network.syncher.SynchedEntityData;
-+import net.minecraft.server.network.ServerPlayerConnection;
  import net.minecraft.util.Mth;
  import net.minecraft.world.effect.MobEffectInstance;
  import net.minecraft.world.entity.Entity;
-@@ -35,6 +_,9 @@
+@@ -35,6 +_,6 @@
  import net.minecraft.world.item.MapItem;
  import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.entity.Player;
-+import org.bukkit.event.player.PlayerVelocityEvent;
-+import org.jetbrains.annotations.Nullable;
  import org.slf4j.Logger;
  
  public class ServerEntity {
@@ -23,16 +19,16 @@
     private boolean f_8524_;
     private boolean f_8525_;
 +   // CraftBukkit start
-+   private final Set<ServerPlayerConnection> trackedPlayers;
++   private final Set<net.minecraft.server.network.ServerPlayerConnection> trackedPlayers;
  
 -   public ServerEntity(ServerLevel p_8528_, Entity p_8529_, int p_8530_, boolean p_8531_, Consumer<Packet<?>> p_8532_) {
-+   public ServerEntity(ServerLevel p_8528_, Entity p_8529_, int p_8530_, boolean p_8531_, Consumer<Packet<?>> p_8532_, Set<ServerPlayerConnection> trackedPlayers) {
++   public ServerEntity(ServerLevel p_8528_, Entity p_8529_, int p_8530_, boolean p_8531_, Consumer<Packet<?>> p_8532_, Set<net.minecraft.server.network.ServerPlayerConnection> trackedPlayers) {
 +      this.trackedPlayers = trackedPlayers;
 +      // CraftBukkit end
        this.f_8509_ = p_8528_;
        this.f_8513_ = p_8532_;
        this.f_8510_ = p_8529_;
-@@ -75,29 +_,30 @@
+@@ -75,29 +_,28 @@
        List<Entity> list = this.f_8510_.m_20197_();
        if (!list.equals(this.f_8523_)) {
           this.f_8523_ = list;
@@ -51,7 +47,7 @@
 +         Integer integer = MapItem.m_151131_(itemstack);
 +         MapItemSavedData mapitemsaveddata = MapItem.m_42853_(itemstack, this.f_8509_);
 +         if (mapitemsaveddata != null) {
-+               for(ServerPlayerConnection tracked : this.trackedPlayers) {  // CraftBukkit
++               for(net.minecraft.server.network.ServerPlayerConnection tracked : this.trackedPlayers) {  // CraftBukkit
 +                  ServerPlayer serverplayer = tracked.m_142253_(); // Magma
                    mapitemsaveddata.m_77918_(serverplayer, itemstack);
                    Packet<?> packet = mapitemsaveddata.m_164796_(integer, serverplayer);
@@ -65,8 +61,6 @@
           this.m_8543_();
        }
  
-+
-+
        if (this.f_8521_ % this.f_8511_ == 0 || this.f_8510_.f_19812_ || this.f_8510_.m_20088_().m_135352_()) {
           if (this.f_8510_.m_20159_()) {
              int i1 = Mth.m_14143_(this.f_8510_.m_146908_() * 256.0F / 360.0F);
@@ -116,9 +110,9 @@
 +         // CraftBukkit start - Create PlayerVelocity event
 +         boolean cancelled = false;
 +         if (this.f_8510_ instanceof ServerPlayer) {
-+            Player player = (Player) this.f_8510_.getBukkitEntity();
++            org.bukkit.entity.Player player = (org.bukkit.entity.Player) this.f_8510_.getBukkitEntity();
 +            org.bukkit.util.Vector velocity = player.getVelocity();
-+            PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
++            org.bukkit.event.player.PlayerVelocityEvent event = new org.bukkit.event.player.PlayerVelocityEvent(player, velocity.clone());
 +            this.f_8510_.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +            if (event.isCancelled()) {
 +               cancelled = true;
@@ -149,14 +143,14 @@
     }
  
 +   //Magma start - add original method to prevent errors with mods relying on it [fix for quark]
-+   @Nullable public ServerPlayer sendPairingData_ent = null;
++   @org.jetbrains.annotations.Nullable public ServerPlayer sendPairingData_ent = null;
     public void m_8536_(Consumer<Packet<?>> p_8537_) {
 +      this.sendPairingData(p_8537_, sendPairingData_ent);
 +      sendPairingData_ent = null;
 +   }
 +   //Magma end
 +
-+   public void sendPairingData(Consumer<Packet<?>> p_8537_, @Nullable ServerPlayer entityplayer) { // CraftBukkit - add player
++   public void sendPairingData(Consumer<Packet<?>> p_8537_, @org.jetbrains.annotations.Nullable ServerPlayer entityplayer) { // CraftBukkit - add player
        if (this.f_8510_.m_146910_()) {
 -         f_8508_.warn("Fetching packet for removed entity {}", (Object)this.f_8510_);
 +         // CraftBukkit start - Remove useless error spam, just return

@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/projectile/SpectralArrow.java
 +++ b/net/minecraft/world/entity/projectile/SpectralArrow.java
-@@ -9,6 +_,7 @@
+@@ -9,6 +_,6 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.Items;
  import net.minecraft.world.level.Level;
-+import org.bukkit.event.entity.EntityPotionEffectEvent;
  
  public class SpectralArrow extends AbstractArrow {
     public int f_37409_ = 200;
@@ -13,7 +12,7 @@
        super.m_7761_(p_37422_);
        MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.f_19619_, this.f_37409_, 0);
 -      p_37422_.m_147207_(mobeffectinstance, this.m_150173_());
-+      p_37422_.prepare(EntityPotionEffectEvent.Cause.ARROW); //Magma
++      p_37422_.prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ARROW); //Magma
 +      p_37422_.m_147207_(mobeffectinstance, this.m_150173_()); // CraftBukkit
     }
  

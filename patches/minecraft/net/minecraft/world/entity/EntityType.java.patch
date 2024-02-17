@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -146,14 +_,15 @@
+@@ -146,14 +_,14 @@
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  import org.slf4j.Logger;
  
 -public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T> {
@@ -70,13 +69,13 @@
  
     @Nullable
     public Entity m_20592_(ServerLevel p_20593_, @Nullable ItemStack p_20594_, @Nullable Player p_20595_, BlockPos p_20596_, MobSpawnType p_20597_, boolean p_20598_, boolean p_20599_) {
-+      this.prepareSpawn(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
++      this.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
        return this.m_20600_(p_20593_, p_20594_ == null ? null : p_20594_.m_41783_(), p_20594_ != null && p_20594_.m_41788_() ? p_20594_.m_41786_() : null, p_20595_, p_20596_, p_20597_, p_20598_, p_20599_);
     }
  
 +   //Magma start - spawn reason
-+   private @Nullable CreatureSpawnEvent.SpawnReason spawn_spawnReason = CreatureSpawnEvent.SpawnReason.SPAWNER_EGG;
-+   public void prepareSpawn(CreatureSpawnEvent.SpawnReason spawnReason) {
++   private @Nullable org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawn_spawnReason = org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG;
++   public void prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
 +      this.spawn_spawnReason = spawnReason;
 +   }
 +   //Magma end
@@ -86,7 +85,7 @@
        T t = this.m_20655_(p_20601_, p_20602_, p_20603_, p_20604_, p_20605_, p_20606_, p_20607_, p_20608_);
        if (t != null) {
 +         p_20601_.prepareEntity(t, spawn_spawnReason); //Magma - add spawn reason
-+         prepareSpawn(CreatureSpawnEvent.SpawnReason.SPAWNER_EGG); //Magma - reset spawn reason
++         prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG); //Magma - reset spawn reason
           p_20601_.m_47205_(t);
        }
  
