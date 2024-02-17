@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/storage/loot/LootTables.java
 +++ b/net/minecraft/world/level/storage/loot/LootTables.java
-@@ -7,6 +_,6 @@
- import com.mojang.logging.LogUtils;
- import java.util.Map;
- import java.util.Set;
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.server.packs.resources.ResourceManager;
- import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 @@ -18,6 +_,7 @@
     private static final Logger f_79188_ = LogUtils.getLogger();
     private static final Gson f_79189_ = Deserializers.m_78800_().create();

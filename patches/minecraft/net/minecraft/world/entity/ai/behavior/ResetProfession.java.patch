@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ai/behavior/ResetProfession.java
 +++ b/net/minecraft/world/entity/ai/behavior/ResetProfession.java
-@@ -7,6 +_,6 @@
- import net.minecraft.world.entity.npc.Villager;
- import net.minecraft.world.entity.npc.VillagerData;
- import net.minecraft.world.entity.npc.VillagerProfession;
- 
- public class ResetProfession extends Behavior<Villager> {
-    public ResetProfession() {
 @@ -19,7 +_,13 @@
     }
  

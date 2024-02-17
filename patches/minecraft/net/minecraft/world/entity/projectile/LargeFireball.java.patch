@@ -1,12 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/LargeFireball.java
 +++ b/net/minecraft/world/entity/projectile/LargeFireball.java
-@@ -10,24 +_,34 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.EntityHitResult;
- import net.minecraft.world.phys.HitResult;
- 
- public class LargeFireball extends Fireball {
-    public int f_37197_ = 1;
+@@ -16,18 +_,28 @@
  
     public LargeFireball(EntityType<? extends LargeFireball> p_37199_, Level p_37200_) {
        super(p_37199_, p_37200_);

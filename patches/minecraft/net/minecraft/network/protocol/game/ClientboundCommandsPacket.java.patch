@@ -1,32 +1,5 @@
 --- a/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
-@@ -10,19 +_,19 @@
- import com.mojang.brigadier.tree.CommandNode;
- import com.mojang.brigadier.tree.LiteralCommandNode;
- import com.mojang.brigadier.tree.RootCommandNode;
- import it.unimi.dsi.fastutil.objects.Object2IntMap;
- import it.unimi.dsi.fastutil.objects.Object2IntMaps;
- import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
- import it.unimi.dsi.fastutil.objects.ObjectArrayList;
- import java.util.List;
- import java.util.Map;
- import java.util.Queue;
- import javax.annotation.Nullable;
- import net.minecraft.commands.SharedSuggestionProvider;
- import net.minecraft.commands.synchronization.ArgumentTypes;
- import net.minecraft.commands.synchronization.SuggestionProviders;
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.protocol.Packet;
- 
- public class ClientboundCommandsPacket implements Packet<ClientGamePacketListener> {
-    private static final byte f_178797_ = 3;
-@@ -34,6 +_,6 @@
-    private static final byte f_178803_ = 2;
-    private final RootCommandNode<SharedSuggestionProvider> f_131858_;
- 
-    public ClientboundCommandsPacket(RootCommandNode<SharedSuggestionProvider> p_131861_) {
-       this.f_131858_ = p_131861_;
-    }
 @@ -54,6 +_,96 @@
        p_131886_.m_130130_(object2intmap.get(this.f_131858_));
     }

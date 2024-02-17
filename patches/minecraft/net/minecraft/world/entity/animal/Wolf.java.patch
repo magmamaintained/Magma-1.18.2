@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Wolf.java
 +++ b/net/minecraft/world/entity/animal/Wolf.java
-@@ -68,6 +_,6 @@
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.level.pathfinder.BlockPathTypes;
- import net.minecraft.world.phys.Vec3;
- 
- public class Wolf extends TamableAnimal implements NeutralMob {
-    private static final EntityDataAccessor<Boolean> f_30358_ = SynchedEntityData.m_135353_(Wolf.class, EntityDataSerializers.f_135035_);
 @@ -123,6 +_,16 @@
        return Mob.m_21552_().m_22268_(Attributes.f_22279_, (double)0.3F).m_22268_(Attributes.f_22276_, 8.0D).m_22268_(Attributes.f_22281_, 2.0D);
     }

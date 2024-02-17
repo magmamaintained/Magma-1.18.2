@@ -1,13 +1,6 @@
 --- a/net/minecraft/world/item/SignItem.java
 +++ b/net/minecraft/world/item/SignItem.java
-@@ -2,13 +_,16 @@
- 
- import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.entity.SignBlockEntity;
+@@ -9,6 +_,9 @@
  import net.minecraft.world.level.block.state.BlockState;
  
  public class SignItem extends StandingAndWallBlockItem {

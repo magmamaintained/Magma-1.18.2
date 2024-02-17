@@ -1,12 +1,6 @@
 --- a/net/minecraft/world/level/block/SaplingBlock.java
 +++ b/net/minecraft/world/level/block/SaplingBlock.java
-@@ -13,12 +_,13 @@
- import net.minecraft.world.level.block.state.properties.IntegerProperty;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class SaplingBlock extends BushBlock implements BonemealableBlock {
-    public static final IntegerProperty f_55973_ = BlockStateProperties.f_61387_;
+@@ -19,6 +_,7 @@
     protected static final float f_154380_ = 6.0F;
     protected static final VoxelShape f_55974_ = Block.m_49796_(2.0D, 0.0D, 2.0D, 14.0D, 12.0D, 14.0D);
     private final AbstractTreeGrower f_55975_;

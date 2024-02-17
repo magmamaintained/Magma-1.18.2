@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/entity/BeehiveBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BeehiveBlockEntity.java
-@@ -25,6 +_,6 @@
- import net.minecraft.world.level.block.CampfireBlock;
- import net.minecraft.world.level.block.FireBlock;
- import net.minecraft.world.level.block.state.BlockState;
- 
- public class BeehiveBlockEntity extends BlockEntity {
-    public static final String f_155121_ = "FlowerPos";
 @@ -41,6 +_,7 @@
     private final List<BeehiveBlockEntity.BeeData> f_58732_ = Lists.newArrayList();
     @Nullable

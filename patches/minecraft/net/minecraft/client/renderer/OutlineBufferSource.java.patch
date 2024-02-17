@@ -1,27 +1,12 @@
 --- a/net/minecraft/client/renderer/OutlineBufferSource.java
 +++ b/net/minecraft/client/renderer/OutlineBufferSource.java
-@@ -1,13 +_,13 @@
- package net.minecraft.client.renderer;
- 
- import com.mojang.blaze3d.vertex.BufferBuilder;
- import com.mojang.blaze3d.vertex.DefaultedVertexConsumer;
- import com.mojang.blaze3d.vertex.VertexConsumer;
- import com.mojang.blaze3d.vertex.VertexMultiConsumer;
- import java.util.Optional;
- import net.minecraftforge.api.distmarker.Dist;
- import net.minecraftforge.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
- public class OutlineBufferSource implements MultiBufferSource {
-    private final MultiBufferSource.BufferSource f_109920_;
-@@ -104,6 +_,10 @@
- 
+@@ -105,5 +_,9 @@
        public void m_5752_() {
           this.f_109936_.m_5483_(this.f_109937_, this.f_109938_, this.f_109939_).m_6122_(this.f_85825_, this.f_85826_, this.f_85827_, this.f_85828_).m_7421_(this.f_109940_, this.f_109941_).m_5752_();
-+      }
+       }
 +
 +      public com.mojang.blaze3d.vertex.VertexFormat getVertexFormat() {
 +         return this.f_109936_.getVertexFormat();
-       }
++      }
     }
  }

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/EnderEyeItem.java
 +++ b/net/minecraft/world/item/EnderEyeItem.java
-@@ -2,6 +_,6 @@
- 
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.core.BlockPos;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.sounds.SoundEvents;
 @@ -54,6 +_,26 @@
                 }
  

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/inventory/GrindstoneMenu.java
 +++ b/net/minecraft/world/inventory/GrindstoneMenu.java
-@@ -17,6 +_,6 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.phys.Vec3;
- 
- public class GrindstoneMenu extends AbstractContainerMenu {
-    public static final int f_150565_ = 35;
 @@ -27,14 +_,26 @@
     private static final int f_150570_ = 30;
     private static final int f_150571_ = 30;

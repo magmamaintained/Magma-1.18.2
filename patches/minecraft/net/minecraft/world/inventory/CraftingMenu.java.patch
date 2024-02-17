@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/inventory/CraftingMenu.java
 +++ b/net/minecraft/world/inventory/CraftingMenu.java
-@@ -11,8 +_,8 @@
- import net.minecraft.world.item.crafting.CraftingRecipe;
- import net.minecraft.world.item.crafting.Recipe;
- import net.minecraft.world.item.crafting.RecipeType;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Blocks;
- 
- public class CraftingMenu extends RecipeBookMenu<CraftingContainer> {
-    public static final int f_150539_ = 0;
 @@ -27,6 +_,21 @@
     public final ContainerLevelAccess f_39350_;
     private final Player f_39351_;

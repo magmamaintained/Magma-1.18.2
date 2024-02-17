@@ -1,9 +1,6 @@
 --- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 +++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-@@ -64,9 +_,16 @@
- import net.minecraft.world.level.pathfinder.BlockPathTypes;
- import net.minecraft.world.level.pathfinder.PathFinder;
- import net.minecraft.world.phys.Vec3;
+@@ -67,6 +_,13 @@
  import org.slf4j.Logger;
  
  public class Axolotl extends Animal implements LerpingModel, Bucketable {

@@ -1,21 +1,5 @@
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -17,7 +_,7 @@
- import javax.crypto.SecretKey;
- import net.minecraft.DefaultUncaughtExceptionHandler;
- import net.minecraft.network.Connection;
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.chat.TranslatableComponent;
- import net.minecraft.network.protocol.game.ClientboundDisconnectPacket;
- import net.minecraft.network.protocol.login.ClientboundGameProfilePacket;
-@@ -34,7 +_,7 @@
- import net.minecraft.util.CryptException;
- import net.minecraft.world.entity.player.Player;
- import org.apache.commons.lang3.Validate;
- import org.slf4j.Logger;
- 
- public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener {
-    private static final AtomicInteger f_10014_ = new AtomicInteger(0);
 @@ -51,6 +_,8 @@
     private final String f_10022_ = "";
     @Nullable

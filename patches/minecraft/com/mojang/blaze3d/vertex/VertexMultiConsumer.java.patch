@@ -1,15 +1,5 @@
 --- a/com/mojang/blaze3d/vertex/VertexMultiConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexMultiConsumer.java
-@@ -1,9 +_,9 @@
- package com.mojang.blaze3d.vertex;
- 
- import java.util.function.Consumer;
- import net.minecraftforge.api.distmarker.Dist;
- import net.minecraftforge.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
- public class VertexMultiConsumer {
-    public static VertexConsumer m_167060_() {
 @@ -91,6 +_,10 @@
           this.f_86171_.m_141991_();
           this.f_86172_.m_141991_();

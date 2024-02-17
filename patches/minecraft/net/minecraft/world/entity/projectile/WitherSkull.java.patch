@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/WitherSkull.java
 +++ b/net/minecraft/world/entity/projectile/WitherSkull.java
-@@ -20,6 +_,6 @@
- import net.minecraft.world.level.material.FluidState;
- import net.minecraft.world.phys.EntityHitResult;
- import net.minecraft.world.phys.HitResult;
- 
- public class WitherSkull extends AbstractHurtingProjectile {
-    private static final EntityDataAccessor<Boolean> f_37595_ = SynchedEntityData.m_135353_(WitherSkull.class, EntityDataSerializers.f_135035_);
 @@ -41,7 +_,7 @@
     }
  

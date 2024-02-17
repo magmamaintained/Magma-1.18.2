@@ -1,26 +1,5 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
-@@ -4,20 +_,20 @@
- import com.mojang.serialization.Codec;
- import com.mojang.serialization.DataResult;
- import com.mojang.serialization.Dynamic;
- import java.io.DataInput;
- import java.io.DataOutput;
- import java.io.IOException;
- import java.util.Collections;
- import java.util.List;
- import java.util.Map;
- import java.util.Objects;
- import java.util.Set;
- import java.util.UUID;
- import java.util.Map.Entry;
- import javax.annotation.Nullable;
- import net.minecraft.CrashReport;
- import net.minecraft.CrashReportCategory;
- import net.minecraft.ReportedException;
- 
- public class CompoundTag implements Tag {
-    public static final Codec<CompoundTag> f_128325_ = Codec.PASSTHROUGH.comapFlatMap((p_128336_) -> {
 @@ -40,6 +_,7 @@
              while((b0 = CompoundTag.m_128420_(p_128485_, p_128487_)) != 0) {
                 String s = CompoundTag.m_128432_(p_128485_, p_128487_);

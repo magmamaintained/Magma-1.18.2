@@ -1,12 +1,6 @@
 --- a/net/minecraft/network/CompressionEncoder.java
 +++ b/net/minecraft/network/CompressionEncoder.java
-@@ -3,12 +_,14 @@
- import io.netty.buffer.ByteBuf;
- import io.netty.channel.ChannelHandlerContext;
- import io.netty.handler.codec.MessageToByteEncoder;
- import java.util.zip.Deflater;
- 
- public class CompressionEncoder extends MessageToByteEncoder<ByteBuf> {
+@@ -9,6 +_,8 @@
     private final byte[] f_129444_ = new byte[8192];
     private final Deflater f_129445_;
     private int f_129446_;

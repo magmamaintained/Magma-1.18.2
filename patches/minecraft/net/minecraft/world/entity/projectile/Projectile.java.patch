@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
-@@ -20,6 +_,6 @@
- import net.minecraft.world.phys.EntityHitResult;
- import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
- 
- public abstract class Projectile extends Entity {
-    @Nullable
 @@ -29,6 +_,10 @@
     private boolean f_37246_;
     private boolean f_150164_;

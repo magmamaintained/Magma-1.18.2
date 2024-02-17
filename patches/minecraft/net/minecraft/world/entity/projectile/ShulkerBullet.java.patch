@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
 +++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
-@@ -27,6 +_,6 @@
- import net.minecraft.world.phys.EntityHitResult;
- import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
- 
- public class ShulkerBullet extends Projectile {
-    private static final double f_150183_ = 0.15D;
 @@ -57,7 +_,20 @@
        this.f_37312_ = p_37332_;
        this.f_37313_ = Direction.UP;

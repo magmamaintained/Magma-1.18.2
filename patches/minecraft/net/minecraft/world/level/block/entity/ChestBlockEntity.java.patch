@@ -1,18 +1,5 @@
 --- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
-@@ -1,5 +_,5 @@
- package net.minecraft.world.level.block.entity;
- 
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.core.NonNullList;
-@@ -23,6 +_,6 @@
- import net.minecraft.world.level.block.ChestBlock;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.properties.ChestType;
- 
- public class ChestBlockEntity extends RandomizableContainerBlockEntity implements LidBlockEntity {
-    private static final int f_155323_ = 1;
 @@ -51,6 +_,36 @@
     };
     private final ChestLidController f_155325_ = new ChestLidController();

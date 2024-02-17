@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/PointedDripstoneBlock.java
 +++ b/net/minecraft/world/level/block/PointedDripstoneBlock.java
-@@ -42,6 +_,6 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class PointedDripstoneBlock extends Block implements Fallable, SimpleWaterloggedBlock {
-    public static final DirectionProperty f_154009_ = BlockStateProperties.f_155997_;
 @@ -117,6 +_,11 @@
     public void m_5581_(Level p_154042_, BlockState p_154043_, BlockHitResult p_154044_, Projectile p_154045_) {
        BlockPos blockpos = p_154044_.m_82425_();

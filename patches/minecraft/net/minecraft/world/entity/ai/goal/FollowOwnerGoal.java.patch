@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ai/goal/FollowOwnerGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/FollowOwnerGoal.java
-@@ -12,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.pathfinder.BlockPathTypes;
- import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
- 
- public class FollowOwnerGoal extends Goal {
-    public static final int f_148087_ = 12;
 @@ -117,7 +_,19 @@
        } else if (!this.m_25307_(new BlockPos(p_25304_, p_25305_, p_25306_))) {
           return false;

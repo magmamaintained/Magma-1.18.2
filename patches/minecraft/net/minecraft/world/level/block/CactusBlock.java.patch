@@ -1,7 +1,6 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -20,8 +_,8 @@
- import net.minecraft.world.level.pathfinder.PathComputationType;
+@@ -21,7 +_,7 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
  

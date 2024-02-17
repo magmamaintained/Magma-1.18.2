@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/monster/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/AbstractSkeleton.java
-@@ -9,6 +_,6 @@
- import net.minecraft.sounds.SoundEvents;
- import net.minecraft.world.Difficulty;
- import net.minecraft.world.DifficultyInstance;
- import net.minecraft.world.entity.EntityDimensions;
- import net.minecraft.world.entity.EntityType;
- import net.minecraft.world.entity.EquipmentSlot;
 @@ -152,7 +_,7 @@
        if (this.f_19853_ != null && !this.f_19853_.f_46443_) {
           this.f_21345_.m_25363_(this.f_32131_);

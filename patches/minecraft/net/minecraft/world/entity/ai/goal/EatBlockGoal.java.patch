@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ai/goal/EatBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/EatBlockGoal.java
-@@ -11,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
- import net.minecraft.world.level.gameevent.GameEvent;
- 
- public class EatBlockGoal extends Goal {
-    private static final int f_148085_ = 40;
 @@ -61,7 +_,7 @@
        if (this.f_25204_ == this.m_183277_(4)) {
           BlockPos blockpos = this.f_25202_.m_142538_();

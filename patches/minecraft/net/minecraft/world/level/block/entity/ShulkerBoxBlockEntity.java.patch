@@ -1,21 +1,5 @@
 --- a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
-@@ -1,8 +_,8 @@
- package net.minecraft.world.level.block.entity;
- 
- import java.util.List;
- import java.util.stream.IntStream;
- import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.core.NonNullList;
-@@ -31,6 +_,6 @@
- import net.minecraft.world.level.material.PushReaction;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
- 
- public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity implements WorldlyContainer {
-    public static final int f_155657_ = 9;
 @@ -50,6 +_,37 @@
     @Nullable
     private final DyeColor f_59650_;

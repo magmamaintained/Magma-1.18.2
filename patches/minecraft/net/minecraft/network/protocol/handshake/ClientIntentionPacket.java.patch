@@ -1,15 +1,5 @@
 --- a/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
 +++ b/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-@@ -1,9 +_,9 @@
- package net.minecraft.network.protocol.handshake;
- 
- import net.minecraft.SharedConstants;
- import net.minecraft.network.ConnectionProtocol;
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.protocol.Packet;
- 
- public class ClientIntentionPacket implements Packet<ServerHandshakePacketListener> {
-    private static final int f_179799_ = 255;
 @@ -11,6 +_,10 @@
     public String f_134721_;
     public final int f_134722_;

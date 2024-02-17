@@ -1,16 +1,5 @@
 --- a/net/minecraft/world/entity/ai/behavior/StartAttacking.java
 +++ b/net/minecraft/world/entity/ai/behavior/StartAttacking.java
-@@ -5,10 +_,10 @@
- import java.util.function.Function;
- import java.util.function.Predicate;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.Mob;
- import net.minecraft.world.entity.ai.memory.MemoryModuleType;
- import net.minecraft.world.entity.ai.memory.MemoryStatus;
- 
- public class StartAttacking<E extends Mob> extends Behavior<E> {
-    private final Predicate<E> f_24190_;
 @@ -42,7 +_,19 @@
     }
  

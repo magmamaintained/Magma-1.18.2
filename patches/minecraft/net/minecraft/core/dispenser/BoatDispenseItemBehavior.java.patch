@@ -1,12 +1,5 @@
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -8,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.DispenserBlock;
- 
- public class BoatDispenseItemBehavior extends DefaultDispenseItemBehavior {
-    private final DefaultDispenseItemBehavior f_123368_ = new DefaultDispenseItemBehavior();
 @@ -34,12 +_,39 @@
  
           d3 = 0.0D;

@@ -1,12 +1,10 @@
 --- a/net/minecraft/world/item/crafting/ShapedRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapedRecipe.java
-@@ -21,8 +_,21 @@
- import net.minecraft.world.item.ItemStack;
+@@ -22,7 +_,20 @@
  import net.minecraft.world.item.Items;
  import net.minecraft.world.level.Level;
--
+ 
 -public class ShapedRecipe implements CraftingRecipe {
-+
 +public class ShapedRecipe implements CraftingRecipe, net.minecraftforge.common.crafting.IShapedRecipe<CraftingContainer> {
 +   static int MAX_WIDTH = 3;
 +   static int MAX_HEIGHT = 3;

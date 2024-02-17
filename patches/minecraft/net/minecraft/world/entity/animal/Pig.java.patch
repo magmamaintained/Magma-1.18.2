@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Pig.java
 +++ b/net/minecraft/world/entity/animal/Pig.java
-@@ -46,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
- 
- public class Pig extends Animal implements ItemSteerable, Saddleable {
-    private static final EntityDataAccessor<Boolean> f_29456_ = SynchedEntityData.m_135353_(Pig.class, EntityDataSerializers.f_135035_);
 @@ -201,7 +_,7 @@
     }
  

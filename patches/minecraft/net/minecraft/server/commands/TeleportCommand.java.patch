@@ -1,25 +1,6 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -4,12 +_,12 @@
- import com.mojang.brigadier.exceptions.CommandSyntaxException;
- import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
- import com.mojang.brigadier.tree.LiteralCommandNode;
- import java.util.Collection;
- import java.util.Collections;
- import java.util.EnumSet;
- import java.util.Locale;
- import java.util.Set;
- import javax.annotation.Nullable;
- import net.minecraft.commands.CommandSourceStack;
- import net.minecraft.commands.Commands;
- import net.minecraft.commands.arguments.EntityAnchorArgument;
-@@ -32,13 +_,13 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.Vec2;
- import net.minecraft.world.phys.Vec3;
- 
- public class TeleportCommand {
-    private static final SimpleCommandExceptionType f_139006_ = new SimpleCommandExceptionType(new TranslatableComponent("commands.teleport.invalidPosition"));
+@@ -38,7 +_,7 @@
  
     public static void m_139008_(CommandDispatcher<CommandSourceStack> p_139009_) {
        LiteralCommandNode<CommandSourceStack> literalcommandnode = p_139009_.register(Commands.m_82127_("teleport").requires((p_139039_) -> {

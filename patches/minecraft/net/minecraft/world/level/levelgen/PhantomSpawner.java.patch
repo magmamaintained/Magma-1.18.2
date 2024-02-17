@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-@@ -19,6 +_,6 @@
- import net.minecraft.world.level.NaturalSpawner;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.material.FluidState;
- 
- public class PhantomSpawner implements CustomSpawner {
-    private int f_64573_;
 @@ -60,7 +_,9 @@
                                   for(int i1 = 0; i1 < l; ++i1) {
                                      Phantom phantom = EntityType.f_20509_.m_20615_(p_64576_);

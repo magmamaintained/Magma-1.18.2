@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/piston/PistonHeadBlock.java
 +++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
-@@ -25,6 +_,6 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class PistonHeadBlock extends DirectionalBlock {
-    public static final EnumProperty<PistonType> f_60235_ = BlockStateProperties.f_61396_;
 @@ -131,6 +_,11 @@
  
     public void m_6861_(BlockState p_60275_, Level p_60276_, BlockPos p_60277_, Block p_60278_, BlockPos p_60279_, boolean p_60280_) {

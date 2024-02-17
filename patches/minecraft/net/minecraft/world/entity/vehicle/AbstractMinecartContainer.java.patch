@@ -1,15 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
-@@ -1,6 +_,6 @@
- package net.minecraft.world.entity.vehicle;
- 
- import javax.annotation.Nullable;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.core.NonNullList;
- import net.minecraft.nbt.CompoundTag;
-@@ -29,13 +_,54 @@
- import net.minecraft.world.level.storage.loot.LootTable;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+@@ -31,11 +_,52 @@
  import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
  
  public abstract class AbstractMinecartContainer extends AbstractMinecart implements Container, MenuProvider {

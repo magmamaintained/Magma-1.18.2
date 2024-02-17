@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/inventory/BrewingStandMenu.java
 +++ b/net/minecraft/world/inventory/BrewingStandMenu.java
-@@ -9,8 +_,8 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.Items;
- import net.minecraft.world.item.alchemy.Potion;
- import net.minecraft.world.item.alchemy.PotionBrewing;
- import net.minecraft.world.item.alchemy.PotionUtils;
- 
- public class BrewingStandMenu extends AbstractContainerMenu {
-    private static final int f_150488_ = 0;
 @@ -27,12 +_,29 @@
     private final ContainerData f_39087_;
     private final Slot f_39088_;

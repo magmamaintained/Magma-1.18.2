@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -14,6 +_,6 @@
- import net.minecraft.world.level.block.AnvilBlock;
- import net.minecraft.world.level.block.state.BlockState;
- import org.apache.commons.lang3.StringUtils;
- import org.slf4j.Logger;
- 
- public class AnvilMenu extends ItemCombinerMenu {
 @@ -31,6 +_,25 @@
     private static final int f_150466_ = 1;
     private static final int f_150467_ = 1;

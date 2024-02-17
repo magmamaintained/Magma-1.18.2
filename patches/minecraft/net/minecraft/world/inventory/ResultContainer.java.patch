@@ -1,15 +1,9 @@
 --- a/net/minecraft/world/inventory/ResultContainer.java
 +++ b/net/minecraft/world/inventory/ResultContainer.java
-@@ -7,11 +_,48 @@
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.crafting.Recipe;
- 
- public class ResultContainer implements Container, RecipeHolder {
-    private final NonNullList<ItemStack> f_40140_ = NonNullList.m_122780_(1, ItemStack.f_41583_);
+@@ -13,6 +_,43 @@
     @Nullable
     private Recipe<?> f_40141_;
-+
+ 
 +   // CraftBukkit start
 +   private int maxStack = MAX_STACK;
 +
@@ -46,6 +40,7 @@
 +      return null;
 +   }
 +   // CraftBukkit end
- 
++
     public int m_6643_() {
        return 1;
+    }

@@ -1,23 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
-@@ -1,5 +_,5 @@
- package net.minecraft.world.level.block.entity;
- 
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.NonNullList;
- import net.minecraft.core.Vec3i;
-@@ -19,6 +_,6 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.BarrelBlock;
- import net.minecraft.world.level.block.state.BlockState;
- 
- public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
-    private NonNullList<ItemStack> f_58591_ = NonNullList.m_122780_(27, ItemStack.f_41583_);
-@@ -45,6 +_,42 @@
-          }
+@@ -46,6 +_,42 @@
        }
     };
-+
+ 
 +   // CraftBukkit start - add fields and methods
 +   public java.util.List<org.bukkit.entity.HumanEntity> transaction = new java.util.ArrayList<>();
 +   private int maxStack = MAX_STACK;
@@ -53,6 +39,7 @@
 +   }
 +
 +   // CraftBukkit end
- 
++
     public BarrelBlockEntity(BlockPos p_155052_, BlockState p_155053_) {
        super(BlockEntityType.f_58942_, p_155052_, p_155053_);
+    }

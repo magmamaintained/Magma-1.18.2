@@ -1,11 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
 +++ b/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
-@@ -13,11 +_,13 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
- 
- public abstract class AbstractHurtingProjectile extends Projectile {
+@@ -18,6 +_,8 @@
     public double f_36813_;
     public double f_36814_;
     public double f_36815_;

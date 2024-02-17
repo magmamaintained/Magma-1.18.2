@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/inventory/LecternMenu.java
 +++ b/net/minecraft/world/inventory/LecternMenu.java
-@@ -2,8 +_,8 @@
- 
- import net.minecraft.world.Container;
- import net.minecraft.world.SimpleContainer;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- 
- public class LecternMenu extends AbstractContainerMenu {
-    private static final int f_150610_ = 1;
 @@ -15,11 +_,28 @@
     private final Container f_39819_;
     private final ContainerData f_39820_;

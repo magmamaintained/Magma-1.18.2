@@ -1,12 +1,5 @@
 --- a/net/minecraft/network/protocol/game/ClientboundInitializeBorderPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundInitializeBorderPacket.java
-@@ -3,6 +_,6 @@
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.world.level.border.WorldBorder;
- 
- public class ClientboundInitializeBorderPacket implements Packet<ClientGamePacketListener> {
-    private final double f_178868_;
 @@ -26,8 +_,23 @@
     }
  

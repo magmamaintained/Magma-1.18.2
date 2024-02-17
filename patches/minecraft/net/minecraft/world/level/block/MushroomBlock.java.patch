@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
-@@ -14,6 +_,6 @@
- import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class MushroomBlock extends BushBlock implements BonemealableBlock {
-    protected static final float f_153980_ = 3.0F;
 @@ -30,7 +_,7 @@
     }
  

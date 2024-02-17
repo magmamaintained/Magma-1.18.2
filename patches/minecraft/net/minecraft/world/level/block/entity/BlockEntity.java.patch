@@ -1,16 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -1,7 +_,7 @@
- package net.minecraft.world.level.block.entity;
- 
- import com.mojang.logging.LogUtils;
- import javax.annotation.Nullable;
- import net.minecraft.CrashReportCategory;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Registry;
-@@ -13,9 +_,10 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
+@@ -15,7 +_,8 @@
  import net.minecraft.world.level.block.state.BlockState;
  import org.slf4j.Logger;
  

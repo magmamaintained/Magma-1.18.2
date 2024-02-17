@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/FishingRodItem.java
 +++ b/net/minecraft/world/item/FishingRodItem.java
-@@ -10,6 +_,6 @@
- import net.minecraft.world.item.enchantment.EnchantmentHelper;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.gameevent.GameEvent;
- 
- public class FishingRodItem extends Item implements Vanishable {
-    public FishingRodItem(Item.Properties p_41285_) {
 @@ -29,11 +_,21 @@
           p_41290_.m_6263_((Player)null, p_41291_.m_20185_(), p_41291_.m_20186_(), p_41291_.m_20189_(), SoundEvents.f_11939_, SoundSource.NEUTRAL, 1.0F, 0.4F / (p_41290_.m_5822_().nextFloat() * 0.4F + 0.8F));
           p_41290_.m_151545_(p_41291_, GameEvent.f_157814_, p_41291_);

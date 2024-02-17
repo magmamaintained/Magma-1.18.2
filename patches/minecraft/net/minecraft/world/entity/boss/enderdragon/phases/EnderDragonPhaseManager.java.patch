@@ -1,17 +1,9 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager.java
-@@ -3,6 +_,6 @@
- import com.mojang.logging.LogUtils;
- import javax.annotation.Nullable;
- import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
- import org.slf4j.Logger;
- 
- public class EnderDragonPhaseManager {
-@@ -22,6 +_,26 @@
-          if (this.f_31411_ != null) {
+@@ -23,6 +_,26 @@
              this.f_31411_.m_7081_();
           }
-+
+ 
 +         // CraftBukkit start - Call EnderDragonChangePhaseEvent
 +         //Magma start - don't call event if phase is unknown
 +         final org.bukkit.entity.EnderDragon.Phase bukkitPhase = org.bukkit.craftbukkit.v1_18_R2.entity.CraftEnderDragon.getBukkitPhase(p_31417_);
@@ -31,6 +23,7 @@
 +         //Magma end
 +
 +         // CraftBukkit end
- 
++
           this.f_31411_ = this.m_31418_(p_31417_);
           if (!this.f_31409_.f_19853_.f_46443_) {
+             this.f_31409_.m_20088_().m_135381_(EnderDragon.f_31067_, p_31417_.m_31405_());

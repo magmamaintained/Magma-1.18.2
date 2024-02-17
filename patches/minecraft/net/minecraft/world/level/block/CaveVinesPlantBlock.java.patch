@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/CaveVinesPlantBlock.java
 +++ b/net/minecraft/world/level/block/CaveVinesPlantBlock.java
-@@ -15,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.StateDefinition;
- import net.minecraft.world.phys.BlockHitResult;
- 
- public class CaveVinesPlantBlock extends GrowingPlantBodyBlock implements BonemealableBlock, CaveVines {
-    public CaveVinesPlantBlock(BlockBehaviour.Properties p_153000_) {
 @@ -35,6 +_,7 @@
     }
  

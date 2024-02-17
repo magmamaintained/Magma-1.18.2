@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-@@ -67,6 +_,6 @@
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
- 
- public abstract class AbstractHorse extends Animal implements ContainerListener, PlayerRideableJumping, Saddleable {
-    public static final int f_149486_ = 400;
 @@ -106,6 +_,7 @@
     private float f_30516_;
     protected boolean f_30523_ = true;

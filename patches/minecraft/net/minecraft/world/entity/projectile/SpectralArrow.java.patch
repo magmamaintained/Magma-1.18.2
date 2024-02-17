@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/SpectralArrow.java
 +++ b/net/minecraft/world/entity/projectile/SpectralArrow.java
-@@ -9,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.Items;
- import net.minecraft.world.level.Level;
- 
- public class SpectralArrow extends AbstractArrow {
-    public int f_37409_ = 200;
 @@ -40,7 +_,8 @@
     protected void m_7761_(LivingEntity p_37422_) {
        super.m_7761_(p_37422_);

@@ -1,8 +1,6 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -146,14 +_,14 @@
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.shapes.Shapes;
+@@ -148,12 +_,12 @@
  import net.minecraft.world.phys.shapes.VoxelShape;
  import org.slf4j.Logger;
  

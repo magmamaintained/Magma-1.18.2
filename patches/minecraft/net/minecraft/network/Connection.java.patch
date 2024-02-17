@@ -1,42 +1,5 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -4,16 +_,16 @@
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.mojang.logging.LogUtils;
- import io.netty.bootstrap.Bootstrap;
- import io.netty.channel.Channel;
- import io.netty.channel.ChannelException;
- import io.netty.channel.ChannelFuture;
- import io.netty.channel.ChannelFutureListener;
- import io.netty.channel.ChannelHandlerContext;
- import io.netty.channel.ChannelInitializer;
- import io.netty.channel.ChannelOption;
- import io.netty.channel.DefaultEventLoopGroup;
- import io.netty.channel.EventLoopGroup;
- import io.netty.channel.SimpleChannelInboundHandler;
- import io.netty.channel.epoll.Epoll;
- import io.netty.channel.epoll.EpollEventLoopGroup;
- import io.netty.channel.epoll.EpollSocketChannel;
-@@ -27,12 +_,12 @@
- import io.netty.util.AttributeKey;
- import io.netty.util.concurrent.Future;
- import io.netty.util.concurrent.GenericFutureListener;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
- import java.util.Queue;
- import java.util.concurrent.RejectedExecutionException;
- import javax.annotation.Nullable;
- import javax.crypto.Cipher;
- import net.minecraft.Util;
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.chat.TranslatableComponent;
-@@ -50,6 +_,6 @@
- import org.slf4j.Marker;
- import org.slf4j.MarkerFactory;
- 
- public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-    private static final float f_178299_ = 0.75F;
-    private static final Logger f_129465_ = LogUtils.getLogger();
 @@ -65,18 +_,23 @@
     });
     public static final AttributeKey<ConnectionProtocol> f_129461_ = AttributeKey.valueOf("protocol");

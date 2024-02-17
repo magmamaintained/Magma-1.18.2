@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/WitherRoseBlock.java
 +++ b/net/minecraft/world/level/block/WitherRoseBlock.java
-@@ -17,6 +_,6 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class WitherRoseBlock extends FlowerBlock {
-    public WitherRoseBlock(MobEffect p_58235_, BlockBehaviour.Properties p_58236_) {
 @@ -46,7 +_,7 @@
           if (p_58241_ instanceof LivingEntity) {
              LivingEntity livingentity = (LivingEntity)p_58241_;

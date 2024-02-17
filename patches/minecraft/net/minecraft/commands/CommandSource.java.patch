@@ -1,13 +1,5 @@
 --- a/net/minecraft/commands/CommandSource.java
 +++ b/net/minecraft/commands/CommandSource.java
-@@ -1,7 +_,7 @@
- package net.minecraft.commands;
- 
- import java.util.UUID;
- import net.minecraft.network.chat.Component;
- 
- public interface CommandSource {
-    CommandSource f_80164_ = new CommandSource() {
 @@ -19,6 +_,14 @@
        public boolean m_6102_() {
           return false;

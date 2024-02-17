@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/TrapDoorBlock.java
 +++ b/net/minecraft/world/level/block/TrapDoorBlock.java
-@@ -25,6 +_,6 @@
- import net.minecraft.world.phys.BlockHitResult;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class TrapDoorBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
-    public static final BooleanProperty f_57514_ = BlockStateProperties.f_61446_;
 @@ -106,6 +_,19 @@
        if (!p_57548_.f_46443_) {
           boolean flag = p_57548_.m_46753_(p_57549_);

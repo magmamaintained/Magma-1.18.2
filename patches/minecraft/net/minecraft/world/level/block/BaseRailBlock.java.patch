@@ -1,7 +1,6 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -19,8 +_,8 @@
- import net.minecraft.world.level.material.PushReaction;
+@@ -20,7 +_,7 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.VoxelShape;
  

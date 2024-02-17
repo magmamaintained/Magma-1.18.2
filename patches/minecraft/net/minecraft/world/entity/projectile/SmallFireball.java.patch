@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/SmallFireball.java
 +++ b/net/minecraft/world/entity/projectile/SmallFireball.java
-@@ -12,6 +_,6 @@
- import net.minecraft.world.phys.BlockHitResult;
- import net.minecraft.world.phys.EntityHitResult;
- import net.minecraft.world.phys.HitResult;
- 
- public class SmallFireball extends Fireball {
-    public SmallFireball(EntityType<? extends SmallFireball> p_37364_, Level p_37365_) {
 @@ -24,6 +_,11 @@
  
     public SmallFireball(Level p_37367_, double p_37368_, double p_37369_, double p_37370_, double p_37371_, double p_37372_, double p_37373_) {

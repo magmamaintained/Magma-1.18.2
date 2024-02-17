@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/DyeItem.java
 +++ b/net/minecraft/world/item/DyeItem.java
-@@ -9,6 +_,6 @@
- import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.animal.Sheep;
- import net.minecraft.world.entity.player.Player;
- 
- public class DyeItem extends Item {
-    private static final Map<DyeColor, DyeItem> f_41076_ = Maps.newEnumMap(DyeColor.class);
 @@ -26,7 +_,17 @@
           if (sheep.m_6084_() && !sheep.m_29875_() && sheep.m_29874_() != this.f_41077_) {
              sheep.f_19853_.m_6269_(p_41086_, sheep, SoundEvents.f_144133_, SoundSource.PLAYERS, 1.0F, 1.0F);

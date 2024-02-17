@@ -1,22 +1,5 @@
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -2,16 +_,16 @@
- 
- import com.mojang.datafixers.DataFixer;
- import com.mojang.logging.LogUtils;
- import java.io.File;
- import javax.annotation.Nullable;
- import net.minecraft.Util;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.nbt.NbtIo;
- import net.minecraft.nbt.NbtUtils;
- import net.minecraft.util.datafix.DataFixTypes;
- import net.minecraft.world.entity.player.Player;
- import org.slf4j.Logger;
- 
- public class PlayerDataStorage {
-    private static final Logger f_78426_ = LogUtils.getLogger();
-    private final File f_78427_;
 @@ -24,6 +_,7 @@
     }
  

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/vehicle/Boat.java
 +++ b/net/minecraft/world/entity/vehicle/Boat.java
-@@ -47,6 +_,6 @@
- import net.minecraft.world.phys.shapes.BooleanOp;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class Boat extends Entity {
-    private static final EntityDataAccessor<Integer> f_38282_ = SynchedEntityData.m_135353_(Boat.class, EntityDataSerializers.f_135028_);
 @@ -87,6 +_,14 @@
     private float f_38260_;
     private float f_38261_;

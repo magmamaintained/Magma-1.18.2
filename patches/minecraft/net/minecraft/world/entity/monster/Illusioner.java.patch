@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/monster/Illusioner.java
 +++ b/net/minecraft/world/entity/monster/Illusioner.java
-@@ -38,6 +_,6 @@
- import net.minecraft.world.level.ServerLevelAccessor;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
- 
- public class Illusioner extends SpellcasterIllager implements RangedAttackMob {
-    private static final int f_149715_ = 4;
 @@ -178,8 +_,10 @@
     }
  

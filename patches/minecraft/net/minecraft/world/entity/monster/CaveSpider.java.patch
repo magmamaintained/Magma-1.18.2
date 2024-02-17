@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/monster/CaveSpider.java
 +++ b/net/minecraft/world/entity/monster/CaveSpider.java
-@@ -17,6 +_,6 @@
- import net.minecraft.world.entity.ai.attributes.Attributes;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.ServerLevelAccessor;
- 
- public class CaveSpider extends Spider {
-    public CaveSpider(EntityType<? extends CaveSpider> p_32254_, Level p_32255_) {
 @@ -38,7 +_,8 @@
              }
  

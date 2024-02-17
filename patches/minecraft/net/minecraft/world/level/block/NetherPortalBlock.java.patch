@@ -1,19 +1,5 @@
 --- a/net/minecraft/world/level/block/NetherPortalBlock.java
 +++ b/net/minecraft/world/level/block/NetherPortalBlock.java
-@@ -1,6 +_,6 @@
- package net.minecraft.world.level.block;
- 
- import java.util.Random;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.core.particles.ParticleTypes;
-@@ -26,6 +_,6 @@
- import net.minecraft.world.level.portal.PortalShape;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class NetherPortalBlock extends Block {
-    public static final EnumProperty<Direction.Axis> f_54904_ = BlockStateProperties.f_61364_;
 @@ -49,12 +_,13 @@
     }
  

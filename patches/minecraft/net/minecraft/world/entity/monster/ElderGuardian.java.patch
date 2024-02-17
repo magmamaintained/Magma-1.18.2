@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/monster/ElderGuardian.java
 +++ b/net/minecraft/world/entity/monster/ElderGuardian.java
-@@ -14,6 +_,6 @@
- import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
- import net.minecraft.world.entity.ai.attributes.Attributes;
- import net.minecraft.world.level.Level;
- 
- public class ElderGuardian extends Guardian {
-    public static final float f_32457_ = EntityType.f_20563_.m_20678_() / EntityType.f_20455_.m_20678_();
 @@ -66,7 +_,8 @@
           for(ServerPlayer serverplayer : list) {
              if (!serverplayer.m_21023_(mobeffect) || serverplayer.m_21124_(mobeffect).m_19564_() < 2 || serverplayer.m_21124_(mobeffect).m_19557_() < 1200) {

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-@@ -27,6 +_,6 @@
- import net.minecraft.util.VisibleForDebug;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.level.ChunkPos;
- import org.slf4j.Logger;
- 
- public class PersistentEntitySectionManager<T extends EntityAccess> implements AutoCloseable {
 @@ -52,6 +_,16 @@
        this.f_157496_ = new LevelEntityGetterAdapter<>(this.f_157494_, this.f_157495_);
     }

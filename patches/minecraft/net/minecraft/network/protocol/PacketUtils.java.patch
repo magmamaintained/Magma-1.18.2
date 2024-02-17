@@ -1,14 +1,5 @@
 --- a/net/minecraft/network/protocol/PacketUtils.java
 +++ b/net/minecraft/network/protocol/PacketUtils.java
-@@ -2,8 +_,8 @@
- 
- import com.mojang.logging.LogUtils;
- import net.minecraft.network.PacketListener;
- import net.minecraft.server.RunningOnDifferentThreadException;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.util.thread.BlockableEventLoop;
- import org.slf4j.Logger;
- 
 @@ -17,8 +_,10 @@
     public static <T extends PacketListener> void m_131363_(Packet<T> p_131364_, T p_131365_, BlockableEventLoop<?> p_131366_) throws RunningOnDifferentThreadException {
        if (!p_131366_.m_18695_()) {

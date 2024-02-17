@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Pufferfish.java
 +++ b/net/minecraft/world/entity/animal/Pufferfish.java
-@@ -25,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.Items;
- import net.minecraft.world.level.Level;
- 
- public class Pufferfish extends AbstractFish {
-    private static final EntityDataAccessor<Integer> f_29596_ = SynchedEntityData.m_135353_(Pufferfish.class, EntityDataSerializers.f_135028_);
 @@ -132,7 +_,8 @@
     private void m_29605_(Mob p_29606_) {
        int i = this.m_29631_();

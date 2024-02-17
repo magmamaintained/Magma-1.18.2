@@ -1,12 +1,5 @@
 --- a/net/minecraft/server/commands/SummonCommand.java
 +++ b/net/minecraft/server/commands/SummonCommand.java
-@@ -21,6 +_,6 @@
- import net.minecraft.world.entity.SpawnGroupData;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.Vec3;
- 
- public class SummonCommand {
-    private static final SimpleCommandExceptionType f_138810_ = new SimpleCommandExceptionType(new TranslatableComponent("commands.summon.failed"));
 @@ -29,7 +_,7 @@
  
     public static void m_138814_(CommandDispatcher<CommandSourceStack> p_138815_) {
