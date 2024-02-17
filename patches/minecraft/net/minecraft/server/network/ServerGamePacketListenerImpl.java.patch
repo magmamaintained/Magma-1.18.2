@@ -1,197 +1,8 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1,31 +_,17 @@
- package net.minecraft.server.network;
- 
-+import co.aikar.timings.MinecraftTimings;
- import com.google.common.collect.Lists;
- import com.google.common.primitives.Floats;
- import com.mojang.brigadier.ParseResults;
- import com.mojang.brigadier.StringReader;
- import com.mojang.logging.LogUtils;
-+import io.netty.buffer.ByteBuf;
- import io.netty.util.concurrent.Future;
- import io.netty.util.concurrent.GenericFutureListener;
--import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
- import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
--import java.util.Collections;
--import java.util.List;
--import java.util.Optional;
--import java.util.Set;
--import java.util.concurrent.CompletableFuture;
--import java.util.function.BiFunction;
--import java.util.function.Consumer;
--import java.util.function.UnaryOperator;
--import java.util.stream.Collectors;
--import java.util.stream.Stream;
--import javax.annotation.Nullable;
--import net.minecraft.ChatFormatting;
--import net.minecraft.CrashReport;
--import net.minecraft.CrashReportCategory;
--import net.minecraft.ReportedException;
--import net.minecraft.SharedConstants;
--import net.minecraft.Util;
-+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-+import net.minecraft.*;
- import net.minecraft.advancements.Advancement;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.commands.CommandSourceStack;
-@@ -41,62 +_,7 @@
- import net.minecraft.network.chat.TranslatableComponent;
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.network.protocol.PacketUtils;
--import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
--import net.minecraft.network.protocol.game.ClientboundChatPacket;
--import net.minecraft.network.protocol.game.ClientboundCommandSuggestionsPacket;
--import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
--import net.minecraft.network.protocol.game.ClientboundDisconnectPacket;
--import net.minecraft.network.protocol.game.ClientboundKeepAlivePacket;
--import net.minecraft.network.protocol.game.ClientboundMoveVehiclePacket;
--import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
--import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
--import net.minecraft.network.protocol.game.ClientboundTagQueryPacket;
--import net.minecraft.network.protocol.game.ServerGamePacketListener;
--import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
--import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQuery;
--import net.minecraft.network.protocol.game.ServerboundChangeDifficultyPacket;
--import net.minecraft.network.protocol.game.ServerboundChatPacket;
--import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
--import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
--import net.minecraft.network.protocol.game.ServerboundCommandSuggestionPacket;
--import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
--import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
--import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
--import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
--import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
--import net.minecraft.network.protocol.game.ServerboundEntityTagQuery;
--import net.minecraft.network.protocol.game.ServerboundInteractPacket;
--import net.minecraft.network.protocol.game.ServerboundJigsawGeneratePacket;
--import net.minecraft.network.protocol.game.ServerboundKeepAlivePacket;
--import net.minecraft.network.protocol.game.ServerboundLockDifficultyPacket;
--import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
--import net.minecraft.network.protocol.game.ServerboundMoveVehiclePacket;
--import net.minecraft.network.protocol.game.ServerboundPaddleBoatPacket;
--import net.minecraft.network.protocol.game.ServerboundPickItemPacket;
--import net.minecraft.network.protocol.game.ServerboundPlaceRecipePacket;
--import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
--import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
--import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
--import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket;
--import net.minecraft.network.protocol.game.ServerboundPongPacket;
--import net.minecraft.network.protocol.game.ServerboundRecipeBookChangeSettingsPacket;
--import net.minecraft.network.protocol.game.ServerboundRecipeBookSeenRecipePacket;
--import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
--import net.minecraft.network.protocol.game.ServerboundResourcePackPacket;
--import net.minecraft.network.protocol.game.ServerboundSeenAdvancementsPacket;
--import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
--import net.minecraft.network.protocol.game.ServerboundSetBeaconPacket;
--import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
--import net.minecraft.network.protocol.game.ServerboundSetCommandBlockPacket;
--import net.minecraft.network.protocol.game.ServerboundSetCommandMinecartPacket;
--import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
--import net.minecraft.network.protocol.game.ServerboundSetJigsawBlockPacket;
--import net.minecraft.network.protocol.game.ServerboundSetStructureBlockPacket;
--import net.minecraft.network.protocol.game.ServerboundSignUpdatePacket;
--import net.minecraft.network.protocol.game.ServerboundSwingPacket;
--import net.minecraft.network.protocol.game.ServerboundTeleportToEntityPacket;
--import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
--import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
-+import net.minecraft.network.protocol.game.*;
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.level.ServerLevel;
-@@ -107,10 +_,8 @@
- import net.minecraft.world.InteractionHand;
- import net.minecraft.world.InteractionResult;
- import net.minecraft.world.effect.MobEffects;
--import net.minecraft.world.entity.Entity;
--import net.minecraft.world.entity.ExperienceOrb;
--import net.minecraft.world.entity.MoverType;
--import net.minecraft.world.entity.PlayerRideableJumping;
-+import net.minecraft.world.entity.*;
-+import net.minecraft.world.entity.animal.Bucketable;
- import net.minecraft.world.entity.animal.horse.AbstractHorse;
- import net.minecraft.world.entity.item.ItemEntity;
- import net.minecraft.world.entity.player.ChatVisiblity;
-@@ -118,1340 +_,2527 @@
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.entity.projectile.AbstractArrow;
- import net.minecraft.world.entity.vehicle.Boat;
--import net.minecraft.world.inventory.AbstractContainerMenu;
--import net.minecraft.world.inventory.AnvilMenu;
--import net.minecraft.world.inventory.BeaconMenu;
--import net.minecraft.world.inventory.MerchantMenu;
--import net.minecraft.world.inventory.RecipeBookMenu;
--import net.minecraft.world.item.BlockItem;
--import net.minecraft.world.item.BucketItem;
--import net.minecraft.world.item.Item;
--import net.minecraft.world.item.ItemStack;
--import net.minecraft.world.item.Items;
--import net.minecraft.world.level.BaseCommandBlock;
--import net.minecraft.world.level.ChunkPos;
--import net.minecraft.world.level.GameRules;
--import net.minecraft.world.level.GameType;
--import net.minecraft.world.level.Level;
--import net.minecraft.world.level.LevelReader;
-+import net.minecraft.world.inventory.*;
-+import net.minecraft.world.item.*;
-+import net.minecraft.world.level.*;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.CommandBlock;
--import net.minecraft.world.level.block.entity.BlockEntity;
--import net.minecraft.world.level.block.entity.CommandBlockEntity;
--import net.minecraft.world.level.block.entity.JigsawBlockEntity;
--import net.minecraft.world.level.block.entity.SignBlockEntity;
--import net.minecraft.world.level.block.entity.StructureBlockEntity;
--import net.minecraft.world.level.block.state.BlockBehaviour;
-+import net.minecraft.world.level.block.entity.*;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.BlockHitResult;
-+import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.BooleanOp;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
--import org.apache.commons.lang3.StringUtils;
-+import net.minecraftforge.common.ForgeHooks;
-+import net.minecraftforge.server.ServerLifecycleHooks;
-+import org.bukkit.Bukkit;
-+import org.bukkit.Location;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
-+import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
-+import org.bukkit.craftbukkit.v1_18_R2.util.LazyPlayerSet;
-+import org.bukkit.craftbukkit.v1_18_R2.util.Waitable;
-+import org.bukkit.event.Event;
-+import org.bukkit.event.block.Action;
-+import org.bukkit.event.block.SignChangeEvent;
-+import org.bukkit.event.inventory.ClickType;
-+import org.bukkit.event.inventory.*;
-+import org.bukkit.event.player.*;
-+import org.bukkit.inventory.CraftingInventory;
-+import org.bukkit.inventory.InventoryView;
-+import org.bukkit.inventory.SmithingInventory;
-+import org.magmafoundation.magma.Magma;
-+import org.magmafoundation.magma.helpers.BorderHelper;
-+import org.magmafoundation.magma.helpers.InventoryViewHelper;
+@@ -153,1305 +_,2474 @@
  import org.slf4j.Logger;
  
-+import javax.annotation.Nullable;
-+import java.nio.charset.StandardCharsets;
-+import java.util.*;
-+import java.util.concurrent.CompletableFuture;
-+import java.util.concurrent.ExecutionException;
-+import java.util.function.BiFunction;
-+import java.util.function.Consumer;
-+import java.util.function.UnaryOperator;
-+import java.util.stream.Collectors;
-+import java.util.stream.Stream;
-+
  public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener {
 -   static final Logger f_9744_ = LogUtils.getLogger();
 -   private static final int f_143608_ = 15000;
@@ -326,7 +137,7 @@
 +        this.cserver = p_9770_.server;
 +    }
 +
-+    private final CraftServer cserver;
++    private final org.bukkit.craftbukkit.v1_18_R2.CraftServer cserver;
 +    public boolean processedDisconnect;
 +    private int lastTick = MinecraftServer.currentTick;
 +    private int allowedPlayerTicks = 1;
@@ -343,8 +154,8 @@
 +    private boolean justTeleported = false;
 +    private boolean hasMoved; // Spigot
 +
-+    public CraftPlayer getCraftPlayer() {
-+        return (this.f_9743_ == null) ? null : (CraftPlayer) this.f_9743_.getBukkitEntity();
++    public org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer getCraftPlayer() {
++        return (this.f_9743_ == null) ? null : (org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) this.f_9743_.getBukkitEntity();
 +    }
 +    // CraftBukkit end
 +
@@ -550,7 +361,7 @@
 +    // CraftBukkit start
 +    @Deprecated
 +    public void m_9942_(Component p_9943_) {
-+        disconnect(CraftChatMessage.fromComponent(p_9943_));
++        disconnect(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromComponent(p_9943_));
 +    }
 +
 +    // CraftBukkit end
@@ -561,7 +372,7 @@
 +        }
 +        String leaveMessage = ChatFormatting.YELLOW + this.f_9743_.m_6302_() + " left the game";
 +
-+        PlayerKickEvent event = new PlayerKickEvent(this.f_9743_.getBukkitEntity(), s, leaveMessage);
++        org.bukkit.event.player.PlayerKickEvent event = new org.bukkit.event.player.PlayerKickEvent(this.f_9743_.getBukkitEntity(), s, leaveMessage);
 +
 +        if (this.cserver.getServer().m_130010_()) {
 +            this.cserver.getPluginManager().callEvent(event);
@@ -579,7 +390,7 @@
 +        if (this.processedDisconnect) {
 +            return;
 +        }
-+        final Component p_9943_ = CraftChatMessage.fromString(s, true)[0];
++        final Component p_9943_ = org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromString(s, true)[0];
 +        // CraftBukkit end
 +
 +        this.f_9742_.m_129514_( new ClientboundDisconnectPacket( p_9943_ ), (p_9828_) -> {
@@ -707,7 +518,7 @@
 +                    flag2 = true;
 +                    f_9744_.warn( "{} (vehicle of {}) moved wrongly! {}", entity.m_7755_().getString(), this.f_9743_.m_7755_().getString(), Math.sqrt( d10 ) );
 +                }
-+                Location curPos = this.getCraftPlayer().getLocation(); // Spigot
++                org.bukkit.Location curPos = this.getCraftPlayer().getLocation(); // Spigot
 +
 +                entity.m_19890_( d3, d4, d5, f, f1 );
 +                f_9743_.m_19890_(d3, d4, d5, this.f_9743_.m_146908_(), this.f_9743_.m_146909_()); // CraftBukkit
@@ -734,8 +545,8 @@
 +                    hasMoved = true;
 +                }
 +                // Spigot End
-+                Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
-+                Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
++                org.bukkit.Location from = new org.bukkit.Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous org.bukkit.event.Event location.
++                org.bukkit.Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
 +
 +                // If the packet contains movement information then we update the To location with the correct XYZ.
 +                to.setX(p_9876_.m_134199_());
@@ -759,8 +570,8 @@
 +
 +                    // Skip the first time we do this
 +                    if (true) { // Spigot - don't skip any move events
-+                        Location oldTo = to.clone();
-+                        PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
++                        org.bukkit.Location oldTo = to.clone();
++                        org.bukkit.event.player.PlayerMoveEvent event = new org.bukkit.event.player.PlayerMoveEvent(player, from, to);
 +                        this.cserver.getPluginManager().callEvent(event);
 +
 +                        // If the event is cancelled we move the player back to their old location.
@@ -771,13 +582,13 @@
 +
 +                        // If a Plugin has changed the To destination then we teleport the Player
 +                        // there to avoid any 'Moved wrongly' or 'Moved too quickly' errors.
-+                        // We only do this if the Event was not cancelled.
++                        // We only do this if the org.bukkit.event.Event was not cancelled.
 +                        if (!oldTo.equals(event.getTo()) && !event.isCancelled()) {
-+                            this.f_9743_.getBukkitEntity().teleport(event.getTo(), PlayerTeleportEvent.TeleportCause.PLUGIN);
++                            this.f_9743_.getBukkitEntity().teleport(event.getTo(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN);
 +                            return;
 +                        }
 +
-+                        // Check to see if the Players Location has some how changed during the call of the event.
++                        // Check to see if the Players org.bukkit.Location has some how changed during the call of the event.
 +                        // This can happen due to a plugin teleporting the player instead of using .setTo()
 +                        if (!from.equals(this.getCraftPlayer().getLocation()) && this.justTeleported) {
 +                            this.justTeleported = false;
@@ -1070,7 +881,7 @@
 +            MerchantMenu merchantmenu = (MerchantMenu) abstractcontainermenu;
 +
 +            // CraftBukkit start
-+            final org.bukkit.event.inventory.TradeSelectEvent tradeSelectEvent = CraftEventFactory.callTradeSelectEvent(this.f_9743_, i, merchantmenu);
++            final org.bukkit.event.inventory.TradeSelectEvent tradeSelectEvent = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callTradeSelectEvent(this.f_9743_, i, merchantmenu);
 +            if (tradeSelectEvent.isCancelled()) {
 +                this.f_9743_.getBukkitEntity().updateInventory();
 +                return;
@@ -1162,7 +973,7 @@
 +        }
 +
 +        p_143637_.m_41700_( "pages", listtag );
-+        CraftEventFactory.handleEditBookEvent(f_9743_, slot, handItem, p_143637_); // CraftBukkit
++        org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleEditBookEvent(f_9743_, slot, handItem, p_143637_); // CraftBukkit
 +    }
 +
 +    public void m_7548_(ServerboundEntityTagQuery p_9864_) {
@@ -1448,8 +1259,8 @@
 +                                this.f_9743_.m_19890_(prevX, prevY, prevZ, prevYaw, prevPitch);
 +
 +                                org.bukkit.entity.Player player = this.getCraftPlayer();
-+                                Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
-+                                Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
++                                org.bukkit.Location from = new org.bukkit.Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous org.bukkit.event.Event location.
++                                org.bukkit.Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
 +
 +                                // If the packet contains movement information then we update the To location with the correct XYZ.
 +                                if (p_9874_.f_134124_) {
@@ -1477,8 +1288,8 @@
 +
 +                                    // Skip the first time we do this
 +                                    if (from.getX() != Double.MAX_VALUE) {
-+                                        Location oldTo = to.clone();
-+                                        PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
++                                        org.bukkit.Location oldTo = to.clone();
++                                        org.bukkit.event.player.PlayerMoveEvent event = new org.bukkit.event.player.PlayerMoveEvent(player, from, to);
 +                                        this.cserver.getPluginManager().callEvent(event);
 +
 +                                        // If the event is cancelled we move the player back to their old location.
@@ -1489,13 +1300,13 @@
 +
 +                                        // If a Plugin has changed the To destination then we teleport the Player
 +                                        // there to avoid any 'Moved wrongly' or 'Moved too quickly' errors.
-+                                        // We only do this if the Event was not cancelled.
++                                        // We only do this if the org.bukkit.event.Event was not cancelled.
 +                                        if (!oldTo.equals(event.getTo()) && !event.isCancelled()) {
-+                                            this.f_9743_.getBukkitEntity().teleport(event.getTo(), PlayerTeleportEvent.TeleportCause.PLUGIN);
++                                            this.f_9743_.getBukkitEntity().teleport(event.getTo(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN);
 +                                            return;
 +                                        }
 +
-+                                        // Check to see if the Players Location has some how changed during the call of the event.
++                                        // Check to see if the Players org.bukkit.Location has some how changed during the call of the event.
 +                                        // This can happen due to a plugin teleporting the player instead of using .setTo()
 +                                        if (!from.equals(this.getCraftPlayer().getLocation()) && this.justTeleported) {
 +                                            this.justTeleported = false;
@@ -1541,28 +1352,28 @@
 +        return false;
 +    }
 +
-+    // CraftBukkit start - Delegate to teleport(Location)
++    // CraftBukkit start - Delegate to teleport(org.bukkit.Location)
 +    public void m_143611_(double p_143612_, double p_143613_, double p_143614_, float p_143615_, float p_143616_) {
-+        this.dismount( p_143612_, p_143613_, p_143614_, p_143615_, p_143616_, PlayerTeleportEvent.TeleportCause.UNKNOWN );
++        this.dismount( p_143612_, p_143613_, p_143614_, p_143615_, p_143616_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN );
 +    }
 +
-+    public void dismount(double p_143612_, double p_143613_, double p_143614_, float p_143615_, float p_143616_, PlayerTeleportEvent.TeleportCause cause) {
++    public void dismount(double p_143612_, double p_143613_, double p_143614_, float p_143615_, float p_143616_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        this.prepareTeleport(cause);
 +        this.m_143617_( p_143612_, p_143613_, p_143614_, p_143615_, p_143616_, Collections.emptySet(), true );
 +    }
 +
 +    //Magma start - move bukkit teleport to its own method
 +    public void m_9774_(double p_9775_, double p_9776_, double p_9777_, float p_9778_, float p_9779_) {
-+        this.teleport( p_9775_, p_9776_, p_9777_, p_9778_, p_9779_, PlayerTeleportEvent.TeleportCause.UNKNOWN );
++        this.teleport( p_9775_, p_9776_, p_9777_, p_9778_, p_9779_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN );
 +    }
 +
-+    public void teleport(double d0, double d1, double d2, float f, float f1, PlayerTeleportEvent.TeleportCause cause) {
++    public void teleport(double d0, double d1, double d2, float f, float f1, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        this.prepareTeleport(cause);
 +        this.m_143617_( d0, d1, d2, f, f1, Collections.emptySet(), false );
 +    }
 +
 +
-+    public void teleport(double p_9781_, double p_9782_, double p_9783_, float p_9784_, float p_9785_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_9786_, PlayerTeleportEvent.TeleportCause cause) {
++    public void teleport(double p_9781_, double p_9782_, double p_9783_, float p_9784_, float p_9785_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_9786_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        this.prepareTeleport(cause);
 +        this.m_143617_( p_9781_, p_9782_, p_9783_, p_9784_, p_9785_, p_9786_, false );
 +    }
@@ -1572,24 +1383,24 @@
 +        this.m_143617_( p_9781_, p_9782_, p_9783_, p_9784_, p_9785_, p_9786_, false );
 +    }
 +
-+    PlayerTeleportEvent.TeleportCause teleportCause = PlayerTeleportEvent.TeleportCause.UNKNOWN;
++    org.bukkit.event.player.PlayerTeleportEvent.TeleportCause teleportCause = org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN;
 +
-+    public void prepareTeleport(PlayerTeleportEvent.TeleportCause cause) {
++    public void prepareTeleport(org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        teleportCause = cause;
 +    }
 +
 +    public void resetCause() {
-+        teleportCause = PlayerTeleportEvent.TeleportCause.UNKNOWN;
++        teleportCause = org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN;
 +    }
 +
 +    private boolean teleportResult = true; //assume that the player teleported successfully
 +    public void m_143617_(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_) {
-+        PlayerTeleportEvent.TeleportCause tmp = teleportCause;
++        org.bukkit.event.player.PlayerTeleportEvent.TeleportCause tmp = teleportCause;
 +        resetCause();
 +        teleportResult = true;
 +
 +        org.bukkit.entity.Player player = this.getCraftPlayer();
-+        Location from = player.getLocation();
++        org.bukkit.Location from = player.getLocation();
 +
 +        double x = p_143618_;
 +        double y = p_143619_;
@@ -1597,14 +1408,14 @@
 +        float yaw = p_143621_;
 +        float pitch = p_143622_;
 +
-+        Location to = new Location( this.getCraftPlayer().getWorld(), x, y, z, yaw, pitch );
++        org.bukkit.Location to = new org.bukkit.Location( this.getCraftPlayer().getWorld(), x, y, z, yaw, pitch );
 +        // SPIGOT-5171: Triggered on join
 +        if (from.equals( to )) {
 +            this.internalTeleport( p_143618_, p_143619_, p_143620_, p_143621_, p_143622_, p_143623_, p_143624_ );
 +            return; // CraftBukkit - Return event status
 +        }
 +
-+        PlayerTeleportEvent event = new PlayerTeleportEvent( player, from.clone(), to.clone(), tmp );
++        org.bukkit.event.player.PlayerTeleportEvent event = new org.bukkit.event.player.PlayerTeleportEvent( player, from.clone(), to.clone(), tmp );
 +        this.cserver.getPluginManager().callEvent( event );
 +
 +        if (event.isCancelled() || !to.equals( event.getTo() )) {
@@ -1621,7 +1432,7 @@
 +        teleportResult = event.isCancelled(); // CraftBukkit - Return event status //Magma - set to variable
 +    }
 +
-+    public boolean teleport(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_, PlayerTeleportEvent.TeleportCause cause) {
++    public boolean teleport(double p_143618_, double p_143619_, double p_143620_, float p_143621_, float p_143622_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_143623_, boolean p_143624_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        this.prepareTeleport(cause);
 +        this.m_143617_( p_143618_, p_143619_, p_143620_, p_143621_, p_143622_, p_143623_, p_143624_ );
 +        boolean result = teleportResult;
@@ -1675,9 +1486,9 @@
 +                if (!this.f_9743_.m_5833_()) {
 +                    ItemStack itemstack = this.f_9743_.m_21120_( InteractionHand.OFF_HAND );
 +                    // CraftBukkit start - inspiration taken from DispenserRegistry (See SpigotCraft#394)
-+                    CraftItemStack mainHand = CraftItemStack.asCraftMirror(itemstack);
-+                    CraftItemStack offHand = CraftItemStack.asCraftMirror(this.f_9743_.m_21120_(InteractionHand.MAIN_HAND));
-+                    PlayerSwapHandItemsEvent swapItemsEvent = new PlayerSwapHandItemsEvent(getCraftPlayer(), mainHand.clone(), offHand.clone());
++                    org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack mainHand = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(itemstack);
++                    org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack offHand = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.f_9743_.m_21120_(InteractionHand.MAIN_HAND));
++                    org.bukkit.event.player.PlayerSwapHandItemsEvent swapItemsEvent = new org.bukkit.event.player.PlayerSwapHandItemsEvent(getCraftPlayer(), mainHand.clone(), offHand.clone());
 +                    this.cserver.getPluginManager().callEvent(swapItemsEvent);
 +                    if (swapItemsEvent.isCancelled()) {
 +                        return;
@@ -1685,12 +1496,12 @@
 +                    if (swapItemsEvent.getOffHandItem().equals(offHand)) {
 +                        this.f_9743_.m_21008_(InteractionHand.OFF_HAND, this.f_9743_.m_21120_(InteractionHand.MAIN_HAND));
 +                    } else {
-+                        this.f_9743_.m_21008_(InteractionHand.OFF_HAND, CraftItemStack.asNMSCopy(swapItemsEvent.getOffHandItem()));
++                        this.f_9743_.m_21008_(InteractionHand.OFF_HAND, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(swapItemsEvent.getOffHandItem()));
 +                    }
 +                    if (swapItemsEvent.getMainHandItem().equals(mainHand)) {
 +                        this.f_9743_.m_21008_(InteractionHand.MAIN_HAND, itemstack);
 +                    } else {
-+                        this.f_9743_.m_21008_(InteractionHand.MAIN_HAND, CraftItemStack.asNMSCopy(swapItemsEvent.getMainHandItem()));
++                        this.f_9743_.m_21008_(InteractionHand.MAIN_HAND, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(swapItemsEvent.getMainHandItem()));
 +                    }
 +                    // CraftBukkit end
 +                    this.f_9743_.m_5810_();
@@ -2170,7 +1981,7 @@
 +                this.f_9743_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(serverlevel, blockpos));
 +                this.f_9743_.f_8906_.m_141995_(new ClientboundBlockUpdatePacket(serverlevel, blockpos.m_142300_(direction)));
 +            } else {
-+                f_9744_.warn("Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.f_9743_.m_36316_().getName(), vec3, blockpos);
++                f_9744_.warn("Ignoring UseItemOnPacket from {}: org.bukkit.Location {} too far away from hit block {}.", this.f_9743_.m_36316_().getName(), vec3, blockpos);
 +            }
 +        } else {
 +            f_9744_.warn("Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.", this.f_9743_.m_36316_().getName(), blockpos, this.f_9743_.m_142538_());
@@ -2466,19 +2277,19 @@
 +            float f8 = f3 * f5;
 +            double d3 = f_9743_.f_8941_.m_9290_()== GameType.CREATIVE ? 5.0D : 4.5D;
 +            Vec3 vec3d1 = vec3d.m_82520_((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
-+            HitResult movingobjectposition = this.f_9743_.f_19853_.m_45547_(new ClipContext(vec3d, vec3d1, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, f_9743_));
++            net.minecraft.world.phys.HitResult movingobjectposition = this.f_9743_.f_19853_.m_45547_(new net.minecraft.world.level.ClipContext(vec3d, vec3d1, net.minecraft.world.level.ClipContext.Block.OUTLINE, net.minecraft.world.level.ClipContext.Fluid.NONE, f_9743_));
 +
 +            boolean cancelled;
-+            if (movingobjectposition == null || movingobjectposition.m_6662_() != HitResult.Type.BLOCK) {
-+                org.bukkit.event.player.PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(this.f_9743_, Action.RIGHT_CLICK_AIR, itemstack, interactionhand);
-+                cancelled = event.useItemInHand() == Event.Result.DENY;
++            if (movingobjectposition == null || movingobjectposition.m_6662_() != net.minecraft.world.phys.HitResult.Type.BLOCK) {
++                org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent(this.f_9743_, org.bukkit.event.block.Action.RIGHT_CLICK_AIR, itemstack, interactionhand);
++                cancelled = event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
 +            } else {
 +                BlockHitResult movingobjectpositionblock = (BlockHitResult) movingobjectposition;
 +                if (f_9743_.f_8941_.firedInteract && f_9743_.f_8941_.interactPosition.equals(movingobjectpositionblock.m_82425_()) && f_9743_.f_8941_.interactHand == interactionhand && ItemStack.m_41658_(f_9743_.f_8941_.interactItemStack, itemstack)) {
 +                    cancelled = f_9743_.f_8941_.interactResult;
 +                } else {
-+                    org.bukkit.event.player.PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(f_9743_, Action.RIGHT_CLICK_BLOCK, movingobjectpositionblock.m_82425_(), movingobjectpositionblock.m_82434_(), itemstack, true, interactionhand);
-+                    cancelled = event.useItemInHand() == Event.Result.DENY;
++                    org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent(f_9743_, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, movingobjectpositionblock.m_82425_(), movingobjectpositionblock.m_82434_(), itemstack, true, interactionhand);
++                    cancelled = event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
 +                }
 +                f_9743_.f_8941_.firedInteract = false;
 +            }
@@ -2514,7 +2325,7 @@
 +            f_9744_.info( "Disconnecting {} due to resource pack rejection", (Object) this.f_9743_.m_7755_() );
 +            this.m_9942_( new TranslatableComponent( "multiplayer.requiredTexturePrompt.disconnect" ) );
 +        }
-+//        this.cserver.getPluginManager().callEvent(new PlayerResourcePackStatusEvent(getCraftPlayer(), PlayerResourcePackStatusEvent.Status.values()[p_9901_.action.ordinal()])); // CraftBukkit
++//        this.cserver.getPluginManager().callEvent(new org.bukkit.event.player.PlayerResourcePackStatusEvent(getCraftPlayer(), org.bukkit.event.player.PlayerResourcePackStatusEvent.Status.values()[p_9901_.action.ordinal()])); // CraftBukkit
 +    }
 +
 +    public void m_5938_(ServerboundPaddleBoatPacket p_9878_) {
@@ -2547,8 +2358,8 @@
 +        String defaultQuitMessage = ChatFormatting.YELLOW + this.f_9743_.m_7755_().getString() + " left the game";
 +        String quitMessage = this.f_9745_.m_6846_().removeAndReturn(this.f_9743_);
 +        if (((quitMessage != null) && (quitMessage.length() > 0))) { //Check if bukkit hasn't cancelled the quit message
-+            if (!Objects.equals(quitMessage, defaultQuitMessage)) //If the message is not the default one, broadcast it, otherwise we let mixins handle it
-+                this.f_9745_.m_6846_().broadcastMessage(CraftChatMessage.fromString(quitMessage));
++            if (!java.util.Objects.equals(quitMessage, defaultQuitMessage)) //If the message is not the default one, broadcast it, otherwise we let mixins handle it
++                this.f_9745_.m_6846_().broadcastMessage(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromString(quitMessage));
 +            else
 +                this.f_9745_.m_6846_().m_11264_((new TranslatableComponent("multiplayer.player.left", this.f_9743_.m_5446_())).m_130940_(ChatFormatting.YELLOW), ChatType.SYSTEM, Util.f_137441_);
 +        }
@@ -2569,13 +2380,13 @@
 +        // CraftBukkit start
 +        if (p_9832_ == null || this.processedDisconnect) { // Spigot
 +            return;
-+        } else if (p_9832_ instanceof ClientboundSetDefaultSpawnPositionPacket) {
-+            ClientboundSetDefaultSpawnPositionPacket packet6 = (ClientboundSetDefaultSpawnPositionPacket) p_9832_;
-+            this.f_9743_.compassTarget = new Location(this.getCraftPlayer().getWorld(), packet6.f_133111_.m_123341_(), packet6.f_133111_.m_123342_(), packet6.f_133111_.m_123343_());
++        } else if (p_9832_ instanceof net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket) {
++            net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket packet6 = (net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket) p_9832_;
++            this.f_9743_.compassTarget = new org.bukkit.Location(this.getCraftPlayer().getWorld(), packet6.f_133111_.m_123341_(), packet6.f_133111_.m_123342_(), packet6.f_133111_.m_123343_());
 +        }
 +        // CraftBukkit end
 +        //Magma start - capture dimension packets
-+        BorderHelper.captureBorderPacket(p_9832_, this.f_9743_);
++        org.magmafoundation.magma.helpers.BorderHelper.captureBorderPacket(p_9832_, this.f_9743_);
 +        try {
 +            this.f_9742_.m_129514_( p_9832_, p_9833_ );
 +        } catch (Throwable throwable) {
@@ -2586,7 +2397,7 @@
 +            } );
 +            throw new ReportedException( crashreport );
 +        } finally {
-+            BorderHelper.clearCapture(p_9832_);
++            org.magmafoundation.magma.helpers.BorderHelper.clearCapture(p_9832_);
 +            //Magma end
 +        }
 +    }
@@ -2595,7 +2406,7 @@
 +        PacketUtils.m_131359_( p_9909_, this, this.f_9743_.m_183503_() );
 +        if (this.f_9743_.m_6107_()) return; // CraftBukkit
 +        if (p_9909_.m_134498_() >= 0 && p_9909_.m_134498_() < Inventory.m_36059_()) {
-+            PlayerItemHeldEvent event = new PlayerItemHeldEvent(this.getCraftPlayer(), this.f_9743_.m_150109_().f_35977_, p_9909_.m_134498_());
++            org.bukkit.event.player.PlayerItemHeldEvent event = new org.bukkit.event.player.PlayerItemHeldEvent(this.getCraftPlayer(), this.f_9743_.m_150109_().f_35977_, p_9909_.m_134498_());
 +            this.cserver.getPluginManager().callEvent(event);
 +            if (event.isCancelled()) {
 +                this.m_141995_(new ClientboundSetCarriedItemPacket(this.f_9743_.m_150109_().f_35977_));
@@ -2677,7 +2488,7 @@
 +                this.f_9750_ += 20;
 +                if (this.f_9750_ > 200 && !this.f_9745_.m_6846_().m_11303_(this.f_9743_.m_36316_())) {
 +                    if (!isSync) {
-+                        class Disconnect2 extends Waitable {
++                        class Disconnect2 extends org.bukkit.craftbukkit.v1_18_R2.util.Waitable<Object> {
 +
 +                            @Override
 +                            protected Object evaluate() {
@@ -2685,7 +2496,7 @@
 +                                return null;
 +                            }
 +                        }
-+                        Waitable waitable2 = new Disconnect2();
++                        org.bukkit.craftbukkit.v1_18_R2.util.Waitable<Object> waitable2 = new Disconnect2();
 +                        this.f_9745_.processQueue.add(waitable2);
 +                        try {
 +                            waitable2.get();
@@ -2693,7 +2504,7 @@
 +                        } catch (InterruptedException e4) {
 +                            Thread.currentThread().interrupt();
 +                            return;
-+                        } catch (ExecutionException e2) {
++                        } catch (java.util.concurrent.ExecutionException e2) {
 +                            throw new RuntimeException(e2);
 +                        }
 +                    }
@@ -2704,18 +2515,18 @@
 +    }
 +
 +    private void m_9957_(String p_9958_) {
-+        MinecraftTimings.playerCommandTimer.startTiming(); // Paper
++        co.aikar.timings.MinecraftTimings.playerCommandTimer.startTiming(); // Paper
 +        // CraftBukkit start - whole method
 +        if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
 +            f_9744_.info( this.f_9743_.m_6302_() + " issued server command: " + p_9958_ );
 +
-+        CraftPlayer player = this.getCraftPlayer();
++        org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer player = this.getCraftPlayer();
 +
-+        PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent( player, p_9958_, new LazyPlayerSet( f_9745_ ) );
++        org.bukkit.event.player.PlayerCommandPreprocessEvent event = new org.bukkit.event.player.PlayerCommandPreprocessEvent( player, p_9958_, new org.bukkit.craftbukkit.v1_18_R2.util.LazyPlayerSet( f_9745_ ) );
 +        this.cserver.getPluginManager().callEvent( event );
 +
 +        if (event.isCancelled()) {
-+            MinecraftTimings.playerCommandTimer.stopTiming(); // Paper
++            co.aikar.timings.MinecraftTimings.playerCommandTimer.stopTiming(); // Paper
 +            return;
 +        }
 +
@@ -2728,7 +2539,7 @@
 +            java.util.logging.Logger.getLogger( ServerGamePacketListenerImpl.class.getName() ).log( java.util.logging.Level.SEVERE, null, ex );
 +            return;
 +        } finally {
-+            MinecraftTimings.playerCommandTimer.stopTiming(); // Paper
++            co.aikar.timings.MinecraftTimings.playerCommandTimer.stopTiming(); // Paper
 +        }
 +        // this.server.getCommands().performCommand(this.player.createCommandSourceStack(), p_9958_);
 +        // CraftBukkit end
@@ -2754,14 +2565,14 @@
 +        float f8 = f3 * f5;
 +        double d3 = f_9743_.f_8941_.m_9290_()== GameType.CREATIVE ? 5.0D : 4.5D;
 +        Vec3 vec3d1 = vec3d.m_82520_((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
-+        HitResult movingobjectposition = this.f_9743_.f_19853_.m_45547_(new ClipContext(vec3d, vec3d1, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, f_9743_));
++        net.minecraft.world.phys.HitResult movingobjectposition = this.f_9743_.f_19853_.m_45547_(new net.minecraft.world.level.ClipContext(vec3d, vec3d1, net.minecraft.world.level.ClipContext.Block.OUTLINE, net.minecraft.world.level.ClipContext.Fluid.NONE, f_9743_));
 +
-+        if (movingobjectposition == null || movingobjectposition.m_6662_() != HitResult.Type.BLOCK) {
-+            CraftEventFactory.callPlayerInteractEvent(this.f_9743_, Action.LEFT_CLICK_AIR, this.f_9743_.m_150109_().m_36056_(), InteractionHand.MAIN_HAND);
++        if (movingobjectposition == null || movingobjectposition.m_6662_() != net.minecraft.world.phys.HitResult.Type.BLOCK) {
++            org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent(this.f_9743_, org.bukkit.event.block.Action.LEFT_CLICK_AIR, this.f_9743_.m_150109_().m_36056_(), InteractionHand.MAIN_HAND);
 +        }
 +
 +        // Arm swing animation
-+        PlayerAnimationEvent event = new PlayerAnimationEvent(this.getCraftPlayer());
++        org.bukkit.event.player.PlayerAnimationEvent event = new org.bukkit.event.player.PlayerAnimationEvent(this.getCraftPlayer());
 +        this.cserver.getPluginManager().callEvent(event);
 +
 +        if (event.isCancelled()) return;
@@ -2776,7 +2587,7 @@
 +        switch (p_9891_.m_134320_()) {
 +            case PRESS_SHIFT_KEY:
 +            case RELEASE_SHIFT_KEY:
-+                PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(this.getCraftPlayer(), p_9891_.m_134320_() == ServerboundPlayerCommandPacket.Action.PRESS_SHIFT_KEY);
++                org.bukkit.event.player.PlayerToggleSneakEvent event = new org.bukkit.event.player.PlayerToggleSneakEvent(this.getCraftPlayer(), p_9891_.m_134320_() == ServerboundPlayerCommandPacket.Action.PRESS_SHIFT_KEY);
 +                this.cserver.getPluginManager().callEvent(event);
 +                if (event.isCancelled()) {
 +                    return;
@@ -2784,7 +2595,7 @@
 +                break;
 +            case START_SPRINTING:
 +            case STOP_SPRINTING:
-+                PlayerToggleSprintEvent e2 = new PlayerToggleSprintEvent(this.getCraftPlayer(), p_9891_.m_134320_() == ServerboundPlayerCommandPacket.Action.START_SPRINTING);
++                org.bukkit.event.player.PlayerToggleSprintEvent e2 = new org.bukkit.event.player.PlayerToggleSprintEvent(this.getCraftPlayer(), p_9891_.m_134320_() == ServerboundPlayerCommandPacket.Action.START_SPRINTING);
 +                this.cserver.getPluginManager().callEvent(e2);
 +                if (e2.isCancelled()) {
 +                    return;
@@ -2865,31 +2676,31 @@
 +            double d0 = 36.0D;
 +            if (this.f_9743_.m_20280_( entity ) < 36.0D) {
 +                p_9866_.m_179617_( new ServerboundInteractPacket.Handler() {
-+                    private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_, PlayerInteractEntityEvent event) { // CraftBukkit
++                    private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_, org.bukkit.event.player.PlayerInteractEntityEvent event) { // CraftBukkit
 +                        if(!ServerGamePacketListenerImpl.this.f_9743_.canInteractWith(entity, 1.5D)) return; //Forge: If the entity cannot be reached, do nothing. Original check was dist < 6, range is 4.5, so vanilla used padding=1.5
 +
 +                        ItemStack itemstack = ServerGamePacketListenerImpl.this.f_9743_.m_21120_( p_143679_ ).m_41777_();
 +                        // CraftBukkit start
 +                        ItemStack itemInHand = ServerGamePacketListenerImpl.this.f_9743_.m_21120_(p_143679_);
-+                        boolean triggerLeashUpdate = itemInHand != null && itemInHand.m_41720_() == Items.f_42655_ && entity instanceof Mob;
++                        boolean triggerLeashUpdate = itemInHand != null && itemInHand.m_41720_() == Items.f_42655_ && entity instanceof net.minecraft.world.entity.Mob;
 +                        Item origItem = f_9743_.m_150109_().m_36056_() == null ? null : f_9743_.m_150109_().m_36056_().m_41720_();
 +
 +                        cserver.getPluginManager().callEvent(event);
 +
 +                        // Entity in bucket - SPIGOT-4048 and SPIGOT-6859
-+                        if ((entity instanceof Bucketable && entity instanceof LivingEntity && origItem != null && origItem.m_5456_() == Items.f_42447_) && (event.isCancelled() || f_9743_.m_150109_().m_36056_() == null || f_9743_.m_150109_().m_36056_().m_41720_() != origItem)) {
-+                            m_141995_(new ClientboundAddMobPacket((LivingEntity) entity));
++                        if ((entity instanceof net.minecraft.world.entity.animal.Bucketable && entity instanceof net.minecraft.world.entity.LivingEntity && origItem != null && origItem.m_5456_() == Items.f_42447_) && (event.isCancelled() || f_9743_.m_150109_().m_36056_() == null || f_9743_.m_150109_().m_36056_().m_41720_() != origItem)) {
++                            m_141995_(new net.minecraft.network.protocol.game.ClientboundAddMobPacket((net.minecraft.world.entity.LivingEntity) entity));
 +                            f_9743_.f_36096_.m_150429_();
 +                        }
 +
 +                        if (triggerLeashUpdate && (event.isCancelled() || f_9743_.m_150109_().m_36056_() == null || f_9743_.m_150109_().m_36056_().m_41720_() != origItem)) {
 +                            // Refresh the current leash state
-+                            m_141995_(new ClientboundSetEntityLinkPacket(entity, ((Mob) entity).m_21524_()));
++                            m_141995_(new net.minecraft.network.protocol.game.ClientboundSetEntityLinkPacket(entity, ((net.minecraft.world.entity.Mob) entity).m_21524_()));
 +                        }
 +
 +                        if (event.isCancelled() || f_9743_.m_150109_().m_36056_() == null || f_9743_.m_150109_().m_36056_().m_41720_() != origItem) {
 +                            // Refresh the current entity metadata
-+                            m_141995_(new ClientboundSetEntityDataPacket(entity.m_142049_(), entity.m_20088_(), true));
++                            m_141995_(new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(entity.m_142049_(), entity.m_20088_(), true));
 +                        }
 +
 +                        if (event.isCancelled()) {
@@ -2913,7 +2724,7 @@
 +                    }
 +
 +                    public void m_142299_(InteractionHand p_143677_) {
-+                        this.performInteraction( p_143677_, Player::m_36157_ , new PlayerInteractEntityEvent(getCraftPlayer(), entity.getBukkitEntity(), (p_143677_ == InteractionHand.OFF_HAND) ? org.bukkit.inventory.EquipmentSlot.OFF_HAND : org.bukkit.inventory.EquipmentSlot.HAND));
++                        this.performInteraction( p_143677_, Player::m_36157_ , new org.bukkit.event.player.PlayerInteractEntityEvent(getCraftPlayer(), entity.getBukkitEntity(), (p_143677_ == InteractionHand.OFF_HAND) ? org.bukkit.inventory.EquipmentSlot.OFF_HAND : org.bukkit.inventory.EquipmentSlot.HAND));
 +                    }
 +
 +                    public void m_142143_(InteractionHand p_143682_, Vec3 p_143683_) {
@@ -2921,7 +2732,7 @@
 +                            InteractionResult onInteractEntityAtResult = net.minecraftforge.common.ForgeHooks.onInteractEntityAt(f_9743_, entity, p_143683_, p_143682_);
 +                            if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
 +                            return p_143687_.m_7111_(p_143686_, p_143683_, p_143688_);
-+                        }, new PlayerInteractAtEntityEvent(getCraftPlayer(), entity.getBukkitEntity(), new org.bukkit.util.Vector(p_143683_.f_82479_, p_143683_.f_82480_, p_143683_.f_82481_), (p_143682_ == InteractionHand.OFF_HAND) ? org.bukkit.inventory.EquipmentSlot.OFF_HAND : org.bukkit.inventory.EquipmentSlot.HAND)); // CraftBukkit
++                        }, new org.bukkit.event.player.PlayerInteractAtEntityEvent(getCraftPlayer(), entity.getBukkitEntity(), new org.bukkit.util.Vector(p_143683_.f_82479_, p_143683_.f_82480_, p_143683_.f_82481_), (p_143682_ == InteractionHand.OFF_HAND) ? org.bukkit.inventory.EquipmentSlot.OFF_HAND : org.bukkit.inventory.EquipmentSlot.HAND)); // CraftBukkit
 +                    }
 +
 +                    public void m_141994_() {
@@ -3003,68 +2814,68 @@
 +                        return;
 +                    }
 +
-+                    // Magma start - capture container owner
-+                    InventoryViewHelper.captureContainerOwner(this.f_9743_);
-+                    InventoryView inventory = this.f_9743_.f_36096_.getBukkitView();
-+                    InventoryViewHelper.resetContainerOwner();
-+                    // Magma end
-+                    InventoryType.SlotType type = inventory.getSlotType( p_9856_.m_133962_() );
++                    // org.magmafoundation.magma.Magma start - capture container owner
++                    org.magmafoundation.magma.helpers.InventoryViewHelper.captureContainerOwner(this.f_9743_);
++                    org.bukkit.inventory.InventoryView inventory = this.f_9743_.f_36096_.getBukkitView();
++                    org.magmafoundation.magma.helpers.InventoryViewHelper.resetContainerOwner();
++                    // org.magmafoundation.magma.Magma end
++                    org.bukkit.event.inventory.InventoryType.SlotType type = inventory.getSlotType( p_9856_.m_133962_() );
 +
-+                    InventoryClickEvent event;
-+                    ClickType click = ClickType.UNKNOWN;
-+                    InventoryAction action = InventoryAction.UNKNOWN;
++                    org.bukkit.event.inventory.InventoryClickEvent event;
++                    org.bukkit.event.inventory.ClickType click = org.bukkit.event.inventory.ClickType.UNKNOWN;
++                    org.bukkit.event.inventory.InventoryAction action = org.bukkit.event.inventory.InventoryAction.UNKNOWN;
 +
 +                    ItemStack itemstack = ItemStack.f_41583_;
 +
 +                    switch (p_9856_.m_133966_()) {
 +                        case PICKUP:
 +                            if (p_9856_.m_133963_() == 0) {
-+                                click = ClickType.LEFT;
++                                click = org.bukkit.event.inventory.ClickType.LEFT;
 +                            } else if (p_9856_.m_133963_() == 1) {
-+                                click = ClickType.RIGHT;
++                                click = org.bukkit.event.inventory.ClickType.RIGHT;
 +                            }
 +                            if (p_9856_.m_133963_() == 0 || p_9856_.m_133963_() == 1) {
-+                                action = InventoryAction.NOTHING; // Don't want to repeat ourselves
++                                action = org.bukkit.event.inventory.InventoryAction.NOTHING; // Don't want to repeat ourselves
 +                                if (p_9856_.m_133962_() == -999) {
 +                                    if (!f_9743_.f_36096_.m_142621_().m_41619_()) {
-+                                        action = p_9856_.m_133963_() == 0 ? InventoryAction.DROP_ALL_CURSOR : InventoryAction.DROP_ONE_CURSOR;
++                                        action = p_9856_.m_133963_() == 0 ? org.bukkit.event.inventory.InventoryAction.DROP_ALL_CURSOR : org.bukkit.event.inventory.InventoryAction.DROP_ONE_CURSOR;
 +                                    }
 +                                } else if (p_9856_.m_133962_() < 0) {
-+                                    action = InventoryAction.NOTHING;
++                                    action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                } else {
-+                                    Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
++                                    net.minecraft.world.inventory.Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
 +                                    if (slot != null) {
 +                                        ItemStack clickedItem = slot.m_7993_();
 +                                        ItemStack cursor = f_9743_.f_36096_.m_142621_();
 +                                        if (clickedItem.m_41619_()) {
 +                                            if (!cursor.m_41619_()) {
-+                                                action = p_9856_.m_133963_() == 0 ? InventoryAction.PLACE_ALL : InventoryAction.PLACE_ONE;
++                                                action = p_9856_.m_133963_() == 0 ? org.bukkit.event.inventory.InventoryAction.PLACE_ALL : org.bukkit.event.inventory.InventoryAction.PLACE_ONE;
 +                                            }
 +                                        } else if (slot.m_8010_( f_9743_ )) {
 +                                            if (cursor.m_41619_()) {
-+                                                action = p_9856_.m_133963_() == 0 ? InventoryAction.PICKUP_ALL : InventoryAction.PICKUP_HALF;
++                                                action = p_9856_.m_133963_() == 0 ? org.bukkit.event.inventory.InventoryAction.PICKUP_ALL : org.bukkit.event.inventory.InventoryAction.PICKUP_HALF;
 +                                            } else if (slot.m_5857_( cursor )) {
 +                                                if (clickedItem.m_41656_( cursor ) && ItemStack.m_41658_( clickedItem, cursor )) {
 +                                                    int toPlace = p_9856_.m_133963_() == 0 ? cursor.m_41613_() : 1;
 +                                                    toPlace = Math.min( toPlace, clickedItem.m_41741_() - clickedItem.m_41613_() );
 +                                                    toPlace = Math.min( toPlace, slot.f_40218_.m_6893_() - clickedItem.m_41613_() );
 +                                                    if (toPlace == 1) {
-+                                                        action = InventoryAction.PLACE_ONE;
++                                                        action = org.bukkit.event.inventory.InventoryAction.PLACE_ONE;
 +                                                    } else if (toPlace == cursor.m_41613_()) {
-+                                                        action = InventoryAction.PLACE_ALL;
++                                                        action = org.bukkit.event.inventory.InventoryAction.PLACE_ALL;
 +                                                    } else if (toPlace < 0) {
-+                                                        action = toPlace != -1 ? InventoryAction.PICKUP_SOME : InventoryAction.PICKUP_ONE; // this happens with oversized stacks
++                                                        action = toPlace != -1 ? org.bukkit.event.inventory.InventoryAction.PICKUP_SOME : org.bukkit.event.inventory.InventoryAction.PICKUP_ONE; // this happens with oversized stacks
 +                                                    } else if (toPlace != 0) {
-+                                                        action = InventoryAction.PLACE_SOME;
++                                                        action = org.bukkit.event.inventory.InventoryAction.PLACE_SOME;
 +                                                    }
 +                                                } else if (cursor.m_41613_() <= slot.m_6641_()) {
-+                                                    action = InventoryAction.SWAP_WITH_CURSOR;
++                                                    action = org.bukkit.event.inventory.InventoryAction.SWAP_WITH_CURSOR;
 +                                                }
 +                                            } else if (cursor.m_41720_() == clickedItem.m_41720_() && ItemStack.m_41658_( cursor, clickedItem )) {
 +                                                if (clickedItem.m_41613_() >= 0) {
 +                                                    if (clickedItem.m_41613_() + cursor.m_41613_() <= cursor.m_41741_()) {
 +                                                        // As of 1.5, this is result slots only
-+                                                        action = InventoryAction.PICKUP_ALL;
++                                                        action = org.bukkit.event.inventory.InventoryAction.PICKUP_ALL;
 +                                                    }
 +                                                }
 +                                            }
@@ -3076,104 +2887,104 @@
 +                        // TODO check on updates
 +                        case QUICK_MOVE:
 +                            if (p_9856_.m_133963_() == 0) {
-+                                click = ClickType.SHIFT_LEFT;
++                                click = org.bukkit.event.inventory.ClickType.SHIFT_LEFT;
 +                            } else if (p_9856_.m_133963_() == 1) {
-+                                click = ClickType.SHIFT_RIGHT;
++                                click = org.bukkit.event.inventory.ClickType.SHIFT_RIGHT;
 +                            }
 +                            if (p_9856_.m_133963_() == 0 || p_9856_.m_133963_() == 1) {
 +                                if (p_9856_.m_133962_() < 0) {
-+                                    action = InventoryAction.NOTHING;
++                                    action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                } else {
-+                                    Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
++                                    net.minecraft.world.inventory.Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
 +                                    if (slot != null && slot.m_8010_( this.f_9743_ ) && slot.m_6657_()) {
-+                                        action = InventoryAction.MOVE_TO_OTHER_INVENTORY;
++                                        action = org.bukkit.event.inventory.InventoryAction.MOVE_TO_OTHER_INVENTORY;
 +                                    } else {
-+                                        action = InventoryAction.NOTHING;
++                                        action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                    }
 +                                }
 +                            }
 +                            break;
 +                        case SWAP:
 +                            if ((p_9856_.m_133963_() >= 0 && p_9856_.m_133963_() < 9) || p_9856_.m_133963_() == 40) {
-+                                click = (p_9856_.m_133963_() == 40) ? ClickType.SWAP_OFFHAND : ClickType.NUMBER_KEY;
-+                                Slot clickedSlot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
++                                click = (p_9856_.m_133963_() == 40) ? org.bukkit.event.inventory.ClickType.SWAP_OFFHAND : org.bukkit.event.inventory.ClickType.NUMBER_KEY;
++                                net.minecraft.world.inventory.Slot clickedSlot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
 +                                if (clickedSlot.m_8010_( f_9743_ )) {
 +                                    ItemStack hotbar = this.f_9743_.m_150109_().m_8020_( p_9856_.m_133963_() );
 +                                    boolean canCleanSwap = hotbar.m_41619_() || (clickedSlot.f_40218_ == f_9743_.m_150109_() && clickedSlot.m_5857_( hotbar )); // the slot will accept the hotbar item
 +                                    if (clickedSlot.m_6657_()) {
 +                                        if (canCleanSwap) {
-+                                            action = InventoryAction.HOTBAR_SWAP;
++                                            action = org.bukkit.event.inventory.InventoryAction.HOTBAR_SWAP;
 +                                        } else {
-+                                            action = InventoryAction.HOTBAR_MOVE_AND_READD;
++                                            action = org.bukkit.event.inventory.InventoryAction.HOTBAR_MOVE_AND_READD;
 +                                        }
 +                                    } else if (!clickedSlot.m_6657_() && !hotbar.m_41619_() && clickedSlot.m_5857_( hotbar )) {
-+                                        action = InventoryAction.HOTBAR_SWAP;
++                                        action = org.bukkit.event.inventory.InventoryAction.HOTBAR_SWAP;
 +                                    } else {
-+                                        action = InventoryAction.NOTHING;
++                                        action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                    }
 +                                } else {
-+                                    action = InventoryAction.NOTHING;
++                                    action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                }
 +                            }
 +                            break;
 +                        case CLONE:
 +                            if (p_9856_.m_133963_() == 2) {
-+                                click = ClickType.MIDDLE;
++                                click = org.bukkit.event.inventory.ClickType.MIDDLE;
 +                                if (p_9856_.m_133962_() < 0) {
-+                                    action = InventoryAction.NOTHING;
++                                    action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                } else {
-+                                    Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
++                                    net.minecraft.world.inventory.Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
 +                                    if (slot != null && slot.m_6657_() && f_9743_.m_150110_().f_35937_ && f_9743_.f_36096_.m_142621_().m_41619_()) {
-+                                        action = InventoryAction.CLONE_STACK;
++                                        action = org.bukkit.event.inventory.InventoryAction.CLONE_STACK;
 +                                    } else {
-+                                        action = InventoryAction.NOTHING;
++                                        action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                    }
 +                                }
 +                            } else {
-+                                click = ClickType.UNKNOWN;
-+                                action = InventoryAction.UNKNOWN;
++                                click = org.bukkit.event.inventory.ClickType.UNKNOWN;
++                                action = org.bukkit.event.inventory.InventoryAction.UNKNOWN;
 +                            }
 +                            break;
 +                        case THROW:
 +                            if (p_9856_.m_133962_() >= 0) {
 +                                if (p_9856_.m_133963_() == 0) {
-+                                    click = ClickType.DROP;
-+                                    Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
++                                    click = org.bukkit.event.inventory.ClickType.DROP;
++                                    net.minecraft.world.inventory.Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
 +                                    if (slot != null && slot.m_6657_() && slot.m_8010_( f_9743_ ) && !slot.m_7993_().m_41619_() && slot.m_7993_().m_41720_() != Item.m_41439_( Blocks.f_50016_ )) {
-+                                        action = InventoryAction.DROP_ONE_SLOT;
++                                        action = org.bukkit.event.inventory.InventoryAction.DROP_ONE_SLOT;
 +                                    } else {
-+                                        action = InventoryAction.NOTHING;
++                                        action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                    }
 +                                } else if (p_9856_.m_133963_() == 1) {
-+                                    click = ClickType.CONTROL_DROP;
-+                                    Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
++                                    click = org.bukkit.event.inventory.ClickType.CONTROL_DROP;
++                                    net.minecraft.world.inventory.Slot slot = this.f_9743_.f_36096_.m_38853_( p_9856_.m_133962_() );
 +                                    if (slot != null && slot.m_6657_() && slot.m_8010_( f_9743_ ) && !slot.m_7993_().m_41619_() && slot.m_7993_().m_41720_() != Item.m_41439_( Blocks.f_50016_ )) {
-+                                        action = InventoryAction.DROP_ALL_SLOT;
++                                        action = org.bukkit.event.inventory.InventoryAction.DROP_ALL_SLOT;
 +                                    } else {
-+                                        action = InventoryAction.NOTHING;
++                                        action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                    }
 +                                }
 +                            } else {
 +                                // Sane default (because this happens when they are holding nothing. Don't ask why.)
-+                                click = ClickType.LEFT;
++                                click = org.bukkit.event.inventory.ClickType.LEFT;
 +                                if (p_9856_.m_133963_() == 1) {
-+                                    click = ClickType.RIGHT;
++                                    click = org.bukkit.event.inventory.ClickType.RIGHT;
 +                                }
-+                                action = InventoryAction.NOTHING;
++                                action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                            }
 +                            break;
 +                        case QUICK_CRAFT:
 +                            this.f_9743_.f_36096_.m_150399_( p_9856_.m_133962_(), p_9856_.m_133963_(), p_9856_.m_133966_(), this.f_9743_ );
 +                            break;
 +                        case PICKUP_ALL:
-+                            click = ClickType.DOUBLE_CLICK;
-+                            action = InventoryAction.NOTHING;
++                            click = org.bukkit.event.inventory.ClickType.DOUBLE_CLICK;
++                            action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                            if (p_9856_.m_133962_() >= 0 && !this.f_9743_.f_36096_.m_142621_().m_41619_()) {
 +                                ItemStack cursor = this.f_9743_.f_36096_.m_142621_();
-+                                action = InventoryAction.NOTHING;
++                                action = org.bukkit.event.inventory.InventoryAction.NOTHING;
 +                                // Quick check for if we have any of the item
-+                                if (inventory.getTopInventory().contains( CraftMagicNumbers.getMaterial( cursor.m_41720_() ) ) || inventory.getBottomInventory().contains( CraftMagicNumbers.getMaterial( cursor.m_41720_() ) )) {
-+                                    action = InventoryAction.COLLECT_TO_CURSOR;
++                                if (inventory.getTopInventory().contains( org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers.getMaterial( cursor.m_41720_() ) ) || inventory.getBottomInventory().contains( org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers.getMaterial( cursor.m_41720_() ) )) {
++                                    action = org.bukkit.event.inventory.InventoryAction.COLLECT_TO_CURSOR;
 +                                }
 +                            }
 +                            break;
@@ -3181,29 +2992,29 @@
 +                            break;
 +                    }
 +                    if (p_9856_.m_133966_() != net.minecraft.world.inventory.ClickType.QUICK_CRAFT) {
-+                        if (click == ClickType.NUMBER_KEY) {
-+                            event = new InventoryClickEvent( inventory, type, p_9856_.m_133962_(), click, action, p_9856_.m_133963_() );
++                        if (click == org.bukkit.event.inventory.ClickType.NUMBER_KEY) {
++                            event = new org.bukkit.event.inventory.InventoryClickEvent( inventory, type, p_9856_.m_133962_(), click, action, p_9856_.m_133963_() );
 +                        } else {
-+                            event = new InventoryClickEvent( inventory, type, p_9856_.m_133962_(), click, action );
++                            event = new org.bukkit.event.inventory.InventoryClickEvent( inventory, type, p_9856_.m_133962_(), click, action );
 +                        }
 +                        org.bukkit.inventory.Inventory top = inventory.getTopInventory();
-+                        if (p_9856_.m_133962_() == 0 && top instanceof CraftingInventory) {
-+                            org.bukkit.inventory.Recipe recipe = ((CraftingInventory) top).getRecipe();
++                        if (p_9856_.m_133962_() == 0 && top instanceof org.bukkit.inventory.CraftingInventory) {
++                            org.bukkit.inventory.Recipe recipe = ((org.bukkit.inventory.CraftingInventory) top).getRecipe();
 +                            if (recipe != null) {
-+                                if (click == ClickType.NUMBER_KEY) {
-+                                    event = new CraftItemEvent( recipe, inventory, type, p_9856_.m_133962_(), click, action, p_9856_.m_133963_() );
++                                if (click == org.bukkit.event.inventory.ClickType.NUMBER_KEY) {
++                                    event = new org.bukkit.event.inventory.CraftItemEvent( recipe, inventory, type, p_9856_.m_133962_(), click, action, p_9856_.m_133963_() );
 +                                } else {
-+                                    event = new CraftItemEvent( recipe, inventory, type, p_9856_.m_133962_(), click, action );
++                                    event = new org.bukkit.event.inventory.CraftItemEvent( recipe, inventory, type, p_9856_.m_133962_(), click, action );
 +                                }
 +                            }
 +                        }
-+                        if (p_9856_.m_133962_() == 2 && top instanceof SmithingInventory) {
-+                            org.bukkit.inventory.ItemStack result = ((SmithingInventory) top).getResult();
++                        if (p_9856_.m_133962_() == 2 && top instanceof org.bukkit.inventory.SmithingInventory) {
++                            org.bukkit.inventory.ItemStack result = ((org.bukkit.inventory.SmithingInventory) top).getResult();
 +                            if (result != null) {
-+                                if (click == ClickType.NUMBER_KEY) {
-+                                    event = new SmithItemEvent( inventory, type, p_9856_.m_133962_(), click, action, p_9856_.m_133963_() );
++                                if (click == org.bukkit.event.inventory.ClickType.NUMBER_KEY) {
++                                    event = new org.bukkit.event.inventory.SmithItemEvent( inventory, type, p_9856_.m_133962_(), click, action, p_9856_.m_133963_() );
 +                                } else {
-+                                    event = new SmithItemEvent( inventory, type, p_9856_.m_133962_(), click, action );
++                                    event = new org.bukkit.event.inventory.SmithItemEvent( inventory, type, p_9856_.m_133962_(), click, action );
 +                                }
 +                            }
 +                        }
@@ -3256,7 +3067,7 @@
 +                                        break;
 +                                }
 +                        }
-+                        if (event instanceof CraftItemEvent || event instanceof SmithItemEvent) {
++                        if (event instanceof org.bukkit.event.inventory.CraftItemEvent || event instanceof org.bukkit.event.inventory.SmithItemEvent) {
 +                            // Need to update the inventory on crafting to
 +                            // correctly support custom recipes
 +                            f_9743_.f_36096_.m_150429_();
@@ -3322,21 +3133,21 @@
 +            boolean flag2 = itemstack.m_41619_() || itemstack.m_41773_() >= 0 && itemstack.m_41613_() <= 64 && !itemstack.m_41619_();
 +            if (flag || (flag1 && !ItemStack.m_41728_( this.f_9743_.f_36095_.m_38853_( p_9915_.m_134561_() ).m_7993_(), p_9915_.m_134564_() ))) { // Insist on valid slot
 +                // CraftBukkit start - Call click event
-+                InventoryView inventory = this.f_9743_.f_36095_.getBukkitView();
-+                org.bukkit.inventory.ItemStack item = CraftItemStack.asBukkitCopy( p_9915_.m_134564_() );
-+                InventoryType.SlotType type = InventoryType.SlotType.QUICKBAR;
++                org.bukkit.inventory.InventoryView inventory = this.f_9743_.f_36095_.getBukkitView();
++                org.bukkit.inventory.ItemStack item = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy( p_9915_.m_134564_() );
++                org.bukkit.event.inventory.InventoryType.SlotType type = org.bukkit.event.inventory.InventoryType.SlotType.QUICKBAR;
 +                if (flag) {
-+                    type = InventoryType.SlotType.OUTSIDE;
++                    type = org.bukkit.event.inventory.InventoryType.SlotType.OUTSIDE;
 +                } else if (p_9915_.m_134561_() < 36) {
 +                    if (p_9915_.m_134561_() >= 5 && p_9915_.m_134561_() < 9) {
-+                        type = InventoryType.SlotType.ARMOR;
++                        type = org.bukkit.event.inventory.InventoryType.SlotType.ARMOR;
 +                    } else {
-+                        type = InventoryType.SlotType.CONTAINER;
++                        type = org.bukkit.event.inventory.InventoryType.SlotType.CONTAINER;
 +                    }
 +                }
-+                InventoryCreativeEvent event = new InventoryCreativeEvent( inventory, type, flag ? -999 : p_9915_.m_134561_(), item );
++                org.bukkit.event.inventory.InventoryCreativeEvent event = new org.bukkit.event.inventory.InventoryCreativeEvent( inventory, type, flag ? -999 : p_9915_.m_134561_(), item );
 +                cserver.getPluginManager().callEvent( event );
-+                itemstack = CraftItemStack.asNMSCopy( event.getCursor() );
++                itemstack = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy( event.getCursor() );
 +                switch (event.getResult()) {
 +                    case ALLOW:
 +                        // Plugin cleared the id / stacksize checks
@@ -3407,7 +3218,7 @@
 +                }
 +            }
 +
-+            SignChangeEvent event = new SignChangeEvent((org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock) player.getWorld().getBlockAt(x, y, z), this.f_9743_.getBukkitEntity(), lines);
++            org.bukkit.event.block.SignChangeEvent event = new org.bukkit.event.block.SignChangeEvent((org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock) player.getWorld().getBlockAt(x, y, z), this.f_9743_.getBukkitEntity(), lines);
 +            this.cserver.getPluginManager().callEvent(event);
 +            if (!event.isCancelled()) {
 +                Component[] components = org.bukkit.craftbukkit.v1_18_R2.block.CraftSign.sanitizeLines(event.getLines());
@@ -3440,7 +3251,7 @@
 +        PacketUtils.m_131359_( p_9887_, this, this.f_9743_.m_183503_() );
 +        // CraftBukkit start
 +        if (this.f_9743_.m_150110_().f_35936_ && this.f_9743_.m_150110_().f_35935_ != p_9887_.m_134264_()) {
-+            PlayerToggleFlightEvent event = new PlayerToggleFlightEvent(this.f_9743_.getBukkitEntity(), p_9887_.m_134264_());
++            org.bukkit.event.player.PlayerToggleFlightEvent event = new org.bukkit.event.player.PlayerToggleFlightEvent(this.f_9743_.getBukkitEntity(), p_9887_.m_134264_());
 +            this.cserver.getPluginManager().callEvent(event);
 +            if (!event.isCancelled()) {
 +                this.f_9743_.m_150110_().f_35935_ = p_9887_.m_134264_(); // Actually set the player's flying status
@@ -3461,17 +3272,17 @@
 +    private static final ResourceLocation CUSTOM_UNREGISTER = new ResourceLocation("unregister");
 +    public void m_7423_(ServerboundCustomPayloadPacket p_9860_) {
 +        PacketUtils.m_131359_( p_9860_, this, this.f_9743_.m_183503_() );
-+        ByteBuf copy = p_9860_.m_179590_().copy();
++        io.netty.buffer.ByteBuf copy = p_9860_.m_179590_().copy();
 +        var buf = new byte[copy.readableBytes()];
 +        copy.readBytes(buf);
-+        ServerLifecycleHooks.getCurrentServer().m_201446_(() -> {
-+            if (ServerLifecycleHooks.getCurrentServer().hasStopped() || processedDisconnect)
++        net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer().m_201446_(() -> {
++            if (net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer().hasStopped() || processedDisconnect)
 +                return;
 +
 +            if (this.f_9742_.m_129536_()) {
 +                if (p_9860_.f_133980_.equals(CUSTOM_REGISTER)) {
 +                    try {
-+                        String channels = new String(buf, StandardCharsets.UTF_8);
++                        String channels = new String(buf, java.nio.charset.StandardCharsets.UTF_8);
 +                        for (String channel : channels.split("\0")) {
 +                            if (!StringUtil.m_14408_(channel))
 +                                this.getCraftPlayer().addChannel(channel);
@@ -3482,7 +3293,7 @@
 +                    }
 +                } else if (p_9860_.f_133980_.equals(CUSTOM_UNREGISTER)) {
 +                    try {
-+                        final String channels = new String(buf, StandardCharsets.UTF_8);
++                        final String channels = new String(buf, java.nio.charset.StandardCharsets.UTF_8);
 +                        for (String channel : channels.split("\0")) {
 +                            if (!StringUtil.m_14408_(channel))
 +                                this.getCraftPlayer().removeChannel(channel);
@@ -3865,39 +3676,39 @@
 -   }
 +        } else if (this.f_9743_.m_9241_() != ChatVisiblity.SYSTEM) {
 +            org.bukkit.entity.Player thisPlayer = this.getCraftPlayer();
-+            AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(async, thisPlayer, s, new LazyPlayerSet(this.f_9745_));
++            org.bukkit.event.player.AsyncPlayerChatEvent event = new org.bukkit.event.player.AsyncPlayerChatEvent(async, thisPlayer, s, new org.bukkit.craftbukkit.v1_18_R2.util.LazyPlayerSet(this.f_9745_));
 +            this.cserver.getPluginManager().callEvent(event);
-+            if (PlayerChatEvent.getHandlerList().getRegisteredListeners().length != 0) {
-+                PlayerChatEvent queueEvent = new PlayerChatEvent(thisPlayer, event.getMessage(), event.getFormat(), event.getRecipients());
++            if (org.bukkit.event.player.PlayerChatEvent.getHandlerList().getRegisteredListeners().length != 0) {
++                org.bukkit.event.player.PlayerChatEvent queueEvent = new org.bukkit.event.player.PlayerChatEvent(thisPlayer, event.getMessage(), event.getFormat(), event.getRecipients());
 +                queueEvent.setCancelled(event.isCancelled());
-+                class SyncChat extends Waitable {
++                class SyncChat extends org.bukkit.craftbukkit.v1_18_R2.util.Waitable<Object> {
 +
 +                    @Override
 +                    protected Object evaluate() {
-+                        Bukkit.getPluginManager().callEvent(queueEvent);
++                        org.bukkit.Bukkit.getPluginManager().callEvent(queueEvent);
 +                        if (queueEvent.isCancelled()) {
 +                            return null;
 +                        }
 +                        String message = String.format(queueEvent.getFormat(), queueEvent.getPlayer().getDisplayName(), queueEvent.getMessage());
-+                        var chatWithLinks = CraftChatMessage.fromStringOrNull(message);
++                        var chatWithLinks = org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromStringOrNull(message);
 +                        if (chatWithLinks == null) return null;
-+                        var event = ForgeHooks.onServerChatEvent(ServerGamePacketListenerImpl.this, queueEvent.getMessage(), ForgeHooks.newChatWithLinks(message), queueEvent.getMessage(), chatWithLinks);
++                        var event = net.minecraftforge.common.ForgeHooks.onServerChatEvent(ServerGamePacketListenerImpl.this, queueEvent.getMessage(), net.minecraftforge.common.ForgeHooks.newChatWithLinks(message), queueEvent.getMessage(), chatWithLinks);
 +                        var component = event == null ? null : event.getComponent();
 +                        if (component == null) return null;
-+                        Bukkit.getConsoleSender().sendMessage(CraftChatMessage.fromComponent(component));
-+                        if (((LazyPlayerSet) queueEvent.getRecipients()).isLazy()) {
++                        org.bukkit.Bukkit.getConsoleSender().sendMessage(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromComponent(component));
++                        if (((org.bukkit.craftbukkit.v1_18_R2.util.LazyPlayerSet) queueEvent.getRecipients()).isLazy()) {
 +                            for (ServerPlayer player : f_9745_.m_6846_().f_11196_) {
 +                                player.m_6352_(component, thisPlayer.getUniqueId());
 +                            }
 +                        } else {
 +                            for (org.bukkit.entity.Player player2 : queueEvent.getRecipients()) {
-+                                ((CraftPlayer) player2).getHandle().m_6352_(component, thisPlayer.getUniqueId());
++                                ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) player2).getHandle().m_6352_(component, thisPlayer.getUniqueId());
 +                            }
 +                        }
 +                        return null;
 +                    }
 +                }
-+                Waitable waitable = new SyncChat();
++                org.bukkit.craftbukkit.v1_18_R2.util.Waitable<Object> waitable = new SyncChat();
 +                if (async) {
 +                    this.f_9745_.processQueue.add(waitable);
 +                } else {
@@ -3909,7 +3720,7 @@
 +                } catch (InterruptedException e2) {
 +                    Thread.currentThread().interrupt();
 +                    return;
-+                } catch (ExecutionException e) {
++                } catch (java.util.concurrent.ExecutionException e) {
 +                    throw new RuntimeException("Exception processing chat event", e.getCause());
 +                }
 +            }
@@ -3917,30 +3728,30 @@
 +                return;
 +            }
 +            s = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
-+            Component chatWithLinks = CraftChatMessage.fromStringOrNull(s);
++            Component chatWithLinks = org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromStringOrNull(s);
 +            if (chatWithLinks == null) return;
-+            class ForgeChat extends Waitable<Void> {
++            class ForgeChat extends org.bukkit.craftbukkit.v1_18_R2.util.Waitable<Void> {
 +
 +                @Override
 +                protected Void evaluate() {
 +                    // this is called on main thread
-+                    var chatEvent = ForgeHooks.onServerChatEvent(ServerGamePacketListenerImpl.this, event.getMessage(), chatWithLinks, event.getMessage(), chatWithLinks);
++                    var chatEvent = net.minecraftforge.common.ForgeHooks.onServerChatEvent(ServerGamePacketListenerImpl.this, event.getMessage(), chatWithLinks, event.getMessage(), chatWithLinks);
 +                    var component = chatEvent != null ? chatEvent.getComponent() : null;
 +                    if (component == null) return null;
-+                    Bukkit.getConsoleSender().sendMessage(CraftChatMessage.fromComponent(component));
-+                    if (((LazyPlayerSet) event.getRecipients()).isLazy()) {
++                    org.bukkit.Bukkit.getConsoleSender().sendMessage(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromComponent(component));
++                    if (((org.bukkit.craftbukkit.v1_18_R2.util.LazyPlayerSet) event.getRecipients()).isLazy()) {
 +                        for (ServerPlayer recipient : f_9745_.m_6846_().f_11196_) {
 +                            recipient.m_6352_(component, thisPlayer.getUniqueId());
 +                        }
 +                    } else {
 +                        for (org.bukkit.entity.Player recipient2 : event.getRecipients()) {
-+                            ((CraftPlayer) recipient2).getHandle().m_6352_(component, thisPlayer.getUniqueId());
++                            ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) recipient2).getHandle().m_6352_(component, thisPlayer.getUniqueId());
 +                        }
 +                    }
 +                    return null;
 +                }
 +            }
-+            Waitable<Void> waitable = new ForgeChat();
++            org.bukkit.craftbukkit.v1_18_R2.util.Waitable<Void> waitable = new ForgeChat();
 +            if (async) {
 +               this.f_9745_.processQueue.add(waitable);
 +            } else {
@@ -3949,8 +3760,8 @@
 +        }
 +    }
 +
-+    public void teleport(Location dest) {
-+        this.f_9743_.m_143425_(((CraftWorld)dest.getWorld()).getHandle());
++    public void teleport(org.bukkit.Location dest) {
++        this.f_9743_.m_143425_(((org.bukkit.craftbukkit.v1_18_R2.CraftWorld)dest.getWorld()).getHandle());
 +        internalTeleport( dest.getX(), dest.getY(), dest.getZ(), dest.getYaw(), dest.getPitch(), Collections.emptySet(), true );
 +    }
 +

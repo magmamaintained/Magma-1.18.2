@@ -1,30 +1,11 @@
 --- a/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
-@@ -1,8 +_,8 @@
- package net.minecraft.world.level.block.entity;
- 
-+import javax.annotation.Nullable;
- import java.util.List;
- import java.util.stream.IntStream;
--import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.core.NonNullList;
-@@ -31,6 +_,8 @@
- import net.minecraft.world.level.material.PushReaction;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
-+import org.bukkit.entity.HumanEntity;
- 
- public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity implements WorldlyContainer {
-    public static final int f_155657_ = 9;
 @@ -50,6 +_,37 @@
     @Nullable
     private final DyeColor f_59650_;
  
 +   // CraftBukkit start - add fields and methods
-+   public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++   public List<org.bukkit.entity.HumanEntity> transaction = new java.util.ArrayList<org.bukkit.entity.HumanEntity>();
 +   private int maxStack = MAX_STACK;
 +   public boolean opened;
 +
@@ -32,15 +13,15 @@
 +      return this.f_59645_;
 +   }
 +
-+   public void onOpen(CraftHumanEntity who) {
++   public void onOpen(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.add(who);
 +   }
 +
-+   public void onClose(CraftHumanEntity who) {
++   public void onClose(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.remove(who);
 +   }
 +
-+   public List<HumanEntity> getViewers() {
++   public List<org.bukkit.entity.HumanEntity> getViewers() {
 +      return transaction;
 +   }
 +

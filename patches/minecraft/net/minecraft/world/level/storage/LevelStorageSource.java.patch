@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -52,6 +_,7 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.LevelSettings;
- import net.minecraft.world.level.dimension.DimensionType;
-+import net.minecraft.world.level.dimension.LevelStem;
- import net.minecraft.world.level.levelgen.WorldGenSettings;
- import org.slf4j.Logger;
- 
 @@ -203,7 +_,12 @@
              LevelVersion levelversion = LevelVersion.m_78390_(dynamic);
              LevelSettings levelsettings = LevelSettings.m_46924_(dynamic, p_211739_);
@@ -30,7 +22,7 @@
 +      return createAccess(p_78261_, null);
 +   }
 +
-+   public LevelStorageAccess createAccess(String name, @Nullable ResourceKey<LevelStem> actualDimension) throws IOException {
++   public LevelStorageAccess createAccess(String name, @Nullable ResourceKey<net.minecraft.world.level.dimension.LevelStem> actualDimension) throws IOException {
 +      return new LevelStorageSource.LevelStorageAccess(name, actualDimension);
     }
  
@@ -43,9 +35,9 @@
 -         this.f_78272_ = p_78276_;
 -         this.f_78271_ = LevelStorageSource.this.f_78194_.resolve(p_78276_);
 +      // CraftBukkit start
-+      public final @Nullable ResourceKey<LevelStem> dimensionType;
++      public final @Nullable ResourceKey<net.minecraft.world.level.dimension.LevelStem> dimensionType;
 +
-+      public LevelStorageAccess(String s, @Nullable ResourceKey<LevelStem> dimensionType) throws IOException {
++      public LevelStorageAccess(String s, @Nullable ResourceKey<net.minecraft.world.level.dimension.LevelStem> dimensionType) throws IOException {
 +         this.dimensionType = dimensionType;
 +         this.f_78272_ = s;
 +         this.f_78271_ = LevelStorageSource.this.f_78194_.resolve(s);

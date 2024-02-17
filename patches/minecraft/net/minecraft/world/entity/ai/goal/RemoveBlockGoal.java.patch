@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
-@@ -20,6 +_,8 @@
- import net.minecraft.world.level.chunk.ChunkAccess;
- import net.minecraft.world.level.chunk.ChunkStatus;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
-+import org.bukkit.event.entity.EntityInteractEvent;
- 
- public class RemoveBlockGoal extends MoveToBlockGoal {
-    private final Block f_25836_;
 @@ -34,7 +_,7 @@
     }
  
@@ -23,8 +14,8 @@
  
           if (this.f_25838_ > 60) {
 +            // CraftBukkit start - Step on eggs
-+            EntityInteractEvent event = new EntityInteractEvent(this.f_25837_.getBukkitEntity(), CraftBlock.at(level, blockpos1));
-+            level.getCraftServer().getPluginManager().callEvent((EntityInteractEvent) event);
++            org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(this.f_25837_.getBukkitEntity(), org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(level, blockpos1));
++            level.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) event);
 +
 +            if (event.isCancelled()) {
 +               return;

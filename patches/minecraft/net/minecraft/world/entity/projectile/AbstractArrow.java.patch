@@ -1,22 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -27,6 +_,7 @@
- import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.MoverType;
- import net.minecraft.world.entity.Pose;
-+import net.minecraft.world.entity.item.ItemEntity;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.enchantment.EnchantmentHelper;
-@@ -41,6 +_,8 @@
- import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.event.entity.EntityCombustByEntityEvent;
-+import org.bukkit.event.player.PlayerPickupArrowEvent;
- 
- public abstract class AbstractArrow extends Projectile {
-    private static final double f_150120_ = 2.0D;
 @@ -64,6 +_,16 @@
     @Nullable
     private List<Entity> f_36702_;
@@ -60,7 +43,7 @@
        if (this.m_6060_() && !flag) {
 -         entity.m_20254_(5);
 +         // CraftBukkit start
-+         EntityCombustByEntityEvent combustEvent = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), 5);
++         org.bukkit.event.entity.EntityCombustByEntityEvent combustEvent = new org.bukkit.event.entity.EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), 5);
 +         org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
 +         if (!combustEvent.isCancelled()) {
 +            entity.setSecondsOnFire(combustEvent.getDuration(), false);
@@ -77,8 +60,8 @@
 +         // CraftBukkit start
 +         ItemStack itemstack = this.m_7941_();
 +         if (this.f_36705_ == Pickup.ALLOWED && !itemstack.m_41619_() && p_36766_.m_150109_().canHold(itemstack) > 0) {
-+            ItemEntity item = new ItemEntity(this.f_19853_, this.m_20185_(), this.m_20186_(), this.m_20189_(), itemstack);
-+            PlayerPickupArrowEvent event = new PlayerPickupArrowEvent((org.bukkit.entity.Player) p_36766_.getBukkitEntity(), new org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem(this.f_19853_.getCraftServer(), this, item), (org.bukkit.entity.AbstractArrow) this.getBukkitEntity());
++            net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(this.f_19853_, this.m_20185_(), this.m_20186_(), this.m_20189_(), itemstack);
++            org.bukkit.event.player.PlayerPickupArrowEvent event = new org.bukkit.event.player.PlayerPickupArrowEvent((org.bukkit.entity.Player) p_36766_.getBukkitEntity(), new org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem(this.f_19853_.getCraftServer(), this, item), (org.bukkit.entity.AbstractArrow) this.getBukkitEntity());
 +            // event.setCancelled(!p_36766_.canPickUpLoot); TODO
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +

@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -21,6 +_,7 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
-+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
- import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
- 
 @@ -107,17 +_,47 @@
        return this.f_78909_;
     }
@@ -72,7 +64,7 @@
 -               return new LootContext(random, this.f_78959_, this.f_78955_, minecraftserver.m_129898_()::m_79217_, minecraftserver.m_129899_()::m_79252_, this.f_78956_, this.f_78957_);
 +               //Magma start - check if params are empty, prevents crash with bukkit loot generate event and forge mods
 +               LootContext context = new LootContext(random, this.f_78959_, this.f_78955_, minecraftserver.m_129898_()::m_79217_, minecraftserver.m_129899_()::m_79252_, this.f_78956_, this.f_78957_, this.queriedLootTableId);
-+               if (p_78976_ == LootContextParamSets.f_81410_ || (p_78976_.m_81394_().isEmpty() && p_78976_.m_81398_().isEmpty()))
++               if (p_78976_ == net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.f_81410_ || (p_78976_.m_81394_().isEmpty() && p_78976_.m_81398_().isEmpty()))
 +                  context.setEmptyParams();
 +               return context;
              }

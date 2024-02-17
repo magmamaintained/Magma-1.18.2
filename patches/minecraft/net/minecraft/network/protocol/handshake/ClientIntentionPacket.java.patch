@@ -1,25 +1,5 @@
 --- a/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
 +++ b/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
-@@ -1,9 +_,19 @@
- package net.minecraft.network.protocol.handshake;
- 
-+import com.google.gson.Gson;
-+import com.google.gson.GsonBuilder;
-+import com.mojang.authlib.properties.Property;
-+import com.mojang.authlib.properties.PropertyMap;
- import net.minecraft.SharedConstants;
- import net.minecraft.network.ConnectionProtocol;
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.protocol.Packet;
-+import net.minecraftforge.network.NetworkConstants;
-+import net.minecraftforge.network.NetworkHooks;
-+import org.spigotmc.SpigotConfig;
-+
-+import java.util.Map;
-+import java.util.Objects;
- 
- public class ClientIntentionPacket implements Packet<ServerHandshakePacketListener> {
-    private static final int f_179799_ = 255;
 @@ -11,6 +_,10 @@
     public String f_134721_;
     public final int f_134722_;
@@ -27,7 +7,7 @@
 +   private String fmlVersion = net.minecraftforge.network.NetworkConstants.NETVERSION;
 +
 +   private static final String EXTRA_DATA = "extraData";
-+   private static final Gson GSON = new GsonBuilder().registerTypeAdapter(PropertyMap.class, new PropertyMap.Serializer()).create();
++   private static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().registerTypeAdapter(com.mojang.authlib.properties.PropertyMap.class, new com.mojang.authlib.properties.PropertyMap.Serializer()).create();
  
     public ClientIntentionPacket(String p_134726_, int p_134727_, ConnectionProtocol p_134728_) {
        this.f_134720_ = SharedConstants.m_183709_().getProtocolVersion();
@@ -39,23 +19,23 @@
 +      this.f_134721_ = p_179801_.m_130136_(Short.MAX_VALUE); // Spigot / Magma removed own init as var
        this.f_134722_ = p_179801_.readUnsignedShort();
        this.f_134723_ = ConnectionProtocol.m_129583_(p_179801_.m_130242_());
-+      this.fmlVersion = NetworkHooks.getFMLVersion(f_134721_);
++      this.fmlVersion = net.minecraftforge.network.NetworkHooks.getFMLVersion(f_134721_);
 +      //this.hostName = hostName.split("\0")[0]; // Magma moved to [ServerHandshakePacketListenerImpl.java#L93]
 +      //Magma start - add Velocity support
-+      if (SpigotConfig.bungee && !Objects.equals(this.fmlVersion, NetworkConstants.NETVERSION)) {
++      if (org.spigotmc.SpigotConfig.bungee && !java.util.Objects.equals(this.fmlVersion, net.minecraftforge.network.NetworkConstants.NETVERSION)) {
 +         String[] split = this.f_134721_.split("\0");
 +         if (split.length == 4) {
-+            PropertyMap properties = GSON.fromJson(split[3], PropertyMap.class);
-+            for (Map.Entry<String, Property> property : properties.entries()) {
++            com.mojang.authlib.properties.PropertyMap properties = GSON.fromJson(split[3], com.mojang.authlib.properties.PropertyMap.class);
++            for (java.util.Map.Entry<String, com.mojang.authlib.properties.Property> property : properties.entries()) {
 +               if (property.getKey().equalsIgnoreCase("forgeClient")) {
-+                  if (property.getValue().getValue().equalsIgnoreCase(NetworkConstants.NETVERSION)) {
-+                     this.fmlVersion = NetworkConstants.NETVERSION;
++                  if (property.getValue().getValue().equalsIgnoreCase(net.minecraftforge.network.NetworkConstants.NETVERSION)) {
++                     this.fmlVersion = net.minecraftforge.network.NetworkConstants.NETVERSION;
 +                  }
 +               }
 +
-+               if (Objects.equals(property.getValue().getName(), EXTRA_DATA)) {
++               if (java.util.Objects.equals(property.getValue().getName(), EXTRA_DATA)) {
 +                  String extraData = property.getValue().getValue().replace("\1", "\0");
-+                  this.fmlVersion = NetworkHooks.getFMLVersion(split[0] + extraData);
++                  this.fmlVersion = net.minecraftforge.network.NetworkHooks.getFMLVersion(split[0] + extraData);
 +               }
 +            }
 +         }

@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/block/PressurePlateBlock.java
 +++ b/net/minecraft/world/level/block/PressurePlateBlock.java
-@@ -16,6 +_,7 @@
- import net.minecraft.world.level.block.state.properties.BooleanProperty;
- import net.minecraft.world.level.material.Material;
- import net.minecraft.world.phys.AABB;
-+import org.bukkit.event.entity.EntityInteractEvent;
- 
- public class PressurePlateBlock extends BasePressurePlateBlock {
-    public static final BooleanProperty f_55249_ = BlockStateProperties.f_61448_;
 @@ -69,6 +_,27 @@
  
        if (!list.isEmpty()) {
@@ -22,8 +14,8 @@
 +               if (entity instanceof Player) {
 +                  cancellable = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, p_55265_, null, null, null);
 +               } else {
-+                  cancellable = new EntityInteractEvent(entity.getBukkitEntity(), bworld.getBlockAt(p_55265_.m_123341_(), p_55265_.m_123342_(), p_55265_.m_123343_()));
-+                  manager.callEvent((EntityInteractEvent) cancellable);
++                  cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), bworld.getBlockAt(p_55265_.m_123341_(), p_55265_.m_123342_(), p_55265_.m_123343_()));
++                  manager.callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
 +               }
 +               
 +               // We only want to block turning the plate on if all events are cancelled

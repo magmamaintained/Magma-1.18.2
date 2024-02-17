@@ -1,31 +1,5 @@
 --- a/net/minecraft/world/entity/LightningBolt.java
 +++ b/net/minecraft/world/entity/LightningBolt.java
-@@ -1,11 +_,6 @@
- package net.minecraft.world.entity;
- 
- import com.google.common.collect.Sets;
--import java.util.List;
--import java.util.Optional;
--import java.util.Set;
--import java.util.stream.Stream;
--import javax.annotation.Nullable;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.core.BlockPos;
- import net.minecraft.nbt.CompoundTag;
-@@ -26,6 +_,13 @@
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+
-+import javax.annotation.Nullable;
-+import java.util.List;
-+import java.util.Optional;
-+import java.util.Set;
-+import java.util.stream.Stream;
- 
- public class LightningBolt extends Entity {
-    private static final int f_147136_ = 2;
 @@ -40,6 +_,9 @@
     private final Set<Entity> f_147134_ = Sets.newHashSet();
     private int f_147135_;
@@ -78,7 +52,7 @@
 -            this.f_19853_.m_46597_(blockpos, blockstate);
 -            ++this.f_147135_;
 +            // CraftBukkit start - add "!visualOnly"
-+            if (!f_20862_ && !CraftEventFactory.callBlockIgniteEvent(f_19853_, blockpos, this).isCancelled()) {
++            if (!f_20862_ && !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(f_19853_, blockpos, this).isCancelled()) {
 +               this.f_19853_.m_46597_(blockpos, blockstate);
 +               ++this.f_147135_;
 +            }
@@ -92,7 +66,7 @@
 -               this.f_19853_.m_46597_(blockpos1, blockstate);
 -               ++this.f_147135_;
 +               // CraftBukkit start - add "!visualOnly"
-+               if (!f_20862_ && !CraftEventFactory.callBlockIgniteEvent(f_19853_, blockpos1, this).isCancelled()) {
++               if (!f_20862_ && !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(f_19853_, blockpos1, this).isCancelled()) {
 +                  this.f_19853_.m_46597_(blockpos1, blockstate);
 +                  ++this.f_147135_;
 +               }

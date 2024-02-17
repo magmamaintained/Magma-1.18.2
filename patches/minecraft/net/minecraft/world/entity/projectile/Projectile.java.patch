@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
-@@ -20,6 +_,7 @@
- import net.minecraft.world.phys.EntityHitResult;
- import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.projectiles.ProjectileSource;
- 
- public abstract class Projectile extends Entity {
-    @Nullable
 @@ -29,6 +_,10 @@
     private boolean f_37246_;
     private boolean f_150164_;
@@ -23,7 +15,7 @@
           this.f_37244_ = p_37263_.m_142081_();
           this.f_150163_ = p_37263_;
        }
-+      this.projectileSource = (p_37263_ != null && p_37263_.getBukkitEntity() instanceof ProjectileSource) ? (ProjectileSource) p_37263_.getBukkitEntity() : null; // CraftBukkit
++      this.projectileSource = (p_37263_ != null && p_37263_.getBukkitEntity() instanceof org.bukkit.projectiles.ProjectileSource) ? (org.bukkit.projectiles.ProjectileSource) p_37263_.getBukkitEntity() : null; // CraftBukkit
  
     }
  

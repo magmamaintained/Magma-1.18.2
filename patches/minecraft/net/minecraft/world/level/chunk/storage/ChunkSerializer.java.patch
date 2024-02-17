@@ -1,64 +1,5 @@
 --- a/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
 +++ b/net/minecraft/world/level/chunk/storage/ChunkSerializer.java
-@@ -7,23 +_,9 @@
- import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
- import it.unimi.dsi.fastutil.longs.LongSet;
- import it.unimi.dsi.fastutil.shorts.ShortList;
--import java.util.Arrays;
--import java.util.EnumSet;
--import java.util.Map;
--import java.util.Objects;
--import java.util.Map.Entry;
--import javax.annotation.Nullable;
- import net.minecraft.SharedConstants;
--import net.minecraft.core.BlockPos;
--import net.minecraft.core.Holder;
--import net.minecraft.core.Registry;
--import net.minecraft.core.RegistryAccess;
--import net.minecraft.core.SectionPos;
--import net.minecraft.nbt.CompoundTag;
--import net.minecraft.nbt.ListTag;
--import net.minecraft.nbt.LongArrayTag;
--import net.minecraft.nbt.NbtOps;
--import net.minecraft.nbt.ShortTag;
-+import net.minecraft.core.*;
-+import net.minecraft.nbt.*;
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.entity.EntityType;
-@@ -36,17 +_,7 @@
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.entity.BlockEntity;
- import net.minecraft.world.level.block.state.BlockState;
--import net.minecraft.world.level.chunk.CarvingMask;
--import net.minecraft.world.level.chunk.ChunkAccess;
--import net.minecraft.world.level.chunk.ChunkSource;
--import net.minecraft.world.level.chunk.ChunkStatus;
--import net.minecraft.world.level.chunk.DataLayer;
--import net.minecraft.world.level.chunk.ImposterProtoChunk;
--import net.minecraft.world.level.chunk.LevelChunk;
--import net.minecraft.world.level.chunk.LevelChunkSection;
--import net.minecraft.world.level.chunk.PalettedContainer;
--import net.minecraft.world.level.chunk.ProtoChunk;
--import net.minecraft.world.level.chunk.UpgradeData;
-+import net.minecraft.world.level.chunk.*;
- import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
- import net.minecraft.world.level.levelgen.GenerationStep;
- import net.minecraft.world.level.levelgen.Heightmap;
-@@ -61,6 +_,13 @@
- import net.minecraft.world.ticks.ProtoChunkTicks;
- import org.slf4j.Logger;
- 
-+import javax.annotation.Nullable;
-+import java.util.Arrays;
-+import java.util.EnumSet;
-+import java.util.Map;
-+import java.util.Map.Entry;
-+import java.util.Objects;
-+
- public class ChunkSerializer {
-    public static final Codec<PalettedContainer<BlockState>> f_188227_ = PalettedContainer.m_188054_(Block.f_49791_, BlockState.f_61039_, PalettedContainer.Strategy.f_188137_, Blocks.f_50016_.m_49966_());
-    private static final Logger f_63449_ = LogUtils.getLogger();
 @@ -146,6 +_,7 @@
              return Registry.f_122822_.m_6612_(ResourceLocation.m_135820_(p_188285_));
           }, p_188233_);
@@ -80,7 +21,7 @@
        }
  
 +      // CraftBukkit start - load chunk persistent data from nbt - SPIGOT-6814: Already load PDC here to account for 1.17 to 1.18 chunk upgrading.
-+      Tag persistentBase = p_188234_.m_128423_("ChunkBukkitValues");
++      net.minecraft.nbt.Tag persistentBase = p_188234_.m_128423_("ChunkBukkitValues");
 +      if (persistentBase instanceof CompoundTag) {
 +         ((ChunkAccess) chunkaccess).persistentDataContainer.putAll((CompoundTag) persistentBase);
 +      }
@@ -140,13 +81,5 @@
 +      }
 +      // CraftBukkit end
        return compoundtag;
-    }
- 
-@@ -404,7 +_,6 @@
-                }
-             }
-          }
--
-       };
     }
  

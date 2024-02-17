@@ -1,73 +1,10 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -2,15 +_,6 @@
- 
- import com.google.common.collect.ImmutableMap;
- import com.mojang.serialization.MapCodec;
--import java.util.Arrays;
--import java.util.Collections;
--import java.util.List;
--import java.util.Random;
--import java.util.function.Function;
--import java.util.function.Predicate;
--import java.util.function.ToIntFunction;
--import java.util.stream.Stream;
--import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.core.HolderSet;
-@@ -32,28 +_,13 @@
- import net.minecraft.world.item.Item;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.context.BlockPlaceContext;
--import net.minecraft.world.level.BlockGetter;
--import net.minecraft.world.level.EmptyBlockGetter;
--import net.minecraft.world.level.Level;
--import net.minecraft.world.level.LevelAccessor;
--import net.minecraft.world.level.LevelReader;
--import net.minecraft.world.level.block.Block;
--import net.minecraft.world.level.block.EntityBlock;
--import net.minecraft.world.level.block.Mirror;
--import net.minecraft.world.level.block.RenderShape;
--import net.minecraft.world.level.block.Rotation;
--import net.minecraft.world.level.block.SoundType;
--import net.minecraft.world.level.block.SupportType;
-+import net.minecraft.world.level.*;
-+import net.minecraft.world.level.block.*;
- import net.minecraft.world.level.block.entity.BlockEntity;
- import net.minecraft.world.level.block.entity.BlockEntityTicker;
- import net.minecraft.world.level.block.entity.BlockEntityType;
- import net.minecraft.world.level.block.state.properties.Property;
--import net.minecraft.world.level.material.Fluid;
--import net.minecraft.world.level.material.FluidState;
--import net.minecraft.world.level.material.Fluids;
--import net.minecraft.world.level.material.Material;
--import net.minecraft.world.level.material.MaterialColor;
--import net.minecraft.world.level.material.PushReaction;
-+import net.minecraft.world.level.material.*;
- import net.minecraft.world.level.pathfinder.PathComputationType;
- import net.minecraft.world.level.storage.loot.BuiltInLootTables;
- import net.minecraft.world.level.storage.loot.LootContext;
-@@ -65,8 +_,23 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
+@@ -66,7 +_,9 @@
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
--
+ 
 -public abstract class BlockBehaviour {
-+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-+import org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData;
-+import org.bukkit.event.block.BlockPhysicsEvent;
-+import org.magmafoundation.magma.configuration.MagmaConfig;
-+
-+import javax.annotation.Nullable;
-+import java.util.Arrays;
-+import java.util.Collections;
-+import java.util.List;
-+import java.util.Random;
-+import java.util.function.Function;
-+import java.util.function.Predicate;
-+import java.util.function.ToIntFunction;
-+import java.util.stream.Stream;
 +
 +//TODO, Delegates are weird here now, because Block extends this.
 +public abstract class BlockBehaviour extends net.minecraftforge.registries.ForgeRegistryEntry<Block> {
@@ -174,9 +111,9 @@
  
        public void m_60690_(Level p_60691_, BlockPos p_60692_, Block p_60693_, BlockPos p_60694_, boolean p_60695_) {
 +         // CraftBukkit start
-+         CraftWorld world = ((ServerLevel) p_60691_).getWorld();
++         org.bukkit.craftbukkit.v1_18_R2.CraftWorld world = ((ServerLevel) p_60691_).getWorld();
 +         if (world != null) {
-+            BlockPhysicsEvent event = new BlockPhysicsEvent( world.getBlockAt( p_60692_.m_123341_(), p_60692_.m_123342_(), p_60692_.m_123343_() ), CraftBlockData.fromData( p_60691_.m_8055_(p_60692_)), world.getBlockAt( p_60694_.m_123341_(), p_60694_.m_123342_(), p_60694_.m_123343_() ) );
++            org.bukkit.event.block.BlockPhysicsEvent event = new org.bukkit.event.block.BlockPhysicsEvent( world.getBlockAt( p_60692_.m_123341_(), p_60692_.m_123342_(), p_60692_.m_123343_() ), org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData.fromData( p_60691_.m_8055_(p_60692_)), world.getBlockAt( p_60694_.m_123341_(), p_60694_.m_123342_(), p_60694_.m_123343_() ) );
 +            p_60691_.getCraftServer().getPluginManager().callEvent( event );
 +
 +            if (event.isCancelled()) {
@@ -195,7 +132,7 @@
 -            BlockState blockstate1 = blockstate.m_60728_(direction.m_122424_(), this.m_7160_(), p_60706_, blockpos$mutableblockpos, p_60707_);
 -            Block.m_49908_(blockstate, blockstate1, p_60706_, blockpos$mutableblockpos, p_60708_, p_60709_);
 +
-+            if (MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++            if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues()) {
 +               p_60706_.neighborShapeChanged(direction.m_122424_(), this.m_7160_(), blockpos$mutableblockpos, p_60707_, p_60708_, p_60709_);
 +            } else {
 +               BlockState blockstate = p_60706_.m_8055_(blockpos$mutableblockpos);

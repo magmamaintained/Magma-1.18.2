@@ -1,21 +1,6 @@
 --- a/net/minecraft/world/SimpleContainer.java
 +++ b/net/minecraft/world/SimpleContainer.java
-@@ -3,6 +_,7 @@
- import com.google.common.collect.Lists;
- import java.util.List;
- import java.util.stream.Collectors;
-+import java.util.stream.IntStream;
- import javax.annotation.Nullable;
- import net.minecraft.core.NonNullList;
- import net.minecraft.nbt.CompoundTag;
-@@ -12,14 +_,69 @@
- import net.minecraft.world.inventory.StackedContentsCompatible;
- import net.minecraft.world.item.Item;
- import net.minecraft.world.item.ItemStack;
-+import org.bukkit.Location;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
-+import org.bukkit.entity.HumanEntity;
-+import org.bukkit.inventory.InventoryHolder;
+@@ -15,11 +_,62 @@
  
  public class SimpleContainer implements Container, StackedContentsCompatible {
     private final int f_19146_;
@@ -25,7 +10,7 @@
     private List<ContainerListener> f_19148_;
  
 +   // CraftBukkit start - add fields and methods
-+   public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++   public List<org.bukkit.entity.HumanEntity> transaction = new java.util.ArrayList<org.bukkit.entity.HumanEntity>();
 +   private int maxStack = MAX_STACK;
 +   protected org.bukkit.inventory.InventoryHolder bukkitOwner;
 +
@@ -33,19 +18,19 @@
 +      return this.f_19147_;
 +   }
 +
-+   public void onOpen(CraftHumanEntity who) {
++   public void onOpen(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.add(who);
 +   }
 +
-+   public void onClose(CraftHumanEntity who) {
++   public void onClose(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.remove(who);
 +   }
 +
-+   public List<HumanEntity> getViewers() {
++   public List<org.bukkit.entity.HumanEntity> getViewers() {
 +      return transaction;
 +   }
 +
-+   public InventoryHolder getOwner() {
++   public org.bukkit.inventory.InventoryHolder getOwner() {
 +      return bukkitOwner;
 +   }
 +
@@ -59,21 +44,21 @@
 +   }
 +
 +   @Override
-+   public Location getLocation() {
++   public org.bukkit.Location getLocation() {
 +      return null;
 +   }
 +
 +
 +   public SimpleContainer(SimpleContainer original) {
 +      this(original.f_19146_);
-+      IntStream.range(0, original.f_19146_).forEach(i -> this.f_19147_.set(i, original.f_19147_.get(i).m_41777_()));
++      java.util.stream.IntStream.range(0, original.f_19146_).forEach(i -> this.f_19147_.set(i, original.f_19147_.get(i).m_41777_()));
 +   }
 +
     public SimpleContainer(int p_19150_) {
 +      this(p_19150_, null);
 +   }
 +
-+   public SimpleContainer(int p_19150_, InventoryHolder owner) {
++   public SimpleContainer(int p_19150_, org.bukkit.inventory.InventoryHolder owner) {
 +      this.bukkitOwner = owner;
 +      // CraftBukkit end
        this.f_19146_ = p_19150_;

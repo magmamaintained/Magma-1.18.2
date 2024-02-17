@@ -1,17 +1,5 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -14,6 +_,11 @@
- import net.minecraft.world.level.block.AnvilBlock;
- import net.minecraft.world.level.block.state.BlockState;
- import org.apache.commons.lang3.StringUtils;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventory;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryAnvil;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
-+import org.magmafoundation.magma.helpers.AnvilHelper;
- import org.slf4j.Logger;
- 
- public class AnvilMenu extends ItemCombinerMenu {
 @@ -31,6 +_,25 @@
     private static final int f_150466_ = 1;
     private static final int f_150467_ = 1;
@@ -19,21 +7,21 @@
 +   // CraftBukkit start
 +   public static final int DEFAULT_DENIED_COST = -1;
 +   //public int maximumRepairCost = 40; //Magma - in favor of AnvilHelper
-+   private CraftInventoryView bukkitEntity;
++   private org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView bukkitEntity;
 +   @Override
-+   public CraftInventoryView getBukkitView() {
++   public org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView getBukkitView() {
 +      if (bukkitEntity != null) {
 +         return bukkitEntity;
 +      }
 +
-+      CraftInventory inventory = new CraftInventoryAnvil(f_39770_.getLocation(), this.f_39769_, this.f_39768_, this);
-+      bukkitEntity = new CraftInventoryView(this.f_39771_.getBukkitEntity(), inventory, this);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventory inventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryAnvil(f_39770_.getLocation(), this.f_39769_, this.f_39768_, this);
++      bukkitEntity = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView(this.f_39771_.getBukkitEntity(), inventory, this);
 +      return bukkitEntity;
 +   }
 +   // CraftBukkit end
 +
 +   //Magma start
-+   public AnvilHelper anvilHelper = new AnvilHelper();
++   public org.magmafoundation.magma.helpers.AnvilHelper anvilHelper = new org.magmafoundation.magma.helpers.AnvilHelper();
 +
     public AnvilMenu(int p_39005_, Inventory p_39006_) {
        this(p_39005_, p_39006_, ContainerLevelAccess.f_39287_);
@@ -75,7 +63,7 @@
        if (itemstack.m_41619_()) {
 -         this.f_39768_.m_6836_(0, ItemStack.f_41583_);
 -         this.f_39002_.m_6422_(0);
-+         CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
 +         this.f_39002_.m_6422_(DEFAULT_DENIED_COST); // CraftBukkit - use a variable for set a cost for denied item
        } else {
           ItemStack itemstack1 = itemstack.m_41777_();
@@ -94,7 +82,7 @@
                 if (l2 <= 0) {
 -                  this.f_39768_.m_6836_(0, ItemStack.f_41583_);
 -                  this.f_39002_.m_6422_(0);
-+                  CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
++                  org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
 +                  this.f_39002_.m_6422_(DEFAULT_DENIED_COST); // CraftBukkit - use a variable for set a cost for denied item
                    return;
                 }
@@ -105,7 +93,7 @@
                 if (!flag && (!itemstack1.m_150930_(itemstack2.m_41720_()) || !itemstack1.m_41763_())) {
 -                  this.f_39768_.m_6836_(0, ItemStack.f_41583_);
 -                  this.f_39002_.m_6422_(0);
-+                  CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
++                  org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
 +                  this.f_39002_.m_6422_(DEFAULT_DENIED_COST); // CraftBukkit - use a variable for set a cost for denied item
                    return;
                 }
@@ -116,7 +104,7 @@
                 if (flag3 && !flag2) {
 -                  this.f_39768_.m_6836_(0, ItemStack.f_41583_);
 -                  this.f_39002_.m_6422_(0);
-+                  CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
++                  org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), ItemStack.f_41583_); // CraftBukkit
 +                  this.f_39002_.m_6422_(DEFAULT_DENIED_COST); // CraftBukkit - use a variable for set a cost for denied item
                    return;
                 }
@@ -150,7 +138,7 @@
           }
  
 -         this.f_39768_.m_6836_(0, itemstack1);
-+         CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), itemstack1); // CraftBukkit
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPrepareAnvilEvent(getBukkitView(), itemstack1); // CraftBukkit
 +         m_150429_(); // CraftBukkit - SPIGOT-6686: Always send completed inventory to stay in sync with client
           this.m_38946_();
        }

@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -13,6 +_,7 @@
- import net.minecraft.world.item.context.BlockPlaceContext;
- import net.minecraft.world.level.BlockGetter;
- import net.minecraft.world.level.Level;
-+import net.minecraft.world.level.LevelAccessor;
- import net.minecraft.world.level.block.state.BlockBehaviour;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.portal.PortalShape;
 @@ -113,7 +_,13 @@
        if (!p_49263_.m_5825_()) {
           p_49263_.m_7311_(p_49263_.m_20094_() + 1);
@@ -46,7 +38,7 @@
     }
 +
 +   // CraftBukkit start
-+   protected void fireExtinguished(LevelAccessor world, BlockPos position) {
++   protected void fireExtinguished(net.minecraft.world.level.LevelAccessor world, BlockPos position) {
 +      if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(world, position, Blocks.f_50016_.m_49966_()).isCancelled()) {
 +         world.m_7471_(position, false);
 +      }

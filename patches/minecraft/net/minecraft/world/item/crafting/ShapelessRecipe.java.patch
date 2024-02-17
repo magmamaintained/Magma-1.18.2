@@ -1,15 +1,6 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -12,19 +_,37 @@
- import net.minecraft.world.inventory.CraftingContainer;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftShapelessRecipe;
- 
- public class ShapelessRecipe implements CraftingRecipe {
-    private final ResourceLocation f_44241_;
+@@ -18,13 +_,28 @@
     final String f_44242_;
     final ItemStack f_44243_;
     final NonNullList<Ingredient> f_44244_;
@@ -27,11 +18,11 @@
 +   // CraftBukkit start
 +   @SuppressWarnings("unchecked")
 +   public org.bukkit.inventory.ShapelessRecipe toBukkitRecipe() {
-+      CraftItemStack result = CraftItemStack.asCraftMirror(this.f_44243_);
-+      CraftShapelessRecipe recipe = new CraftShapelessRecipe(result, this);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.f_44243_);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftShapelessRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftShapelessRecipe(result, this);
 +      recipe.setGroup(this.f_44242_);
 +      for (Ingredient list : this.f_44244_) {
-+         recipe.addIngredient(CraftRecipe.toBukkit(list));
++         recipe.addIngredient(org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(list));
 +      }
 +      return recipe;
 +   }

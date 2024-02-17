@@ -1,25 +1,7 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -5,13 +_,6 @@
- import com.mojang.logging.LogUtils;
- import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
- import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
--import java.util.Map;
--import java.util.Map.Entry;
--import java.util.function.Consumer;
--import java.util.function.Supplier;
--import java.util.stream.Stream;
--import java.util.stream.StreamSupport;
--import javax.annotation.Nullable;
- import net.minecraft.CrashReport;
- import net.minecraft.CrashReportCategory;
- import net.minecraft.ReportedException;
-@@ -47,659 +_,866 @@
- import net.minecraft.world.level.material.Fluids;
- import net.minecraft.world.ticks.LevelChunkTicks;
+@@ -49,657 +_,855 @@
  import net.minecraft.world.ticks.TickContainerAccess;
-+import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer;
-+import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry;
  import org.slf4j.Logger;
  
 -public class LevelChunk extends ChunkAccess {
@@ -300,13 +282,6 @@
 -      } else {
 -         Level level = this.f_62776_;
 -         if (!(level instanceof ServerLevel)) {
-+import javax.annotation.Nullable;
-+import java.util.Map;
-+import java.util.Map.Entry;
-+import java.util.function.Consumer;
-+import java.util.function.Supplier;
-+import java.util.stream.Stream;
-+import java.util.stream.StreamSupport;
 +
 +public class LevelChunk extends ChunkAccess implements net.minecraftforge.common.capabilities.ICapabilityProviderImpl<LevelChunk> {
 +    static final Logger f_62771_ = LogUtils.getLogger();
@@ -516,8 +491,8 @@
 +
 +    public boolean mustNotSave;
 +    public boolean needsDecoration;
-+    private static final CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new CraftPersistentDataTypeRegistry();
-+    public CraftPersistentDataContainer persistentDataContainer = new CraftPersistentDataContainer( DATA_TYPE_REGISTRY );
++    private static final org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry();
++    public org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer persistentDataContainer = new org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer( DATA_TYPE_REGISTRY );
 +    // CraftBukkit end
 +
 +

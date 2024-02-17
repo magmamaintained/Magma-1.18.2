@@ -1,14 +1,6 @@
 --- a/net/minecraft/network/CompressionEncoder.java
 +++ b/net/minecraft/network/CompressionEncoder.java
-@@ -3,12 +_,16 @@
- import io.netty.buffer.ByteBuf;
- import io.netty.channel.ChannelHandlerContext;
- import io.netty.handler.codec.MessageToByteEncoder;
-+import org.magmafoundation.magma.configuration.MagmaConfig;
-+
- import java.util.zip.Deflater;
- 
- public class CompressionEncoder extends MessageToByteEncoder<ByteBuf> {
+@@ -9,6 +_,8 @@
     private final byte[] f_129444_ = new byte[8192];
     private final Deflater f_129445_;
     private int f_129446_;
@@ -21,7 +13,7 @@
           friendlybytebuf.m_130130_(0);
           friendlybytebuf.writeBytes(p_129453_);
        } else {
-+         int maxSize = MagmaConfig.instance.forgePacketCompressionThreshold.getValues();
++         int maxSize = org.magmafoundation.magma.configuration.MagmaConfig.instance.forgePacketCompressionThreshold.getValues();
 +         if (!DISABLE_PACKET_DEBUG && i > 2097152 && i > maxSize) { //Magma - make packet size configurable
 +             p_129453_.markReaderIndex();
 +             LOGGER.error("Attempted to send packet over maximum protocol size: {} > {}", i, maxSize);

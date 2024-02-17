@@ -1,22 +1,14 @@
 --- a/net/minecraft/core/dispenser/ShearsDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/ShearsDispenseItemBehavior.java
-@@ -20,13 +_,41 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.phys.AABB;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.event.block.BlockDispenseEvent;
-+import org.jetbrains.annotations.Nullable;
- 
+@@ -24,9 +_,33 @@
  public class ShearsDispenseItemBehavior extends OptionalDispenseItemBehavior {
     protected ItemStack m_7498_(BlockSource p_123580_, ItemStack p_123581_) {
        Level level = p_123580_.m_7727_();
 +      //CraftBukkit start
 +      org.bukkit.block.Block bukkitBlock = level.getWorld().getBlockAt(p_123580_.m_7961_().m_123341_(), p_123580_.m_7961_().m_123342_(), p_123580_.m_7961_().m_123343_());
-+      CraftItemStack craftItem = CraftItemStack.asCraftMirror(p_123581_);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack craftItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(p_123581_);
 +
-+      BlockDispenseEvent event = new BlockDispenseEvent(bukkitBlock, craftItem.clone(), new org.bukkit.util.Vector(0, 0, 0));
++      org.bukkit.event.block.BlockDispenseEvent event = new org.bukkit.event.block.BlockDispenseEvent(bukkitBlock, craftItem.clone(), new org.bukkit.util.Vector(0, 0, 0));
 +      if (!DispenserBlock.eventFired) {
 +         level.getCraftServer().getPluginManager().callEvent(event);
 +      }
@@ -27,7 +19,7 @@
 +
 +      if (!event.getItem().equals(craftItem)) {
 +         // Chain to handler for new item
-+         ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++         ItemStack eventStack = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(event.getItem());
 +         DispenseItemBehavior idispensebehavior = (DispenseItemBehavior) DispenserBlock.f_52661_.get(eventStack.m_41720_());
 +         if (idispensebehavior != DispenseItemBehavior.f_123393_ && idispensebehavior != this) {
 +            idispensebehavior.m_6115_(p_123580_, eventStack);
@@ -48,9 +40,9 @@
     }
  
 +   //Magma start - prevent mixin inject
-+   private static @Nullable org.bukkit.block.Block tryShearLivingEntity_bukkitBlock;
-+   private static @Nullable CraftItemStack tryShearLivingEntity_craftItem;
-+   private static boolean tryShearLivingEntity(ServerLevel p_123583_, BlockPos p_123584_, org.bukkit.block.Block bukkitBlock, CraftItemStack craftItem) {
++   private static @org.jetbrains.annotations.Nullable org.bukkit.block.Block tryShearLivingEntity_bukkitBlock;
++   private static @org.jetbrains.annotations.Nullable org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack tryShearLivingEntity_craftItem;
++   private static boolean tryShearLivingEntity(ServerLevel p_123583_, BlockPos p_123584_, org.bukkit.block.Block bukkitBlock, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack craftItem) {
 +      tryShearLivingEntity_bukkitBlock = bukkitBlock;
 +      tryShearLivingEntity_craftItem = craftItem;
 +      return m_123582_(p_123583_, p_123584_);
@@ -64,7 +56,7 @@
              if (shearable.m_6220_()) {
 +               //CraftBukkit start
 +               if (tryShearLivingEntity_bukkitBlock != null && tryShearLivingEntity_craftItem != null) { //Magma - null check
-+                  if (CraftEventFactory.callBlockShearEntityEvent(livingentity, tryShearLivingEntity_bukkitBlock, tryShearLivingEntity_craftItem).isCancelled()) {
++                  if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockShearEntityEvent(livingentity, tryShearLivingEntity_bukkitBlock, tryShearLivingEntity_craftItem).isCancelled()) {
 +                     continue;
 +                  }
 +               }

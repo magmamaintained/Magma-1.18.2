@@ -1,21 +1,5 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -6,6 +_,7 @@
- import com.google.gson.JsonElement;
- import com.google.gson.JsonObject;
- import com.mojang.logging.LogUtils;
-+
- import java.io.BufferedWriter;
- import java.io.IOException;
- import java.nio.file.Files;
-@@ -15,6 +_,7 @@
- import java.util.Objects;
- import java.util.stream.Collectors;
- import java.util.stream.Stream;
-+
- import net.minecraft.core.Registry;
- import net.minecraft.data.DataGenerator;
- import net.minecraft.data.DataProvider;
 @@ -27,129 +_,182 @@
  import org.slf4j.Logger;
  

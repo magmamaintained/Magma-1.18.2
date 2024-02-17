@@ -1,42 +1,26 @@
 --- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
-@@ -1,5 +_,6 @@
- package net.minecraft.world.level.block.entity;
- 
-+import java.util.List;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.core.NonNullList;
-@@ -23,6 +_,8 @@
- import net.minecraft.world.level.block.ChestBlock;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.properties.ChestType;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity;
-+import org.bukkit.entity.HumanEntity;
- 
- public class ChestBlockEntity extends RandomizableContainerBlockEntity implements LidBlockEntity {
-    private static final int f_155323_ = 1;
 @@ -51,6 +_,36 @@
     };
     private final ChestLidController f_155325_ = new ChestLidController();
  
 +   // CraftBukkit start - add fields and methods
-+   public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++   public java.util.List<org.bukkit.entity.HumanEntity> transaction = new java.util.ArrayList<org.bukkit.entity.HumanEntity>();
 +   private int maxStack = MAX_STACK;
 +
-+   public List<ItemStack> getContents() {
++   public java.util.List<ItemStack> getContents() {
 +      return this.f_59073_;
 +   }
 +
-+   public void onOpen(CraftHumanEntity who) {
++   public void onOpen(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.add(who);
 +   }
 +
-+   public void onClose(CraftHumanEntity who) {
++   public void onClose(org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity who) {
 +      transaction.remove(who);
 +   }
 +
-+   public List<HumanEntity> getViewers() {
++   public java.util.List<org.bukkit.entity.HumanEntity> getViewers() {
 +      return transaction;
 +   }
 +

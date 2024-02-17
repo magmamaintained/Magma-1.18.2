@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/block/NoteBlock.java
 +++ b/net/minecraft/world/level/block/NoteBlock.java
-@@ -20,6 +_,7 @@
- import net.minecraft.world.level.block.state.properties.IntegerProperty;
- import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
- import net.minecraft.world.phys.BlockHitResult;
-+import org.jetbrains.annotations.Nullable;
- 
- public class NoteBlock extends Block {
-    public static final EnumProperty<NoteBlockInstrument> f_55011_ = BlockStateProperties.f_61395_;
 @@ -43,7 +_,9 @@
        boolean flag = p_55042_.m_46753_(p_55043_);
        if (flag != p_55041_.m_61143_(f_55012_)) {
@@ -23,7 +15,7 @@
     }
  
 +   //Magma - start
-+   private @Nullable BlockState playNote_data;
++   private @org.jetbrains.annotations.Nullable BlockState playNote_data;
 +   private void prepareNoteData(BlockState p_55041_) {
 +      this.playNote_data = p_55041_;
 +   }

@@ -1,22 +1,13 @@
 --- a/net/minecraft/CrashReport.java
 +++ b/net/minecraft/CrashReport.java
-@@ -16,6 +_,8 @@
- import net.minecraft.util.MemoryReserve;
- import org.apache.commons.io.IOUtils;
- import org.apache.commons.lang3.ArrayUtils;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftCrashReport;
-+import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
- import org.slf4j.Logger;
- 
- public class CrashReport {
 @@ -29,8 +_,10 @@
     private final SystemReport f_178624_ = new SystemReport();
  
     public CrashReport(String p_127509_, Throwable p_127510_) {
-+      DeobfRewritePolicy.getDeobfuscator().deobf(p_127510_);
++      org.magmafoundation.magma.deobf.DeobfRewritePolicy.getDeobfuscator().deobf(p_127510_);
        this.f_127500_ = p_127509_;
        this.f_127501_ = p_127510_;
-+      this.f_178624_.m_143522_("CraftBukkit Information", new CraftCrashReport()); // CraftBukkit
++      this.f_178624_.m_143522_("CraftBukkit Information", new org.bukkit.craftbukkit.v1_18_R2.CraftCrashReport()); // CraftBukkit
     }
  
     public String m_127511_() {

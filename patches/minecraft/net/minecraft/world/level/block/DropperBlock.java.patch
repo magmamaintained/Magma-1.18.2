@@ -1,19 +1,7 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -6,6 +_,7 @@
- import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
- import net.minecraft.core.dispenser.DispenseItemBehavior;
- import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.world.CompoundContainer;
- import net.minecraft.world.Container;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -14,9 +_,11 @@
- import net.minecraft.world.level.block.entity.HopperBlockEntity;
- import net.minecraft.world.level.block.state.BlockBehaviour;
+@@ -16,7 +_,7 @@
  import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.event.inventory.InventoryMoveItemEvent;
  
  public class DropperBlock extends DispenserBlock {
 -   private static final DispenseItemBehavior f_52939_ = new DefaultDispenseItemBehavior();
@@ -36,22 +24,22 @@
 -               itemstack1 = HopperBlockEntity.m_59326_(dispenserblockentity, container, itemstack.m_41777_().m_41620_(1), direction.m_122424_());
 -               if (itemstack1.m_41619_()) {
 +               // CraftBukkit start - Fire event when pushing items into other inventories
-+               CraftItemStack oitemstack = CraftItemStack.asCraftMirror(itemstack.m_41777_().m_41620_(1));
++               org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack oitemstack = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(itemstack.m_41777_().m_41620_(1));
 +
 +               org.bukkit.inventory.Inventory destinationInventory;
 +               // Have to special case large chests as they work oddly
-+               if (container instanceof CompoundContainer) {
-+                  destinationInventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryDoubleChest((CompoundContainer) container);
++               if (container instanceof net.minecraft.world.CompoundContainer) {
++                  destinationInventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryDoubleChest((net.minecraft.world.CompoundContainer) container);
 +               } else {
 +                  destinationInventory = container.getOwner().getInventory();
 +               }
 +
-+               InventoryMoveItemEvent event = new InventoryMoveItemEvent(dispenserblockentity.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
++               org.bukkit.event.inventory.InventoryMoveItemEvent event = new org.bukkit.event.inventory.InventoryMoveItemEvent(dispenserblockentity.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
 +               p_52944_.getCraftServer().getPluginManager().callEvent(event);
 +               if (event.isCancelled()) {
 +                  return;
 +               }
-+               itemstack1 = HopperBlockEntity.m_59326_(dispenserblockentity, container, CraftItemStack.asNMSCopy(event.getItem()), direction.m_122424_());
++               itemstack1 = HopperBlockEntity.m_59326_(dispenserblockentity, container, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(event.getItem()), direction.m_122424_());
 +               if (event.getItem().equals(oitemstack) && itemstack1.m_41619_()) {
 +                  // CraftBukkit end
                    itemstack1 = itemstack.m_41777_();

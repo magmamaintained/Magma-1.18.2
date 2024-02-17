@@ -1,13 +1,5 @@
 --- a/net/minecraft/server/commands/DebugCommand.java
 +++ b/net/minecraft/server/commands/DebugCommand.java
-@@ -29,6 +_,7 @@
- import net.minecraft.server.ServerFunctionManager;
- import net.minecraft.util.TimeUtil;
- import net.minecraft.util.profiling.ProfileResults;
-+import org.bukkit.command.CommandSender;
- import org.slf4j.Logger;
- 
- public class DebugCommand {
 @@ -38,7 +_,7 @@
  
     public static void m_136905_(CommandDispatcher<CommandSourceStack> p_136906_) {
@@ -24,7 +16,7 @@
 +      }
 +
 +      @Override
-+      public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
 +         return null;
        }
     }
