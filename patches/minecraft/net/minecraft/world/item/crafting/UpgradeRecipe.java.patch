@@ -1,16 +1,5 @@
 --- a/net/minecraft/world/item/crafting/UpgradeRecipe.java
 +++ b/net/minecraft/world/item/crafting/UpgradeRecipe.java
-@@ -10,6 +_,10 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Blocks;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe;
-+import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
- 
- public class UpgradeRecipe implements Recipe<Container> {
-    final Ingredient f_44518_;
 @@ -68,11 +_,20 @@
  
     public boolean m_142505_() {
@@ -24,8 +13,8 @@
 +   // CraftBukkit start
 +   @Override
 +   public org.bukkit.inventory.Recipe toBukkitRecipe() {
-+      CraftItemStack result = CraftItemStack.asCraftMirror(this.f_44520_);
-+      CraftSmithingRecipe recipe = new CraftSmithingRecipe(CraftNamespacedKey.fromMinecraft(this.f_44521_), result, CraftRecipe.toBukkit(this.f_44518_), CraftRecipe.toBukkit(this.f_44519_));
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.f_44520_);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(this.f_44521_), result, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.f_44518_), org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.f_44519_));
 +      return recipe;
 +   }
 +   // CraftBukkit end

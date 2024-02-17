@@ -1,15 +1,5 @@
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
-@@ -41,6 +_,9 @@
- import net.minecraft.world.level.material.PushReaction;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftEquipmentSlot;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
- 
- public class ArmorStand extends LivingEntity {
-    public static final int f_149592_ = 5;
 @@ -71,7 +_,7 @@
     public static final EntityDataAccessor<Rotations> f_31550_ = SynchedEntityData.m_135353_(ArmorStand.class, EntityDataSerializers.f_135037_);
     public static final EntityDataAccessor<Rotations> f_31527_ = SynchedEntityData.m_135353_(ArmorStand.class, EntityDataSerializers.f_135037_);
@@ -73,12 +63,12 @@
        } else if (itemstack.m_41619_() && (this.f_31541_ & 1 << p_31590_.m_20750_() + 16) != 0) {
 +
 +         // CraftBukkit start
-+         org.bukkit.inventory.ItemStack armorStandItem = CraftItemStack.asCraftMirror(itemstack);
-+         org.bukkit.inventory.ItemStack playerHeldItem = CraftItemStack.asCraftMirror(p_31591_);
++         org.bukkit.inventory.ItemStack armorStandItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(itemstack);
++         org.bukkit.inventory.ItemStack playerHeldItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(p_31591_);
 +         org.bukkit.entity.Player player = (org.bukkit.entity.Player) p_31589_.getBukkitEntity();
 +         org.bukkit.entity.ArmorStand self = (org.bukkit.entity.ArmorStand) this.getBukkitEntity();
-+         org.bukkit.inventory.EquipmentSlot slot = CraftEquipmentSlot.getSlot(p_31590_);
-+         PlayerArmorStandManipulateEvent armorStandManipulateEvent = new PlayerArmorStandManipulateEvent(player,self,playerHeldItem,armorStandItem,slot);
++         org.bukkit.inventory.EquipmentSlot slot = org.bukkit.craftbukkit.v1_18_R2.CraftEquipmentSlot.getSlot(p_31590_);
++         org.bukkit.event.player.PlayerArmorStandManipulateEvent armorStandManipulateEvent = new org.bukkit.event.player.PlayerArmorStandManipulateEvent(player,self,playerHeldItem,armorStandItem,slot);
 +         this.f_19853_.getCraftServer().getPluginManager().callEvent(armorStandManipulateEvent);
 +         if (armorStandManipulateEvent.isCancelled()) {
 +            return true;

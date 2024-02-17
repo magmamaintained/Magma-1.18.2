@@ -1,21 +1,8 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -9,6 +_,8 @@
- import net.minecraft.core.Registry;
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.chat.TranslatableComponent;
-+import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
-+import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.world.damagesource.DamageSource;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.entity.LivingEntity;
-@@ -17,8 +_,11 @@
- import net.minecraft.world.entity.ai.attributes.AttributeMap;
+@@ -18,7 +_,7 @@
  import net.minecraft.world.entity.ai.attributes.AttributeModifier;
  import net.minecraft.world.entity.player.Player;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.EntityExhaustionEvent;
-+import org.bukkit.event.entity.EntityRegainHealthEvent;
  
 -public class MobEffect {
 +public class MobEffect extends net.minecraftforge.registries.ForgeRegistryEntry<MobEffect> implements net.minecraftforge.common.extensions.IForgeMobEffect {
@@ -32,20 +19,20 @@
     public void m_6742_(LivingEntity p_19467_, int p_19468_) {
        if (this == MobEffects.f_19605_) {
           if (p_19467_.m_21223_() < p_19467_.m_21233_()) {
-+            p_19467_.setRegainReason(EntityRegainHealthEvent.RegainReason.MAGIC_REGEN);
++            p_19467_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC_REGEN);
              p_19467_.m_5634_(1.0F);
           }
        } else if (this == MobEffects.f_19614_) {
           if (p_19467_.m_21223_() > 1.0F) {
 -            p_19467_.m_6469_(DamageSource.f_19319_, 1.0F);
-+            p_19467_.m_6469_(CraftEventFactory.POISON, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON
++            p_19467_.m_6469_(org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.POISON, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.POISON
           }
        } else if (this == MobEffects.f_19615_) {
           p_19467_.m_6469_(DamageSource.f_19320_, 1.0F);
 -      } else if (this == MobEffects.f_19612_ && p_19467_ instanceof Player) {
 -         ((Player)p_19467_).m_36399_(0.005F * (float)(p_19468_ + 1));
 +      } else if (this == MobEffects.f_19612_ && p_19467_ instanceof Player player) {
-+         player.setExhaustionReason(EntityExhaustionEvent.ExhaustionReason.HUNGER_EFFECT);
++         player.setExhaustionReason(org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.HUNGER_EFFECT);
 +         player.m_36399_(0.005F * (float)(p_19468_ + 1));
        } else if (this == MobEffects.f_19618_ && p_19467_ instanceof Player) {
           if (!p_19467_.f_19853_.f_46443_) {
@@ -54,13 +41,13 @@
 +            Player entityhuman = (Player) p_19467_;
 +            int oldFoodLevel = entityhuman.m_36324_().f_38696_;
 +
-+            org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(entityhuman, p_19468_ + 1 + oldFoodLevel);
++            org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callFoodLevelChangeEvent(entityhuman, p_19468_ + 1 + oldFoodLevel);
 +
 +            if (!event.isCancelled()) {
 +               entityhuman.m_36324_().m_38707_(event.getFoodLevel() - oldFoodLevel, 1.0F);
 +            }
 +
-+            ((ServerPlayer) entityhuman).f_8906_.m_141995_(new ClientboundSetHealthPacket(((ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), entityhuman.m_36324_().f_38696_, entityhuman.m_36324_().f_38697_));
++            ((net.minecraft.server.level.ServerPlayer) entityhuman).f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundSetHealthPacket(((net.minecraft.server.level.ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), entityhuman.m_36324_().f_38696_, entityhuman.m_36324_().f_38697_));
 +            // CraftBukkit end
           }
        } else if ((this != MobEffects.f_19601_ || p_19467_.m_21222_()) && (this != MobEffects.f_19602_ || !p_19467_.m_21222_())) {
@@ -68,7 +55,7 @@
              p_19467_.m_6469_(DamageSource.f_19319_, (float)(6 << p_19468_));
           }
        } else {
-+         p_19467_.setRegainReason(EntityRegainHealthEvent.RegainReason.MAGIC);
++         p_19467_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC);
           p_19467_.m_5634_((float)Math.max(4 << p_19468_, 0));
        }
  
@@ -76,7 +63,7 @@
           }
        } else {
           int i = (int)(p_19466_ * (double)(4 << p_19465_) + 0.5D);
-+         p_19464_.setRegainReason(EntityRegainHealthEvent.RegainReason.MAGIC);
++         p_19464_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC);
           p_19464_.m_5634_((float)i);
        }
  

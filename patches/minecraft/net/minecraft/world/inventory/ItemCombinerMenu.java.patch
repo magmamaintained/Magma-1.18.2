@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/inventory/ItemCombinerMenu.java
 +++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
-@@ -7,6 +_,7 @@
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.Location;
- 
- public abstract class ItemCombinerMenu extends AbstractContainerMenu {
-    public static final int f_150595_ = 0;
 @@ -16,13 +_,8 @@
     private static final int f_150598_ = 30;
     private static final int f_150599_ = 30;
@@ -38,7 +30,7 @@
 +
 +         // CraftBukkit start
 +         @Override
-+         public Location getLocation() {
++         public org.bukkit.Location getLocation() {
 +            return p_39776_.getLocation();
 +         }
 +         // CraftBukkit end

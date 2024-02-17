@@ -1,22 +1,13 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -52,6 +_,8 @@
- import net.minecraft.world.level.material.Fluid;
- import net.minecraft.world.ticks.SerializableTickContainer;
- import net.minecraft.world.ticks.TickContainerAccess;
-+import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry;
-+import org.bukkit.craftbukkit.v1_18_R2.persistence.DirtyCraftPersistentDataContainer;
- import org.slf4j.Logger;
- 
- public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, FeatureAccess {
 @@ -79,6 +_,12 @@
     protected final LevelHeightAccessor f_187611_;
     protected final LevelChunkSection[] f_187612_;
  
 +   public final Registry<Biome> biomeRegistry;
 +   // CraftBukkit start - SPIGOT-6814: move to IChunkAccess to account for 1.17 to 1.18 chunk upgrading.
-+   private static final CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new CraftPersistentDataTypeRegistry();
-+   public DirtyCraftPersistentDataContainer persistentDataContainer = new DirtyCraftPersistentDataContainer(DATA_TYPE_REGISTRY);
++   private static final org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry();
++   public org.bukkit.craftbukkit.v1_18_R2.persistence.DirtyCraftPersistentDataContainer persistentDataContainer = new org.bukkit.craftbukkit.v1_18_R2.persistence.DirtyCraftPersistentDataContainer(DATA_TYPE_REGISTRY);
 +   // CraftBukkit end
 +
     public ChunkAccess(ChunkPos p_187621_, UpgradeData p_187622_, LevelHeightAccessor p_187623_, Registry<Biome> p_187624_, long p_187625_, @Nullable LevelChunkSection[] p_187626_, @Nullable BlendingData p_187627_) {

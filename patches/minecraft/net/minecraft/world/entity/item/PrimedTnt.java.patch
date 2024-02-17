@@ -1,13 +1,6 @@
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -16,12 +_,15 @@
- import net.minecraft.world.entity.Pose;
- import net.minecraft.world.level.Explosion;
- import net.minecraft.world.level.Level;
-+import org.bukkit.event.entity.ExplosionPrimeEvent;
- 
- public class PrimedTnt extends Entity {
-    private static final EntityDataAccessor<Integer> f_32071_ = SynchedEntityData.m_135353_(PrimedTnt.class, EntityDataSerializers.f_135028_);
+@@ -22,6 +_,8 @@
     private static final int f_149679_ = 80;
     @Nullable
     public LivingEntity f_32072_;
@@ -59,7 +52,7 @@
 +      // CraftBukkit start
 +      // float f = 4.0F;
 +
-+      ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) this.getBukkitEntity());
++      org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) this.getBukkitEntity());
 +      this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +
 +      if (!event.isCancelled()) {

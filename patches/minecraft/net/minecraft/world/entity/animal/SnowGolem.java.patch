@@ -1,10 +1,8 @@
 --- a/net/minecraft/world/entity/animal/SnowGolem.java
 +++ b/net/minecraft/world/entity/animal/SnowGolem.java
-@@ -39,8 +_,9 @@
- import net.minecraft.world.level.block.state.BlockState;
+@@ -40,7 +_,7 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  
 -public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob {
 +public class SnowGolem extends AbstractGolem implements Shearable, RangedAttackMob, net.minecraftforge.common.IForgeShearable {
@@ -16,7 +14,7 @@
           Biome biome = this.f_19853_.m_204166_(blockpos).m_203334_();
           if (biome.m_198910_(blockpos)) {
 -            this.m_6469_(DamageSource.f_19307_, 1.0F);
-+            this.m_6469_(CraftEventFactory.MELTING, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
++            this.m_6469_(org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.MELTING, 1.0F); // CraftBukkit - DamageSource.BURN -> org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.MELTING
           }
  
 -         if (!this.f_19853_.m_46469_().m_46207_(GameRules.f_46132_)) {

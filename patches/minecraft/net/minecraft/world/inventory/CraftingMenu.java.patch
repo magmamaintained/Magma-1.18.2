@@ -1,33 +1,20 @@
 --- a/net/minecraft/world/inventory/CraftingMenu.java
 +++ b/net/minecraft/world/inventory/CraftingMenu.java
-@@ -11,8 +_,12 @@
- import net.minecraft.world.item.crafting.CraftingRecipe;
- import net.minecraft.world.item.crafting.Recipe;
- import net.minecraft.world.item.crafting.RecipeType;
-+import net.minecraft.world.item.crafting.RepairItemRecipe;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Blocks;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting;
-+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView;
- 
- public class CraftingMenu extends RecipeBookMenu<CraftingContainer> {
-    public static final int f_150539_ = 0;
 @@ -27,6 +_,21 @@
     public final ContainerLevelAccess f_39350_;
     private final Player f_39351_;
  
 +   // CraftBukkit start
-+   private CraftInventoryView bukkitEntity = null;
++   private org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView bukkitEntity = null;
 +
 +   @Override
-+   public CraftInventoryView getBukkitView() {
++   public org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView getBukkitView() {
 +      if (bukkitEntity != null) {
 +         return bukkitEntity;
 +      }
 +
-+      CraftInventoryCrafting inventory = new CraftInventoryCrafting(this.f_39348_, this.f_39349_);
-+      bukkitEntity = new CraftInventoryView(this.f_39351_.getBukkitEntity(), inventory, this);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting inventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting(this.f_39348_, this.f_39349_);
++      bukkitEntity = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView(this.f_39351_.getBukkitEntity(), inventory, this);
 +      return bukkitEntity;
 +   }
 +   // CraftBukkit end
@@ -51,7 +38,7 @@
              }
           }
 -
-+         itemstack = CraftEventFactory.callPreCraftEvent(p_150550_, p_150551_, itemstack, p_150547_.getBukkitView(), optional.orElse(null) instanceof RepairItemRecipe); // CraftBukkit
++         itemstack = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPreCraftEvent(p_150550_, p_150551_, itemstack, p_150547_.getBukkitView(), optional.orElse(null) instanceof net.minecraft.world.item.crafting.RepairItemRecipe); // CraftBukkit
           p_150551_.m_6836_(0, itemstack);
           p_150547_.m_150404_(0, itemstack);
           serverplayer.f_8906_.m_141995_(new ClientboundContainerSetSlotPacket(p_150547_.f_38840_, p_150547_.m_182425_(), 0, itemstack));

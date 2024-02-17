@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/block/StairBlock.java
 +++ b/net/minecraft/world/level/block/StairBlock.java
-@@ -30,6 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.magmafoundation.magma.configuration.MagmaConfig;
- 
- public class StairBlock extends Block implements SimpleWaterloggedBlock {
-    public static final DirectionProperty f_56841_ = HorizontalDirectionalBlock.f_54117_;
 @@ -81,11 +_,21 @@
        return voxelshape;
     }
@@ -35,7 +27,7 @@
     public void m_6807_(BlockState p_56961_, Level p_56962_, BlockPos p_56963_, BlockState p_56964_, boolean p_56965_) {
        if (!p_56961_.m_60713_(p_56961_.m_60734_())) {
 -         this.f_56859_.m_60690_(p_56962_, p_56963_, Blocks.f_50016_, p_56963_, false);
-+         if (MagmaConfig.instance.patchUpdateSuppression.getValues())
++         if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues())
 +            p_56962_.neighborChanged(this.f_56859_, p_56963_, Blocks.f_50016_, p_56963_, false);
 +         else
 +            this.f_56859_.m_60690_(p_56962_, p_56963_, Blocks.f_50016_, p_56963_, false);

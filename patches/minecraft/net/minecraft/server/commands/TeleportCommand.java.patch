@@ -1,32 +1,6 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -4,12 +_,6 @@
- import com.mojang.brigadier.exceptions.CommandSyntaxException;
- import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
- import com.mojang.brigadier.tree.LiteralCommandNode;
--import java.util.Collection;
--import java.util.Collections;
--import java.util.EnumSet;
--import java.util.Locale;
--import java.util.Set;
--import javax.annotation.Nullable;
- import net.minecraft.commands.CommandSourceStack;
- import net.minecraft.commands.Commands;
- import net.minecraft.commands.arguments.EntityAnchorArgument;
-@@ -32,13 +_,20 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.Vec2;
- import net.minecraft.world.phys.Vec3;
-+import org.bukkit.Location;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-+import org.bukkit.event.entity.EntityTeleportEvent;
-+import org.bukkit.event.player.PlayerTeleportEvent;
-+
-+import javax.annotation.Nullable;
-+import java.util.*;
- 
- public class TeleportCommand {
-    private static final SimpleCommandExceptionType f_139006_ = new SimpleCommandExceptionType(new TranslatableComponent("commands.teleport.invalidPosition"));
+@@ -38,7 +_,7 @@
  
     public static void m_139008_(CommandDispatcher<CommandSourceStack> p_139009_) {
        LiteralCommandNode<CommandSourceStack> literalcommandnode = p_139009_.register(Commands.m_82127_("teleport").requires((p_139039_) -> {
@@ -50,18 +24,18 @@
  
              if (p_139017_ == p_139016_.f_19853_) {
 -               ((ServerPlayer)p_139016_).f_8906_.m_9780_(p_139018_, p_139019_, p_139020_, f, f1, p_139021_);
-+               ((ServerPlayer)p_139016_).f_8906_.teleport(p_139018_, p_139019_, p_139020_, f, f1, p_139021_, PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
++               ((ServerPlayer)p_139016_).f_8906_.teleport(p_139018_, p_139019_, p_139020_, f, f1, p_139021_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
              } else {
 -               ((ServerPlayer)p_139016_).m_8999_(p_139017_, p_139018_, p_139019_, p_139020_, f, f1);
-+               ((ServerPlayer)p_139016_).teleportTo(p_139017_, p_139018_, p_139019_, p_139020_, f, f1, PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
++               ((ServerPlayer)p_139016_).teleportTo(p_139017_, p_139018_, p_139019_, p_139020_, f, f1, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
              }
  
              p_139016_.m_5616_(f);
           } else {
              float f2 = Mth.m_14036_(f1, -90.0F, 90.0F);
 +            // CraftBukkit start - Teleport event
-+            Location to = new Location(p_139017_.getWorld(), p_139018_, p_139019_, p_139020_, f1, f2);
-+            EntityTeleportEvent bevent = new EntityTeleportEvent(p_139016_.getBukkitEntity(), p_139016_.getBukkitEntity().getLocation(), to);
++            org.bukkit.Location to = new org.bukkit.Location(p_139017_.getWorld(), p_139018_, p_139019_, p_139020_, f1, f2);
++            org.bukkit.event.entity.EntityTeleportEvent bevent = new org.bukkit.event.entity.EntityTeleportEvent(p_139016_.getBukkitEntity(), p_139016_.getBukkitEntity().getLocation(), to);
 +            p_139017_.getCraftServer().getPluginManager().callEvent(bevent);
 +            if (bevent.isCancelled()) {
 +               return;
@@ -72,7 +46,7 @@
 +            p_139020_ = to.getZ();
 +            f = to.getYaw();
 +            f2 = to.getPitch();
-+            p_139017_ = ((CraftWorld) to.getWorld()).getHandle();
++            p_139017_ = ((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) to.getWorld()).getHandle();
 +            // CraftBukkit end
              if (p_139017_ == p_139016_.f_19853_) {
                 p_139016_.m_7678_(p_139018_, p_139019_, p_139020_, f, f2);

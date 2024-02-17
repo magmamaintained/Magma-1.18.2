@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/block/DoorBlock.java
 +++ b/net/minecraft/world/level/block/DoorBlock.java
-@@ -32,6 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.event.block.BlockRedstoneEvent;
- 
- public class DoorBlock extends Block {
-    public static final DirectionProperty f_52726_ = HorizontalDirectionalBlock.f_54117_;
 @@ -180,8 +_,24 @@
     }
  
@@ -27,7 +19,7 @@
 +      int oldPower = (Boolean) p_52776_.m_61143_(DoorBlock.f_52729_) ? 15 : 0;
 +
 +      if (oldPower == 0 ^ power == 0) {
-+         BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(bukkitBlock, oldPower, power);
++         org.bukkit.event.block.BlockRedstoneEvent eventRedstone = new org.bukkit.event.block.BlockRedstoneEvent(bukkitBlock, oldPower, power);
 +         p_52777_.getCraftServer().getPluginManager().callEvent(eventRedstone);
 +
 +         boolean flag = eventRedstone.getNewCurrent() > 0;

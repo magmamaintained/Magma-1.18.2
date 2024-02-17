@@ -1,137 +1,5 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -1,5 +_,6 @@
- package net.minecraft.commands;
- 
-+import com.google.common.base.Joiner;
- import com.google.common.collect.Maps;
- import com.mojang.brigadier.CommandDispatcher;
- import com.mojang.brigadier.ParseResults;
-@@ -9,104 +_,41 @@
- import com.mojang.brigadier.builder.LiteralArgumentBuilder;
- import com.mojang.brigadier.builder.RequiredArgumentBuilder;
- import com.mojang.brigadier.exceptions.CommandSyntaxException;
-+import com.mojang.brigadier.suggestion.SuggestionProvider;
- import com.mojang.brigadier.tree.CommandNode;
-+import com.mojang.brigadier.tree.LiteralCommandNode;
- import com.mojang.brigadier.tree.RootCommandNode;
- import com.mojang.logging.LogUtils;
--import java.util.Map;
--import java.util.Set;
--import java.util.function.Predicate;
--import java.util.stream.Collectors;
--import javax.annotation.Nullable;
-+import io.netty.buffer.Unpooled;
-+import io.netty.util.AttributeKey;
- import net.minecraft.ChatFormatting;
- import net.minecraft.SharedConstants;
- import net.minecraft.Util;
- import net.minecraft.commands.synchronization.ArgumentTypes;
- import net.minecraft.commands.synchronization.SuggestionProviders;
- import net.minecraft.gametest.framework.TestCommand;
--import net.minecraft.network.chat.ClickEvent;
--import net.minecraft.network.chat.Component;
--import net.minecraft.network.chat.ComponentUtils;
--import net.minecraft.network.chat.HoverEvent;
--import net.minecraft.network.chat.MutableComponent;
--import net.minecraft.network.chat.TextComponent;
--import net.minecraft.network.chat.TranslatableComponent;
-+import net.minecraft.network.FriendlyByteBuf;
-+import net.minecraft.network.chat.*;
- import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
--import net.minecraft.server.commands.AdvancementCommands;
--import net.minecraft.server.commands.AttributeCommand;
--import net.minecraft.server.commands.BanIpCommands;
--import net.minecraft.server.commands.BanListCommands;
--import net.minecraft.server.commands.BanPlayerCommands;
--import net.minecraft.server.commands.BossBarCommands;
--import net.minecraft.server.commands.ClearInventoryCommands;
--import net.minecraft.server.commands.CloneCommands;
--import net.minecraft.server.commands.DataPackCommand;
--import net.minecraft.server.commands.DeOpCommands;
--import net.minecraft.server.commands.DebugCommand;
--import net.minecraft.server.commands.DefaultGameModeCommands;
--import net.minecraft.server.commands.DifficultyCommand;
--import net.minecraft.server.commands.EffectCommands;
--import net.minecraft.server.commands.EmoteCommands;
--import net.minecraft.server.commands.EnchantCommand;
--import net.minecraft.server.commands.ExecuteCommand;
--import net.minecraft.server.commands.ExperienceCommand;
--import net.minecraft.server.commands.FillCommand;
--import net.minecraft.server.commands.ForceLoadCommand;
--import net.minecraft.server.commands.FunctionCommand;
--import net.minecraft.server.commands.GameModeCommand;
--import net.minecraft.server.commands.GameRuleCommand;
--import net.minecraft.server.commands.GiveCommand;
--import net.minecraft.server.commands.HelpCommand;
--import net.minecraft.server.commands.ItemCommands;
--import net.minecraft.server.commands.JfrCommand;
--import net.minecraft.server.commands.KickCommand;
--import net.minecraft.server.commands.KillCommand;
--import net.minecraft.server.commands.ListPlayersCommand;
--import net.minecraft.server.commands.LocateBiomeCommand;
--import net.minecraft.server.commands.LocateCommand;
--import net.minecraft.server.commands.LootCommand;
--import net.minecraft.server.commands.MsgCommand;
--import net.minecraft.server.commands.OpCommand;
--import net.minecraft.server.commands.PardonCommand;
--import net.minecraft.server.commands.PardonIpCommand;
--import net.minecraft.server.commands.ParticleCommand;
--import net.minecraft.server.commands.PerfCommand;
--import net.minecraft.server.commands.PlaceFeatureCommand;
--import net.minecraft.server.commands.PlaySoundCommand;
--import net.minecraft.server.commands.PublishCommand;
--import net.minecraft.server.commands.RecipeCommand;
--import net.minecraft.server.commands.ReloadCommand;
--import net.minecraft.server.commands.SaveAllCommand;
--import net.minecraft.server.commands.SaveOffCommand;
--import net.minecraft.server.commands.SaveOnCommand;
--import net.minecraft.server.commands.SayCommand;
--import net.minecraft.server.commands.ScheduleCommand;
--import net.minecraft.server.commands.ScoreboardCommand;
--import net.minecraft.server.commands.SeedCommand;
--import net.minecraft.server.commands.SetBlockCommand;
--import net.minecraft.server.commands.SetPlayerIdleTimeoutCommand;
--import net.minecraft.server.commands.SetSpawnCommand;
--import net.minecraft.server.commands.SetWorldSpawnCommand;
--import net.minecraft.server.commands.SpectateCommand;
--import net.minecraft.server.commands.SpreadPlayersCommand;
--import net.minecraft.server.commands.StopCommand;
--import net.minecraft.server.commands.StopSoundCommand;
--import net.minecraft.server.commands.SummonCommand;
--import net.minecraft.server.commands.TagCommand;
--import net.minecraft.server.commands.TeamCommand;
--import net.minecraft.server.commands.TeamMsgCommand;
--import net.minecraft.server.commands.TeleportCommand;
--import net.minecraft.server.commands.TellRawCommand;
--import net.minecraft.server.commands.TimeCommand;
--import net.minecraft.server.commands.TitleCommand;
--import net.minecraft.server.commands.TriggerCommand;
--import net.minecraft.server.commands.WeatherCommand;
--import net.minecraft.server.commands.WhitelistCommand;
--import net.minecraft.server.commands.WorldBorderCommand;
-+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
-+import net.minecraft.resources.ResourceLocation;
-+import net.minecraft.server.commands.*;
- import net.minecraft.server.commands.data.DataCommands;
- import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.util.profiling.jfr.JvmProfiler;
-+import net.minecraftforge.network.ConnectionData;
-+import net.minecraftforge.server.command.CommandHelper;
-+import org.bukkit.event.player.PlayerCommandSendEvent;
-+import org.bukkit.event.server.ServerCommandEvent;
-+import org.magmafoundation.magma.commands.DispatcherRedirector;
-+import org.magmafoundation.magma.util.Wrapped;
- import org.slf4j.Logger;
- 
-+import javax.annotation.Nullable;
-+import java.util.*;
-+import java.util.function.Predicate;
-+import java.util.stream.Collectors;
-+
- public class Commands {
-    private static final Logger f_82089_ = LogUtils.getLogger();
-    public static final int f_165682_ = 0;
 @@ -115,8 +_,10 @@
     public static final int f_165685_ = 3;
     public static final int f_165686_ = 4;
@@ -176,12 +44,12 @@
  
 +   // CraftBukkit start
 +   public int dispatchServerCommand(CommandSourceStack sender, String command) {
-+      Joiner joiner = Joiner.on(" ");
++      com.google.common.base.Joiner joiner = com.google.common.base.Joiner.on(" ");
 +      if (command.startsWith("/")) {
 +         command = command.substring(1);
 +      }
 +
-+      ServerCommandEvent event = new ServerCommandEvent(sender.getBukkitSender(), command);
++      org.bukkit.event.server.ServerCommandEvent event = new org.bukkit.event.server.ServerCommandEvent(sender.getBukkitSender(), command);
 +      org.bukkit.Bukkit.getPluginManager().callEvent(event);
 +      if (event.isCancelled()) {
 +         return 0;
@@ -262,7 +130,7 @@
 +      }
 +   }
 +
-+   private Optional<net.minecraftforge.event.CommandEvent> parseCommand(StringReader stringreader, CommandSourceStack stack) throws Exception {
++   private java.util.Optional<net.minecraftforge.event.CommandEvent> parseCommand(StringReader stringreader, CommandSourceStack stack) throws Exception {
 +      ParseResults<CommandSourceStack> parse = this.getCurrentDispatcher(stringreader).parse(stringreader, stack);
 +      net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(parse);
 +      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
@@ -271,9 +139,9 @@
 +         } else if (event.getException() != null) {
 +            com.google.common.base.Throwables.throwIfUnchecked(event.getException());
 +         }
-+         return Optional.empty();
++         return java.util.Optional.empty();
 +      }
-+      return Optional.of(event);
++      return java.util.Optional.of(event);
 +   }
 +
 +   public int performCommand(CommandSourceStack p_82118_, String p_82119_, String label, boolean stripSlash) {
@@ -296,7 +164,7 @@
 +      map.put(vanillaCommands.m_82094_().getRoot(), vanillaRoot);
 +
 +      // FORGE: Use our own command node merging method to handle redirect nodes properly, see issue #7551
-+      CommandHelper.mergeCommandNode(vanillaCommands.m_82094_().getRoot(), vanillaRoot, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((SuggestionProvider<SharedSuggestionProvider>) (SuggestionProvider<?>) suggest));
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(vanillaCommands.m_82094_().getRoot(), vanillaRoot, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
 +      // Now build the global commands in a second pass
        RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
@@ -304,14 +172,14 @@
 -      this.m_82112_(this.f_82090_.getRoot(), rootcommandnode, p_82096_.m_20203_(), map);
 -      p_82096_.f_8906_.m_141995_(new ClientboundCommandsPacket(rootcommandnode));
 +
-+      CommandHelper.mergeCommandNode(this.f_82090_.getRoot(), rootcommandnode, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((SuggestionProvider<SharedSuggestionProvider>) (SuggestionProvider<?>) suggest));
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.f_82090_.getRoot(), rootcommandnode, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
-+      LinkedHashSet<String> set = new LinkedHashSet<>();
++      java.util.LinkedHashSet<String> set = new java.util.LinkedHashSet<>();
 +      for (CommandNode<SharedSuggestionProvider> child : rootcommandnode.getChildren()) {
 +         set.add(child.getName());
 +      }
 +
-+      PlayerCommandSendEvent event = new PlayerCommandSendEvent(p_82096_.getBukkitEntity(), new LinkedHashSet<>(set));
++      org.bukkit.event.player.PlayerCommandSendEvent event = new org.bukkit.event.player.PlayerCommandSendEvent(p_82096_.getBukkitEntity(), new java.util.LinkedHashSet<>(set));
 +      event.getPlayer().getServer().getPluginManager().callEvent(event);
 +
 +      // Remove labels that were removed during the event
@@ -325,26 +193,26 @@
 +      RootCommandNode<SharedSuggestionProvider> forgeRoot = new RootCommandNode<>();
 +      map.put(this.forgeDispatcher.getRoot(), forgeRoot);
 +
-+      CommandHelper.mergeCommandNode(this.forgeDispatcher.getRoot(), forgeRoot, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((SuggestionProvider<SharedSuggestionProvider>) (SuggestionProvider<?>) suggest));
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.forgeDispatcher.getRoot(), forgeRoot, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
 +      //Add all the forge commands to the root node
 +      forgeRoot.getChildren().forEach(rootcommandnode::addChild);
 +      //ambassador support start
 +      ClientboundCommandsPacket packet = new ClientboundCommandsPacket(rootcommandnode);
 +      try{
-+         ConnectionData connectionData = (ConnectionData) p_82096_.f_8906_.f_9742_.channel().attr(AttributeKey.valueOf("fml:conndata")).get();
++         net.minecraftforge.network.ConnectionData connectionData = (net.minecraftforge.network.ConnectionData) p_82096_.f_8906_.f_9742_.channel().attr(io.netty.util.AttributeKey.valueOf("fml:conndata")).get();
 +         if (connectionData == null){
 +            f_82089_.info("Failed to get a channel with the attribute of fml:conndata.");
 +            p_82096_.f_8906_.m_141995_(packet);
-+         } else if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
-+            FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
++         } else if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new net.minecraft.resources.ResourceLocation("ambassador:commands")))) {
++            net.minecraft.network.FriendlyByteBuf byteBuf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
 +            packet.write(byteBuf, true);
-+            p_82096_.f_8906_.m_141995_(new ClientboundCustomPayloadPacket(new ResourceLocation("ambassador:commands"), byteBuf));
++            p_82096_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket(new net.minecraft.resources.ResourceLocation("ambassador:commands"), byteBuf));
 +         } else {
 +            p_82096_.f_8906_.m_141995_(packet);
 +         }
 +      }catch (ClassCastException e){
-+            f_82089_.error("Failed to get connection data for player " + p_82096_.m_7755_().getString() + ". Someone registered a channel with the fml:conndata key that isn't a ConnectionData object.");
++            f_82089_.error("Failed to get connection data for player " + p_82096_.m_7755_().getString() + ". Someone registered a channel with the fml:conndata key that isn't a net.minecraftforge.network.ConnectionData object.");
 +            p_82096_.f_8906_.m_141995_(packet);
 +      }
 +      //ambassador support end
@@ -361,14 +229,14 @@
     }
  
     public CommandDispatcher<CommandSourceStack> m_82094_() {
-+      if (DispatcherRedirector.shouldBypass())
++      if (org.magmafoundation.magma.commands.DispatcherRedirector.shouldBypass())
 +         return this.forgeDispatcher;
        return this.f_82090_;
     }
  
 +   //Magma - wrap the forge dispatcher to prevent LuckPerms from using this method as the vanilla dispatcher.. thanks reflection...
-+   public Wrapped<CommandDispatcher<CommandSourceStack>> getForgeDispatcher() {
-+      return Wrapped.wrap(forgeDispatcher);
++   public org.magmafoundation.magma.util.Wrapped<CommandDispatcher<CommandSourceStack>> getForgeDispatcher() {
++      return org.magmafoundation.magma.util.Wrapped.wrap(forgeDispatcher);
 +   }
 +
     @Nullable
@@ -400,8 +268,8 @@
 +              .getRoot()
 +              .getChildren()
 +              .stream()
-+              .filter(node -> node instanceof LiteralCommandNode)
-+              .filter(node -> ((LiteralCommandNode<?>) node).getLiteral().equals(search))
++              .filter(node -> node instanceof com.mojang.brigadier.tree.LiteralCommandNode)
++              .filter(node -> ((com.mojang.brigadier.tree.LiteralCommandNode<?>) node).getLiteral().equals(search))
 +              .findFirst()
 +              .orElse(null);
 +

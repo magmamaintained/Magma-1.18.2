@@ -1,38 +1,29 @@
 --- a/net/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager.java
 +++ b/net/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager.java
-@@ -3,6 +_,8 @@
- import com.mojang.logging.LogUtils;
- import javax.annotation.Nullable;
- import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEnderDragon;
-+import org.bukkit.event.entity.EnderDragonChangePhaseEvent;
- import org.slf4j.Logger;
- 
- public class EnderDragonPhaseManager {
-@@ -22,6 +_,26 @@
-          if (this.f_31411_ != null) {
+@@ -23,6 +_,26 @@
              this.f_31411_.m_7081_();
           }
-+
+ 
 +         // CraftBukkit start - Call EnderDragonChangePhaseEvent
 +         //Magma start - don't call event if phase is unknown
-+         final org.bukkit.entity.EnderDragon.Phase bukkitPhase = CraftEnderDragon.getBukkitPhase(p_31417_);
++         final org.bukkit.entity.EnderDragon.Phase bukkitPhase = org.bukkit.craftbukkit.v1_18_R2.entity.CraftEnderDragon.getBukkitPhase(p_31417_);
 +
 +         if (bukkitPhase != org.bukkit.entity.EnderDragon.Phase.UNKNOWN) {
-+            EnderDragonChangePhaseEvent event = new EnderDragonChangePhaseEvent(
-+                    (CraftEnderDragon) this.f_31409_.getBukkitEntity(),
-+                    (this.f_31411_ == null) ? null : CraftEnderDragon.getBukkitPhase(this.f_31411_.m_7309_()),
++            org.bukkit.event.entity.EnderDragonChangePhaseEvent event = new org.bukkit.event.entity.EnderDragonChangePhaseEvent(
++                    (org.bukkit.craftbukkit.v1_18_R2.entity.CraftEnderDragon) this.f_31409_.getBukkitEntity(),
++                    (this.f_31411_ == null) ? null : org.bukkit.craftbukkit.v1_18_R2.entity.CraftEnderDragon.getBukkitPhase(this.f_31411_.m_7309_()),
 +                    bukkitPhase
 +            );
 +            this.f_31409_.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +            if (event.isCancelled()) {
 +               return;
 +            }
-+            p_31417_ = CraftEnderDragon.getMinecraftPhase(event.getNewPhase());
++            p_31417_ = org.bukkit.craftbukkit.v1_18_R2.entity.CraftEnderDragon.getMinecraftPhase(event.getNewPhase());
 +         }
 +         //Magma end
 +
 +         // CraftBukkit end
- 
++
           this.f_31411_ = this.m_31418_(p_31417_);
           if (!this.f_31409_.f_19853_.f_46443_) {
+             this.f_31409_.m_20088_().m_135381_(EnderDragon.f_31067_, p_31417_.m_31405_());

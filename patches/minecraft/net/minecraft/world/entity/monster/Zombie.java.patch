@@ -1,29 +1,10 @@
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -13,6 +_,7 @@
- import net.minecraft.network.syncher.EntityDataAccessor;
- import net.minecraft.network.syncher.EntityDataSerializers;
- import net.minecraft.network.syncher.SynchedEntityData;
-+import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.sounds.SoundEvent;
- import net.minecraft.sounds.SoundEvents;
-@@ -64,6 +_,10 @@
- import net.minecraft.world.level.ServerLevelAccessor;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
-+import org.bukkit.event.entity.EntityCombustByEntityEvent;
-+import org.bukkit.event.entity.EntityTargetEvent;
-+import org.bukkit.event.entity.EntityTransformEvent;
- 
- public class Zombie extends Monster {
-    private static final UUID f_34259_ = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
 @@ -83,6 +_,7 @@
     private boolean f_34264_;
     private int f_34265_;
     public int f_34266_;
-+   private int lastTick = MinecraftServer.currentTick; // CraftBukkit - add field
++   private int lastTick = net.minecraft.server.MinecraftServer.currentTick; // CraftBukkit - add field
  
     public Zombie(EntityType<? extends Zombie> p_34271_, Level p_34272_) {
        super(p_34271_, p_34272_);
@@ -43,7 +24,7 @@
 -            --this.f_34266_;
 -            if (this.f_34266_ < 0) {
 +            // CraftBukkit start - Use wall time instead of ticks for conversion
-+            int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
++            int elapsedTicks = net.minecraft.server.MinecraftServer.currentTick - this.lastTick;
 +            this.f_34266_ -= elapsedTicks;
 +            // CraftBukkit end
 +            if (this.f_34266_ < 0 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.f_20562_, (timer) -> this.f_34266_ = timer)) {
@@ -54,7 +35,7 @@
        }
  
        super.m_8119_();
-+      this.lastTick = MinecraftServer.currentTick; // CraftBukkit
++      this.lastTick = net.minecraft.server.MinecraftServer.currentTick; // CraftBukkit
     }
  
     public void m_8107_() {
@@ -62,7 +43,7 @@
     }
  
     public void m_34278_(int p_34279_) {
-+      this.lastTick = MinecraftServer.currentTick; // CraftBukkit
++      this.lastTick = net.minecraft.server.MinecraftServer.currentTick; // CraftBukkit
        this.f_34266_ = p_34279_;
        this.m_20088_().m_135381_(f_34261_, true);
     }
@@ -71,7 +52,7 @@
  
     protected void m_34310_(EntityType<? extends Zombie> p_34311_) {
 -      Zombie zombie = this.m_21406_(p_34311_, true);
-+      Zombie zombie = this.convertTo(p_34311_, true, EntityTransformEvent.TransformReason.DROWNED, CreatureSpawnEvent.SpawnReason.DROWNED);
++      Zombie zombie = this.convertTo(p_34311_, true, org.bukkit.event.entity.EntityTransformEvent.TransformReason.DROWNED, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DROWNED);
        if (zombie != null) {
           zombie.m_34339_(zombie.f_19853_.m_6436_(zombie.m_142538_()).m_19057_());
           zombie.m_34336_(zombie.m_7586_() && this.m_34330_());
@@ -106,9 +87,9 @@
                    if (!this.f_19853_.m_45914_((double)i1, (double)j1, (double)k1, 7.0D) && this.f_19853_.m_45784_(zombie) && this.f_19853_.m_45786_(zombie) && !this.f_19853_.m_46855_(zombie.m_142469_())) {
 -                     zombie.m_6710_(livingentity);
 +                     if (livingentity != null)
-+                     zombie.setTarget(livingentity, EntityTargetEvent.TargetReason.REINFORCEMENT_TARGET, true); // CraftBukkit
++                     zombie.setTarget(livingentity, org.bukkit.event.entity.EntityTargetEvent.TargetReason.REINFORCEMENT_TARGET, true); // CraftBukkit
                       zombie.m_6518_(serverlevel, this.f_19853_.m_6436_(zombie.m_142538_()), MobSpawnType.REINFORCEMENT, (SpawnGroupData)null, (CompoundTag)null);
-+                     serverlevel.prepareEntity(zombie, CreatureSpawnEvent.SpawnReason.REINFORCEMENTS); //Magma - add spawn reason
++                     serverlevel.prepareEntity(zombie, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS); //Magma - add spawn reason
                       serverlevel.m_47205_(zombie);
                       this.m_21051_(Attributes.f_22287_).m_22125_(new AttributeModifier("Zombie reinforcement caller charge", (double)-0.05F, AttributeModifier.Operation.ADDITION));
                       zombie.m_21051_(Attributes.f_22287_).m_22125_(new AttributeModifier("Zombie reinforcement callee charge", (double)-0.05F, AttributeModifier.Operation.ADDITION));
@@ -118,7 +99,7 @@
           if (this.m_21205_().m_41619_() && this.m_6060_() && this.f_19796_.nextFloat() < f * 0.3F) {
 -            p_34276_.m_20254_(2 * (int)f);
 +            // CraftBukkit start
-+            EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this.getBukkitEntity(), p_34276_.getBukkitEntity(), 2 * (int) f); // PAIL: fixme
++            org.bukkit.event.entity.EntityCombustByEntityEvent event = new org.bukkit.event.entity.EntityCombustByEntityEvent(this.getBukkitEntity(), p_34276_.getBukkitEntity(), 2 * (int) f); // PAIL: fixme
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
 +            if (!event.isCancelled()) {
 +               p_34276_.setSecondsOnFire(event.getDuration(), false);
@@ -149,11 +130,11 @@
 -            p_34281_.m_5898_((Player)null, 1026, this.m_142538_(), 0);
 +         Villager villager = (Villager) p_34282_;
 +         // CraftBukkit start
-+         zombifyVillager(p_34281_, villager, this.m_142538_(), this.m_20067_(), CreatureSpawnEvent.SpawnReason.INFECTION);
++         zombifyVillager(p_34281_, villager, this.m_142538_(), this.m_20067_(), org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.INFECTION);
 +      }
 +   }
-+   public static ZombieVillager zombifyVillager(ServerLevel p_34281_, Villager villager, net.minecraft.core.BlockPos blockPosition, boolean silent, CreatureSpawnEvent.SpawnReason spawnReason) {
-+      ZombieVillager entityzombievillager = (ZombieVillager) villager.convertTo(EntityType.f_20530_, false, EntityTransformEvent.TransformReason.INFECTION, spawnReason);
++   public static ZombieVillager zombifyVillager(ServerLevel p_34281_, Villager villager, net.minecraft.core.BlockPos blockPosition, boolean silent, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
++      ZombieVillager entityzombievillager = (ZombieVillager) villager.convertTo(EntityType.f_20530_, false, org.bukkit.event.entity.EntityTransformEvent.TransformReason.INFECTION, spawnReason);
 +      if (entityzombievillager != null) {
 +         // CraftBukkit end
 +         entityzombievillager.m_6518_(p_34281_, p_34281_.m_6436_(villager.m_142538_()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag) null);
@@ -175,7 +156,7 @@
                    chicken1.m_6518_(p_34297_, p_34298_, MobSpawnType.JOCKEY, (SpawnGroupData)null, (CompoundTag)null);
                    chicken1.m_28273_(true);
                    this.m_20329_(chicken1);
-+                  p_34297_.prepareEntity(chicken1, CreatureSpawnEvent.SpawnReason.MOUNT); //Magma - add spawn reason
++                  p_34297_.prepareEntity(chicken1, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.MOUNT); //Magma - add spawn reason
                    p_34297_.m_7967_(chicken1);
                 }
              }

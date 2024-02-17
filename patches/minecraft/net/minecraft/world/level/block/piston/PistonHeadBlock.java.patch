@@ -1,18 +1,10 @@
 --- a/net/minecraft/world/level/block/piston/PistonHeadBlock.java
 +++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
-@@ -25,6 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.magmafoundation.magma.configuration.MagmaConfig;
- 
- public class PistonHeadBlock extends DirectionalBlock {
-    public static final EnumProperty<PistonType> f_60235_ = BlockStateProperties.f_61396_;
 @@ -131,6 +_,11 @@
  
     public void m_6861_(BlockState p_60275_, Level p_60276_, BlockPos p_60277_, Block p_60278_, BlockPos p_60279_, boolean p_60280_) {
        if (p_60275_.m_60710_(p_60276_, p_60277_)) {
-+         if (MagmaConfig.instance.patchUpdateSuppression.getValues()) {
++         if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues()) {
 +            p_60276_.m_46586_(p_60277_.m_142300_(p_60275_.m_61143_(f_52588_).m_122424_()), p_60278_, p_60279_);
 +            return;
 +         }

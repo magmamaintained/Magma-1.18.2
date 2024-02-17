@@ -1,13 +1,5 @@
 --- a/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/net/minecraft/util/worldupdate/WorldUpgrader.java
-@@ -31,6 +_,7 @@
- import net.minecraft.world.level.chunk.ChunkGenerator;
- import net.minecraft.world.level.chunk.storage.ChunkStorage;
- import net.minecraft.world.level.chunk.storage.RegionFile;
-+import net.minecraft.world.level.dimension.DimensionType;
- import net.minecraft.world.level.levelgen.WorldGenSettings;
- import net.minecraft.world.level.storage.DimensionDataStorage;
- import net.minecraft.world.level.storage.LevelStorageSource;
 @@ -50,7 +_,8 @@
     private volatile int f_18807_;
     private volatile int f_18808_;

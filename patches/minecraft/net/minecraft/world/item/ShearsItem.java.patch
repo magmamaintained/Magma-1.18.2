@@ -1,19 +1,9 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -16,6 +_,7 @@
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.GrowingPlantHeadBlock;
- import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
- 
- public class ShearsItem extends Item {
-    public ShearsItem(Item.Properties p_43074_) {
-@@ -46,6 +_,39 @@
-       } else {
-          return 15.0F;
+@@ -48,6 +_,39 @@
        }
-+   }
-+
+    }
+ 
 +   @Override
 +   public net.minecraft.world.InteractionResult m_6880_(ItemStack stack, net.minecraft.world.entity.player.Player playerIn, LivingEntity entity, net.minecraft.world.InteractionHand hand) {
 +      if (entity instanceof net.minecraftforge.common.IForgeShearable target) {
@@ -21,7 +11,7 @@
 +         BlockPos pos = new BlockPos(entity.m_20185_(), entity.m_20186_(), entity.m_20189_());
 +         if (target.isShearable(stack, entity.f_19853_, pos)) {
 +            // Magma start
-+            if (!CraftEventFactory.handlePlayerShearEntityEvent(playerIn, entity, stack, hand)) {
++            if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handlePlayerShearEntityEvent(playerIn, entity, stack, hand)) {
 +               return InteractionResult.PASS;
 +            }
 +            // Magma end
@@ -45,6 +35,8 @@
 +   @Override
 +   public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
 +      return net.minecraftforge.common.ToolActions.DEFAULT_SHEARS_ACTIONS.contains(toolAction);
-    }
- 
++   }
++
     public InteractionResult m_6225_(UseOnContext p_186371_) {
+       Level level = p_186371_.m_43725_();
+       BlockPos blockpos = p_186371_.m_8083_();

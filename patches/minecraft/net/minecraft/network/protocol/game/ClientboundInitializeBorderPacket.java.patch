@@ -1,13 +1,5 @@
 --- a/net/minecraft/network/protocol/game/ClientboundInitializeBorderPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundInitializeBorderPacket.java
-@@ -3,6 +_,7 @@
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.world.level.border.WorldBorder;
-+import org.magmafoundation.magma.helpers.BorderHelper;
- 
- public class ClientboundInitializeBorderPacket implements Packet<ClientGamePacketListener> {
-    private final double f_178868_;
 @@ -26,8 +_,23 @@
     }
  
@@ -16,7 +8,7 @@
 -      this.f_178869_ = p_178877_.m_6345_();
 +      //Magma start
 +      if (p_178877_.world == null)
-+         p_178877_.world = BorderHelper.getLevelFromPlayer(this);
++         p_178877_.world = org.magmafoundation.magma.helpers.BorderHelper.getLevelFromPlayer(this);
 +
 +      double newCenterX = p_178877_.m_6347_();
 +      double newCenterZ = p_178877_.m_6345_();

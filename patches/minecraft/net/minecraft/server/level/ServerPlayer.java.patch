@@ -1,154 +1,5 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -4,19 +_,7 @@
- import com.mojang.authlib.GameProfile;
- import com.mojang.datafixers.util.Either;
- import com.mojang.logging.LogUtils;
--import java.util.Collection;
--import java.util.List;
--import java.util.Optional;
--import java.util.OptionalInt;
--import java.util.Random;
--import java.util.UUID;
--import javax.annotation.Nullable;
--import net.minecraft.BlockUtil;
--import net.minecraft.ChatFormatting;
--import net.minecraft.CrashReport;
--import net.minecraft.CrashReportCategory;
--import net.minecraft.ReportedException;
--import net.minecraft.Util;
-+import net.minecraft.*;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.commands.arguments.EntityAnchorArgument;
- import net.minecraft.core.BlockPos;
-@@ -24,46 +_,11 @@
- import net.minecraft.core.NonNullList;
- import net.minecraft.core.SectionPos;
- import net.minecraft.nbt.CompoundTag;
-+import net.minecraft.nbt.ListTag;
- import net.minecraft.nbt.NbtOps;
--import net.minecraft.network.chat.ChatType;
--import net.minecraft.network.chat.Component;
--import net.minecraft.network.chat.HoverEvent;
--import net.minecraft.network.chat.TextComponent;
--import net.minecraft.network.chat.TranslatableComponent;
-+import net.minecraft.network.chat.*;
- import net.minecraft.network.protocol.Packet;
--import net.minecraft.network.protocol.game.ClientboundAddPlayerPacket;
--import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
--import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
--import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
--import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
--import net.minecraft.network.protocol.game.ClientboundChatPacket;
--import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
--import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
--import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket;
--import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
--import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
--import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
--import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
--import net.minecraft.network.protocol.game.ClientboundHorseScreenOpenPacket;
--import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
--import net.minecraft.network.protocol.game.ClientboundMerchantOffersPacket;
--import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
--import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
--import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
--import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
--import net.minecraft.network.protocol.game.ClientboundPlayerCombatEndPacket;
--import net.minecraft.network.protocol.game.ClientboundPlayerCombatEnterPacket;
--import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
--import net.minecraft.network.protocol.game.ClientboundPlayerLookAtPacket;
--import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
--import net.minecraft.network.protocol.game.ClientboundResourcePackPacket;
--import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
--import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
--import net.minecraft.network.protocol.game.ClientboundSetExperiencePacket;
--import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
--import net.minecraft.network.protocol.game.ClientboundSoundPacket;
--import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
--import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
-+import net.minecraft.network.protocol.game.*;
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.server.MinecraftServer;
-@@ -82,16 +_,12 @@
- import net.minecraft.world.Container;
- import net.minecraft.world.InteractionHand;
- import net.minecraft.world.MenuProvider;
-+import net.minecraft.world.damagesource.CombatTracker;
- import net.minecraft.world.damagesource.DamageSource;
- import net.minecraft.world.damagesource.EntityDamageSource;
- import net.minecraft.world.effect.MobEffectInstance;
- import net.minecraft.world.effect.MobEffects;
--import net.minecraft.world.entity.Entity;
--import net.minecraft.world.entity.EntitySelector;
--import net.minecraft.world.entity.HumanoidArm;
--import net.minecraft.world.entity.LivingEntity;
--import net.minecraft.world.entity.Mob;
--import net.minecraft.world.entity.NeutralMob;
-+import net.minecraft.world.entity.*;
- import net.minecraft.world.entity.animal.horse.AbstractHorse;
- import net.minecraft.world.entity.item.ItemEntity;
- import net.minecraft.world.entity.monster.Monster;
-@@ -99,18 +_,9 @@
- import net.minecraft.world.entity.player.Inventory;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.entity.projectile.AbstractArrow;
--import net.minecraft.world.inventory.AbstractContainerMenu;
--import net.minecraft.world.inventory.ContainerListener;
--import net.minecraft.world.inventory.ContainerSynchronizer;
--import net.minecraft.world.inventory.HorseInventoryMenu;
--import net.minecraft.world.inventory.ResultSlot;
--import net.minecraft.world.inventory.Slot;
--import net.minecraft.world.item.ComplexItem;
--import net.minecraft.world.item.ItemCooldowns;
--import net.minecraft.world.item.ItemStack;
--import net.minecraft.world.item.Items;
--import net.minecraft.world.item.ServerItemCooldowns;
--import net.minecraft.world.item.WrittenBookItem;
-+import net.minecraft.world.food.FoodData;
-+import net.minecraft.world.inventory.*;
-+import net.minecraft.world.item.*;
- import net.minecraft.world.item.crafting.Recipe;
- import net.minecraft.world.item.trading.MerchantOffers;
- import net.minecraft.world.level.ChunkPos;
-@@ -119,6 +_,7 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.biome.BiomeManager;
- import net.minecraft.world.level.block.Blocks;
-+import net.minecraft.world.level.block.ChestBlock;
- import net.minecraft.world.level.block.HorizontalDirectionalBlock;
- import net.minecraft.world.level.block.NetherPortalBlock;
- import net.minecraft.world.level.block.entity.BlockEntity;
-@@ -132,10 +_,28 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.scores.PlayerTeam;
- import net.minecraft.world.scores.Score;
-+import net.minecraft.world.scores.Scoreboard;
- import net.minecraft.world.scores.Team;
- import net.minecraft.world.scores.criteria.ObjectiveCriteria;
-+import org.bukkit.Bukkit;
-+import org.bukkit.Location;
-+import org.bukkit.WeatherType;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftWorldBorder;
-+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftPortalEvent;
-+import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
-+import org.bukkit.craftbukkit.v1_18_R2.util.CraftDimensionUtil;
-+import org.bukkit.event.player.*;
-+import org.bukkit.inventory.MainHand;
-+import org.magmafoundation.magma.helpers.InventoryViewHelper;
- import org.slf4j.Logger;
- 
-+import javax.annotation.Nullable;
-+import java.util.*;
-+import java.util.concurrent.atomic.AtomicReference;
-+
- public class ServerPlayer extends Player {
-    private static final Logger f_8907_ = LogUtils.getLogger();
-    private static final int f_143381_ = 32;
 @@ -174,7 +_,7 @@
     private Vec3 f_8933_;
     @Nullable
@@ -224,8 +75,8 @@
 +   public String locale = "en_us"; // CraftBukkit - add, lowercase
 +
 +   @Override
-+   public CraftPlayer getBukkitEntity() {
-+      return (CraftPlayer) super.getBukkitEntity();
++   public org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer getBukkitEntity() {
++      return (org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) super.getBukkitEntity();
 +   }
 +
 +   // CraftBukkit end
@@ -383,7 +234,7 @@
 -            this.f_8935_ = Level.f_46427_.parse(NbtOps.f_128958_, p_9131_.m_128423_("SpawnDimension")).resultOrPartial(f_8907_::error).orElse(Level.f_46428_);
 +      // CraftBukkit start
 +      String spawnWorld = p_9131_.m_128461_( "SpawnWorld" );
-+      CraftWorld oldWorld = (CraftWorld) Bukkit.getWorld( spawnWorld );
++      org.bukkit.craftbukkit.v1_18_R2.CraftWorld oldWorld = (org.bukkit.craftbukkit.v1_18_R2.CraftWorld) org.bukkit.Bukkit.getWorld( spawnWorld );
 +      if (oldWorld != null) {
 +         this.f_8935_ = oldWorld.getHandle().m_46472_();
 +      }
@@ -399,7 +250,7 @@
        }
 +
 +      //Magma start - load forge captures
-+      ListTag forgeCaptures = p_9131_.m_128437_("ForgeCaptures", 10);
++      net.minecraft.nbt.ListTag forgeCaptures = p_9131_.m_128437_("ForgeCaptures", 10);
 +      setForgeCaptures(this, forgeCaptures);
 +      //Magma end
  
@@ -483,7 +334,7 @@
 +
 +      //Magma start - save forge captures
 +      Inventory forgeCaptures = getForgeCaptures();
-+      if (forgeCaptures != null) p_9197_.m_128365_("ForgeCaptures", forgeCaptures.m_36026_(new ListTag()));
++      if (forgeCaptures != null) p_9197_.m_128365_("ForgeCaptures", forgeCaptures.m_36026_(new net.minecraft.nbt.ListTag()));
 +      //Magma end
 +   }
 +
@@ -500,7 +351,7 @@
 +            }
 +         }
 +         if (world == null || position == null) {
-+            world = ((CraftWorld) Bukkit.getServer().getWorlds().get( 0 )).getHandle();
++            world = ((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) org.bukkit.Bukkit.getServer().getWorlds().get( 0 )).getHandle();
 +            position = Vec3.m_82512_( ((ServerLevel) world).m_8900_() );
 +         }
 +         this.f_19853_ = world;
@@ -708,11 +559,11 @@
 +         }
 +
 +         if (this.oldLevel != this.f_36078_) {
-+            CraftEventFactory.callPlayerLevelChangeEvent( this.getBukkitEntity(), this.oldLevel, this.f_36078_ );
++            org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerLevelChangeEvent( this.getBukkitEntity(), this.oldLevel, this.f_36078_ );
 +            this.oldLevel = this.f_36078_;
 +         }
 +         if (this.getBukkitEntity().hasClientWorldBorder()) {
-+            ((CraftWorldBorder) this.getBukkitEntity().getWorldBorder()).getHandle().m_61969_();
++            ((org.bukkit.craftbukkit.v1_18_R2.CraftWorldBorder) this.getBukkitEntity().getWorldBorder()).getHandle().m_61969_();
 +         }
 +         // CraftBukkit end
  
@@ -778,13 +629,13 @@
 +         this.m_6668_(p_9035_);
 +      }
 +
-+      List<org.bukkit.inventory.ItemStack> capturedDrops = new ArrayList<>(this.drops);
++      List<org.bukkit.inventory.ItemStack> capturedDrops = new java.util.ArrayList<>(this.drops);
 +      this.drops.clear();
 +
 +      Component defaultMessage = this.m_21231_().m_19293_();
 +      String deathmessage = defaultMessage.getString();
 +      keepLevel = keepInventory; // SPIGOT-2222: pre-set keepLevel
-+      org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, capturedDrops, deathmessage, keepInventory);
++      org.bukkit.event.entity.PlayerDeathEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerDeathEvent(this, capturedDrops, deathmessage, keepInventory);
 +      // SPIGOT-943 - only call if they have an inventory open
 +      if (this.f_36096_ != this.f_36095_) {
 +         this.m_9230_();
@@ -795,7 +646,7 @@
 +         if (deathMessage.equals(deathmessage)) {
 +            itextcomponent = this.m_21231_().m_19293_();
 +         } else {
-+            itextcomponent = CraftChatMessage.fromStringOrNull(deathMessage);
++            itextcomponent = org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromStringOrNull(deathMessage);
 +         }
 +         this.f_8906_.m_9831_(new ClientboundPlayerCombatKillPacket(this.m_21231_(), itextcomponent), (future) -> {
 +            if (!future.isSuccess()) {
@@ -1005,26 +856,26 @@
 -      ResourceKey<Level> resourcekey = serverlevel.m_46472_();
 -      if (resourcekey == Level.f_46430_ && p_9180_.m_46472_() == Level.f_46428_) {
 +      // CraftBukkit start
-+      return changeDimension( p_9180_, p_9180_.m_8871_(), PlayerTeleportEvent.TeleportCause.UNKNOWN );
++      return changeDimension( p_9180_, p_9180_.m_8871_(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN );
 +   }
 +
 +   @Nullable
 +   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter) {
-+      return changeDimension( p_9180_, teleporter, PlayerTeleportEvent.TeleportCause.UNKNOWN );
++      return changeDimension( p_9180_, teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN );
 +   }
 +
 +   @Nullable
-+   public Entity changeDimension(ServerLevel p_9180_, PlayerTeleportEvent.TeleportCause cause) {
++   public Entity changeDimension(ServerLevel p_9180_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +      return changeDimension( p_9180_, p_9180_.m_8871_(), cause );
 +   }
 +
 +   @Nullable
-+   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, PlayerTeleportEvent.TeleportCause cause) {
++   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +      // CraftBukkit end
 +      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension( this, p_9180_.m_46472_() )) return null;
 +      if (this.m_5803_()) return this; // CraftBukkit - SPIGOT-3154
 +      // this.isChangingDimension = true; // CraftBukkit - Moved down and into PlayerList#changeDimension
-+      AtomicReference<ServerLevel> serverlevel = new AtomicReference<>( this.m_183503_() ); // For use in lambda
++      java.util.concurrent.atomic.AtomicReference<ServerLevel> serverlevel = new java.util.concurrent.atomic.AtomicReference<>( this.m_183503_() ); // For use in lambda
 +      ResourceKey<Level> resourcekey = serverlevel.get().m_46472_();
 +      if (resourcekey == Level.f_46430_ && p_9180_.m_46472_() == Level.f_46428_ && teleporter.isVanilla()) { //Forge: Fix non-vanilla teleporters triggering end credits
 +         this.f_8927_ = true;
@@ -1090,15 +941,15 @@
 +                     this.m_9006_( p_9180_, new BlockPos( portalinfo.f_77676_ ) );
 +                  }
 +
-+               Location enter = this.getBukkitEntity().getLocation();
-+               Location exit = (serverlevel.get() == null) ? null : new Location( p_9180_.getWorld(), portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, portalinfo.f_77679_ );
-+               PlayerTeleportEvent tpEvent = new PlayerTeleportEvent( this.getBukkitEntity(), enter, exit, cause );
-+               Bukkit.getServer().getPluginManager().callEvent( tpEvent );
++               org.bukkit.Location enter = this.getBukkitEntity().getLocation();
++               org.bukkit.Location exit = (serverlevel.get() == null) ? null : new org.bukkit.Location( p_9180_.getWorld(), portalinfo.f_77676_.f_82479_, portalinfo.f_77676_.f_82480_, portalinfo.f_77676_.f_82481_, portalinfo.f_77678_, portalinfo.f_77679_ );
++               org.bukkit.event.player.PlayerTeleportEvent tpEvent = new org.bukkit.event.player.PlayerTeleportEvent( this.getBukkitEntity(), enter, exit, cause );
++               org.bukkit.Bukkit.getServer().getPluginManager().callEvent( tpEvent );
 +               if (tpEvent.isCancelled() || tpEvent.getTo() == null) {
 +                  return null;
 +               }
 +               exit = tpEvent.getTo();
-+               serverlevel.set( ((CraftWorld) exit.getWorld()).getHandle() );
++               serverlevel.set( ((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) exit.getWorld()).getHandle() );
 +               // CraftBukkit end
 +
 +               serverlevel.get().m_46473_().m_7238_();
@@ -1141,7 +992,7 @@
              this.f_8918_ = -1;
 +            net.minecraftforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent( this, resourcekey, p_9180_.m_46472_() );
 +            // CraftBukkit start
-+            PlayerChangedWorldEvent changeEvent = new PlayerChangedWorldEvent( this.getBukkitEntity(), serverlevel.get().getWorld() );
++            org.bukkit.event.player.PlayerChangedWorldEvent changeEvent = new org.bukkit.event.player.PlayerChangedWorldEvent( this.getBukkitEntity(), serverlevel.get().getWorld() );
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent( changeEvent );
 +            // CraftBukkit end
           }
@@ -1152,15 +1003,15 @@
 +
 +   // CraftBukkit start
 +   @Override
-+   protected CraftPortalEvent callPortalEvent(Entity entity, ServerLevel exitServerLevel, BlockPos exitPosition, PlayerTeleportEvent.TeleportCause cause, int searchRadius, int creationRadius) {
-+      Location enter = this.getBukkitEntity().getLocation();
-+      Location exit = new Location( exitServerLevel.getWorld(), exitPosition.m_123341_(), exitPosition.m_123342_(), exitPosition.m_123343_(), m_146908_(), m_146909_() );
-+      PlayerPortalEvent event = new PlayerPortalEvent( this.getBukkitEntity(), enter, exit, cause, searchRadius, true, creationRadius );
-+      Bukkit.getServer().getPluginManager().callEvent( event );
++   protected org.bukkit.craftbukkit.v1_18_R2.event.CraftPortalEvent callPortalEvent(Entity entity, ServerLevel exitServerLevel, BlockPos exitPosition, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause, int searchRadius, int creationRadius) {
++      org.bukkit.Location enter = this.getBukkitEntity().getLocation();
++      org.bukkit.Location exit = new org.bukkit.Location( exitServerLevel.getWorld(), exitPosition.m_123341_(), exitPosition.m_123342_(), exitPosition.m_123343_(), m_146908_(), m_146909_() );
++      org.bukkit.event.player.PlayerPortalEvent event = new org.bukkit.event.player.PlayerPortalEvent( this.getBukkitEntity(), enter, exit, cause, searchRadius, true, creationRadius );
++      org.bukkit.Bukkit.getServer().getPluginManager().callEvent( event );
 +      if (event.isCancelled() || event.getTo() == null || event.getTo().getWorld() == null) {
 +         return null;
 +      }
-+      return new CraftPortalEvent( event );
++      return new org.bukkit.craftbukkit.v1_18_R2.event.CraftPortalEvent( event );
 +   }
 +   // CraftBukkit end
  
@@ -1229,8 +1080,8 @@
 -      if (resourcekey1 != Level.f_46429_) {
 +
 +      // CraftBukkit start
-+      ResourceKey<Level> maindimensionkey = CraftDimensionUtil.getMainDimensionKey( p_9210_ );
-+      ResourceKey<Level> maindimensionkey1 = CraftDimensionUtil.getMainDimensionKey( this.f_19853_ );
++      ResourceKey<Level> maindimensionkey = org.bukkit.craftbukkit.v1_18_R2.util.CraftDimensionUtil.getMainDimensionKey( p_9210_ );
++      ResourceKey<Level> maindimensionkey1 = org.bukkit.craftbukkit.v1_18_R2.util.CraftDimensionUtil.getMainDimensionKey( this.f_19853_ );
 +
 +      CriteriaTriggers.f_10588_.m_19757_( this, maindimensionkey, maindimensionkey1 );
 +      if (maindimensionkey != resourcekey || maindimensionkey1 != resourcekey1) {
@@ -1388,7 +1239,7 @@
     public void m_6145_(boolean p_9165_, boolean p_9166_) {
 +      if (!this.m_5803_()) return; // CraftBukkit - Can't leave bed if not in one!
 +      // CraftBukkit start - fire PlayerBedLeaveEvent
-+      CraftPlayer player = this.getBukkitEntity();
++      org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer player = this.getBukkitEntity();
 +      BlockPos bedPosition = this.m_21257_().orElse( null );
 +
 +      org.bukkit.block.Block bed;
@@ -1398,7 +1249,7 @@
 +         bed = this.f_19853_.getWorld().getBlockAt( player.getLocation() );
 +      }
 +
-+      PlayerBedLeaveEvent event = new PlayerBedLeaveEvent( player, bed, true );
++      org.bukkit.event.player.PlayerBedLeaveEvent event = new org.bukkit.event.player.PlayerBedLeaveEvent( player, bed, true );
 +      this.f_19853_.getCraftServer().getPluginManager().callEvent( event );
 +      if (event.isCancelled()) {
 +         return;
@@ -1517,16 +1368,16 @@
 +            abstractcontainermenu.setTitle( p_9033_.m_5446_() );
 +            boolean cancelled = false;
 +            // magma start - capture container owner
-+            InventoryViewHelper.captureContainerOwner(this);
-+            abstractcontainermenu = CraftEventFactory.callInventoryOpenEvent( this, abstractcontainermenu, cancelled );
-+            InventoryViewHelper.resetContainerOwner();
++            org.magmafoundation.magma.helpers.InventoryViewHelper.captureContainerOwner(this);
++            abstractcontainermenu = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callInventoryOpenEvent( this, abstractcontainermenu, cancelled );
++            org.magmafoundation.magma.helpers.InventoryViewHelper.resetContainerOwner();
 +            if (abstractcontainermenu == null && !cancelled) { // Let pre-cancelled events fall through
 +               // SPIGOT-5263 - close chest if cancelled
 +               if (p_9033_ instanceof Container) {
 +                  ((Container) p_9033_).m_5785_( this );
-+               } else if (p_9033_ instanceof ChestBlock.DoubleInventory) {
++               } else if (p_9033_ instanceof net.minecraft.world.level.block.ChestBlock.DoubleInventory) {
 +                  // SPIGOT-5355 - double chests too :(
-+                  ((ChestBlock.DoubleInventory) p_9033_).inventorylargechest.m_5785_( this );
++                  ((net.minecraft.world.level.block.ChestBlock.DoubleInventory) p_9033_).inventorylargechest.m_5785_( this );
 +               }
 +               return OptionalInt.empty();
 +            }
@@ -1572,7 +1423,7 @@
 -      this.m_143399_(this.f_36096_);
 +      AbstractContainerMenu container = new HorseInventoryMenu( this.f_8940_, this.m_150109_(), p_9060_, p_9059_ );
 +      container.setTitle( p_9059_.m_5446_() );
-+      container = CraftEventFactory.callInventoryOpenEvent( this, container );
++      container = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callInventoryOpenEvent( this, container );
 +      if (container == null) {
 +         p_9060_.m_5785_( this );
 +         return;
@@ -1619,10 +1470,10 @@
 -      this.f_36095_.m_150414_(this.f_36096_);
 +      //Magma start - fix inventory closing
 +      if (this.f_36096_ != this.f_36095_) {
-+         Player old = InventoryViewHelper.getContainerOwner();
-+         InventoryViewHelper.captureContainerOwner(this);
-+         CraftEventFactory.handleInventoryCloseEvent(this);
-+         InventoryViewHelper.captureContainerOwner(old);
++         Player old = org.magmafoundation.magma.helpers.InventoryViewHelper.getContainerOwner();
++         org.magmafoundation.magma.helpers.InventoryViewHelper.captureContainerOwner(this);
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleInventoryCloseEvent(this);
++         org.magmafoundation.magma.helpers.InventoryViewHelper.captureContainerOwner(old);
 +      }
 +      //Magma end
 +
@@ -1933,11 +1784,11 @@
     public void m_9156_(ServerboundClientInformationPacket p_9157_) {
 +      // CraftBukkit start
 +      if (m_5737_() != p_9157_.f_133868_()) {
-+         PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent( getBukkitEntity(), m_5737_() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT );
++         org.bukkit.event.player.PlayerChangedMainHandEvent event = new org.bukkit.event.player.PlayerChangedMainHandEvent( getBukkitEntity(), m_5737_() == HumanoidArm.LEFT ? org.bukkit.inventory.MainHand.LEFT : org.bukkit.inventory.MainHand.RIGHT );
 +         this.f_8924_.server.getPluginManager().callEvent( event );
 +      }
 +      if (!this.locale.equals( p_9157_.f_133863_() )) {
-+         PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent( getBukkitEntity(), p_9157_.f_133863_() );
++         org.bukkit.event.player.PlayerLocaleChangeEvent event = new org.bukkit.event.player.PlayerLocaleChangeEvent( getBukkitEntity(), p_9157_.f_133863_() );
 +         this.f_8924_.server.getPluginManager().callEvent( event );
 +      }
 +      this.locale = p_9157_.f_133863_();
@@ -2016,7 +1867,7 @@
 -         this.f_8906_.m_141995_(new ClientboundSetCameraPacket(this.f_8926_));
 -         this.m_6021_(this.f_8926_.m_20185_(), this.f_8926_.m_20186_(), this.f_8926_.m_20189_());
 +         this.f_8906_.m_141995_( new ClientboundSetCameraPacket( this.f_8926_ ) );
-+         this.f_8906_.teleport( this.f_8926_.m_20185_(), this.f_8926_.m_20186_(), this.f_8926_.m_20189_(), this.f_8926_.m_146908_(), this.f_8926_.m_146909_(), PlayerTeleportEvent.TeleportCause.SPECTATE ); // CraftBukkit
++         this.f_8906_.teleport( this.f_8926_.m_20185_(), this.f_8926_.m_20186_(), this.f_8926_.m_20189_(), this.f_8926_.m_146908_(), this.f_8926_.m_146909_(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.SPECTATE ); // CraftBukkit
        }
  
     }
@@ -2058,7 +1909,7 @@
  
 +   // CraftBukkit start
     public void m_8999_(ServerLevel p_9000_, double p_9001_, double p_9002_, double p_9003_, float p_9004_, float p_9005_) {
-+      this.teleportTo(p_9000_, p_9001_, p_9002_, p_9003_, p_9004_, p_9005_, PlayerTeleportEvent.TeleportCause.UNKNOWN);
++      this.teleportTo(p_9000_, p_9001_, p_9002_, p_9003_, p_9004_, p_9005_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN);
 +   }
 +
 +   public void teleportTo(ServerLevel p_9000_, double p_9001_, double p_9002_, double p_9003_, float p_9004_, float p_9005_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
@@ -2067,8 +1918,8 @@
        this.m_8127_();
 +
 +      //Magma start - use bukkit teleporting if not caused by a mod calling teleportTo
-+      if (cause != PlayerTeleportEvent.TeleportCause.UNKNOWN) {
-+         this.getBukkitEntity().teleport(new Location(p_9000_.getWorld(), p_9001_, p_9002_, p_9003_, p_9004_, p_9005_), cause);
++      if (cause != org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN) {
++         this.getBukkitEntity().teleport(new org.bukkit.Location(p_9000_.getWorld(), p_9001_, p_9002_, p_9003_, p_9004_, p_9005_), cause);
 +         return;
 +      }
 +      //Magma end
@@ -2274,13 +2125,13 @@
 +      }
 +   }
 +
-+   public WeatherType weather = null;
++   public org.bukkit.WeatherType weather = null;
 +
-+   public WeatherType getPlayerWeather() {
++   public org.bukkit.WeatherType getPlayerWeather() {
 +      return this.weather;
 +   }
 +
-+   public void setPlayerWeather(WeatherType type, boolean plugin) {
++   public void setPlayerWeather(org.bukkit.WeatherType type, boolean plugin) {
 +      if (!plugin && this.weather != null) {
 +         return;
 +      }
@@ -2289,7 +2140,7 @@
 +         this.weather = type;
 +      }
 +
-+      if (type == WeatherType.DOWNFALL) {
++      if (type == org.bukkit.WeatherType.DOWNFALL) {
 +         this.f_8906_.m_141995_( new ClientboundGameEventPacket( ClientboundGameEventPacket.f_132155_, 0 ) );
 +      } else {
 +         this.f_8906_.m_141995_( new ClientboundGameEventPacket( ClientboundGameEventPacket.f_132154_, 0 ) );
@@ -2298,7 +2149,7 @@
 +
 +   public void resetPlayerWeather() {
 +      this.weather = null;
-+      this.setPlayerWeather( this.f_19853_.m_6106_().m_6533_() ? WeatherType.DOWNFALL : WeatherType.CLEAR, false );
++      this.setPlayerWeather( this.f_19853_.m_6106_().m_6533_() ? org.bukkit.WeatherType.DOWNFALL : org.bukkit.WeatherType.CLEAR, false );
 +   }
 +
 +   private float pluginRainPosition;
@@ -2318,7 +2169,7 @@
 +      }
 +
 +      if (oldThunder != newThunder) {
-+         if (weather == WeatherType.DOWNFALL || weather == null) {
++         if (weather == org.bukkit.WeatherType.DOWNFALL || weather == null) {
 +            this.f_8906_.m_141995_( new ClientboundGameEventPacket( ClientboundGameEventPacket.f_132161_, newThunder ) );
 +         } else {
 +            this.f_8906_.m_141995_( new ClientboundGameEventPacket( ClientboundGameEventPacket.f_132161_, 0 ) );
@@ -2330,7 +2181,7 @@
 +      if (this.weather == null) return;
 +
 +      pluginRainPositionPrevious = pluginRainPosition;
-+      if (weather == WeatherType.DOWNFALL) {
++      if (weather == org.bukkit.WeatherType.DOWNFALL) {
 +         pluginRainPosition += 0.01;
 +      } else {
 +         pluginRainPosition -= 0.01;
@@ -2351,7 +2202,7 @@
 +   }
 +
 +   @Override
-+   public Scoreboard m_36329_() {
++   public net.minecraft.world.scores.Scoreboard m_36329_() {
 +      return getBukkitEntity().getScoreboard().getHandle();
 +   }
 +
@@ -2369,7 +2220,7 @@
 +      this.m_5810_(); // CraftBukkit - SPIGOT-6682: Clear active item on reset
 +      this.f_19831_ = 0;
 +      this.f_19789_ = 0;
-+      this.f_36097_ = new FoodData( this );
++      this.f_36097_ = new net.minecraft.world.food.FoodData( this );
 +      this.f_36078_ = this.newLevel;
 +      this.f_36079_ = this.newTotalExp;
 +      this.f_36080_ = 0;
@@ -2380,7 +2231,7 @@
 +      this.f_36096_ = this.f_36095_;
 +      this.f_20888_ = null;
 +      this.f_20949_ = null;
-+      this.f_20944_ = new CombatTracker( this );
++      this.f_20944_ = new net.minecraft.world.damagesource.CombatTracker( this );
 +      this.f_8920_ = -1;
 +      if (this.keepLevel) { // CraftBukkit - SPIGOT-6687: Only use keepLevel (was pre-set with RULE_KEEPINVENTORY value in PlayerDeathEvent)
 +         this.f_36080_ = exp;
