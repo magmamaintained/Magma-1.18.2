@@ -1,12 +1,5 @@
 --- a/net/minecraft/server/rcon/RconConsoleSource.java
 +++ b/net/minecraft/server/rcon/RconConsoleSource.java
-@@ -10,6 +_,6 @@
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.phys.Vec2;
- import net.minecraft.world.phys.Vec3;
- 
- public class RconConsoleSource implements CommandSource {
-    private static final String f_144022_ = "Rcon";
 @@ -34,8 +_,19 @@
        return new CommandSourceStack(this, Vec3.m_82528_(serverlevel.m_8900_()), Vec2.f_82462_, serverlevel, 4, "Rcon", f_11500_, this.f_11502_, (Entity)null);
     }

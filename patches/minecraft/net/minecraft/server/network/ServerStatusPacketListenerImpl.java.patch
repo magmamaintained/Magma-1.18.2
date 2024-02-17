@@ -1,20 +1,5 @@
 --- a/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
-@@ -1,14 +_,14 @@
- package net.minecraft.server.network;
- 
- import net.minecraft.network.Connection;
- import net.minecraft.network.chat.Component;
- import net.minecraft.network.chat.TranslatableComponent;
- import net.minecraft.network.protocol.status.ClientboundPongResponsePacket;
- import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
- import net.minecraft.network.protocol.status.ServerStatusPacketListener;
- import net.minecraft.network.protocol.status.ServerboundPingRequestPacket;
- import net.minecraft.network.protocol.status.ServerboundStatusRequestPacket;
- import net.minecraft.server.MinecraftServer;
- 
- public class ServerStatusPacketListenerImpl implements ServerStatusPacketListener {
-    private static final Component f_10081_ = new TranslatableComponent("multiplayer.status.request_handled");
 @@ -33,7 +_,44 @@
           this.f_10083_.m_129507_(f_10081_);
        } else {

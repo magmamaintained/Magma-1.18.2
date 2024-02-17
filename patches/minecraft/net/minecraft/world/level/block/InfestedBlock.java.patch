@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/InfestedBlock.java
 +++ b/net/minecraft/world/level/block/InfestedBlock.java
-@@ -16,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockBehaviour;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.properties.Property;
- 
- public class InfestedBlock extends Block {
-    private final Block f_54174_;
 @@ -40,6 +_,7 @@
     private void m_54180_(ServerLevel p_54181_, BlockPos p_54182_) {
        Silverfish silverfish = EntityType.f_20523_.m_20615_(p_54181_);

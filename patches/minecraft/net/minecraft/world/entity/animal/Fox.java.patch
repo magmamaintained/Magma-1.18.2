@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Fox.java
 +++ b/net/minecraft/world/entity/animal/Fox.java
-@@ -88,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.pathfinder.BlockPathTypes;
- import net.minecraft.world.phys.Vec3;
- 
- public class Fox extends Animal {
-    private static final EntityDataAccessor<Integer> f_28437_ = SynchedEntityData.m_135353_(Fox.class, EntityDataSerializers.f_135028_);
 @@ -476,7 +_,8 @@
  
     protected void m_7581_(ItemEntity p_28514_) {

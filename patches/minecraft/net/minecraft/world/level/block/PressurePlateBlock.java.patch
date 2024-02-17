@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/PressurePlateBlock.java
 +++ b/net/minecraft/world/level/block/PressurePlateBlock.java
-@@ -16,6 +_,6 @@
- import net.minecraft.world.level.block.state.properties.BooleanProperty;
- import net.minecraft.world.level.material.Material;
- import net.minecraft.world.phys.AABB;
- 
- public class PressurePlateBlock extends BasePressurePlateBlock {
-    public static final BooleanProperty f_55249_ = BlockStateProperties.f_61448_;
 @@ -69,6 +_,27 @@
  
        if (!list.isEmpty()) {

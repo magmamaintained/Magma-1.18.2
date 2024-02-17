@@ -1,24 +1,5 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -18,11 +_,11 @@
- import net.minecraft.core.Direction;
- import net.minecraft.core.IdMapper;
- import net.minecraft.core.Vec3i;
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.nbt.DoubleTag;
- import net.minecraft.nbt.IntTag;
- import net.minecraft.nbt.ListTag;
- import net.minecraft.nbt.NbtUtils;
- import net.minecraft.world.Clearable;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.entity.EntityType;
-@@ -49,6 +_,6 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
- import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
- 
- public class StructureTemplate {
-    public static final String f_163789_ = "palette";
 @@ -68,6 +_,11 @@
     private Vec3i f_74484_ = Vec3i.f_123288_;
     private String f_74485_ = "?";

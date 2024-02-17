@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/ButtonBlock.java
 +++ b/net/minecraft/world/level/block/ButtonBlock.java
-@@ -26,6 +_,6 @@
- import net.minecraft.world.phys.BlockHitResult;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public abstract class ButtonBlock extends FaceAttachedHorizontalDirectionalBlock {
-    public static final BooleanProperty f_51045_ = BlockStateProperties.f_61448_;
 @@ -97,6 +_,19 @@
        if (p_51088_.m_61143_(f_51045_)) {
           return InteractionResult.CONSUME;

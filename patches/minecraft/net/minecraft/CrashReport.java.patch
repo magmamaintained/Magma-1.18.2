@@ -1,12 +1,5 @@
 --- a/net/minecraft/CrashReport.java
 +++ b/net/minecraft/CrashReport.java
-@@ -16,6 +_,6 @@
- import net.minecraft.util.MemoryReserve;
- import org.apache.commons.io.IOUtils;
- import org.apache.commons.lang3.ArrayUtils;
- import org.slf4j.Logger;
- 
- public class CrashReport {
 @@ -29,8 +_,10 @@
     private final SystemReport f_178624_ = new SystemReport();
  

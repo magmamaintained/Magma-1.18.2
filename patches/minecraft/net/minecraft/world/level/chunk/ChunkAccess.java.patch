@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -52,6 +_,6 @@
- import net.minecraft.world.level.material.Fluid;
- import net.minecraft.world.ticks.SerializableTickContainer;
- import net.minecraft.world.ticks.TickContainerAccess;
- import org.slf4j.Logger;
- 
- public abstract class ChunkAccess implements BlockGetter, BiomeManager.NoiseBiomeSource, FeatureAccess {
 @@ -79,6 +_,12 @@
     protected final LevelHeightAccessor f_187611_;
     protected final LevelChunkSection[] f_187612_;

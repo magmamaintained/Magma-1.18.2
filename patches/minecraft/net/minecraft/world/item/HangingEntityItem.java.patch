@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/HangingEntityItem.java
 +++ b/net/minecraft/world/item/HangingEntityItem.java
-@@ -13,6 +_,6 @@
- import net.minecraft.world.item.context.UseOnContext;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.gameevent.GameEvent;
- 
- public class HangingEntityItem extends Item {
-    private final EntityType<? extends HangingEntity> f_41322_;
 @@ -52,6 +_,16 @@
  
           if (hangingentity.m_7088_()) {

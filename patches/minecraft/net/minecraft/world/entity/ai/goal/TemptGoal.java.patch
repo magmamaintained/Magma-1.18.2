@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ai/goal/TemptGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/TemptGoal.java
-@@ -7,6 +_,6 @@
- import net.minecraft.world.entity.ai.targeting.TargetingConditions;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.crafting.Ingredient;
- 
- public class TemptGoal extends Goal {
-    private static final TargetingConditions f_25926_ = TargetingConditions.m_148353_().m_26883_(10.0D).m_148355_();
 @@ -19,7 +_,7 @@
     private double f_25931_;
     private double f_25932_;

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
 +++ b/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
-@@ -13,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.Items;
- import net.minecraft.world.item.enchantment.EnchantmentHelper;
- 
- public class SkeletonTrapGoal extends Goal {
-    private final SkeletonHorse f_30925_;
 @@ -27,6 +_,10 @@
  
     public void m_8037_() {

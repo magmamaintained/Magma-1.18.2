@@ -1,19 +1,5 @@
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -22,6 +_,6 @@
- import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
- import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
- import net.minecraft.network.syncher.SynchedEntityData;
- import net.minecraft.util.Mth;
- import net.minecraft.world.effect.MobEffectInstance;
- import net.minecraft.world.entity.Entity;
-@@ -35,6 +_,6 @@
- import net.minecraft.world.item.MapItem;
- import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
- 
- public class ServerEntity {
 @@ -57,8 +_,12 @@
     private List<Entity> f_8523_ = Collections.emptyList();
     private boolean f_8524_;
@@ -28,7 +14,7 @@
        this.f_8509_ = p_8528_;
        this.f_8513_ = p_8532_;
        this.f_8510_ = p_8529_;
-@@ -75,29 +_,28 @@
+@@ -75,24 +_,23 @@
        List<Entity> list = this.f_8510_.m_20197_();
        if (!list.equals(this.f_8523_)) {
           this.f_8523_ = list;
@@ -59,11 +45,6 @@
           }
  
           this.m_8543_();
-       }
- 
-       if (this.f_8521_ % this.f_8511_ == 0 || this.f_8510_.f_19812_ || this.f_8510_.m_20088_().m_135352_()) {
-          if (this.f_8510_.m_20159_()) {
-             int i1 = Mth.m_14143_(this.f_8510_.m_146908_() * 256.0F / 360.0F);
 @@ -121,6 +_,17 @@
              Packet<?> packet1 = null;
              boolean flag3 = flag2 || this.f_8521_ % 60 == 0;

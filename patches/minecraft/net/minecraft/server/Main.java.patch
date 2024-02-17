@@ -1,28 +1,6 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -8,13 +_,13 @@
- import com.mojang.logging.LogUtils;
- import com.mojang.serialization.DynamicOps;
- import com.mojang.serialization.Lifecycle;
- import java.awt.GraphicsEnvironment;
- import java.io.File;
- import java.net.Proxy;
- import java.nio.file.Path;
- import java.nio.file.Paths;
- import java.util.Optional;
- import java.util.function.BooleanSupplier;
- import joptsimple.OptionParser;
- import joptsimple.OptionSet;
- import joptsimple.OptionSpec;
-@@ -48,192 +_,327 @@
- import net.minecraft.world.level.GameRules;
- import net.minecraft.world.level.LevelSettings;
- import net.minecraft.world.level.levelgen.WorldGenSettings;
- import net.minecraft.world.level.storage.LevelResource;
- import net.minecraft.world.level.storage.LevelStorageSource;
- import net.minecraft.world.level.storage.LevelSummary;
- import net.minecraft.world.level.storage.PrimaryLevelData;
- import net.minecraft.world.level.storage.WorldData;
+@@ -56,184 +_,319 @@
  import org.slf4j.Logger;
  
  public class Main {
@@ -487,10 +465,10 @@
 +    public static void m_195488_(LevelStorageSource.LevelStorageAccess p_195489_, DataFixer p_195490_, boolean p_195491_, BooleanSupplier p_195492_, WorldGenSettings p_195493_) {
 +        f_129670_.info("Forcing world upgrade! {}", p_195489_.m_78277_()); // CraftBukkit
 +        WorldUpgrader worldupgrader = new WorldUpgrader(p_195489_, p_195490_, p_195493_, p_195491_);
-+        java.awt.Component component = null;
++        net.minecraft.network.chat.Component component = null;
 +
 +        while (!worldupgrader.m_18829_()) {
-+            java.awt.Component component1 = worldupgrader.m_18837_();
++            net.minecraft.network.chat.Component component1 = worldupgrader.m_18837_();
 +            if (component != component1) {
 +                component = component1;
 +                f_129670_.info(worldupgrader.m_18837_().getString());

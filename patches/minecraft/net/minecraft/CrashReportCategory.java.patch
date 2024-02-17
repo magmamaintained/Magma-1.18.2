@@ -1,12 +1,5 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -8,6 +_,6 @@
- import net.minecraft.core.SectionPos;
- import net.minecraft.world.level.LevelHeightAccessor;
- import net.minecraft.world.level.block.state.BlockState;
- 
- public class CrashReportCategory {
-    private final String f_128137_;
 @@ -102,8 +_,11 @@
        if (astacktraceelement.length <= 0) {
           return 0;

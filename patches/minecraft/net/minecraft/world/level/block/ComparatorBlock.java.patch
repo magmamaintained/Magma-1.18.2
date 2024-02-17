@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/ComparatorBlock.java
 +++ b/net/minecraft/world/level/block/ComparatorBlock.java
-@@ -25,6 +_,6 @@
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.BlockHitResult;
- import net.minecraft.world.ticks.TickPriority;
- 
- public class ComparatorBlock extends DiodeBlock implements EntityBlock {
-    public static final EnumProperty<ComparatorMode> f_51854_ = BlockStateProperties.f_61393_;
 @@ -139,8 +_,18 @@
           boolean flag1 = this.m_7320_(p_51908_, p_51909_, p_51910_);
           boolean flag = p_51910_.m_61143_(f_52496_);

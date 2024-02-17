@@ -1,16 +1,5 @@
 --- a/net/minecraft/world/level/chunk/storage/ChunkStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/ChunkStorage.java
-@@ -11,10 +_,10 @@
- import net.minecraft.nbt.CompoundTag;
- import net.minecraft.nbt.NbtUtils;
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.util.datafix.DataFixTypes;
- import net.minecraft.world.level.ChunkPos;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.chunk.ChunkGenerator;
- import net.minecraft.world.level.levelgen.structure.LegacyStructureDataHandler;
- import net.minecraft.world.level.storage.DimensionDataStorage;
- 
 @@ -30,8 +_,48 @@
        this.f_63495_ = new IOWorker(p_196912_, p_196914_, "chunk");
     }

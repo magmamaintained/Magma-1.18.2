@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/monster/Husk.java
 +++ b/net/minecraft/world/entity/monster/Husk.java
-@@ -15,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.ServerLevelAccessor;
- 
- public class Husk extends Zombie {
-    public Husk(EntityType<? extends Husk> p_32889_, Level p_32890_) {
 @@ -49,7 +_,8 @@
        boolean flag = super.m_7327_(p_32892_);
        if (flag && this.m_21205_().m_41619_() && p_32892_ instanceof LivingEntity) {

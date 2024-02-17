@@ -1,17 +1,9 @@
 --- a/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
 +++ b/net/minecraft/core/dispenser/ShulkerBoxDispenseBehavior.java
-@@ -9,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.context.DirectionalPlaceContext;
- import net.minecraft.world.level.block.DispenserBlock;
- import org.slf4j.Logger;
- 
- public class ShulkerBoxDispenseBehavior extends OptionalDispenseItemBehavior {
-@@ -21,6 +_,30 @@
-          Direction direction = p_123587_.m_6414_().m_61143_(DispenserBlock.f_52659_);
+@@ -22,6 +_,30 @@
           BlockPos blockpos = p_123587_.m_7961_().m_142300_(direction);
           Direction direction1 = p_123587_.m_7727_().m_46859_(blockpos.m_7495_()) ? direction : Direction.UP;
-+
+ 
 +         // CraftBukkit start
 +         org.bukkit.block.Block bukkitBlock = p_123587_.m_7727_().getWorld().getBlockAt(p_123587_.m_7961_().m_123341_(), p_123587_.m_7961_().m_123342_(), p_123587_.m_7961_().m_123343_());
 +         org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack craftItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(p_123588_);
@@ -35,6 +27,7 @@
 +            }
 +         }
 +         // CraftBukkit end
- 
++
           try {
              this.m_123573_(((BlockItem)item).m_40576_(new DirectionalPlaceContext(p_123587_.m_7727_(), blockpos, direction, p_123588_, direction1)).m_19077_());
+          } catch (Exception exception) {

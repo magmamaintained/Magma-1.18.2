@@ -1,19 +1,5 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
-@@ -11,6 +_,6 @@
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.item.context.BlockPlaceContext;
- import net.minecraft.world.level.BlockGetter;
- import net.minecraft.world.level.GameRules;
-@@ -26,6 +_,6 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class FireBlock extends BaseFireBlock {
-    public static final int f_153264_ = 15;
 @@ -89,7 +_,23 @@
     }
  

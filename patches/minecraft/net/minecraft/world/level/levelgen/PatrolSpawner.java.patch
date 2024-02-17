@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/levelgen/PatrolSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PatrolSpawner.java
-@@ -15,6 +_,6 @@
- import net.minecraft.world.level.NaturalSpawner;
- import net.minecraft.world.level.biome.Biome;
- import net.minecraft.world.level.block.state.BlockState;
- 
- public class PatrolSpawner implements CustomSpawner {
-    private int f_64562_;
 @@ -104,7 +_,9 @@
              }
  

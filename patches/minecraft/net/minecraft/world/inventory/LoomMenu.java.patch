@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/inventory/LoomMenu.java
 +++ b/net/minecraft/world/inventory/LoomMenu.java
-@@ -17,6 +_,6 @@
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.entity.BannerPattern;
- import net.minecraft.world.level.block.entity.BlockEntityType;
- 
- public class LoomMenu extends AbstractContainerMenu {
-    private static final int f_150612_ = 4;
 @@ -32,19 +_,24 @@
     private final Slot f_39850_;
     private final Slot f_39851_;

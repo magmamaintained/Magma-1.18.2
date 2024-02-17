@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/MinecartItem.java
 +++ b/net/minecraft/world/item/MinecartItem.java
-@@ -15,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.properties.RailShape;
- import net.minecraft.world.level.gameevent.GameEvent;
- 
- public class MinecartItem extends Item {
-    private static final DispenseItemBehavior f_42934_ = new DefaultDispenseItemBehavior() {
 @@ -28,7 +_,7 @@
           double d2 = p_42949_.m_7094_() + (double)direction.m_122431_() * 1.125D;
           BlockPos blockpos = p_42949_.m_7961_().m_142300_(direction);

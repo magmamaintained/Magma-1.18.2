@@ -1,37 +1,5 @@
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -1,31 +_,31 @@
- package net.minecraft.server.level;
- 
- import com.mojang.logging.LogUtils;
- import java.util.Objects;
- import javax.annotation.Nullable;
- import net.minecraft.advancements.CriteriaTriggers;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
- import net.minecraft.network.protocol.game.ClientboundBlockBreakAckPacket;
- import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
- import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
- import net.minecraft.world.InteractionHand;
- import net.minecraft.world.InteractionResult;
- import net.minecraft.world.InteractionResultHolder;
- import net.minecraft.world.MenuProvider;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.context.UseOnContext;
- import net.minecraft.world.level.ChunkPos;
- import net.minecraft.world.level.GameType;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.GameMasterBlock;
- import net.minecraft.world.level.block.entity.BlockEntity;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.BlockHitResult;
- import org.slf4j.Logger;
- 
- public class ServerPlayerGameMode {
-    private static final Logger f_9246_ = LogUtils.getLogger();
-    protected ServerLevel f_9244_;
 @@ -51,6 +_,13 @@
        if (p_143474_ == this.f_9247_) {
           return false;

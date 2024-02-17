@@ -1,12 +1,5 @@
 --- a/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen.java
-@@ -48,6 +_,6 @@
- import net.minecraft.world.item.enchantment.EnchantmentHelper;
- import net.minecraftforge.api.distmarker.Dist;
- import net.minecraftforge.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
- public class CreativeModeInventoryScreen extends EffectRenderingInventoryScreen<CreativeModeInventoryScreen.ItemPickerMenu> {
 @@ -73,6 +_,8 @@
     private Slot f_98512_;
     private CreativeInventoryListener f_98513_;

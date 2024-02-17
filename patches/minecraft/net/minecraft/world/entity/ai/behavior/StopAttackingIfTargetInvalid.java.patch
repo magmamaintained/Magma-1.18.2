@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
 +++ b/net/minecraft/world/entity/ai/behavior/StopAttackingIfTargetInvalid.java
-@@ -9,6 +_,6 @@
- import net.minecraft.world.entity.Mob;
- import net.minecraft.world.entity.ai.memory.MemoryModuleType;
- import net.minecraft.world.entity.ai.memory.MemoryStatus;
- 
- public class StopAttackingIfTargetInvalid<E extends Mob> extends Behavior<E> {
-    private static final int f_147978_ = 200;
 @@ -73,6 +_,17 @@
     }
  

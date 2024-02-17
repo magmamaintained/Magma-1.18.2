@@ -1,11 +1,6 @@
 --- a/net/minecraft/world/inventory/PlayerEnderChestContainer.java
 +++ b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
-@@ -7,13 +_,27 @@
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
- 
- public class PlayerEnderChestContainer extends SimpleContainer {
+@@ -12,8 +_,22 @@
     @Nullable
     private EnderChestBlockEntity f_40101_;
  

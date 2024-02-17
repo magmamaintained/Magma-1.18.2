@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/ChorusFlowerBlock.java
 +++ b/net/minecraft/world/level/block/ChorusFlowerBlock.java
-@@ -16,6 +_,6 @@
- import net.minecraft.world.level.block.state.properties.BlockStateProperties;
- import net.minecraft.world.level.block.state.properties.IntegerProperty;
- import net.minecraft.world.phys.BlockHitResult;
- 
- public class ChorusFlowerBlock extends Block {
-    public static final int f_153067_ = 5;
 @@ -43,7 +_,7 @@
        BlockPos blockpos = p_51704_.m_7494_();
        if (p_51703_.m_46859_(blockpos) && blockpos.m_123342_() < p_51703_.m_151558_()) {

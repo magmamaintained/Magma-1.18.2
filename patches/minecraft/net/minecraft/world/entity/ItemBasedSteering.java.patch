@@ -15,8 +15,3 @@
     public void m_20847_(CompoundTag p_20848_) {
        p_20848_.m_128379_("Saddle", this.m_20851_());
     }
-@@ -54,4 +_,4 @@
-    public boolean m_20851_() {
-       return this.f_20837_.m_135370_(this.f_20839_);
-    }
- }

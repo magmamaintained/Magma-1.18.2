@@ -1,10 +1,6 @@
 --- a/net/minecraft/world/level/ServerLevelAccessor.java
 +++ b/net/minecraft/world/level/ServerLevelAccessor.java
-@@ -2,11 +_,27 @@
- 
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.world.entity.Entity;
- 
+@@ -6,7 +_,23 @@
  public interface ServerLevelAccessor extends LevelAccessor {
     ServerLevel m_6018_();
  

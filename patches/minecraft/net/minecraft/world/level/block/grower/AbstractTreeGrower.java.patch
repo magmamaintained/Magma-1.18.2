@@ -1,19 +1,5 @@
 --- a/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
 +++ b/net/minecraft/world/level/block/grower/AbstractTreeGrower.java
-@@ -4,13 +_,13 @@
- import javax.annotation.Nullable;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Holder;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.tags.BlockTags;
- import net.minecraft.world.level.LevelAccessor;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.chunk.ChunkGenerator;
- import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
- 
- public abstract class AbstractTreeGrower {
-    @Nullable
 @@ -18,10 +_,12 @@
  
     public boolean m_6334_(ServerLevel p_60006_, ChunkGenerator p_60007_, BlockPos p_60008_, BlockState p_60009_, Random p_60010_) {

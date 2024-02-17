@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/monster/Evoker.java
 +++ b/net/minecraft/world/entity/monster/Evoker.java
-@@ -37,6 +_,6 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class Evoker extends SpellcasterIllager {
-    @Nullable
 @@ -247,6 +_,7 @@
              vex.m_33994_(Evoker.this);
              vex.m_34033_(blockpos);

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/border/WorldBorder.java
 +++ b/net/minecraft/world/level/border/WorldBorder.java
-@@ -9,6 +_,6 @@
- import net.minecraft.util.Mth;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.level.ChunkPos;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.shapes.BooleanOp;
- import net.minecraft.world.phys.shapes.Shapes;
 @@ -27,6 +_,7 @@
     int f_61913_ = 29999984;
     private WorldBorder.BorderExtent f_61914_ = new WorldBorder.StaticBorderExtent(5.9999968E7D);

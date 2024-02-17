@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/animal/Panda.java
 +++ b/net/minecraft/world/entity/animal/Panda.java
-@@ -60,6 +_,6 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.gameevent.GameEvent;
- import net.minecraft.world.phys.Vec3;
- 
- public class Panda extends Animal {
-    private static final EntityDataAccessor<Integer> f_29073_ = SynchedEntityData.m_135353_(Panda.class, EntityDataSerializers.f_135028_);
 @@ -501,7 +_,7 @@
     }
  

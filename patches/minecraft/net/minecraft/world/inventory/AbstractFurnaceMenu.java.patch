@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/inventory/AbstractFurnaceMenu.java
 +++ b/net/minecraft/world/inventory/AbstractFurnaceMenu.java
-@@ -11,6 +_,6 @@
- import net.minecraft.world.item.crafting.RecipeType;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
- 
- public abstract class AbstractFurnaceMenu extends RecipeBookMenu<Container> {
-    public static final int f_150453_ = 0;
 @@ -28,6 +_,22 @@
     private final RecipeType<? extends AbstractCookingRecipe> f_38957_;
     private final RecipeBookType f_38958_;

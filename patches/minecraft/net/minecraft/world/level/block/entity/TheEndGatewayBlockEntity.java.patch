@@ -1,17 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -28,6 +_,6 @@
- import net.minecraft.world.level.levelgen.feature.configurations.EndGatewayConfiguration;
- import net.minecraft.world.phys.AABB;
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
- 
- public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
-@@ -180,6 +_,24 @@
-             } else {
+@@ -181,6 +_,24 @@
                 entity = p_155832_.m_20201_();
              }
-+
+ 
 +            // CraftBukkit start - Fire PlayerTeleportEvent
 +            if (entity instanceof ServerPlayer) {
 +               org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer player = (org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) entity.getBukkitEntity();
@@ -29,6 +21,7 @@
 +               return;
 +            }
 +            // CraftBukkit end
- 
++
              entity.m_20091_();
              entity.m_20324_((double)blockpos1.m_123341_() + 0.5D, (double)blockpos1.m_123342_(), (double)blockpos1.m_123343_() + 0.5D);
+          }

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ai/behavior/AssignProfessionFromJobSite.java
 +++ b/net/minecraft/world/entity/ai/behavior/AssignProfessionFromJobSite.java
-@@ -11,6 +_,6 @@
- import net.minecraft.world.entity.ai.memory.MemoryStatus;
- import net.minecraft.world.entity.npc.Villager;
- import net.minecraft.world.entity.npc.VillagerProfession;
- 
- public class AssignProfessionFromJobSite extends Behavior<Villager> {
-    public AssignProfessionFromJobSite() {
 @@ -36,7 +_,13 @@
                 return p_147412_.m_35622_() == p_22457_;
              }).findFirst();

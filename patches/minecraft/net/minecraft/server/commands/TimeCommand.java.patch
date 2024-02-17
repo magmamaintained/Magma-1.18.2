@@ -1,16 +1,6 @@
 --- a/net/minecraft/server/commands/TimeCommand.java
 +++ b/net/minecraft/server/commands/TimeCommand.java
-@@ -1,5 +_,5 @@
- package net.minecraft.server.commands;
- 
- import com.mojang.brigadier.CommandDispatcher;
- import com.mojang.brigadier.arguments.IntegerArgumentType;
- import net.minecraft.commands.CommandSourceStack;
-@@ -7,11 +_,11 @@
- import net.minecraft.commands.arguments.TimeArgument;
- import net.minecraft.network.chat.TranslatableComponent;
- import net.minecraft.server.level.ServerLevel;
- 
+@@ -11,7 +_,7 @@
  public class TimeCommand {
     public static void m_139071_(CommandDispatcher<CommandSourceStack> p_139072_) {
        p_139072_.register(Commands.m_82127_("time").requires((p_139076_) -> {

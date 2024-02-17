@@ -1,15 +1,5 @@
 --- a/net/minecraft/world/Container.java
 +++ b/net/minecraft/world/Container.java
-@@ -1,9 +_,9 @@
- package net.minecraft.world;
- 
- import java.util.Set;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.Item;
- import net.minecraft.world.item.ItemStack;
- 
- public interface Container extends Clearable {
-    int f_146642_ = 64;
 @@ -61,4 +_,36 @@
  
        return false;

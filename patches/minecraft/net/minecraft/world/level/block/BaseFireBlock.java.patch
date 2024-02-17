@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -13,6 +_,6 @@
- import net.minecraft.world.item.context.BlockPlaceContext;
- import net.minecraft.world.level.BlockGetter;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.state.BlockBehaviour;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.portal.PortalShape;
 @@ -113,7 +_,13 @@
        if (!p_49263_.m_5825_()) {
           p_49263_.m_7311_(p_49263_.m_20094_() + 1);

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/crafting/SmeltingRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmeltingRecipe.java
-@@ -3,6 +_,6 @@
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.block.Blocks;
- 
- public class SmeltingRecipe extends AbstractCookingRecipe {
-    public SmeltingRecipe(ResourceLocation p_44460_, String p_44461_, Ingredient p_44462_, ItemStack p_44463_, float p_44464_, int p_44465_) {
 @@ -16,4 +_,14 @@
     public RecipeSerializer<?> m_7707_() {
        return RecipeSerializer.f_44091_;

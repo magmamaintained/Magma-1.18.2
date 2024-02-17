@@ -1,22 +1,6 @@
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -5,13 +_,13 @@
- import com.mojang.logging.LogUtils;
- import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
- import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
- import java.util.Map;
- import java.util.Map.Entry;
- import java.util.function.Consumer;
- import java.util.function.Supplier;
- import java.util.stream.Stream;
- import java.util.stream.StreamSupport;
- import javax.annotation.Nullable;
- import net.minecraft.CrashReport;
- import net.minecraft.CrashReportCategory;
- import net.minecraft.ReportedException;
-@@ -47,659 +_,857 @@
- import net.minecraft.world.level.material.Fluids;
- import net.minecraft.world.ticks.LevelChunkTicks;
+@@ -49,657 +_,855 @@
  import net.minecraft.world.ticks.TickContainerAccess;
  import org.slf4j.Logger;
  

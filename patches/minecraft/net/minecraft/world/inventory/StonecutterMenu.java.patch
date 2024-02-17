@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/inventory/StonecutterMenu.java
 +++ b/net/minecraft/world/inventory/StonecutterMenu.java
-@@ -14,6 +_,6 @@
- import net.minecraft.world.item.crafting.StonecutterRecipe;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Blocks;
- 
- public class StonecutterMenu extends AbstractContainerMenu {
-    public static final int f_150665_ = 0;
 @@ -32,14 +_,24 @@
     final Slot f_40283_;
     Runnable f_40291_ = () -> {

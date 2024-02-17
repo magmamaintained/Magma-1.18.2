@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/WeightedPressurePlateBlock.java
 +++ b/net/minecraft/world/level/block/WeightedPressurePlateBlock.java
-@@ -13,6 +_,6 @@
- import net.minecraft.world.level.block.state.StateDefinition;
- import net.minecraft.world.level.block.state.properties.BlockStateProperties;
- import net.minecraft.world.level.block.state.properties.IntegerProperty;
- 
- public class WeightedPressurePlateBlock extends BasePressurePlateBlock {
-    public static final IntegerProperty f_58198_ = BlockStateProperties.f_61426_;
 @@ -25,7 +_,23 @@
     }
  

@@ -1,18 +1,9 @@
 --- a/net/minecraft/world/level/portal/PortalForcer.java
 +++ b/net/minecraft/world/level/portal/PortalForcer.java
-@@ -1,7 +_,7 @@
- package net.minecraft.world.level.portal;
- 
- import java.util.Comparator;
- import java.util.Optional;
- import net.minecraft.BlockUtil;
- import net.minecraft.core.BlockPos;
- import net.minecraft.core.Direction;
-@@ -18,164 +_,190 @@
- import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+@@ -19,163 +_,189 @@
  import net.minecraft.world.level.border.WorldBorder;
  import net.minecraft.world.level.levelgen.Heightmap;
--
+ 
 -public class PortalForcer {
 -   private static final int f_164734_ = 3;
 -   private static final int f_164735_ = 128;
@@ -172,7 +163,6 @@
 -
 -      return true;
 -   }
-+
 +
 +public class PortalForcer implements net.minecraftforge.common.util.ITeleporter {
 +    private static final int f_164734_ = 3;

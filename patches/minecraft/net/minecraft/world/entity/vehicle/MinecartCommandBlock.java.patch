@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/vehicle/MinecartCommandBlock.java
 +++ b/net/minecraft/world/entity/vehicle/MinecartCommandBlock.java
-@@ -17,6 +_,6 @@
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.Vec3;
- 
- public class MinecartCommandBlock extends AbstractMinecart {
-    public static final EntityDataAccessor<String> f_38503_ = SynchedEntityData.m_135353_(MinecartCommandBlock.class, EntityDataSerializers.f_135030_);
 @@ -72,6 +_,8 @@
     }
  

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/storage/loot/LootContext.java
 +++ b/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -21,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
- import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
- import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
- 
 @@ -107,17 +_,47 @@
        return this.f_78909_;
     }

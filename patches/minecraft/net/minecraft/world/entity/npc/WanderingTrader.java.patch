@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/npc/WanderingTrader.java
 +++ b/net/minecraft/world/entity/npc/WanderingTrader.java
-@@ -43,6 +_,6 @@
- import net.minecraft.world.item.trading.MerchantOffers;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.Vec3;
- 
- public class WanderingTrader extends AbstractVillager {
-    private static final int f_150044_ = 5;
 @@ -52,6 +_,7 @@
  
     public WanderingTrader(EntityType<? extends WanderingTrader> p_35843_, Level p_35844_) {

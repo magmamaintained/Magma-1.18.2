@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -32,6 +_,6 @@
- import net.minecraft.world.phys.BlockHitResult;
- import net.minecraft.world.phys.HitResult;
- import net.minecraft.world.phys.Vec3;
- 
- public class SpawnEggItem extends Item {
-    private static final Map<EntityType<? extends Mob>, SpawnEggItem> f_43201_ = Maps.newIdentityHashMap();
 @@ -39,11 +_,14 @@
     private final int f_151201_;
     private final EntityType<?> f_43204_;

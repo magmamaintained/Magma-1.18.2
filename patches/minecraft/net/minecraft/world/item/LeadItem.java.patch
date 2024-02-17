@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/LeadItem.java
 +++ b/net/minecraft/world/item/LeadItem.java
-@@ -10,6 +_,6 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.AABB;
- 
- public class LeadItem extends Item {
-    public LeadItem(Item.Properties p_42828_) {
 @@ -44,8 +_,24 @@
           if (mob.m_21524_() == p_42830_) {
              if (leashfenceknotentity == null) {

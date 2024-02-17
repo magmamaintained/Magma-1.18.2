@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -18,6 +_,6 @@
- import net.minecraft.world.level.block.state.properties.IntegerProperty;
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public class StemBlock extends BushBlock implements BonemealableBlock {
-    public static final int f_154724_ = 7;
 @@ -43,22 +_,28 @@
     }
  

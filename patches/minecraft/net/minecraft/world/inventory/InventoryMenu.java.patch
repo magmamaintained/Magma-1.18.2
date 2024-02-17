@@ -1,19 +1,5 @@
 --- a/net/minecraft/world/inventory/InventoryMenu.java
 +++ b/net/minecraft/world/inventory/InventoryMenu.java
-@@ -1,6 +_,6 @@
- package net.minecraft.world.inventory;
- 
- import com.mojang.datafixers.util.Pair;
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.world.Container;
- import net.minecraft.world.entity.EquipmentSlot;
-@@ -11,6 +_,6 @@
- import net.minecraft.world.item.ItemStack;
- import net.minecraft.world.item.crafting.Recipe;
- import net.minecraft.world.item.enchantment.EnchantmentHelper;
- 
- public class InventoryMenu extends RecipeBookMenu<CraftingContainer> {
-    public static final int f_150579_ = 0;
 @@ -37,10 +_,31 @@
     public final boolean f_39698_;
     private final Player f_39703_;

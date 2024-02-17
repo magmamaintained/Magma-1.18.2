@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/inventory/SmithingMenu.java
 +++ b/net/minecraft/world/inventory/SmithingMenu.java
-@@ -10,6 +_,6 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.state.BlockState;
- 
- public class SmithingMenu extends ItemCombinerMenu {
-    private final Level f_40241_;
 @@ -17,6 +_,20 @@
     private UpgradeRecipe f_40242_;
     private final List<UpgradeRecipe> f_40243_;

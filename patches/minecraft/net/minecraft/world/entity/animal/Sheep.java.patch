@@ -1,14 +1,6 @@
 --- a/net/minecraft/world/entity/animal/Sheep.java
 +++ b/net/minecraft/world/entity/animal/Sheep.java
-@@ -46,6 +_,6 @@
- import net.minecraft.world.inventory.AbstractContainerMenu;
- import net.minecraft.world.inventory.CraftingContainer;
- import net.minecraft.world.inventory.MenuType;
- import net.minecraft.world.item.DyeColor;
- import net.minecraft.world.item.DyeItem;
- import net.minecraft.world.item.ItemStack;
-@@ -59,8 +_,8 @@
- import net.minecraft.world.level.block.state.BlockState;
+@@ -60,7 +_,7 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.level.storage.loot.BuiltInLootTables;
  

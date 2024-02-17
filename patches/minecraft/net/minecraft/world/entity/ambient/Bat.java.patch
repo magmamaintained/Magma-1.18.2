@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/entity/ambient/Bat.java
 +++ b/net/minecraft/world/entity/ambient/Bat.java
-@@ -27,6 +_,6 @@
- import net.minecraft.world.level.LevelAccessor;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.Vec3;
- 
- public class Bat extends AmbientCreature {
-    public static final float f_148698_ = 74.48451F;
 @@ -123,16 +_,24 @@
              }
  

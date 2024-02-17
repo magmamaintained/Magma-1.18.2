@@ -1,16 +1,6 @@
 --- a/net/minecraft/world/SimpleContainer.java
 +++ b/net/minecraft/world/SimpleContainer.java
-@@ -3,6 +_,6 @@
- import com.google.common.collect.Lists;
- import java.util.List;
- import java.util.stream.Collectors;
- import javax.annotation.Nullable;
- import net.minecraft.core.NonNullList;
- import net.minecraft.nbt.CompoundTag;
-@@ -12,14 +_,65 @@
- import net.minecraft.world.inventory.StackedContentsCompatible;
- import net.minecraft.world.item.Item;
- import net.minecraft.world.item.ItemStack;
+@@ -15,11 +_,62 @@
  
  public class SimpleContainer implements Container, StackedContentsCompatible {
     private final int f_19146_;

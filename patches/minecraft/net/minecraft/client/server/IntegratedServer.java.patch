@@ -1,27 +1,5 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -12,10 +_,10 @@
- import java.util.UUID;
- import java.util.function.BooleanSupplier;
- import javax.annotation.Nullable;
- import net.minecraft.CrashReport;
- import net.minecraft.SharedConstants;
- import net.minecraft.SystemReport;
- import net.minecraft.client.Minecraft;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.WorldStem;
- import net.minecraft.server.level.ServerPlayer;
-@@ -25,10 +_,10 @@
- import net.minecraft.stats.Stats;
- import net.minecraft.util.ModCheck;
- import net.minecraft.util.profiling.ProfilerFiller;
- import net.minecraft.world.level.GameType;
- import net.minecraft.world.level.storage.LevelStorageSource;
- import net.minecraftforge.api.distmarker.Dist;
- import net.minecraftforge.api.distmarker.OnlyIn;
- import org.slf4j.Logger;
- 
- @OnlyIn(Dist.CLIENT)
 @@ -60,9 +_,10 @@
        this.m_129997_(true);
        this.m_129999_(true);

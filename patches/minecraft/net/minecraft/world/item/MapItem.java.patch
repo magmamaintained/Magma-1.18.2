@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/MapItem.java
 +++ b/net/minecraft/world/item/MapItem.java
-@@ -31,6 +_,6 @@
- import net.minecraft.world.level.material.FluidState;
- import net.minecraft.world.level.material.MaterialColor;
- import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
- 
- public class MapItem extends ComplexItem {
-    public static final int f_151104_ = 128;
 @@ -55,20 +_,34 @@
  
     @Nullable

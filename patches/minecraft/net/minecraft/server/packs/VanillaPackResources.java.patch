@@ -18,10 +18,12 @@
     }
  
     public boolean m_7211_(PackType p_10355_, ResourceLocation p_10356_) {
-@@ -294,6 +_,20 @@
-    public void close() {
+@@ -292,6 +_,20 @@
     }
  
+    public void close() {
++   }
++
 +   //Vanilla used to just grab from the classpath, this breaks dev environments, and Forge runtime
 +   //as forge ships vanilla assets in an 'extra' jar with no classes.
 +   //So find that extra jar using the .mcassetsroot marker.
@@ -34,13 +36,6 @@
 +      } catch (IOException e) {
 +         return VanillaPackResources.class.getResourceAsStream(resource);
 +      }
-+   }
-+
-    public Resource m_142591_(final ResourceLocation p_143764_) throws IOException {
-       return new Resource() {
-          @Nullable
-@@ -334,4 +_,4 @@
-          }
-       };
     }
- }
+ 
+    public Resource m_142591_(final ResourceLocation p_143764_) throws IOException {

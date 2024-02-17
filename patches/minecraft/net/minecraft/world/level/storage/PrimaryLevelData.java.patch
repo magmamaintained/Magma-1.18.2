@@ -1,21 +1,5 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -23,8 +_,8 @@
- import net.minecraft.nbt.NbtUtils;
- import net.minecraft.nbt.StringTag;
- import net.minecraft.nbt.Tag;
- import net.minecraft.resources.RegistryOps;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.util.datafix.DataFixTypes;
- import net.minecraft.world.Difficulty;
- import net.minecraft.world.level.DataPackConfig;
-@@ -36,6 +_,6 @@
- import net.minecraft.world.level.levelgen.WorldGenSettings;
- import net.minecraft.world.level.timers.TimerCallbacks;
- import net.minecraft.world.level.timers.TimerQueue;
- import org.slf4j.Logger;
- 
- public class PrimaryLevelData implements ServerLevelData, WorldData {
 @@ -76,6 +_,21 @@
     private final Set<String> f_78439_;
     private boolean f_78440_;

@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/item/trading/MerchantOffer.java
 +++ b/net/minecraft/world/item/trading/MerchantOffer.java
-@@ -4,6 +_,6 @@
- import net.minecraft.nbt.NbtUtils;
- import net.minecraft.util.Mth;
- import net.minecraft.world.item.ItemStack;
- 
- public class MerchantOffer {
-    public ItemStack f_45310_;
 @@ -17,6 +_,23 @@
     public float f_45318_;
     public int f_45319_ = 1;

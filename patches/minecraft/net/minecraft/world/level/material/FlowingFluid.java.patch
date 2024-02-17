@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -28,6 +_,6 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
- public abstract class FlowingFluid extends Fluid {
-    public static final BooleanProperty f_75947_ = BlockStateProperties.f_61434_;
 @@ -117,6 +_,15 @@
           BlockState blockstate1 = p_76011_.m_8055_(blockpos);
           FluidState fluidstate = this.m_76035_(p_76011_, blockpos, blockstate1);

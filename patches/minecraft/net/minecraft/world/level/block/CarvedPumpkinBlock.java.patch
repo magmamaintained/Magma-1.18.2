@@ -1,12 +1,5 @@
 --- a/net/minecraft/world/level/block/CarvedPumpkinBlock.java
 +++ b/net/minecraft/world/level/block/CarvedPumpkinBlock.java
-@@ -23,6 +_,6 @@
- import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
- import net.minecraft.world.level.block.state.properties.DirectionProperty;
- import net.minecraft.world.level.material.Material;
- 
- public class CarvedPumpkinBlock extends HorizontalDirectionalBlock implements Wearable {
-    public static final DirectionProperty f_51367_ = HorizontalDirectionalBlock.f_54117_;
 @@ -55,17 +_,28 @@
  
     private void m_51378_(Level p_51379_, BlockPos p_51380_) {
