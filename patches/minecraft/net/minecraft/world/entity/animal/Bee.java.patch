@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
-@@ -87,6 +_,7 @@
+@@ -87,6 +_,6 @@
  import net.minecraft.world.level.pathfinder.BlockPathTypes;
  import net.minecraft.world.level.pathfinder.Path;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.EntityPotionEffectEvent;
  
  public class Bee extends Animal implements NeutralMob, FlyingAnimal {
     public static final float f_148718_ = 120.32113F;
@@ -13,7 +12,7 @@
  
              if (i > 0) {
 -               ((LivingEntity)p_27722_).m_147207_(new MobEffectInstance(MobEffects.f_19614_, i * 20, 0), this);
-+               ((LivingEntity)p_27722_).prepare(EntityPotionEffectEvent.Cause.ATTACK); //Magma
++               ((LivingEntity)p_27722_).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
 +               ((LivingEntity)p_27722_).m_147207_(new MobEffectInstance(MobEffects.f_19614_, i * 20, 0), this); // CraftBukkit
              }
           }

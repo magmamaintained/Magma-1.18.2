@@ -1,20 +1,16 @@
 --- a/net/minecraft/world/level/block/SpongeBlock.java
 +++ b/net/minecraft/world/level/block/SpongeBlock.java
-@@ -1,6 +_,7 @@
+@@ -1,6 +_,6 @@
  package net.minecraft.world.level.block;
  
  import com.google.common.collect.Lists;
-+import java.util.List;
  import java.util.Queue;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
-@@ -12,6 +_,9 @@
+@@ -12,6 +_,6 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.material.FluidState;
  import net.minecraft.world.level.material.Material;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator;
-+import org.bukkit.event.block.SpongeAbsorbEvent;
  
  public class SpongeBlock extends Block {
     public static final int f_154689_ = 6;
@@ -22,7 +18,7 @@
        Queue<Tuple<BlockPos, Integer>> queue = Lists.newLinkedList();
        queue.add(new Tuple<>(p_56809_, 0));
        int i = 0;
-+      BlockStateListPopulator blockList = new BlockStateListPopulator(p_56808_); // CraftBukkit - Use BlockStateListPopulator
++      org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator(p_56808_); // CraftBukkit - Use BlockStateListPopulator
  
        while(!queue.isEmpty()) {
           Tuple<BlockPos, Integer> tuple = queue.poll();
@@ -67,15 +63,15 @@
        }
 +
 +      // CraftBukkit start
-+      List<CraftBlockState> blocks = blockList.getList(); // Is a clone
++      java.util.List<org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockState> blocks = blockList.getList(); // Is a clone
 +      if (!blocks.isEmpty()) {
 +         final org.bukkit.block.Block bblock = p_56808_.getWorld().getBlockAt(p_56809_.m_123341_(), p_56809_.m_123342_(), p_56809_.m_123343_());
-+         SpongeAbsorbEvent event = new SpongeAbsorbEvent(bblock, (List<org.bukkit.block.BlockState>) (List) blocks);
++         org.bukkit.event.block.SpongeAbsorbEvent event = new org.bukkit.event.block.SpongeAbsorbEvent(bblock, (java.util.List<org.bukkit.block.BlockState>) (java.util.List) blocks);
 +         p_56808_.getCraftServer().getPluginManager().callEvent(event);
 +         if (event.isCancelled()) {
 +            return false;
 +         }
-+         for (CraftBlockState block : blocks) {
++         for (org.bukkit.craftbukkit.v1_18_R2.block.CraftBlockState block : blocks) {
 +            BlockPos blockposition2 = block.getPosition();
 +            BlockState blockState = p_56808_.m_8055_(blockposition2);
 +            FluidState fluidState = p_56808_.m_6425_(blockposition2);

@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/level/block/VineBlock.java
 +++ b/net/minecraft/world/level/block/VineBlock.java
-@@ -21,8 +_,9 @@
+@@ -21,8 +_,8 @@
  import net.minecraft.world.phys.shapes.CollisionContext;
  import net.minecraft.world.phys.shapes.Shapes;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  
 -public class VineBlock extends Block {
 +public class VineBlock extends Block implements net.minecraftforge.common.IForgeShearable {
@@ -30,21 +29,21 @@
 +
                    if (flag && m_57853_(p_57893_, blockpos2, direction3)) {
 -                     p_57893_.m_7731_(blockpos4, this.m_49966_().m_61124_(m_57883_(direction3), Boolean.valueOf(true)), 2);
-+                     CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos4, this.m_49966_().m_61124_(m_57883_(direction3), Boolean.valueOf(true)), 2);
++                     org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos4, this.m_49966_().m_61124_(m_57883_(direction3), Boolean.valueOf(true)), 2);
                    } else if (flag1 && m_57853_(p_57893_, blockpos3, direction4)) {
 -                     p_57893_.m_7731_(blockpos4, this.m_49966_().m_61124_(m_57883_(direction4), Boolean.valueOf(true)), 2);
-+                     CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos4, this.m_49966_().m_61124_(m_57883_(direction4), Boolean.valueOf(true)), 2);
++                     org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos4, this.m_49966_().m_61124_(m_57883_(direction4), Boolean.valueOf(true)), 2);
                    } else {
                       Direction direction1 = direction.m_122424_();
                       if (flag && p_57893_.m_46859_(blockpos2) && m_57853_(p_57893_, p_57894_.m_142300_(direction3), direction1)) {
 -                        p_57893_.m_7731_(blockpos2, this.m_49966_().m_61124_(m_57883_(direction1), Boolean.valueOf(true)), 2);
-+                        CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos2, this.m_49966_().m_61124_(m_57883_(direction1), Boolean.valueOf(true)), 2);
++                        org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos2, this.m_49966_().m_61124_(m_57883_(direction1), Boolean.valueOf(true)), 2);
                       } else if (flag1 && p_57893_.m_46859_(blockpos3) && m_57853_(p_57893_, p_57894_.m_142300_(direction4), direction1)) {
 -                        p_57893_.m_7731_(blockpos3, this.m_49966_().m_61124_(m_57883_(direction1), Boolean.valueOf(true)), 2);
-+                        CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos3, this.m_49966_().m_61124_(m_57883_(direction1), Boolean.valueOf(true)), 2);
++                        org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos3, this.m_49966_().m_61124_(m_57883_(direction1), Boolean.valueOf(true)), 2);
                       } else if ((double)p_57895_.nextFloat() < 0.05D && m_57853_(p_57893_, blockpos4.m_7494_(), Direction.UP)) {
 -                        p_57893_.m_7731_(blockpos4, this.m_49966_().m_61124_(f_57833_, Boolean.valueOf(true)), 2);
-+                        CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos4, this.m_49966_().m_61124_(f_57833_, Boolean.valueOf(true)), 2);
++                        org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, source, blockpos4, this.m_49966_().m_61124_(f_57833_, Boolean.valueOf(true)), 2);
                       }
 +                     // CraftBukkit end
                    }
@@ -55,7 +54,7 @@
  
                    if (this.m_57911_(blockstate3)) {
 -                     p_57893_.m_7731_(blockpos, blockstate3, 2);
-+                     CraftEventFactory.handleBlockSpreadEvent(p_57893_, p_57894_, blockpos, blockstate3, 2);
++                     org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, p_57894_, blockpos, blockstate3, 2);
                    }
  
                    return;
@@ -64,7 +63,7 @@
                    BlockState blockstate2 = this.m_57870_(p_57892_, blockstate1, p_57895_);
                    if (blockstate1 != blockstate2 && this.m_57911_(blockstate2)) {
 -                     p_57893_.m_7731_(blockpos1, blockstate2, 2);
-+                     CraftEventFactory.handleBlockSpreadEvent(p_57893_, p_57894_, blockpos1, blockstate2, 2);
++                     org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_57893_, p_57894_, blockpos1, blockstate2, 2);
                    }
                 }
              }

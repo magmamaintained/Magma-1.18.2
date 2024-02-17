@@ -1,197 +1,140 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1,5 +_,6 @@
+@@ -1,5 +_,5 @@
  package net.minecraft.server;
  
-+import co.aikar.timings.MinecraftTimings;
  import com.google.common.base.Splitter;
  import com.google.common.collect.ImmutableList;
  import com.google.common.collect.Lists;
-@@ -10,52 +_,12 @@
+@@ -10,52 +_,52 @@
  import com.mojang.authlib.minecraft.MinecraftSessionService;
  import com.mojang.datafixers.DataFixer;
  import com.mojang.logging.LogUtils;
-+import com.mojang.serialization.DynamicOps;
-+import com.mojang.serialization.Lifecycle;
  import it.unimi.dsi.fastutil.longs.LongIterator;
--import java.awt.image.BufferedImage;
--import java.io.ByteArrayOutputStream;
--import java.io.File;
--import java.io.IOException;
--import java.io.UnsupportedEncodingException;
--import java.io.Writer;
--import java.lang.management.ManagementFactory;
--import java.lang.management.ThreadInfo;
--import java.lang.management.ThreadMXBean;
--import java.net.Proxy;
--import java.net.URLEncoder;
--import java.nio.charset.StandardCharsets;
--import java.nio.file.Files;
--import java.nio.file.Path;
--import java.security.KeyPair;
--import java.text.SimpleDateFormat;
--import java.util.Arrays;
--import java.util.Base64;
--import java.util.Collection;
--import java.util.Collections;
--import java.util.Comparator;
--import java.util.Date;
--import java.util.Iterator;
--import java.util.List;
--import java.util.Map;
--import java.util.Objects;
--import java.util.Optional;
--import java.util.Random;
--import java.util.Set;
--import java.util.UUID;
--import java.util.Map.Entry;
--import java.util.concurrent.CompletableFuture;
--import java.util.concurrent.Executor;
--import java.util.concurrent.RejectedExecutionException;
--import java.util.concurrent.atomic.AtomicReference;
--import java.util.function.BooleanSupplier;
--import java.util.function.Consumer;
--import java.util.function.Function;
--import javax.annotation.Nullable;
--import javax.imageio.ImageIO;
--import net.minecraft.CrashReport;
--import net.minecraft.ReportedException;
--import net.minecraft.SharedConstants;
--import net.minecraft.SystemReport;
--import net.minecraft.Util;
-+import jline.console.ConsoleReader;
-+import joptsimple.OptionSet;
-+import net.minecraft.*;
+ import java.awt.image.BufferedImage;
+ import java.io.ByteArrayOutputStream;
+ import java.io.File;
+ import java.io.IOException;
+ import java.io.UnsupportedEncodingException;
+ import java.io.Writer;
+ import java.lang.management.ManagementFactory;
+ import java.lang.management.ThreadInfo;
+ import java.lang.management.ThreadMXBean;
+ import java.net.Proxy;
+ import java.net.URLEncoder;
+ import java.nio.charset.StandardCharsets;
+ import java.nio.file.Files;
+ import java.nio.file.Path;
+ import java.security.KeyPair;
+ import java.text.SimpleDateFormat;
+ import java.util.Arrays;
+ import java.util.Base64;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.Comparator;
+ import java.util.Date;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.Random;
+ import java.util.Set;
+ import java.util.UUID;
+ import java.util.Map.Entry;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.RejectedExecutionException;
+ import java.util.concurrent.atomic.AtomicReference;
+ import java.util.function.BooleanSupplier;
+ import java.util.function.Consumer;
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
+ import net.minecraft.CrashReport;
+ import net.minecraft.ReportedException;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.SystemReport;
+ import net.minecraft.Util;
  import net.minecraft.commands.CommandSource;
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
-@@ -65,6 +_,7 @@
+@@ -65,6 +_,6 @@
  import net.minecraft.core.RegistryAccess;
  import net.minecraft.data.worldgen.features.MiscOverworldFeatures;
  import net.minecraft.gametest.framework.GameTestTicker;
-+import net.minecraft.nbt.Tag;
  import net.minecraft.network.chat.Component;
  import net.minecraft.network.chat.TextComponent;
  import net.minecraft.network.chat.TranslatableComponent;
-@@ -75,13 +_,7 @@
+@@ -75,13 +_,13 @@
  import net.minecraft.resources.ResourceKey;
  import net.minecraft.resources.ResourceLocation;
  import net.minecraft.server.bossevents.CustomBossEvents;
--import net.minecraft.server.level.DemoMode;
--import net.minecraft.server.level.PlayerRespawnLogic;
--import net.minecraft.server.level.ServerChunkCache;
--import net.minecraft.server.level.ServerLevel;
--import net.minecraft.server.level.ServerPlayer;
--import net.minecraft.server.level.ServerPlayerGameMode;
--import net.minecraft.server.level.TicketType;
-+import net.minecraft.server.level.*;
+ import net.minecraft.server.level.DemoMode;
+ import net.minecraft.server.level.PlayerRespawnLogic;
+ import net.minecraft.server.level.ServerChunkCache;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.server.level.ServerPlayerGameMode;
+ import net.minecraft.server.level.TicketType;
  import net.minecraft.server.level.progress.ChunkProgressListener;
  import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
  import net.minecraft.server.network.ServerConnectionListener;
-@@ -96,19 +_,8 @@
+@@ -96,19 +_,19 @@
  import net.minecraft.server.players.PlayerList;
  import net.minecraft.server.players.ServerOpListEntry;
  import net.minecraft.server.players.UserWhiteList;
--import net.minecraft.util.Crypt;
--import net.minecraft.util.CryptException;
--import net.minecraft.util.FrameTimer;
--import net.minecraft.util.ModCheck;
--import net.minecraft.util.Mth;
--import net.minecraft.util.NativeModuleLister;
--import net.minecraft.util.ProgressListener;
--import net.minecraft.util.Unit;
--import net.minecraft.util.profiling.EmptyProfileResults;
--import net.minecraft.util.profiling.ProfileResults;
--import net.minecraft.util.profiling.ProfilerFiller;
--import net.minecraft.util.profiling.ResultField;
--import net.minecraft.util.profiling.SingleTickProfiler;
-+import net.minecraft.util.*;
-+import net.minecraft.util.profiling.*;
+ import net.minecraft.util.Crypt;
+ import net.minecraft.util.CryptException;
+ import net.minecraft.util.FrameTimer;
+ import net.minecraft.util.ModCheck;
+ import net.minecraft.util.Mth;
+ import net.minecraft.util.NativeModuleLister;
+ import net.minecraft.util.ProgressListener;
+ import net.minecraft.util.Unit;
+ import net.minecraft.util.profiling.EmptyProfileResults;
+ import net.minecraft.util.profiling.ProfileResults;
+ import net.minecraft.util.profiling.ProfilerFiller;
+ import net.minecraft.util.profiling.ResultField;
+ import net.minecraft.util.profiling.SingleTickProfiler;
  import net.minecraft.util.profiling.jfr.JvmProfiler;
  import net.minecraft.util.profiling.jfr.callback.ProfiledDuration;
  import net.minecraft.util.profiling.metrics.profiling.ActiveMetricsRecorder;
-@@ -124,14 +_,7 @@
+@@ -124,14 +_,14 @@
  import net.minecraft.world.entity.npc.WanderingTraderSpawner;
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.crafting.RecipeManager;
--import net.minecraft.world.level.ChunkPos;
--import net.minecraft.world.level.CustomSpawner;
--import net.minecraft.world.level.DataPackConfig;
--import net.minecraft.world.level.ForcedChunksSavedData;
--import net.minecraft.world.level.GameRules;
--import net.minecraft.world.level.GameType;
--import net.minecraft.world.level.Level;
--import net.minecraft.world.level.LevelSettings;
-+import net.minecraft.world.level.*;
+ import net.minecraft.world.level.ChunkPos;
+ import net.minecraft.world.level.CustomSpawner;
+ import net.minecraft.world.level.DataPackConfig;
+ import net.minecraft.world.level.ForcedChunksSavedData;
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.GameType;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelSettings;
  import net.minecraft.world.level.biome.BiomeManager;
  import net.minecraft.world.level.border.BorderChangeListener;
  import net.minecraft.world.level.border.WorldBorder;
-@@ -144,1693 +_,2189 @@
+@@ -144,1693 +_,2152 @@
  import net.minecraft.world.level.levelgen.WorldGenSettings;
  import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
  import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
--import net.minecraft.world.level.storage.CommandStorage;
--import net.minecraft.world.level.storage.DerivedLevelData;
--import net.minecraft.world.level.storage.DimensionDataStorage;
--import net.minecraft.world.level.storage.LevelData;
--import net.minecraft.world.level.storage.LevelResource;
--import net.minecraft.world.level.storage.LevelStorageSource;
--import net.minecraft.world.level.storage.PlayerDataStorage;
--import net.minecraft.world.level.storage.ServerLevelData;
--import net.minecraft.world.level.storage.WorldData;
-+import net.minecraft.world.level.storage.*;
+ import net.minecraft.world.level.storage.CommandStorage;
+ import net.minecraft.world.level.storage.DerivedLevelData;
+ import net.minecraft.world.level.storage.DimensionDataStorage;
+ import net.minecraft.world.level.storage.LevelData;
+ import net.minecraft.world.level.storage.LevelResource;
+ import net.minecraft.world.level.storage.LevelStorageSource;
+ import net.minecraft.world.level.storage.PlayerDataStorage;
+ import net.minecraft.world.level.storage.ServerLevelData;
+ import net.minecraft.world.level.storage.WorldData;
  import net.minecraft.world.level.storage.loot.ItemModifierManager;
  import net.minecraft.world.level.storage.loot.LootTables;
  import net.minecraft.world.level.storage.loot.PredicateManager;
  import net.minecraft.world.phys.Vec2;
  import net.minecraft.world.phys.Vec3;
-+import net.minecraftforge.common.MinecraftForge;
  import org.apache.commons.lang3.Validate;
-+import org.bukkit.Bukkit;
-+import org.bukkit.command.CommandSender;
-+import org.bukkit.craftbukkit.Main;
-+import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-+import org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboardManager;
-+import org.bukkit.event.server.ServerLoadEvent;
-+import org.bukkit.event.world.WorldInitEvent;
-+import org.bukkit.event.world.WorldLoadEvent;
-+import org.bukkit.plugin.PluginLoadOrder;
-+import org.magmafoundation.magma.Magma;
-+import org.magmafoundation.magma.metrics.Metrics;
-+import org.magmafoundation.magma.configuration.MagmaConfig;
-+import org.magmafoundation.magma.craftbukkit.ItemMetaTransformer;
-+import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
-+import org.magmafoundation.magma.error.StackTraceDeobfuscator;
-+import org.magmafoundation.magma.forge.ForgeInject;
-+import org.magmafoundation.magma.helpers.ServerInitHelper;
-+import org.magmafoundation.magma.patcher.PatcherManager;
-+import org.magmafoundation.magma.protect.InjectProtect;
  import org.slf4j.Logger;
-+import org.spongepowered.asm.mixin.throwables.MixinError;
-+
-+import javax.annotation.Nullable;
-+import javax.imageio.ImageIO;
-+import java.awt.image.BufferedImage;
-+import java.io.*;
-+import java.lang.management.ManagementFactory;
-+import java.lang.management.ThreadInfo;
-+import java.lang.management.ThreadMXBean;
-+import java.net.Proxy;
-+import java.net.URLEncoder;
-+import java.nio.charset.StandardCharsets;
-+import java.nio.file.Files;
-+import java.nio.file.Path;
-+import java.security.KeyPair;
-+import java.text.SimpleDateFormat;
-+import java.util.*;
-+import java.util.Map.Entry;
-+import java.util.concurrent.CompletableFuture;
-+import java.util.concurrent.Executor;
-+import java.util.concurrent.RejectedExecutionException;
-+import java.util.concurrent.atomic.AtomicReference;
-+import java.util.function.BooleanSupplier;
-+import java.util.function.Consumer;
-+import java.util.function.Function;
  
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
 -   public static final Logger f_129750_ = LogUtils.getLogger();
@@ -411,7 +354,7 @@
 +    private static final int f_177892_ = 6000;
 +    private static final int f_177893_ = 3;
 +    public static final int f_177883_ = 29999984;
-+    public static final LevelSettings f_129743_ = new LevelSettings("Demo World", GameType.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackConfig.f_45842_, Lifecycle.experimental());
++    public static final LevelSettings f_129743_ = new LevelSettings("Demo World", GameType.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackConfig.f_45842_, com.mojang.serialization.Lifecycle.experimental());
 +    private static final long f_177871_ = 50L;
 +    public static final GameProfile f_195496_ = new GameProfile(Util.f_137441_, "Anonymous Player");
 +    public final LevelStorageSource.LevelStorageAccess f_129744_;
@@ -488,12 +431,12 @@
 +
 +    // CraftBukkit start
 +    public DataPackConfig datapackconfiguration;
-+    public DynamicOps<Tag> registryreadops;
-+    public CraftServer server;
-+    public OptionSet options;
++    public com.mojang.serialization.DynamicOps<net.minecraft.nbt.Tag> registryreadops;
++    public org.bukkit.craftbukkit.v1_18_R2.CraftServer server;
++    public joptsimple.OptionSet options;
 +    public org.bukkit.command.ConsoleCommandSender console;
 +    public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
-+    public ConsoleReader reader;
++    public jline.console.ConsoleReader reader;
 +    public static int currentTick = 0; // Paper - Further improve tick loop
 +    public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
 +    public int autosavePeriod;
@@ -507,11 +450,11 @@
 +    public final double[] recentTps = new double[ 3 ];
 +    // Spigot end
 +    public static long currentTickLong = 0L; // Paper
-+    // Magma start
++    // org.magmafoundation.magma.Magma start
 +    private static MinecraftServer instance;
-+    private Magma magma;
-+    private static Metrics metrics;
-+    // Magma end
++    private org.magmafoundation.magma.Magma magma;
++    private static org.magmafoundation.magma.metrics.Metrics metrics;
++    // org.magmafoundation.magma.Magma end
 +
 +    public static <S extends MinecraftServer> S m_129872_(Function<Thread, S> p_129873_) {
 +        AtomicReference<S> atomicreference = new AtomicReference<>();
@@ -531,7 +474,7 @@
 +        return s;
 +    }
 +
-+    public void preInit(OptionSet options, DataPackConfig p_129768_, DynamicOps<Tag> registryreadops) {
++    public void preInit(joptsimple.OptionSet options, DataPackConfig p_129768_, com.mojang.serialization.DynamicOps<net.minecraft.nbt.Tag> registryreadops) {
 +        this.options = options;
 +        this.datapackconfiguration = p_129768_;
 +        this.registryreadops = registryreadops;
@@ -540,7 +483,7 @@
 +    public MinecraftServer(Thread p_206546_, LevelStorageSource.LevelStorageAccess p_206547_, PackRepository p_206548_, WorldStem p_206549_, Proxy p_206550_, DataFixer p_206551_, @Nullable MinecraftSessionService p_206552_, @Nullable GameProfileRepository p_206553_, @Nullable GameProfileCache p_206554_, ChunkProgressListenerFactory p_206555_) {
 +        super("Server");
 +        instance = this; // Magma
-+        preInit(ServerInitHelper.getOptions(), ServerInitHelper.getDataPackConfig(), ServerInitHelper.getRegistryReadOps());
++        preInit(org.magmafoundation.magma.helpers.ServerInitHelper.getOptions(), org.magmafoundation.magma.helpers.ServerInitHelper.getDataPackConfig(), org.magmafoundation.magma.helpers.ServerInitHelper.getRegistryReadOps());
 +
 +        this.f_129746_ = p_206549_.f_206894_();
 +        this.f_129749_ = p_206549_.f_206895_();
@@ -568,37 +511,37 @@
 +        // Try to see if we're actually running in a terminal, disable jline if not
 +        if (System.console() == null && System.getProperty("jline.terminal") == null) {
 +            System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
-+            Main.useJline = false;
++            org.bukkit.craftbukkit.Main.useJline = false;
 +        }
 +
 +        //Magma start - add magma
 +            //metrics
-+            metrics = new Metrics();
++            metrics = new org.magmafoundation.magma.metrics.Metrics();
 +
 +
-+            magma = Magma.getInstance();
++            magma = org.magmafoundation.magma.Magma.getInstance();
 +
 +            //init patcher
-+            magma.setPatcherManager(new PatcherManager());
++            magma.setPatcherManager(new org.magmafoundation.magma.patcher.PatcherManager());
 +            magma.getPatcherManager().init();
 +
 +            //init stacktrace deobfuscator
-+            DeobfRewritePolicy.setDeobfuscator(new StackTraceDeobfuscator());
++            org.magmafoundation.magma.deobf.DeobfRewritePolicy.setDeobfuscator(new org.magmafoundation.magma.error.StackTraceDeobfuscator());
 +
 +            //init meta transformer
-+            ItemMetaTransformer.loadPrefixes();
++            org.magmafoundation.magma.craftbukkit.ItemMetaTransformer.loadPrefixes();
 +        //Magma end
 +
 +        try {
-+            reader = new ConsoleReader(System.in, System.out);
++            reader = new jline.console.ConsoleReader(System.in, System.out);
 +            reader.setExpandEvents(false); // Avoid parsing exceptions for uncommonly used event designators
 +        } catch (Throwable e) {
 +            try {
 +                // Try again with jline disabled for Windows users without C++ 2008 Redistributable
 +                System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
 +                System.setProperty("user.language", "en");
-+                Main.useJline = false;
-+                reader = new ConsoleReader(System.in, System.out);
++                org.bukkit.craftbukkit.Main.useJline = false;
++                reader = new jline.console.ConsoleReader(System.in, System.out);
 +                reader.setExpandEvents(false);
 +            } catch (IOException ex) {
 +                f_129750_.warn((String) null, ex);
@@ -662,7 +605,7 @@
 +        }
 +
 +        ServerLevel serverlevel = new ServerLevel(this, this.f_129738_, this.f_129744_, serverleveldata, Level.f_46428_, holder, p_129816_, chunkgenerator, flag, j, list, true);
-+        ForgeInject.addForgeEnvironment(this.f_129749_.m_5961_().m_204655_());
++        org.magmafoundation.magma.forge.ForgeInject.addForgeEnvironment(this.f_129749_.m_5961_().m_204655_());
 +        this.f_129762_.put(Level.f_46428_, bukkitInit(serverlevel)); //Magma - bukkitInit
 +        DimensionDataStorage dimensiondatastorage = serverlevel.m_8895_();
 +        this.m_129841_(dimensiondatastorage);
@@ -2173,7 +2116,7 @@
 +                Holder<DimensionType> holder1 = entry.getValue().m_204521_();
 +                ChunkGenerator chunkgenerator1 = entry.getValue().m_63990_();
 +                DerivedLevelData derivedleveldata = new DerivedLevelData(this.f_129749_, serverleveldata);
-+                if (MagmaConfig.instance.forceRandomizedUUIDForDimensions.getValues())
++                if (org.magmafoundation.magma.configuration.MagmaConfig.instance.forceRandomizedUUIDForDimensions.getValues())
 +                    derivedleveldata.setLevelName(derivedleveldata.m_5462_() + "_" + resourcekey.m_135782_().m_135815_());
 +                ServerLevel serverlevel1 = new ServerLevel(this, this.f_129738_, this.f_129744_, derivedleveldata, resourcekey1, holder1, p_129816_, chunkgenerator1, flag, j, ImmutableList.of(), false);
 +                worldborder.m_61929_(new BorderChangeListener.DelegateBorderChangeListener(serverlevel1.m_6857_()));
@@ -2185,28 +2128,28 @@
 +        worldborder.m_61931_(serverleveldata.m_5813_());
 +
 +        // CraftBukkit start
-+        this.server.enablePlugins(PluginLoadOrder.POSTWORLD);
-+        this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
++        this.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
++        this.server.getPluginManager().callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.STARTUP));
 +        this.f_129755_.acceptConnections();
 +        // CraftBukkit end
 +    }
 +
 +    private ServerLevel bukkitInit(ServerLevel level) {
-+        CraftScoreboardManager manager = ((CraftServer) Bukkit.getServer()).scoreboardManager;
++        org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboardManager manager = ((org.bukkit.craftbukkit.v1_18_R2.CraftServer) org.bukkit.Bukkit.getServer()).scoreboardManager;
 +        if (manager == null) {
-+            manager = new CraftScoreboardManager((MinecraftServer) (Object) this, level.m_6188_());
-+            ((CraftServer) Bukkit.getServer()).scoreboardManager = manager;
++            manager = new org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboardManager((MinecraftServer) (Object) this, level.m_6188_());
++            ((org.bukkit.craftbukkit.v1_18_R2.CraftServer) org.bukkit.Bukkit.getServer()).scoreboardManager = manager;
 +        }
 +
 +        org.bukkit.generator.ChunkGenerator generator = level.getWorld().getGenerator();
 +        if (generator != null)
 +            level.getWorld().getPopulators().addAll(generator.getDefaultPopulators(level.getWorld()));
-+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(level.getWorld()));
++        org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(level.getWorld()));
 +        return level;
 +    }
 +
 +    //Magma start - bukkit methods
-+    public void initWorld(ServerLevel level, PrimaryLevelData worldData, PrimaryLevelData worldData1, WorldGenSettings worldGenSettings) {
++    public void initWorld(ServerLevel level, net.minecraft.world.level.storage.PrimaryLevelData worldData, net.minecraft.world.level.storage.PrimaryLevelData worldData1, WorldGenSettings worldGenSettings) {
 +        boolean flag = worldGenSettings.m_64668_();
 +        org.bukkit.generator.ChunkGenerator generator = level.getWorld().getGenerator();
 +        if (generator != null)
@@ -2236,7 +2179,7 @@
 +
 +    public void prepareLevels(ChunkProgressListener progressListener, ServerLevel internal) {
 +        this.markWorldsDirty();
-+        MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(internal));
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(internal));
 +        if (!internal.getWorld().getKeepSpawnInMemory())
 +            return;
 +        this.forceTicks = true;
@@ -2271,10 +2214,10 @@
 +        internal.m_46703_(this.m_7004_(), this.m_6998_());
 +        this.forceTicks = false;
 +    }
-+    // Magma end
++    // org.magmafoundation.magma.Magma end
 +
 +    @Override
-+    public CommandSender getBukkitSender(CommandSourceStack wrapper) {
++    public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
 +        return console;
 +    }
 +
@@ -2368,7 +2311,7 @@
 +                    net.minecraftforge.common.world.ForgeChunkManager.reinstatePersistentChunks(serverlevel1, forcedchunkssaveddata);
 +                }
 +            }
-+            Bukkit.getPluginManager().callEvent(new WorldLoadEvent(serverlevel1.getWorld())); // CraftBukkit
++            org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(serverlevel1.getWorld())); // CraftBukkit
 +        }
 +
 +        this.executeModerately();
@@ -2473,7 +2416,7 @@
 +            this.m_177928_();
 +        }
 +        f_129750_.info("Stopping server");
-+        MinecraftTimings.stopServer(); // Paper
++        co.aikar.timings.MinecraftTimings.stopServer(); // Paper
 +        // CraftBukkit start
 +        if (this.server != null) {
 +            this.server.disablePlugins();
@@ -2697,8 +2640,8 @@
 +                net.minecraftforge.server.ServerLifecycleHooks.expectServerStopped(); // has to come before finalTick to avoid race conditions
 +                this.m_7268_((CrashReport) null);
 +            }
-+        } catch (MixinError mixinerror) {
-+            InjectProtect.mixinInjectCaught(null, mixinerror);
++        } catch (org.spongepowered.asm.mixin.throwables.MixinError mixinerror) {
++            org.magmafoundation.magma.protect.InjectProtect.mixinInjectCaught(null, mixinerror);
 +            CrashReport crashreport = m_206568_(mixinerror);
 +            this.m_177935_(crashreport.m_178626_());
 +            File file1 = new File(new File(this.m_6237_(), "crash-reports"), "crash-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + "-server.txt");
@@ -2914,7 +2857,7 @@
 +        }
 +
 +        // Paper start - move executeAll() into full server tick timing
-+        try (co.aikar.timings.Timing ignored = MinecraftTimings.processTasksTimer.startTiming()) {
++        try (co.aikar.timings.Timing ignored = co.aikar.timings.MinecraftTimings.processTasksTimer.startTiming()) {
 +            this.m_18699_();
 +        }
 +        // Paper end
@@ -2930,35 +2873,35 @@
 +    }
 +
 +    public void m_5703_(BooleanSupplier p_129954_) {
-+        MinecraftTimings.bukkitSchedulerTimer.startTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.bukkitSchedulerTimer.startTiming(); // Spigot // Paper
 +        this.server.getScheduler().mainThreadHeartbeat(this.f_129766_); // CraftBukkit
-+        MinecraftTimings.bukkitSchedulerTimer.stopTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.bukkitSchedulerTimer.stopTiming(); // Spigot // Paper
 +        this.f_129754_.m_6180_("commandFunctions");
-+        MinecraftTimings.commandFunctionsTimer.startTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.commandFunctionsTimer.startTiming(); // Spigot // Paper
 +        this.m_129890_().m_136128_();
-+        MinecraftTimings.commandFunctionsTimer.stopTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.commandFunctionsTimer.stopTiming(); // Spigot // Paper
 +        this.f_129754_.m_6182_("levels");
 +
 +        // CraftBukkit start
 +        // Run tasks that are waiting on processing
-+        MinecraftTimings.processQueueTimer.startTiming(); // Spigot
++        co.aikar.timings.MinecraftTimings.processQueueTimer.startTiming(); // Spigot
 +        while (!processQueue.isEmpty()) {
 +            processQueue.remove().run();
 +        }
-+        MinecraftTimings.processQueueTimer.stopTiming(); // Spigot
++        co.aikar.timings.MinecraftTimings.processQueueTimer.stopTiming(); // Spigot
 +
 +        for (ServerLevel serverlevel : this.getWorldArray()) {
 +            long tickStart = Util.m_137569_();
 +            this.f_129754_.m_6521_(() -> {
 +                return serverlevel + " " + serverlevel.m_46472_().m_135782_();
 +            });
-+            MinecraftTimings.timeUpdateTimer.startTiming(); // Spigot // Paper
++            co.aikar.timings.MinecraftTimings.timeUpdateTimer.startTiming(); // Spigot // Paper
 +            if (this.f_129766_ % 20 == 0) {
 +                this.f_129754_.m_6180_("timeSync");
 +                this.f_129763_.m_11270_(new ClientboundSetTimePacket(serverlevel.m_46467_(), serverlevel.m_46468_(), serverlevel.m_46469_().m_46207_(GameRules.f_46140_)), serverlevel.m_46472_());
 +                this.f_129754_.m_7238_();
 +            }
-+            MinecraftTimings.timeUpdateTimer.stopTiming(); // Spigot // Paper
++            co.aikar.timings.MinecraftTimings.timeUpdateTimer.stopTiming(); // Spigot // Paper
 +
 +            this.f_129754_.m_6180_("tick");
 +            net.minecraftforge.event.ForgeEventFactory.onPreWorldTick(serverlevel, p_129954_);
@@ -2987,24 +2930,24 @@
 +        }
 +
 +        this.f_129754_.m_6182_("connection");
-+        MinecraftTimings.connectionTimer.startTiming(); // Spigot
++        co.aikar.timings.MinecraftTimings.connectionTimer.startTiming(); // Spigot
 +        this.m_129919_().m_9721_();
-+        MinecraftTimings.connectionTimer.stopTiming(); // Spigot
++        co.aikar.timings.MinecraftTimings.connectionTimer.stopTiming(); // Spigot
 +        this.f_129754_.m_6182_("players");
-+        MinecraftTimings.playerListTimer.startTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.playerListTimer.startTiming(); // Spigot // Paper
 +        this.f_129763_.m_11288_();
-+        MinecraftTimings.playerListTimer.stopTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.playerListTimer.stopTiming(); // Spigot // Paper
 +        if (net.minecraftforge.gametest.ForgeGameTestHooks.isGametestEnabled()) {
 +            GameTestTicker.f_177648_.m_127790_();
 +        }
 +
 +        this.f_129754_.m_6182_("server gui refresh");
 +
-+        MinecraftTimings.tickablesTimer.startTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.tickablesTimer.startTiming(); // Spigot // Paper
 +        for (int i = 0; i < this.f_129752_.size(); ++i) {
 +            this.f_129752_.get(i).run();
 +        }
-+        MinecraftTimings.tickablesTimer.stopTiming(); // Spigot // Paper
++        co.aikar.timings.MinecraftTimings.tickablesTimer.stopTiming(); // Spigot // Paper
 +
 +        this.f_129754_.m_7238_();
 +    }
@@ -3408,7 +3351,7 @@
 +        }).thenAcceptAsync((p_212919_) -> {
 +            this.f_129740_.close();
 +            this.f_129740_ = p_212919_;
-+            ItemMetaTransformer.loadPrefixes(); //Magma - reload prefixes
++            org.magmafoundation.magma.craftbukkit.ItemMetaTransformer.loadPrefixes(); //Magma - reload prefixes
 +            this.server.doSync(p_212919_.f_206585_().f_206847_); //Magma - sync forge commands
 +            this.f_129730_.m_10509_(p_129862_);
 +            this.f_129749_.m_6645_(m_129817_(this.f_129730_));
@@ -3824,7 +3767,7 @@
 +
 +    @Deprecated
 +    public static MinecraftServer getServer() {
-+        return (Bukkit.getServer() instanceof CraftServer) ? ((CraftServer) Bukkit.getServer()).getServer() : null;
++        return (org.bukkit.Bukkit.getServer() instanceof org.bukkit.craftbukkit.v1_18_R2.CraftServer) ? ((org.bukkit.craftbukkit.v1_18_R2.CraftServer) org.bukkit.Bukkit.getServer()).getServer() : null;
 +    }
 +
 +    public static MinecraftServer getServerInstance() {

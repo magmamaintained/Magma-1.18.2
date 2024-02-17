@@ -1,10 +1,9 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -8,6 +_,7 @@
+@@ -8,6 +_,6 @@
  import net.minecraft.core.SectionPos;
  import net.minecraft.world.level.LevelHeightAccessor;
  import net.minecraft.world.level.block.state.BlockState;
-+import org.magmafoundation.magma.deobf.DeobfRewritePolicy;
  
  public class CrashReportCategory {
     private final String f_128137_;
@@ -18,7 +17,7 @@
 +         if (len <= 0) len = astacktraceelement.length;
 +         this.f_128139_ = new StackTraceElement[len];
 +         System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.f_128139_, 0, this.f_128139_.length);
-+         this.f_128139_ = DeobfRewritePolicy.getDeobfuscator().deobf(f_128139_);
++         this.f_128139_ = org.magmafoundation.magma.deobf.DeobfRewritePolicy.getDeobfuscator().deobf(f_128139_);
           return this.f_128139_.length;
        }
     }

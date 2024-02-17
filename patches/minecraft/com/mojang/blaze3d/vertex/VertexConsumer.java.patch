@@ -1,21 +1,18 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -4,8 +_,6 @@
+@@ -4,8 +_,8 @@
  import com.mojang.math.Matrix4f;
  import com.mojang.math.Vector3f;
  import com.mojang.math.Vector4f;
--import java.nio.ByteBuffer;
--import java.nio.IntBuffer;
+ import java.nio.ByteBuffer;
+ import java.nio.IntBuffer;
  import net.minecraft.client.renderer.block.model.BakedQuad;
  import net.minecraft.core.Vec3i;
  import net.minecraft.util.FastColor;
-@@ -13,8 +_,11 @@
+@@ -13,8 +_,8 @@
  import net.minecraftforge.api.distmarker.OnlyIn;
  import org.lwjgl.system.MemoryStack;
  
-+import java.nio.ByteBuffer;
-+import java.nio.IntBuffer;
-+
  @OnlyIn(Dist.CLIENT)
 -public interface VertexConsumer {
 +public interface VertexConsumer extends net.minecraftforge.client.extensions.IForgeVertexConsumer {

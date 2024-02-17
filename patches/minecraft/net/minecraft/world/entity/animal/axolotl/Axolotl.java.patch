@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 +++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-@@ -64,9 +_,17 @@
+@@ -64,9 +_,16 @@
  import net.minecraft.world.level.pathfinder.BlockPathTypes;
  import net.minecraft.world.level.pathfinder.PathFinder;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.event.entity.EntityPotionEffectEvent;
  import org.slf4j.Logger;
  
  public class Axolotl extends Animal implements LerpingModel, Bucketable {
@@ -32,7 +31,7 @@
        if (i < 2400) {
           i = Math.min(2400, 100 + i);
 -         p_149174_.m_147207_(new MobEffectInstance(MobEffects.f_19605_, i, 0), this);
-+         p_149174_.prepare(EntityPotionEffectEvent.Cause.AXOLOTL); //Magma
++         p_149174_.prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.AXOLOTL); //Magma
 +         p_149174_.m_147207_(new MobEffectInstance(MobEffects.f_19605_, i, 0), this); // CraftBukkit
        }
  

@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
 +++ b/net/minecraft/world/entity/animal/horse/SkeletonTrapGoal.java
-@@ -13,6 +_,7 @@
+@@ -13,6 +_,6 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.item.Items;
  import net.minecraft.world.item.enchantment.EnchantmentHelper;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  
  public class SkeletonTrapGoal extends Goal {
     private final SkeletonHorse f_30925_;
@@ -28,7 +27,7 @@
        Skeleton skeleton = this.m_30931_(difficultyinstance, this.f_30925_);
 -      skeleton.m_20329_(this.f_30925_);
 +      if (skeleton != null) skeleton.m_20329_(this.f_30925_); // CraftBukkit
-+      serverlevel.prepareEntity(skeleton, CreatureSpawnEvent.SpawnReason.TRAP); //Magma - add spawn reason
++      serverlevel.prepareEntity(skeleton, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.TRAP); //Magma - add spawn reason
        serverlevel.m_47205_(skeleton);
  
        for(int i = 0; i < 3; ++i) {
@@ -38,7 +37,7 @@
 -         skeleton1.m_20329_(abstracthorse);
 +         if (skeleton1 != null) skeleton1.m_20329_(abstracthorse); // CraftBukkit
           abstracthorse.m_5997_(this.f_30925_.m_21187_().nextGaussian() * 0.5D, 0.0D, this.f_30925_.m_21187_().nextGaussian() * 0.5D);
-+         serverlevel.prepareEntity(abstracthorse, CreatureSpawnEvent.SpawnReason.JOCKEY); //Magma - add spawn reason
++         serverlevel.prepareEntity(abstracthorse, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.JOCKEY); //Magma - add spawn reason
           serverlevel.m_47205_(abstracthorse);
        }
 -

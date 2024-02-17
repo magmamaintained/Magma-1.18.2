@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/level/block/RedStoneOreBlock.java
 +++ b/net/minecraft/world/level/block/RedStoneOreBlock.java
-@@ -20,6 +_,8 @@
+@@ -20,6 +_,6 @@
  import net.minecraft.world.level.block.state.StateDefinition;
  import net.minecraft.world.level.block.state.properties.BooleanProperty;
  import net.minecraft.world.phys.BlockHitResult;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.EntityInteractEvent;
  
  public class RedStoneOreBlock extends Block {
     public static final BooleanProperty f_55450_ = RedstoneTorchBlock.f_55674_;
@@ -29,7 +27,7 @@
 +            super.m_141947_(p_154299_, p_154300_, p_154301_, p_154302_);
 +         }
 +      } else {
-+         EntityInteractEvent event = new EntityInteractEvent(p_154302_.getBukkitEntity(), p_154299_.getWorld().getBlockAt(p_154300_.m_123341_(), p_154300_.m_123342_(), p_154300_.m_123343_()));
++         org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(p_154302_.getBukkitEntity(), p_154299_.getWorld().getBlockAt(p_154300_.m_123341_(), p_154300_.m_123342_(), p_154300_.m_123343_()));
 +         p_154299_.getCraftServer().getPluginManager().callEvent(event);
 +         if (!event.isCancelled()) {
 +            interact(p_154299_.m_8055_(p_154300_), p_154299_, p_154300_, p_154302_); // add p_154302_
@@ -56,7 +54,7 @@
        m_55454_(p_55494_, p_55495_);
        if (!p_55493_.m_61143_(f_55450_)) {
 +         // CraftBukkit start
-+         if (CraftEventFactory.callEntityChangeBlockEvent(entity, p_55495_, p_55493_.m_61124_(f_55450_, true)).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(entity, p_55495_, p_55493_.m_61124_(f_55450_, true)).isCancelled()) {
 +            return;
 +         }
 +         // CraftBukkit end
@@ -68,7 +66,7 @@
     public void m_7455_(BlockState p_55488_, ServerLevel p_55489_, BlockPos p_55490_, Random p_55491_) {
        if (p_55488_.m_61143_(f_55450_)) {
 +         // CraftBukkit start
-+         if (CraftEventFactory.callBlockFadeEvent(p_55489_, p_55490_, p_55488_.m_61124_(f_55450_, false)).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_55489_, p_55490_, p_55488_.m_61124_(f_55450_, false)).isCancelled()) {
 +            return;
 +         }
 +         // CraftBukkit end

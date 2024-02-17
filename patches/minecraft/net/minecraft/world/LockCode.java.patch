@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/LockCode.java
 +++ b/net/minecraft/world/LockCode.java
-@@ -3,6 +_,8 @@
+@@ -3,6 +_,6 @@
  import javax.annotation.concurrent.Immutable;
  import net.minecraft.nbt.CompoundTag;
  import net.minecraft.world.item.ItemStack;
-+import org.bukkit.ChatColor;
-+import org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage;
  
  @Immutable
  public class LockCode {
@@ -17,12 +15,12 @@
 +      // CraftBukkit start - SPIGOT-6307: Check for color codes if the lock contains color codes
 +      if (this.f_19103_.isEmpty()) return true;
 +      if (!p_19108_.m_41619_() && p_19108_.m_41788_()) {
-+         if (this.f_19103_.indexOf(ChatColor.COLOR_CHAR) == -1) {
++         if (this.f_19103_.indexOf(org.bukkit.ChatColor.COLOR_CHAR) == -1) {
 +            // The lock key contains no color codes, so let's ignore colors in the item display name (vanilla Minecraft behavior):
 +            return this.f_19103_.equals(p_19108_.m_41786_().getString());
 +         } else {
 +            // The lock key contains color codes, so let's take them into account:
-+            return this.f_19103_.equals(CraftChatMessage.fromComponent(p_19108_.m_41786_()));
++            return this.f_19103_.equals(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromComponent(p_19108_.m_41786_()));
 +         }
 +      }
 +      return false;

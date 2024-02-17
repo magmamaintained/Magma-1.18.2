@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/level/portal/PortalForcer.java
 +++ b/net/minecraft/world/level/portal/PortalForcer.java
-@@ -1,7 +_,5 @@
+@@ -1,7 +_,7 @@
  package net.minecraft.world.level.portal;
  
--import java.util.Comparator;
--import java.util.Optional;
+ import java.util.Comparator;
+ import java.util.Optional;
  import net.minecraft.BlockUtil;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
-@@ -18,164 +_,195 @@
+@@ -18,164 +_,190 @@
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.border.WorldBorder;
  import net.minecraft.world.level.levelgen.Heightmap;
@@ -172,12 +172,7 @@
 -
 -      return true;
 -   }
-+import org.bukkit.World;
-+import org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator;
-+import org.bukkit.event.world.PortalCreateEvent;
 +
-+import java.util.Comparator;
-+import java.util.Optional;
 +
 +public class PortalForcer implements net.minecraftforge.common.util.ITeleporter {
 +    private static final int f_164734_ = 3;
@@ -289,7 +284,7 @@
 +            d0 = d1;
 +        }
 +
-+        BlockStateListPopulator blockList = new BlockStateListPopulator( this.f_77648_ ); // CraftBukkit - Use BlockStateListPopulator
++        org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator( this.f_77648_ ); // CraftBukkit - Use BlockStateListPopulator
 +        if (d0 == -1.0D) {
 +            int k1 = Math.max( this.f_77648_.m_141937_() - -1, 70 );
 +            int i2 = i - 9;
@@ -333,8 +328,8 @@
 +        }
 +
 +        // CraftBukkit start
-+        World bworld = this.f_77648_.world;
-+        PortalCreateEvent event = new PortalCreateEvent( (java.util.List<org.bukkit.block.BlockState>) (java.util.List) blockList.getList(), bworld, (entity == null) ? null : entity.getBukkitEntity(), PortalCreateEvent.CreateReason.NETHER_PAIR );
++        org.bukkit.World bworld = this.f_77648_.world;
++        org.bukkit.event.world.PortalCreateEvent event = new org.bukkit.event.world.PortalCreateEvent( (java.util.List<org.bukkit.block.BlockState>) (java.util.List) blockList.getList(), bworld, (entity == null) ? null : entity.getBukkitEntity(), org.bukkit.event.world.PortalCreateEvent.CreateReason.NETHER_PAIR );
 +        this.f_77648_.getCraftServer().getPluginManager().callEvent( event );
 +        if (event.isCancelled()) {
 +            return Optional.empty();

@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/level/block/WeightedPressurePlateBlock.java
 +++ b/net/minecraft/world/level/block/WeightedPressurePlateBlock.java
-@@ -13,6 +_,7 @@
+@@ -13,6 +_,6 @@
  import net.minecraft.world.level.block.state.StateDefinition;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.block.state.properties.IntegerProperty;
-+import org.bukkit.event.entity.EntityInteractEvent;
  
  public class WeightedPressurePlateBlock extends BasePressurePlateBlock {
     public static final IntegerProperty f_58198_ = BlockStateProperties.f_61426_;
@@ -20,8 +19,8 @@
 +         if (entity instanceof Player) {
 +            cancellable = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, p_58214_, null, null, null);
 +         } else {
-+            cancellable = new EntityInteractEvent(entity.getBukkitEntity(), p_58213_.getWorld().getBlockAt(p_58214_.m_123341_(), p_58214_.m_123342_(), p_58214_.m_123343_()));
-+            p_58213_.getCraftServer().getPluginManager().callEvent((EntityInteractEvent) cancellable);
++            cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), p_58213_.getWorld().getBlockAt(p_58214_.m_123341_(), p_58214_.m_123342_(), p_58214_.m_123343_()));
++            p_58213_.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
 +         }
 +         // We only want to block turning the plate on if all events are cancelled
 +         if (!cancellable.isCancelled()) {

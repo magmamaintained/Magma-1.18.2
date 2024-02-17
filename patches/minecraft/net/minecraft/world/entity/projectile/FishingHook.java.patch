@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -42,6 +_,8 @@
+@@ -42,6 +_,6 @@
  import net.minecraft.world.phys.EntityHitResult;
  import net.minecraft.world.phys.HitResult;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.entity.FishHook;
-+import org.bukkit.event.player.PlayerFishEvent;
  import org.slf4j.Logger;
  
  public class FishingHook extends Projectile {
@@ -47,7 +45,7 @@
 +            // CraftBukkit start
 +            Player playerOwner = this.m_37168_();
 +            if (playerOwner != null) {
-+               PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) playerOwner.getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.FAILED_ATTEMPT);
++               org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) playerOwner.getBukkitEntity(), null, (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT);
 +               this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +            }
 +            // CraftBukkit end
@@ -70,7 +68,7 @@
 +            // CraftBukkit start
 +            Player playerOwner = this.m_37168_();
 +            if (playerOwner != null) {
-+               PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) playerOwner.getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.BITE);
++               org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) playerOwner.getBukkitEntity(), null, (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.BITE);
 +               this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +               if (playerFishEvent.isCancelled()) {
 +                  return;
@@ -109,7 +107,7 @@
 +         net.minecraftforge.event.entity.player.ItemFishedEvent event = null;
           if (this.f_37094_ != null) {
 +            // CraftBukkit start
-+            PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), this.f_37094_.getBukkitEntity(), (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.CAUGHT_ENTITY);
++            org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), this.f_37094_.getBukkitEntity(), (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_ENTITY);
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +
 +            if (playerFishEvent.isCancelled()) {
@@ -136,7 +134,7 @@
              for(ItemStack itemstack : list) {
                 ItemEntity itementity = new ItemEntity(this.f_19853_, this.m_20185_(), this.m_20186_(), this.m_20189_(), itemstack);
 +               // CraftBukkit start
-+               PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), player.getBukkitEntity(), (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.CAUGHT_FISH);
++               org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), player.getBukkitEntity(), (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH);
 +               playerFishEvent.setExpToDrop(this.f_19796_.nextInt(6) + 1);
 +               this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +
@@ -164,7 +162,7 @@
  
           if (this.f_19861_) {
 +            // CraftBukkit start
-+            PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.IN_GROUND);
++            org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), null, (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND);
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +
 +            if (playerFishEvent.isCancelled()) {
@@ -176,7 +174,7 @@
  
 +         // CraftBukkit start
 +         if (i == 0) {
-+            PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), null, (FishHook) this.getBukkitEntity(), PlayerFishEvent.State.REEL_IN);
++            org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) player.getBukkitEntity(), null, (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.REEL_IN);
 +            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +            if (playerFishEvent.isCancelled()) {
 +               return 0;

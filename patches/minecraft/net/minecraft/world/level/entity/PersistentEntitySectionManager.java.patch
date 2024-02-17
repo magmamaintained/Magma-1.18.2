@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-@@ -27,6 +_,8 @@
+@@ -27,6 +_,6 @@
  import net.minecraft.util.VisibleForDebug;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.level.ChunkPos;
-+import net.minecraft.world.level.chunk.storage.EntityStorage;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  import org.slf4j.Logger;
  
  public class PersistentEntitySectionManager<T extends EntityAccess> implements AutoCloseable {
@@ -75,7 +73,7 @@
           }).collect(Collectors.toList());
           if (list.isEmpty()) {
              if (persistententitysectionmanager$chunkloadstatus == PersistentEntitySectionManager.ChunkLoadStatus.LOADED) {
-+               if (callEvent) CraftEventFactory.callEntitiesUnloadEvent(((EntityStorage) f_157493_).f_156538_, new ChunkPos(p_157513_), ImmutableList.of()); // CraftBukkit
++               if (callEvent) org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntitiesUnloadEvent(((net.minecraft.world.level.chunk.storage.EntityStorage) f_157493_).f_156538_, new ChunkPos(p_157513_), ImmutableList.of()); // CraftBukkit
                 this.f_157493_.m_141971_(new ChunkEntities<>(new ChunkPos(p_157513_), ImmutableList.of()));
              }
  
@@ -83,7 +81,7 @@
              this.m_157562_(p_157513_);
              return false;
           } else {
-+            if (callEvent) CraftEventFactory.callEntitiesUnloadEvent(((EntityStorage) f_157493_).f_156538_, new ChunkPos(p_157513_), list.stream().map(entity -> (Entity) entity).collect(Collectors.toList())); // CraftBukkit
++            if (callEvent) org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntitiesUnloadEvent(((net.minecraft.world.level.chunk.storage.EntityStorage) f_157493_).f_156538_, new ChunkPos(p_157513_), list.stream().map(entity -> (Entity) entity).collect(Collectors.toList())); // CraftBukkit
              this.f_157493_.m_141971_(new ChunkEntities<>(new ChunkPos(p_157513_), list));
              list.forEach(p_157514_);
              return true;
@@ -108,7 +106,7 @@
           this.f_157498_.put(chunkentities.m_156791_().m_45588_(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
 +         // CraftBukkit start - call entity load event
 +         List<Entity> entities = getEntities(chunkentities.m_156791_());
-+         CraftEventFactory.callEntitiesLoadEvent(((EntityStorage) f_157493_).f_156538_, chunkentities.m_156791_(), entities);
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntitiesLoadEvent(((net.minecraft.world.level.chunk.storage.EntityStorage) f_157493_).f_156538_, chunkentities.m_156791_(), entities);
 +         // CraftBukkit end
        }
  

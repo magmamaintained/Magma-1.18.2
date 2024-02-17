@@ -1,27 +1,20 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -1,7 +_,8 @@
+@@ -1,7 +_,7 @@
  package net.minecraft.world.level.block.entity;
  
-+import co.aikar.timings.MinecraftTimings;
-+import co.aikar.timings.Timing;
  import com.mojang.logging.LogUtils;
--import javax.annotation.Nullable;
+ import javax.annotation.Nullable;
  import net.minecraft.CrashReportCategory;
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Registry;
-@@ -13,9 +_,15 @@
+@@ -13,9 +_,10 @@
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.block.state.BlockState;
-+import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer;
-+import org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry;
-+import org.bukkit.inventory.InventoryHolder;
-+import org.magmafoundation.magma.helpers.InventoryHelper;
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
-+import javax.annotation.Nullable;
 +
 +public abstract class BlockEntity extends net.minecraftforge.common.capabilities.CapabilityProvider<BlockEntity> implements net.minecraftforge.common.extensions.IForgeBlockEntity {
     private static final Logger f_58854_ = LogUtils.getLogger();
@@ -33,11 +26,11 @@
     private BlockState f_58856_;
 +   private CompoundTag customTileData;
 +
-+   public Timing tickTimer = MinecraftTimings.getTileEntityTimings(this); // Paper
++   public co.aikar.timings.Timing tickTimer = co.aikar.timings.MinecraftTimings.getTileEntityTimings(this); // Paper
 +
 +   // CraftBukkit start - data containers
-+   private static final CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new CraftPersistentDataTypeRegistry();
-+   public CraftPersistentDataContainer persistentDataContainer;
++   private static final org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry DATA_TYPE_REGISTRY = new org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataTypeRegistry();
++   public org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer persistentDataContainer;
 +   // CraftBukkit end
  
     public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
@@ -56,7 +49,7 @@
 +      if (p_155245_.m_128441_("ForgeData")) this.customTileData = p_155245_.m_128469_("ForgeData");
 +      if (getCapabilities() != null && p_155245_.m_128441_("ForgeCaps")) deserializeCaps(p_155245_.m_128469_("ForgeCaps"));
 +      // CraftBukkit start - read container
-+      this.persistentDataContainer = new CraftPersistentDataContainer(DATA_TYPE_REGISTRY);
++      this.persistentDataContainer = new org.bukkit.craftbukkit.v1_18_R2.persistence.CraftPersistentDataContainer(DATA_TYPE_REGISTRY);
 +      net.minecraft.nbt.Tag persistentDataTag = p_155245_.m_128423_("PublicBukkitValues");
 +      if (persistentDataTag instanceof CompoundTag) {
 +         this.persistentDataContainer.putAll((CompoundTag) persistentDataTag);
@@ -123,8 +116,8 @@
     }
 +
 +   // CraftBukkit start - add method
-+   public InventoryHolder getOwner() {
-+      return InventoryHelper.getHolder(f_58857_, f_58858_);
++   public org.bukkit.inventory.InventoryHolder getOwner() {
++      return org.magmafoundation.magma.helpers.InventoryHelper.getHolder(f_58857_, f_58858_);
 +   }
 +   // CraftBukkit end
  }

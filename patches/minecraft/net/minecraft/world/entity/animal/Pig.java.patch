@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/entity/animal/Pig.java
 +++ b/net/minecraft/world/entity/animal/Pig.java
-@@ -46,6 +_,8 @@
+@@ -46,6 +_,6 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
  
  public class Pig extends Animal implements ItemSteerable, Saddleable {
     private static final EntityDataAccessor<Boolean> f_29456_ = SynchedEntityData.m_135353_(Pig.class, EntityDataSerializers.f_135035_);
@@ -24,10 +22,10 @@
           zombifiedpiglin.m_21530_();
 +         net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, zombifiedpiglin);
 +         // CraftBukkit start
-+         if (CraftEventFactory.callPigZapEvent(this, p_29474_, zombifiedpiglin).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPigZapEvent(this, p_29474_, zombifiedpiglin).isCancelled()) {
 +            return;
 +         }
-+         p_29473_.prepareEntity(zombifiedpiglin, CreatureSpawnEvent.SpawnReason.LIGHTNING); //Magma - add spawn reason
++         p_29473_.prepareEntity(zombifiedpiglin, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING); //Magma - add spawn reason
           p_29473_.m_7967_(zombifiedpiglin);
 +         // CraftBukkit end
           this.m_146870_();

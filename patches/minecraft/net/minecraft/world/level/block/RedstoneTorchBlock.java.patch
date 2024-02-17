@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/level/block/RedstoneTorchBlock.java
 +++ b/net/minecraft/world/level/block/RedstoneTorchBlock.java
-@@ -16,6 +_,7 @@
+@@ -16,6 +_,6 @@
  import net.minecraft.world.level.block.state.StateDefinition;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.block.state.properties.BooleanProperty;
-+import org.bukkit.event.block.BlockRedstoneEvent;
  
  public class RedstoneTorchBlock extends TorchBlock {
     public static final BooleanProperty f_55674_ = BlockStateProperties.f_61443_;
@@ -17,7 +16,7 @@
 +      org.bukkit.block.Block block = p_55690_.getWorld().getBlockAt(p_55691_.m_123341_(), p_55691_.m_123342_(), p_55691_.m_123343_());
 +      int oldCurrent = ((Boolean) p_55689_.m_61143_(f_55674_)).booleanValue() ? 15 : 0;
 +
-+      BlockRedstoneEvent event = new BlockRedstoneEvent(block, oldCurrent, oldCurrent);
++      org.bukkit.event.block.BlockRedstoneEvent event = new org.bukkit.event.block.BlockRedstoneEvent(block, oldCurrent, oldCurrent);
 +      // CraftBukkit end
        if (p_55689_.m_61143_(f_55674_)) {
           if (flag) {

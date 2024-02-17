@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/entity/monster/WitherSkeleton.java
 +++ b/net/minecraft/world/entity/monster/WitherSkeleton.java
-@@ -25,6 +_,7 @@
+@@ -25,6 +_,6 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.ServerLevelAccessor;
  import net.minecraft.world.level.pathfinder.BlockPathTypes;
-+import org.bukkit.event.entity.EntityPotionEffectEvent;
  
  public class WitherSkeleton extends AbstractSkeleton {
     public WitherSkeleton(EntityType<? extends WitherSkeleton> p_34166_, Level p_34167_) {
@@ -13,7 +12,7 @@
        } else {
           if (p_34169_ instanceof LivingEntity) {
 -            ((LivingEntity)p_34169_).m_147207_(new MobEffectInstance(MobEffects.f_19615_, 200), this);
-+            ((LivingEntity)p_34169_).prepare(EntityPotionEffectEvent.Cause.ATTACK); //Magma
++            ((LivingEntity)p_34169_).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
 +            ((LivingEntity)p_34169_).m_147207_(new MobEffectInstance(MobEffects.f_19615_, 200), this); // CraftBukkit
           }
  

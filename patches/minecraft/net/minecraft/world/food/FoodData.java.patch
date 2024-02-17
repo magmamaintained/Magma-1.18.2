@@ -1,21 +1,15 @@
 --- a/net/minecraft/world/food/FoodData.java
 +++ b/net/minecraft/world/food/FoodData.java
-@@ -1,12 +_,18 @@
+@@ -1,12 +_,12 @@
  package net.minecraft.world.food;
  
  import net.minecraft.nbt.CompoundTag;
-+import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
-+import net.minecraft.server.level.ServerPlayer;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.damagesource.DamageSource;
  import net.minecraft.world.entity.player.Player;
  import net.minecraft.world.item.Item;
  import net.minecraft.world.item.ItemStack;
  import net.minecraft.world.level.GameRules;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
-+import org.bukkit.event.entity.EntityExhaustionEvent;
-+import org.bukkit.event.entity.EntityRegainHealthEvent;
-+import org.jetbrains.annotations.Nullable;
  
  public class FoodData {
     public int f_38696_ = 20;
@@ -24,7 +18,7 @@
     private int f_38700_ = 20;
  
 +   // CraftBukkit start
-+   private @Nullable Player entityhuman; //Magma - add @Nullable
++   private @org.jetbrains.annotations.Nullable Player entityhuman; //Magma - add @Nullable
 +   public boolean saturatedRegenRateModified = false; //Magma - mixin inject
 +   public boolean unsaturatedRegenRateModified = false; //Magma - mixin inject
 +   public boolean starvationRateModified = false; //Magma - mixin inject
@@ -72,13 +66,13 @@
 +
 +         // CraftBukkit start
 +         int oldFoodLevel = f_38696_;
-+         org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(entityhuman, foodproperties.m_38744_() + oldFoodLevel, p_38714_);
++         org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callFoodLevelChangeEvent(entityhuman, foodproperties.m_38744_() + oldFoodLevel, p_38714_);
 +
 +         if (!event.isCancelled()) {
 +            this.m_38707_(event.getFoodLevel() - oldFoodLevel, foodproperties.m_38745_());
 +         }
 +
-+         ((ServerPlayer) entityhuman).getBukkitEntity().sendHealthUpdate();
++         ((net.minecraft.server.level.ServerPlayer) entityhuman).getBukkitEntity().sendHealthUpdate();
 +         // CraftBukkit end
 +
        }
@@ -93,13 +87,13 @@
 +            if (entityhuman != null) {
 +
 +               // CraftBukkit start
-+               org.bukkit.event.entity.FoodLevelChangeEvent event = CraftEventFactory.callFoodLevelChangeEvent(entityhuman, Math.max(this.f_38696_ - 1, 0));
++               org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callFoodLevelChangeEvent(entityhuman, Math.max(this.f_38696_ - 1, 0));
 +
 +               if (!event.isCancelled()) {
 +                  this.f_38696_ = event.getFoodLevel();
 +               }
 +
-+               ((ServerPlayer) entityhuman).f_8906_.m_141995_(new ClientboundSetHealthPacket(((ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), this.f_38696_, this.f_38697_));
++               ((net.minecraft.server.level.ServerPlayer) entityhuman).f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundSetHealthPacket(((net.minecraft.server.level.ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), this.f_38696_, this.f_38697_));
 +               // CraftBukkit end
 +            }
 +            //Magma end
@@ -114,9 +108,9 @@
 +         if (this.f_38699_ >= (saturatedRegenRateModified ? saturatedRegenRate : 10)) { // CraftBukkit - add saturatedRegenRate //Magma - mixin inject
              float f = Math.min(this.f_38697_, 6.0F);
 -            p_38711_.m_5634_(f / 6.0F);
-+            p_38711_.setRegainReason(EntityRegainHealthEvent.RegainReason.SATIATED); // Magma - fix mixin inject
++            p_38711_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.SATIATED); // Magma - fix mixin inject
 +            p_38711_.m_5634_(f / 6.0F); // CraftBukkit - add RegainReason
-+            this.prepareExhaustion(p_38711_, EntityExhaustionEvent.ExhaustionReason.REGEN); //Magma
++            this.prepareExhaustion(p_38711_, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.REGEN); //Magma
              this.m_38703_(f);
              this.f_38699_ = 0;
           }
@@ -124,10 +118,10 @@
           ++this.f_38699_;
 -         if (this.f_38699_ >= 80) {
 +         if (this.f_38699_ >= (unsaturatedRegenRateModified ? this.unsaturatedRegenRate : 80)) { // CraftBukkit - add unsaturatedRegenRate //Magma - mixin inject
-+            p_38711_.setRegainReason(EntityRegainHealthEvent.RegainReason.SATIATED); // Magma - fix mixin inject
++            p_38711_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.SATIATED); // Magma - fix mixin inject
              p_38711_.m_5634_(1.0F);
 -            this.m_38703_(6.0F);
-+            this.prepareExhaustion(p_38711_, EntityExhaustionEvent.ExhaustionReason.REGEN); //Magma
++            this.prepareExhaustion(p_38711_, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.REGEN); //Magma
 +            this.m_38703_(entityhuman == null ? 6.0F : entityhuman.f_19853_.spigotConfig.regenExhaustion); //Magma - add null check
              this.f_38699_ = 0;
           }
@@ -143,9 +137,9 @@
     }
  
 +   //Magma start - mixin inject
-+   private @Nullable Player addExhaustion_player;
-+   private @Nullable EntityExhaustionEvent.ExhaustionReason addExhaustion_reason;
-+   public void prepareExhaustion(Player player, EntityExhaustionEvent.ExhaustionReason reason) {
++   private @org.jetbrains.annotations.Nullable Player addExhaustion_player;
++   private @org.jetbrains.annotations.Nullable org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason addExhaustion_reason;
++   public void prepareExhaustion(Player player, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason reason) {
 +      this.addExhaustion_player = player;
 +      this.addExhaustion_reason = reason;
 +   }
@@ -155,7 +149,7 @@
 +
 +      if (addExhaustion_player != null) {
 +         // CraftBukkit start
-+         EntityExhaustionEvent event = CraftEventFactory.callPlayerExhaustionEvent(addExhaustion_player, addExhaustion_reason, p_38704_);
++         org.bukkit.event.entity.EntityExhaustionEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerExhaustionEvent(addExhaustion_player, addExhaustion_reason, p_38704_);
 +         if (!event.isCancelled()) {
 +            this.f_38698_ = Math.min(this.f_38698_ + event.getExhaustion(), 40.0F);
 +         }

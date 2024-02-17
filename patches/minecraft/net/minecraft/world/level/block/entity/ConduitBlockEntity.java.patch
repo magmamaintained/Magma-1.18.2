@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ConduitBlockEntity.java
-@@ -26,6 +_,8 @@
+@@ -26,6 +_,6 @@
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
-+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
-+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
  
  public class ConduitBlockEntity extends BlockEntity {
     private static final int f_155390_ = 2;
@@ -38,11 +36,11 @@
 -         p_155409_.m_6263_((Player)null, p_155413_.f_59189_.m_20185_(), p_155413_.f_59189_.m_20186_(), p_155413_.f_59189_.m_20189_(), SoundEvents.f_11823_, SoundSource.BLOCKS, 1.0F, 1.0F);
 -         p_155413_.f_59189_.m_6469_(DamageSource.f_19319_, 4.0F);
 +         // CraftBukkit start
-+         CraftEventFactory.blockDamage = CraftBlock.at(p_155409_, p_155410_);
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.blockDamage = org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(p_155409_, p_155410_);
 +         if (p_155413_.f_59189_.m_6469_(DamageSource.f_19319_, 4.0F)) {
 +            p_155409_.m_6263_((Player) null, p_155413_.f_59189_.m_20185_(), p_155413_.f_59189_.m_20186_(), p_155413_.f_59189_.m_20189_(), SoundEvents.f_11823_, SoundSource.BLOCKS, 1.0F, 1.0F);
 +         }
-+         CraftEventFactory.blockDamage = null;
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.blockDamage = null;
 +         // CraftBukkit end
        }
  

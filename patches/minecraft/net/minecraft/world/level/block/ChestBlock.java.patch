@@ -68,11 +68,10 @@
     public ChestBlock(BlockBehaviour.Properties p_51490_, Supplier<BlockEntityType<? extends ChestBlockEntity>> p_51491_) {
        super(p_51490_, p_51491_);
        this.m_49959_(this.f_49792_.m_61090_().m_61124_(f_51478_, Direction.NORTH).m_61124_(f_51479_, ChestType.SINGLE).m_61124_(f_51480_, Boolean.valueOf(false)));
-@@ -269,9 +_,16 @@
+@@ -269,9 +_,15 @@
        return DoubleBlockCombiner.m_52822_(this.f_48675_.get(), ChestBlock::m_51582_, ChestBlock::m_51584_, f_51478_, p_51544_, p_51545_, p_51546_, bipredicate);
     }
  
-+
     @Nullable
     public MenuProvider m_7246_(BlockState p_51574_, Level p_51575_, BlockPos p_51576_) {
 -      return this.m_5641_(p_51574_, p_51575_, p_51576_, false).<Optional<MenuProvider>>m_5649_(f_51487_).orElse((MenuProvider)null);
@@ -96,9 +95,8 @@
     }
  
     protected void m_7926_(StateDefinition.Builder<Block, BlockState> p_51562_) {
-@@ -354,4 +_,5 @@
+@@ -354,4 +_,4 @@
        }
  
     }
-+
  }
