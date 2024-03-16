@@ -6,5 +6,5 @@
  
 +@net.minecraftforge.registries.ObjectHolder("minecraft")
  public class MobEffects {
-    public static final MobEffect f_19596_ = m_19623_(1, "speed", (new MobEffect(MobEffectCategory.BENEFICIAL, 8171462)).m_19472_(Attributes.f_22279_, "91AEAA56-376B-4498-935B-2F7F68070635", (double)0.2F, AttributeModifier.Operation.MULTIPLY_TOTAL));
-    public static final MobEffect f_19597_ = m_19623_(2, "slowness", (new MobEffect(MobEffectCategory.HARMFUL, 5926017)).m_19472_(Attributes.f_22279_, "7107DE5E-7CE8-4030-940E-514C1F160890", (double)-0.15F, AttributeModifier.Operation.MULTIPLY_TOTAL));
+    public static final MobEffect MOVEMENT_SPEED = register(1, "speed", (new MobEffect(MobEffectCategory.BENEFICIAL, 8171462)).addAttributeModifier(Attributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", (double)0.2F, AttributeModifier.Operation.MULTIPLY_TOTAL));
+    public static final MobEffect MOVEMENT_SLOWDOWN = register(2, "slowness", (new MobEffect(MobEffectCategory.HARMFUL, 5926017)).addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", (double)-0.15F, AttributeModifier.Operation.MULTIPLY_TOTAL));

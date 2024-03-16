@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/LevelAccessor.java
 +++ b/net/minecraft/world/level/LevelAccessor.java
 @@ -77,6 +_,10 @@
-    default void m_6289_(BlockPos p_46781_, Block p_46782_) {
+    default void blockUpdated(BlockPos p_46781_, Block p_46782_) {
     }
  
 +   default void neighborShapeChanged(net.minecraft.core.Direction p_220411_, net.minecraft.world.level.block.state.BlockState p_220412_, BlockPos p_220413_, BlockPos p_220414_, int p_220415_, int p_220416_) {
 +      org.magmafoundation.magma.mcpatch.updatesuppression.NeighborUpdater.executeShapeUpdate(this, p_220411_, p_220412_, p_220413_, p_220414_, p_220415_, p_220416_ - 1);
 +   }
 +
-    void m_5594_(@Nullable Player p_46775_, BlockPos p_46776_, SoundEvent p_46777_, SoundSource p_46778_, float p_46779_, float p_46780_);
+    void playSound(@Nullable Player p_46775_, BlockPos p_46776_, SoundEvent p_46777_, SoundSource p_46778_, float p_46779_, float p_46780_);
  
-    void m_7106_(ParticleOptions p_46783_, double p_46784_, double p_46785_, double p_46786_, double p_46787_, double p_46788_, double p_46789_);
+    void addParticle(ParticleOptions p_46783_, double p_46784_, double p_46785_, double p_46786_, double p_46787_, double p_46788_, double p_46789_);
 @@ -100,4 +_,6 @@
-    default void m_151545_(@Nullable Entity p_151546_, GameEvent p_151547_, Entity p_151548_) {
-       this.m_142346_(p_151546_, p_151547_, p_151548_.m_142538_());
+    default void gameEvent(@Nullable Entity p_151546_, GameEvent p_151547_, Entity p_151548_) {
+       this.gameEvent(p_151546_, p_151547_, p_151548_.blockPosition());
     }
 +
 +   net.minecraft.server.level.ServerLevel getMinecraftWorld(); // CraftBukkit

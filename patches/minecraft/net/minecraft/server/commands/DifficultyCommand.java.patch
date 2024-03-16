@@ -4,8 +4,8 @@
        }
  
        p_136939_.register(literalargumentbuilder.requires((p_136943_) -> {
--         return p_136943_.m_6761_(2);
+-         return p_136943_.hasPermission(2);
 +         return p_136943_.hasPermission(2,"minecraft.command.difficulty");
        }).executes((p_136941_) -> {
-          Difficulty difficulty1 = p_136941_.getSource().m_81372_().m_46791_();
-          p_136941_.getSource().m_81354_(new TranslatableComponent("commands.difficulty.query", difficulty1.m_19033_()), false);
+          Difficulty difficulty1 = p_136941_.getSource().getLevel().getDifficulty();
+          p_136941_.getSource().sendSuccess(new TranslatableComponent("commands.difficulty.query", difficulty1.getDisplayName()), false);

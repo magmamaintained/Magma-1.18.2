@@ -6,12 +6,12 @@
  
 +      // CraftBukkit start
 +      org.bukkit.plugin.PluginManager manager = p_55690_.getCraftServer().getPluginManager();
-+      org.bukkit.block.Block block = p_55690_.getWorld().getBlockAt(p_55691_.m_123341_(), p_55691_.m_123342_(), p_55691_.m_123343_());
-+      int oldCurrent = ((Boolean) p_55689_.m_61143_(f_55674_)).booleanValue() ? 15 : 0;
++      org.bukkit.block.Block block = p_55690_.getWorld().getBlockAt(p_55691_.getX(), p_55691_.getY(), p_55691_.getZ());
++      int oldCurrent = ((Boolean) p_55689_.getValue(LIT)).booleanValue() ? 15 : 0;
 +
 +      org.bukkit.event.block.BlockRedstoneEvent event = new org.bukkit.event.block.BlockRedstoneEvent(block, oldCurrent, oldCurrent);
 +      // CraftBukkit end
-       if (p_55689_.m_61143_(f_55674_)) {
+       if (p_55689_.getValue(LIT)) {
           if (flag) {
 +            // CraftBukkit start
 +            if (oldCurrent != 0) {
@@ -22,13 +22,13 @@
 +               }
 +            }
 +            // CraftBukkit end
-             p_55690_.m_7731_(p_55691_, p_55689_.m_61124_(f_55674_, Boolean.valueOf(false)), 3);
-             if (m_55684_(p_55690_, p_55691_, true)) {
-                p_55690_.m_46796_(1502, p_55691_, 0);
+             p_55690_.setBlock(p_55691_, p_55689_.setValue(LIT, Boolean.valueOf(false)), 3);
+             if (isToggledTooFrequently(p_55690_, p_55691_, true)) {
+                p_55690_.levelEvent(1502, p_55691_, 0);
 @@ -71,6 +_,15 @@
              }
           }
-       } else if (!flag && !m_55684_(p_55690_, p_55691_, false)) {
+       } else if (!flag && !isToggledTooFrequently(p_55690_, p_55691_, false)) {
 +         // CraftBukkit start
 +         if (oldCurrent != 15) {
 +            event.setNewCurrent(15);
@@ -38,6 +38,6 @@
 +            }
 +         }
 +         // CraftBukkit end
-          p_55690_.m_7731_(p_55691_, p_55689_.m_61124_(f_55674_, Boolean.valueOf(true)), 3);
+          p_55690_.setBlock(p_55691_, p_55689_.setValue(LIT, Boolean.valueOf(true)), 3);
        }
  

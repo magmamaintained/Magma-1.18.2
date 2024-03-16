@@ -6,6 +6,6 @@
  @OnlyIn(Dist.CLIENT)
 -public interface ModelState {
 +public interface ModelState extends net.minecraftforge.client.extensions.IForgeModelState {
-    default Transformation m_6189_() {
-       return Transformation.m_121093_();
+    default Transformation getRotation() {
+       return Transformation.identity();
     }

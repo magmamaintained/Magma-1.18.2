@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/ClearInventoryCommands.java
 @@ -25,7 +_,7 @@
  
-    public static void m_136699_(CommandDispatcher<CommandSourceStack> p_136700_) {
-       p_136700_.register(Commands.m_82127_("clear").requires((p_136704_) -> {
--         return p_136704_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_136700_) {
+       p_136700_.register(Commands.literal("clear").requires((p_136704_) -> {
+-         return p_136704_.hasPermission(2);
 +         return p_136704_.hasPermission(2,"minecraft.command.clear");
        }).executes((p_136721_) -> {
-          return m_136705_(p_136721_.getSource(), Collections.singleton(p_136721_.getSource().m_81375_()), (p_180029_) -> {
+          return clearInventory(p_136721_.getSource(), Collections.singleton(p_136721_.getSource().getPlayerOrException()), (p_180029_) -> {
              return true;

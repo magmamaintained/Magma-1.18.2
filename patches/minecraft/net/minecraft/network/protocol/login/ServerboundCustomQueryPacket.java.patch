@@ -7,6 +7,6 @@
 -public class ServerboundCustomQueryPacket implements Packet<ServerLoginPacketListener> {
 +public class ServerboundCustomQueryPacket implements Packet<ServerLoginPacketListener>, net.minecraftforge.network.ICustomPacket<ServerboundCustomQueryPacket>
 +{
-    private static final int f_179821_ = 1048576;
-    private final int f_134825_;
+    private static final int MAX_PAYLOAD_SIZE = 1048576;
+    private final int transactionId;
     @Nullable

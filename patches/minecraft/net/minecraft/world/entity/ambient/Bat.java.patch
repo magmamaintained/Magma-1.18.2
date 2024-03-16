@@ -3,12 +3,12 @@
 @@ -123,16 +_,24 @@
              }
  
-             if (this.f_19853_.m_45946_(f_27408_, this) != null) {
+             if (this.level.getNearestPlayer(BAT_RESTING_TARGETING, this) != null) {
 +               // CraftBukkit Start - Call BatToggleSleepEvent
 +               if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
-+                  this.m_27456_(false);
++                  this.setResting(false);
 +                  if (!flag) {
-+                     this.f_19853_.m_5898_((Player) null, 1025, blockpos, 0);
++                     this.level.levelEvent((Player) null, 1025, blockpos, 0);
 +                  }
 +               }
 +               // CraftBukkit End
@@ -16,28 +16,28 @@
 +         } else {
 +            // CraftBukkit Start - Call BatToggleSleepEvent
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
-                this.m_27456_(false);
+                this.setResting(false);
                 if (!flag) {
-                   this.f_19853_.m_5898_((Player)null, 1025, blockpos, 0);
+                   this.level.levelEvent((Player)null, 1025, blockpos, 0);
                 }
              }
 -         } else {
--            this.m_27456_(false);
+-            this.setResting(false);
 -            if (!flag) {
--               this.f_19853_.m_5898_((Player)null, 1025, blockpos, 0);
+-               this.level.levelEvent((Player)null, 1025, blockpos, 0);
 -            }
 +            // CraftBukkit End - Call BatToggleSleepEvent
           }
        } else {
-          if (this.f_27409_ != null && (!this.f_19853_.m_46859_(this.f_27409_) || this.f_27409_.m_123342_() <= this.f_19853_.m_141937_())) {
+          if (this.targetPosition != null && (!this.level.isEmptyBlock(this.targetPosition) || this.targetPosition.getY() <= this.level.getMinBuildHeight())) {
 @@ -154,7 +_,11 @@
-          this.f_20902_ = 0.5F;
-          this.m_146922_(this.m_146908_() + f1);
-          if (this.f_19796_.nextInt(100) == 0 && this.f_19853_.m_8055_(blockpos1).m_60796_(this.f_19853_, blockpos1)) {
--            this.m_27456_(true);
+          this.zza = 0.5F;
+          this.setYRot(this.getYRot() + f1);
+          if (this.random.nextInt(100) == 0 && this.level.getBlockState(blockpos1).isRedstoneConductor(this.level, blockpos1)) {
+-            this.setResting(true);
 +            // CraftBukkit Start - Call BatToggleSleepEvent
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, false)) {
-+               this.m_27456_(true);
++               this.setResting(true);
 +            }
 +            // CraftBukkit End
           }
@@ -46,13 +46,13 @@
 @@ -180,7 +_,11 @@
           return false;
        } else {
-          if (!this.f_19853_.f_46443_ && this.m_27452_()) {
--            this.m_27456_(false);
+          if (!this.level.isClientSide && this.isResting()) {
+-            this.setResting(false);
 +            // CraftBukkit Start - Call BatToggleSleepEvent
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBatToggleSleepEvent(this, true)) {
-+               this.m_27456_(false);
++               this.setResting(false);
 +            }
 +            // CraftBukkit End - Call BatToggleSleepEvent
           }
  
-          return super.m_6469_(p_27424_, p_27425_);
+          return super.hurt(p_27424_, p_27425_);

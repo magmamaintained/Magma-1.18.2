@@ -4,9 +4,9 @@
           }
        }
  
--      f_139325_.info("Loaded {} advancements", (int)this.f_139326_.size());
-+      net.minecraftforge.common.AdvancementLoadFix.buildSortedTrees(this.f_139327_);
+-      LOGGER.info("Loaded {} advancements", (int)this.advancements.size());
++      net.minecraftforge.common.AdvancementLoadFix.buildSortedTrees(this.roots);
 +      // LOGGER.info("Loaded {} advancements", (int)this.advancements.size()); // CraftBukkit
     }
  
-    public void m_139332_() {
+    public void clear() {

@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
 @@ -12,8 +_,22 @@
     @Nullable
-    private EnderChestBlockEntity f_40101_;
+    private EnderChestBlockEntity activeChest;
  
 -   public PlayerEnderChestContainer() {
 +   // CraftBukkit start
@@ -14,7 +14,7 @@
 +
 +   @Override
 +   public org.bukkit.Location getLocation() {
-+      return this.f_40101_ != null ? new org.bukkit.Location(this.f_40101_.m_58904_().getWorld(), this.f_40101_.m_58899_().m_123341_(), this.f_40101_.m_58899_().m_123342_(), this.f_40101_.m_58899_().m_123343_()) : null;
++      return this.activeChest != null ? new org.bukkit.Location(this.activeChest.getLevel().getWorld(), this.activeChest.getBlockPos().getX(), this.activeChest.getBlockPos().getY(), this.activeChest.getBlockPos().getZ()) : null;
 +   }
 +
 +   public PlayerEnderChestContainer(Player owner) {
@@ -23,4 +23,4 @@
 +      // CraftBukkit end
     }
  
-    public void m_40105_(EnderChestBlockEntity p_40106_) {
+    public void setActiveChest(EnderChestBlockEntity p_40106_) {

@@ -1,31 +1,31 @@
 --- a/net/minecraft/world/inventory/ItemCombinerMenu.java
 +++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
 @@ -16,13 +_,8 @@
-    private static final int f_150598_ = 30;
-    private static final int f_150599_ = 30;
-    private static final int f_150600_ = 39;
--   protected final ResultContainer f_39768_ = new ResultContainer();
--   protected final Container f_39769_ = new SimpleContainer(2) {
--      public void m_6596_() {
--         super.m_6596_();
--         ItemCombinerMenu.this.m_6199_(this);
+    private static final int INV_SLOT_END = 30;
+    private static final int USE_ROW_SLOT_START = 30;
+    private static final int USE_ROW_SLOT_END = 39;
+-   protected final ResultContainer resultSlots = new ResultContainer();
+-   protected final Container inputSlots = new SimpleContainer(2) {
+-      public void setChanged() {
+-         super.setChanged();
+-         ItemCombinerMenu.this.slotsChanged(this);
 -      }
 -   };
-+   protected final ResultContainer f_39768_;
-+   protected final Container f_39769_;
-    protected final ContainerLevelAccess f_39770_;
-    protected final Player f_39771_;
++   protected final ResultContainer resultSlots;
++   protected final Container inputSlots;
+    protected final ContainerLevelAccess access;
+    protected final Player player;
  
 @@ -34,6 +_,22 @@
  
     public ItemCombinerMenu(@Nullable MenuType<?> p_39773_, int p_39774_, Inventory p_39775_, ContainerLevelAccess p_39776_) {
        super(p_39773_, p_39774_);
 +      //Magma start - add location
-+      this.f_39768_ = new ResultContainer();
-+      this.f_39769_ = new SimpleContainer(2) {
-+         public void m_6596_() {
-+            super.m_6596_();
-+            ItemCombinerMenu.this.m_6199_(this);
++      this.resultSlots = new ResultContainer();
++      this.inputSlots = new SimpleContainer(2) {
++         public void setChanged() {
++            super.setChanged();
++            ItemCombinerMenu.this.slotsChanged(this);
 +         }
 +
 +         // CraftBukkit start
@@ -36,14 +36,14 @@
 +         // CraftBukkit end
 +      };
 +      //Magma end
-       this.f_39770_ = p_39776_;
-       this.f_39771_ = p_39775_.f_35978_;
-       this.m_38897_(new Slot(this.f_39769_, 0, 27, 47));
+       this.access = p_39776_;
+       this.player = p_39775_.player;
+       this.addSlot(new Slot(this.inputSlots, 0, 27, 47));
 @@ -82,6 +_,7 @@
     }
  
-    public boolean m_6875_(Player p_39780_) {
+    public boolean stillValid(Player p_39780_) {
 +      if (!this.checkReachable) return true; // CraftBukkit
-       return this.f_39770_.m_39299_((p_39785_, p_39786_) -> {
-          return !this.m_8039_(p_39785_.m_8055_(p_39786_)) ? false : p_39780_.m_20275_((double)p_39786_.m_123341_() + 0.5D, (double)p_39786_.m_123342_() + 0.5D, (double)p_39786_.m_123343_() + 0.5D) <= 64.0D;
+       return this.access.evaluate((p_39785_, p_39786_) -> {
+          return !this.isValidBlock(p_39785_.getBlockState(p_39786_)) ? false : p_39780_.distanceToSqr((double)p_39786_.getX() + 0.5D, (double)p_39786_.getY() + 0.5D, (double)p_39786_.getZ() + 0.5D) <= 64.0D;
        }, true);

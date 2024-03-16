@@ -3,18 +3,18 @@
 @@ -73,6 +_,17 @@
     }
  
-    protected void m_24255_(E p_24256_) {
+    protected void clearAttackTarget(E p_24256_) {
 +      // CraftBukkit start
-+      LivingEntity old = p_24256_.m_6274_().m_21952_(MemoryModuleType.f_26372_).orElse(null);
-+      org.bukkit.event.entity.EntityTargetEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTargetLivingEvent(p_24256_, null, (old != null && !old.m_6084_()) ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_DIED : org.bukkit.event.entity.EntityTargetEvent.TargetReason.FORGOT_TARGET);
++      LivingEntity old = p_24256_.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
++      org.bukkit.event.entity.EntityTargetEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTargetLivingEvent(p_24256_, null, (old != null && !old.isAlive()) ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_DIED : org.bukkit.event.entity.EntityTargetEvent.TargetReason.FORGOT_TARGET);
 +      if (event.isCancelled()) {
 +         return;
 +      }
 +      if (event.getTarget() != null) {
-+         p_24256_.m_6274_().m_21879_(MemoryModuleType.f_26372_, ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity) event.getTarget()).getHandle());
++         p_24256_.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity) event.getTarget()).getHandle());
 +         return;
 +      }
 +      // CraftBukkit end
-       this.f_147979_.accept(p_24256_);
-       p_24256_.m_6274_().m_21936_(MemoryModuleType.f_26372_);
+       this.onTargetErased.accept(p_24256_);
+       p_24256_.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
     }

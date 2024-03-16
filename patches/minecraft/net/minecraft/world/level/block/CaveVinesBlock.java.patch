@@ -3,8 +3,8 @@
 @@ -49,6 +_,7 @@
     }
  
-    public InteractionResult m_6227_(BlockState p_152980_, Level p_152981_, BlockPos p_152982_, Player p_152983_, InteractionHand p_152984_, BlockHitResult p_152985_) {
+    public InteractionResult use(BlockState p_152980_, Level p_152981_, BlockPos p_152982_, Player p_152983_, InteractionHand p_152984_, BlockHitResult p_152985_) {
 +      org.magmafoundation.magma.helpers.InterfaceHelper.tempNMSEntity.set(p_152983_); //Magma - set the entity to be used by the event
-       return CaveVines.m_152953_(p_152980_, p_152981_, p_152982_);
+       return CaveVines.use(p_152980_, p_152981_, p_152982_);
     }
  

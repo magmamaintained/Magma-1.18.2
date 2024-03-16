@@ -4,20 +4,20 @@
  
        try {
           URL url = VanillaPackResources.class.getResource(s);
--         return m_10335_(s, url) ? url.openStream() : null;
-+         return m_10335_(s, url) ? getExtraInputStream(p_10359_, s) : null;
+-         return isResourceUrlValid(s, url) ? url.openStream() : null;
++         return isResourceUrlValid(s, url) ? getExtraInputStream(p_10359_, s) : null;
        } catch (IOException ioexception) {
           return VanillaPackResources.class.getResourceAsStream(s);
        }
 @@ -219,7 +_,7 @@
  
     @Nullable
-    protected InputStream m_5539_(String p_10334_) {
+    protected InputStream getResourceAsStream(String p_10334_) {
 -      return VanillaPackResources.class.getResourceAsStream("/" + p_10334_);
 +      return getExtraInputStream(PackType.SERVER_DATA, "/" + p_10334_);
     }
  
-    public boolean m_7211_(PackType p_10355_, ResourceLocation p_10356_) {
+    public boolean hasResource(PackType p_10355_, ResourceLocation p_10356_) {
 @@ -292,6 +_,20 @@
     }
  
@@ -29,7 +29,7 @@
 +   //So find that extra jar using the .mcassetsroot marker.
 +   private InputStream getExtraInputStream(PackType type, String resource) {
 +      try {
-+         Path rootDir = f_182296_.get(type);
++         Path rootDir = ROOT_DIR_BY_TYPE.get(type);
 +         if (rootDir != null)
 +            return Files.newInputStream(rootDir.resolve(resource));
 +         return VanillaPackResources.class.getResourceAsStream(resource);
@@ -38,4 +38,4 @@
 +      }
     }
  
-    public Resource m_142591_(final ResourceLocation p_143764_) throws IOException {
+    public Resource getResource(final ResourceLocation p_143764_) throws IOException {

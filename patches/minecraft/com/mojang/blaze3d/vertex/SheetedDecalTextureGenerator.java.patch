@@ -1,11 +1,11 @@
 --- a/com/mojang/blaze3d/vertex/SheetedDecalTextureGenerator.java
 +++ b/com/mojang/blaze3d/vertex/SheetedDecalTextureGenerator.java
 @@ -91,4 +_,8 @@
-       this.f_85878_ = p_85902_;
+       this.nz = p_85902_;
        return this;
     }
 +
 +   public VertexFormat getVertexFormat() {
-+      return this.f_85867_.getVertexFormat();
++      return this.delegate.getVertexFormat();
 +   }
  }

@@ -6,96 +6,96 @@
  
 +   // CraftBukkit start
 +   protected void parseSelector(boolean overridePermissions) throws CommandSyntaxException {
-+      this.f_121189_ = !overridePermissions;
++      this.usesSelectors = !overridePermissions;
 +      // CraftBukkit end
-+      this.f_121176_ = this::m_121322_;
-+      if (!this.f_121201_.canRead()) {
-+         throw f_121193_.createWithContext(this.f_121201_);
++      this.suggestions = this::suggestSelector;
++      if (!this.reader.canRead()) {
++         throw ERROR_MISSING_SELECTOR_TYPE.createWithContext(this.reader);
 +      } else {
-+         int i = this.f_121201_.getCursor();
-+         char c0 = this.f_121201_.read();
++         int i = this.reader.getCursor();
++         char c0 = this.reader.read();
 +         if (c0 == 'p') {
-+            this.f_121203_ = 1;
-+            this.f_121204_ = false;
-+            this.f_121171_ = f_121197_;
-+            this.m_121241_(EntityType.f_20532_);
++            this.maxResults = 1;
++            this.includesEntities = false;
++            this.order = ORDER_NEAREST;
++            this.limitToType(EntityType.PLAYER);
 +         } else if (c0 == 'a') {
-+            this.f_121203_ = Integer.MAX_VALUE;
-+            this.f_121204_ = false;
-+            this.f_121171_ = f_121196_;
-+            this.m_121241_(EntityType.f_20532_);
++            this.maxResults = Integer.MAX_VALUE;
++            this.includesEntities = false;
++            this.order = ORDER_ARBITRARY;
++            this.limitToType(EntityType.PLAYER);
 +         } else if (c0 == 'r') {
-+            this.f_121203_ = 1;
-+            this.f_121204_ = false;
-+            this.f_121171_ = f_121199_;
-+            this.m_121241_(EntityType.f_20532_);
++            this.maxResults = 1;
++            this.includesEntities = false;
++            this.order = ORDER_RANDOM;
++            this.limitToType(EntityType.PLAYER);
 +         } else if (c0 == 's') {
-+            this.f_121203_ = 1;
-+            this.f_121204_ = true;
-+            this.f_121172_ = true;
++            this.maxResults = 1;
++            this.includesEntities = true;
++            this.currentEntity = true;
 +         } else {
 +            if (c0 != 'e') {
-+               this.f_121201_.setCursor(i);
-+               throw f_121191_.createWithContext(this.f_121201_, "@" + String.valueOf(c0));
++               this.reader.setCursor(i);
++               throw ERROR_UNKNOWN_SELECTOR_TYPE.createWithContext(this.reader, "@" + String.valueOf(c0));
 +            }
 +
-+            this.f_121203_ = Integer.MAX_VALUE;
-+            this.f_121204_ = true;
-+            this.f_121171_ = f_121196_;
-+            this.f_121170_ = Entity::m_6084_;
++            this.maxResults = Integer.MAX_VALUE;
++            this.includesEntities = true;
++            this.order = ORDER_ARBITRARY;
++            this.predicate = Entity::isAlive;
 +         }
 +
-+         this.f_121176_ = this::m_121333_;
-+         if (this.f_121201_.canRead() && this.f_121201_.peek() == '[') {
-+            this.f_121201_.skip();
-+            this.f_121176_ = this::m_121341_;
-+            this.m_121317_();
++         this.suggestions = this::suggestOpenOptions;
++         if (this.reader.canRead() && this.reader.peek() == '[') {
++            this.reader.skip();
++            this.suggestions = this::suggestOptionsKeyOrClose;
++            this.parseOptions();
 +         }
 +
 +      }
 +   }
 +
-    protected void m_121304_() throws CommandSyntaxException {
-       if (this.f_121201_.canRead()) {
-          this.f_121176_ = this::m_121309_;
+    protected void parseNameOrUUID() throws CommandSyntaxException {
+       if (this.reader.canRead()) {
+          this.suggestions = this::suggestName;
 @@ -461,6 +_,9 @@
           }
  
-          this.f_121201_.skip();
+          this.reader.skip();
 +         EntitySelector forgeSelector = net.minecraftforge.common.command.EntitySelectorManager.parseSelector(this);
 +         if (forgeSelector != null)
 +            return forgeSelector;
-          this.m_121281_();
+          this.parseSelector();
        } else {
-          this.m_121304_();
+          this.parseNameOrUUID();
 @@ -470,12 +_,36 @@
-       return this.m_121230_();
+       return this.getSelector();
     }
  
 +   // CraftBukkit start
 +   public EntitySelector parse(boolean overridePermissions) throws CommandSyntaxException {
 +      // CraftBukkit end
-+      this.f_121174_ = this.f_121201_.getCursor();
-+      this.f_121176_ = this::m_121286_;
-+      if (this.f_121201_.canRead() && this.f_121201_.peek() == '@') {
-+         if (!this.f_121202_) {
-+            throw f_121192_.createWithContext(this.f_121201_);
++      this.startPosition = this.reader.getCursor();
++      this.suggestions = this::suggestNameOrSelector;
++      if (this.reader.canRead() && this.reader.peek() == '@') {
++         if (!this.allowSelectors) {
++            throw ERROR_SELECTORS_NOT_ALLOWED.createWithContext(this.reader);
 +         }
 +
-+         this.f_121201_.skip();
++         this.reader.skip();
 +         EntitySelector forgeSelector = net.minecraftforge.common.command.EntitySelectorManager.parseSelector(this);
 +         if (forgeSelector != null)
 +            return forgeSelector;
 +         this.parseSelector(overridePermissions); // CraftBukkit
 +      } else {
-+         this.m_121304_();
++         this.parseNameOrUUID();
 +      }
 +
-+      this.m_121229_();
-+      return this.m_121230_();
++      this.finalizePredicates();
++      return this.getSelector();
 +   }
 +
-    private static void m_121247_(SuggestionsBuilder p_121248_) {
+    private static void fillSelectorSuggestions(SuggestionsBuilder p_121248_) {
        p_121248_.suggest("@p", new TranslatableComponent("argument.entity.selector.nearestPlayer"));
        p_121248_.suggest("@a", new TranslatableComponent("argument.entity.selector.allPlayers"));
        p_121248_.suggest("@r", new TranslatableComponent("argument.entity.selector.randomPlayer"));
@@ -104,4 +104,4 @@
 +      net.minecraftforge.common.command.EntitySelectorManager.fillSelectorSuggestions(p_121248_);
     }
  
-    private CompletableFuture<Suggestions> m_121286_(SuggestionsBuilder p_121287_, Consumer<SuggestionsBuilder> p_121288_) {
+    private CompletableFuture<Suggestions> suggestNameOrSelector(SuggestionsBuilder p_121287_, Consumer<SuggestionsBuilder> p_121288_) {

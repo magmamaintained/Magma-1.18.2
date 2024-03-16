@@ -1,24 +1,21 @@
 --- a/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -50,7 +_,8 @@
-    private volatile int f_18807_;
-    private volatile int f_18808_;
-    private volatile int f_18809_;
--   private final Object2FloatMap<ResourceKey<Level>> f_18810_ = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap<>(Util.m_137583_()));
-+   private final Object2FloatMap<ResourceKey<Level>> f_18810_ = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(Util.m_137583_())); // CraftBukkit
+    private volatile int totalChunks;
+    private volatile int converted;
+    private volatile int skipped;
+-   private final Object2FloatMap<ResourceKey<Level>> progressMap = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap<>(Util.identityStrategy()));
++   private final Object2FloatMap<ResourceKey<Level>> progressMap = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(Util.identityStrategy())); // CraftBukkit
 +
-    private volatile Component f_18811_ = new TranslatableComponent("optimizeWorld.stage.counting");
-    private static final Pattern f_18812_ = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
-    private final DimensionDataStorage f_18813_;
-@@ -123,9 +_,9 @@
-                      if (compoundtag != null) {
-                         int j = ChunkStorage.m_63505_(compoundtag);
-                         ChunkGenerator chunkgenerator = this.f_185925_.m_204655_().m_6246_(WorldGenSettings.m_190052_(resourcekey2)).m_63990_();
--                        CompoundTag compoundtag1 = chunkstorage.m_188288_(resourcekey2, () -> {
-+                        CompoundTag compoundtag1 = chunkstorage.upgradeChunkTag(resourcekey2, () -> {
-                            return this.f_18813_;
--                        }, compoundtag, chunkgenerator.m_187743_());
-+                        }, compoundtag, chunkgenerator.m_187743_(),chunkpos,  null); // Magma - maybe fix this?!
-                         ChunkPos chunkpos1 = new ChunkPos(compoundtag1.m_128451_("xPos"), compoundtag1.m_128451_("zPos"));
+    private volatile Component status = new TranslatableComponent("optimizeWorld.stage.counting");
+    private static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
+    private final DimensionDataStorage overworldDataStorage;
+@@ -125,7 +_,7 @@
+                         ChunkGenerator chunkgenerator = this.worldGenSettings.dimensions().get(WorldGenSettings.levelToLevelStem(resourcekey2)).generator();
+                         CompoundTag compoundtag1 = chunkstorage.upgradeChunkTag(resourcekey2, () -> {
+                            return this.overworldDataStorage;
+-                        }, compoundtag, chunkgenerator.getTypeNameForDataFixer());
++                        }, compoundtag, chunkgenerator.getTypeNameForDataFixer(),chunkpos,  null); // Magma - maybe fix this?!
+                         ChunkPos chunkpos1 = new ChunkPos(compoundtag1.getInt("xPos"), compoundtag1.getInt("zPos"));
                          if (!chunkpos1.equals(chunkpos)) {
-                            f_18797_.warn("Chunk {} has invalid position {}", chunkpos, chunkpos1);
+                            LOGGER.warn("Chunk {} has invalid position {}", chunkpos, chunkpos1);

@@ -1,31 +1,31 @@
 --- a/net/minecraft/world/level/block/FarmBlock.java
 +++ b/net/minecraft/world/level/block/FarmBlock.java
 @@ -70,31 +_,55 @@
-       int i = p_53285_.m_61143_(f_53243_);
-       if (!m_53258_(p_53286_, p_53287_) && !p_53286_.m_46758_(p_53287_.m_7494_())) {
+       int i = p_53285_.getValue(MOISTURE);
+       if (!isNearWater(p_53286_, p_53287_) && !p_53286_.isRainingAt(p_53287_.above())) {
           if (i > 0) {
--            p_53286_.m_7731_(p_53287_, p_53285_.m_61124_(f_53243_, Integer.valueOf(i - 1)), 2);
-+            org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleMoistureChangeEvent(p_53286_, p_53287_, p_53285_.m_61124_(f_53243_, Integer.valueOf(i - 1)), 2); // CraftBukkit
-          } else if (!m_53250_(p_53286_, p_53287_)) {
-             m_53296_(p_53285_, p_53286_, p_53287_);
+-            p_53286_.setBlock(p_53287_, p_53285_.setValue(MOISTURE, Integer.valueOf(i - 1)), 2);
++            org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleMoistureChangeEvent(p_53286_, p_53287_, p_53285_.setValue(MOISTURE, Integer.valueOf(i - 1)), 2); // CraftBukkit
+          } else if (!isUnderCrops(p_53286_, p_53287_)) {
+             turnToDirt(p_53285_, p_53286_, p_53287_);
           }
        } else if (i < 7) {
--         p_53286_.m_7731_(p_53287_, p_53285_.m_61124_(f_53243_, Integer.valueOf(7)), 2);
-+         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleMoistureChangeEvent(p_53286_, p_53287_, p_53285_.m_61124_(f_53243_, Integer.valueOf(7)), 2); // CraftBukkit
+-         p_53286_.setBlock(p_53287_, p_53285_.setValue(MOISTURE, Integer.valueOf(7)), 2);
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleMoistureChangeEvent(p_53286_, p_53287_, p_53285_.setValue(MOISTURE, Integer.valueOf(7)), 2); // CraftBukkit
        }
  
     }
  
-    public void m_142072_(Level p_153227_, BlockState p_153228_, BlockPos p_153229_, Entity p_153230_, float p_153231_) {
--      if (!p_153227_.f_46443_ && p_153227_.f_46441_.nextFloat() < p_153231_ - 0.5F && p_153230_ instanceof LivingEntity && (p_153230_ instanceof Player || p_153227_.m_46469_().m_46207_(GameRules.f_46132_)) && p_153230_.m_20205_() * p_153230_.m_20205_() * p_153230_.m_20206_() > 0.512F) {
-+      super.m_142072_(p_153227_, p_153228_, p_153229_, p_153230_, p_153231_); // CraftBukkit - moved here as game rules / events shouldn't affect fall damage
-+      if (!p_153227_.f_46443_ && net.minecraftforge.common.ForgeHooks.onFarmlandTrample(p_153227_, p_153229_, Blocks.f_50493_.m_49966_(), p_153231_, p_153230_)) { // Forge: Move logic to Entity#canTrample
+    public void fallOn(Level p_153227_, BlockState p_153228_, BlockPos p_153229_, Entity p_153230_, float p_153231_) {
+-      if (!p_153227_.isClientSide && p_153227_.random.nextFloat() < p_153231_ - 0.5F && p_153230_ instanceof LivingEntity && (p_153230_ instanceof Player || p_153227_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) && p_153230_.getBbWidth() * p_153230_.getBbWidth() * p_153230_.getBbHeight() > 0.512F) {
++      super.fallOn(p_153227_, p_153228_, p_153229_, p_153230_, p_153231_); // CraftBukkit - moved here as game rules / events shouldn't affect fall damage
++      if (!p_153227_.isClientSide && net.minecraftforge.common.ForgeHooks.onFarmlandTrample(p_153227_, p_153229_, Blocks.DIRT.defaultBlockState(), p_153231_, p_153230_)) { // Forge: Move logic to Entity#canTrample
 +         // CraftBukkit start - Interact soil
 +         org.bukkit.event.Cancellable cancellable;
 +         if (p_153230_ instanceof Player) {
 +            cancellable = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent((Player) p_153230_, org.bukkit.event.block.Action.PHYSICAL, p_153229_, null, null, null);
 +         } else {
-+            cancellable = new org.bukkit.event.entity.EntityInteractEvent(p_153230_.getBukkitEntity(), p_153227_.getWorld().getBlockAt(p_153229_.m_123341_(), p_153229_.m_123342_(), p_153229_.m_123343_()));
++            cancellable = new org.bukkit.event.entity.EntityInteractEvent(p_153230_.getBukkitEntity(), p_153227_.getWorld().getBlockAt(p_153229_.getX(), p_153229_.getY(), p_153229_.getZ()));
 +            p_153227_.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
 +         }
 +
@@ -33,35 +33,35 @@
 +            return;
 +         }
 +
-+         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(p_153230_, p_153229_, Blocks.f_50493_.m_49966_()).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(p_153230_, p_153229_, Blocks.DIRT.defaultBlockState()).isCancelled()) {
 +            return;
 +         }
 +         // CraftBukkit end
-          m_53296_(p_153228_, p_153227_, p_153229_);
+          turnToDirt(p_153228_, p_153227_, p_153229_);
        }
  
--      super.m_142072_(p_153227_, p_153228_, p_153229_, p_153230_, p_153231_);
+-      super.fallOn(p_153227_, p_153228_, p_153229_, p_153230_, p_153231_);
 +      // super.fallOn(p_153227_, p_153228_, p_153229_, p_153230_, p_153231_); // CraftBukkit - moved up
     }
  
-    public static void m_53296_(BlockState p_53297_, Level p_53298_, BlockPos p_53299_) {
+    public static void turnToDirt(BlockState p_53297_, Level p_53298_, BlockPos p_53299_) {
 +      // CraftBukkit start
-+      if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_53298_, p_53299_, Blocks.f_50493_.m_49966_()).isCancelled()) {
++      if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_53298_, p_53299_, Blocks.DIRT.defaultBlockState()).isCancelled()) {
 +         return;
 +      }
 +      // CraftBukkit end
-       p_53298_.m_46597_(p_53299_, m_49897_(p_53297_, Blocks.f_50493_.m_49966_(), p_53298_, p_53299_));
+       p_53298_.setBlockAndUpdate(p_53299_, pushEntitiesUp(p_53297_, Blocks.DIRT.defaultBlockState(), p_53298_, p_53299_));
     }
  
-    private static boolean m_53250_(BlockGetter p_53251_, BlockPos p_53252_) {
--      Block block = p_53251_.m_8055_(p_53252_.m_7494_()).m_60734_();
+    private static boolean isUnderCrops(BlockGetter p_53251_, BlockPos p_53252_) {
+-      Block block = p_53251_.getBlockState(p_53252_.above()).getBlock();
 -      return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
-+      BlockState plant = p_53251_.m_8055_(p_53252_.m_7494_());
-+      BlockState state = p_53251_.m_8055_(p_53252_);
-+      return plant.m_60734_() instanceof net.minecraftforge.common.IPlantable && state.canSustainPlant(p_53251_, p_53252_, Direction.UP, (net.minecraftforge.common.IPlantable)plant.m_60734_());
++      BlockState plant = p_53251_.getBlockState(p_53252_.above());
++      BlockState state = p_53251_.getBlockState(p_53252_);
++      return plant.getBlock() instanceof net.minecraftforge.common.IPlantable && state.canSustainPlant(p_53251_, p_53252_, Direction.UP, (net.minecraftforge.common.IPlantable)plant.getBlock());
     }
  
-    private static boolean m_53258_(LevelReader p_53259_, BlockPos p_53260_) {
+    private static boolean isNearWater(LevelReader p_53259_, BlockPos p_53260_) {
 @@ -104,7 +_,7 @@
           }
        }
@@ -70,4 +70,4 @@
 +      return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(p_53259_, p_53260_);
     }
  
-    protected void m_7926_(StateDefinition.Builder<Block, BlockState> p_53283_) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_53283_) {

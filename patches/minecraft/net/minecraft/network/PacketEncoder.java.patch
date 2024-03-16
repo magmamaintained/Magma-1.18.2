@@ -2,12 +2,12 @@
 +++ b/net/minecraft/network/PacketEncoder.java
 @@ -38,8 +_,8 @@
                 int i = friendlybytebuf.writerIndex();
-                p_130546_.m_5779_(friendlybytebuf);
+                p_130546_.write(friendlybytebuf);
                 int j = friendlybytebuf.writerIndex() - i;
 -               if (j > 8388608) {
 -                  throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than 8388608): " + p_130546_);
 +               if (j > 8388608 && j > org.magmafoundation.magma.configuration.MagmaConfig.instance.forgeMaxPacketSize.getValues()) {
 +                  throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than "+org.magmafoundation.magma.configuration.MagmaConfig.instance.forgeMaxPacketSize.getValues()+"): " + p_130546_);
                 } else {
-                   int k = p_130545_.channel().attr(Connection.f_129461_).get().m_129582_();
-                   JvmProfiler.f_185340_.m_183508_(k, integer, p_130545_.channel().remoteAddress(), j);
+                   int k = p_130545_.channel().attr(Connection.ATTRIBUTE_PROTOCOL).get().getId();
+                   JvmProfiler.INSTANCE.onPacketSent(k, integer, p_130545_.channel().remoteAddress(), j);

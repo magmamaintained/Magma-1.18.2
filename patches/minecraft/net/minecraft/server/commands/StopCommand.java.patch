@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/StopCommand.java
 @@ -8,7 +_,7 @@
  public class StopCommand {
-    public static void m_138785_(CommandDispatcher<CommandSourceStack> p_138786_) {
-       p_138786_.register(Commands.m_82127_("stop").requires((p_138790_) -> {
--         return p_138790_.m_6761_(4);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138786_) {
+       p_138786_.register(Commands.literal("stop").requires((p_138790_) -> {
+-         return p_138790_.hasPermission(4);
 +         return p_138790_.hasPermission(4,"minecraft.command.stop");
        }).executes((p_138788_) -> {
-          p_138788_.getSource().m_81354_(new TranslatableComponent("commands.stop.stopping"), true);
-          p_138788_.getSource().m_81377_().m_7570_(false);
+          p_138788_.getSource().sendSuccess(new TranslatableComponent("commands.stop.stopping"), true);
+          p_138788_.getSource().getServer().halt(false);

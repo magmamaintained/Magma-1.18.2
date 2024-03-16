@@ -6,6 +6,6 @@
  
 -public class SensorType<U extends Sensor<?>> {
 +public class SensorType<U extends Sensor<?>> extends net.minecraftforge.registries.ForgeRegistryEntry<SensorType<?>> {
-    public static final SensorType<DummySensor> f_26809_ = m_26828_("dummy", DummySensor::new);
-    public static final SensorType<NearestItemSensor> f_26810_ = m_26828_("nearest_items", NearestItemSensor::new);
-    public static final SensorType<NearestLivingEntitySensor> f_26811_ = m_26828_("nearest_living_entities", NearestLivingEntitySensor::new);
+    public static final SensorType<DummySensor> DUMMY = register("dummy", DummySensor::new);
+    public static final SensorType<NearestItemSensor> NEAREST_ITEMS = register("nearest_items", NearestItemSensor::new);
+    public static final SensorType<NearestLivingEntitySensor> NEAREST_LIVING_ENTITIES = register("nearest_living_entities", NearestLivingEntitySensor::new);

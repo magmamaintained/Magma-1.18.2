@@ -1,7 +1,7 @@
 --- a/net/minecraft/commands/CommandSource.java
 +++ b/net/minecraft/commands/CommandSource.java
 @@ -19,6 +_,14 @@
-       public boolean m_6102_() {
+       public boolean shouldInformAdmins() {
           return false;
        }
 +
@@ -14,9 +14,9 @@
 +      // CraftBukkit end
     };
  
-    void m_6352_(Component p_80166_, UUID p_80167_);
+    void sendMessage(Component p_80166_, UUID p_80167_);
 @@ -32,4 +_,6 @@
-    default boolean m_142559_() {
+    default boolean alwaysAccepts() {
        return false;
     }
 +

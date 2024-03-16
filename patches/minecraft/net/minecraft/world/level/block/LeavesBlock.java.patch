@@ -6,21 +6,21 @@
  
 -public class LeavesBlock extends Block {
 +public class LeavesBlock extends Block implements net.minecraftforge.common.IForgeShearable {
-    public static final int f_153563_ = 7;
-    public static final IntegerProperty f_54418_ = BlockStateProperties.f_61414_;
-    public static final BooleanProperty f_54419_ = BlockStateProperties.f_61447_;
+    public static final int DECAY_DISTANCE = 7;
+    public static final IntegerProperty DISTANCE = BlockStateProperties.DISTANCE;
+    public static final BooleanProperty PERSISTENT = BlockStateProperties.PERSISTENT;
 @@ -40,6 +_,14 @@
  
-    public void m_7455_(BlockState p_54451_, ServerLevel p_54452_, BlockPos p_54453_, Random p_54454_) {
-       if (!p_54451_.m_61143_(f_54419_) && p_54451_.m_61143_(f_54418_) == 7) {
+    public void randomTick(BlockState p_54451_, ServerLevel p_54452_, BlockPos p_54453_, Random p_54454_) {
+       if (!p_54451_.getValue(PERSISTENT) && p_54451_.getValue(DISTANCE) == 7) {
 +         // CraftBukkit start
-+         org.bukkit.event.block.LeavesDecayEvent event = new org.bukkit.event.block.LeavesDecayEvent(p_54452_.getWorld().getBlockAt(p_54453_.m_123341_(), p_54453_.m_123342_(), p_54453_.m_123343_()));
++         org.bukkit.event.block.LeavesDecayEvent event = new org.bukkit.event.block.LeavesDecayEvent(p_54452_.getWorld().getBlockAt(p_54453_.getX(), p_54453_.getY(), p_54453_.getZ()));
 +         p_54452_.getCraftServer().getPluginManager().callEvent(event);
 +
-+         if (event.isCancelled() || p_54452_.m_8055_(p_54453_).m_60734_() != this) {
++         if (event.isCancelled() || p_54452_.getBlockState(p_54453_).getBlock() != this) {
 +            return;
 +         }
 +         // CraftBukkit end
-          m_49950_(p_54451_, p_54452_, p_54453_);
-          p_54452_.m_7471_(p_54453_, false);
+          dropResources(p_54451_, p_54452_, p_54453_);
+          p_54452_.removeBlock(p_54453_, false);
        }

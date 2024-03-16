@@ -6,29 +6,29 @@
  
 -public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T> {
 +public class EntityType<T extends Entity> extends net.minecraftforge.registries.ForgeRegistryEntry<EntityType<?>> implements EntityTypeTest<Entity, T> {
-    private static final Logger f_20534_ = LogUtils.getLogger();
-    public static final String f_147037_ = "EntityTag";
-    private final Holder.Reference<EntityType<?>> f_204038_ = Registry.f_122826_.m_203693_(this);
-    private static final float f_147038_ = 1.3964844F;
--   public static final EntityType<AreaEffectCloud> f_20476_ = m_20634_("area_effect_cloud", EntityType.Builder.<AreaEffectCloud>m_20704_(AreaEffectCloud::new, MobCategory.MISC).m_20719_().m_20699_(6.0F, 0.5F).m_20702_(10).m_20717_(Integer.MAX_VALUE));
-+   public static final EntityType<AreaEffectCloud> f_20476_ = m_20634_("area_effect_cloud", EntityType.Builder.<AreaEffectCloud>m_20704_(AreaEffectCloud::new, MobCategory.MISC).m_20719_().m_20699_(6.0F, 0.5F).m_20702_(10).m_20717_(10)); // CraftBukkit - SPIGOT-3729: track area effect clouds
-    public static final EntityType<ArmorStand> f_20529_ = m_20634_("armor_stand", EntityType.Builder.<ArmorStand>m_20704_(ArmorStand::new, MobCategory.MISC).m_20699_(0.5F, 1.975F).m_20702_(10));
-    public static final EntityType<Arrow> f_20548_ = m_20634_("arrow", EntityType.Builder.<Arrow>m_20704_(Arrow::new, MobCategory.MISC).m_20699_(0.5F, 0.5F).m_20702_(4).m_20717_(20));
-    public static final EntityType<Axolotl> f_147039_ = m_20634_("axolotl", EntityType.Builder.<Axolotl>m_20704_(Axolotl::new, MobCategory.AXOLOTLS).m_20699_(0.75F, 0.42F).m_20702_(10));
+    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String ENTITY_TAG = "EntityTag";
+    private final Holder.Reference<EntityType<?>> builtInRegistryHolder = Registry.ENTITY_TYPE.createIntrusiveHolder(this);
+    private static final float MAGIC_HORSE_WIDTH = 1.3964844F;
+-   public static final EntityType<AreaEffectCloud> AREA_EFFECT_CLOUD = register("area_effect_cloud", EntityType.Builder.<AreaEffectCloud>of(AreaEffectCloud::new, MobCategory.MISC).fireImmune().sized(6.0F, 0.5F).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE));
++   public static final EntityType<AreaEffectCloud> AREA_EFFECT_CLOUD = register("area_effect_cloud", EntityType.Builder.<AreaEffectCloud>of(AreaEffectCloud::new, MobCategory.MISC).fireImmune().sized(6.0F, 0.5F).clientTrackingRange(10).updateInterval(10)); // CraftBukkit - SPIGOT-3729: track area effect clouds
+    public static final EntityType<ArmorStand> ARMOR_STAND = register("armor_stand", EntityType.Builder.<ArmorStand>of(ArmorStand::new, MobCategory.MISC).sized(0.5F, 1.975F).clientTrackingRange(10));
+    public static final EntityType<Arrow> ARROW = register("arrow", EntityType.Builder.<Arrow>of(Arrow::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20));
+    public static final EntityType<Axolotl> AXOLOTL = register("axolotl", EntityType.Builder.<Axolotl>of(Axolotl::new, MobCategory.AXOLOTLS).sized(0.75F, 0.42F).clientTrackingRange(10));
 @@ -283,6 +_,11 @@
-    private ResourceLocation f_20546_;
-    private final EntityDimensions f_20547_;
+    private ResourceLocation lootTable;
+    private final EntityDimensions dimensions;
  
 +   private final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier;
 +   private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +   private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
 +   private final java.util.function.BiFunction<net.minecraftforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory;
 +
-    private static <T extends Entity> EntityType<T> m_20634_(String p_20635_, EntityType.Builder<T> p_20636_) {
-       return Registry.m_122961_(Registry.f_122826_, p_20635_, p_20636_.m_20712_(p_20635_));
+    private static <T extends Entity> EntityType<T> register(String p_20635_, EntityType.Builder<T> p_20636_) {
+       return Registry.register(Registry.ENTITY_TYPE, p_20635_, p_20636_.build(p_20635_));
     }
 @@ -295,7 +_,19 @@
-       return Registry.f_122826_.m_6612_(ResourceLocation.m_135820_(p_20633_));
+       return Registry.ENTITY_TYPE.getOptional(ResourceLocation.tryParse(p_20633_));
     }
  
 +   // Paper start - add id
@@ -44,13 +44,13 @@
 +
 +   public EntityType(EntityType.EntityFactory<T> p_20574_, MobCategory p_20575_, boolean p_20576_, boolean p_20577_, boolean p_20578_, boolean p_20579_, ImmutableSet<Block> p_20580_, EntityDimensions p_20581_, int p_20582_, int p_20583_, final java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier, final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier, final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier, final java.util.function.BiFunction<net.minecraftforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory, String id) {
 +      // Paper end
-       this.f_20535_ = p_20574_;
-       this.f_20536_ = p_20575_;
-       this.f_20541_ = p_20579_;
+       this.factory = p_20574_;
+       this.category = p_20575_;
+       this.canSpawnFarFromPlayer = p_20579_;
 @@ -306,17 +_,39 @@
-       this.f_20547_ = p_20581_;
-       this.f_20542_ = p_20582_;
-       this.f_20543_ = p_20583_;
+       this.dimensions = p_20581_;
+       this.clientTrackingRange = p_20582_;
+       this.updateInterval = p_20583_;
 +      this.velocityUpdateSupplier = velocityUpdateSupplier;
 +      this.trackingRangeSupplier = trackingRangeSupplier;
 +      this.updateIntervalSupplier = updateIntervalSupplier;
@@ -66,9 +66,9 @@
     }
  
     @Nullable
-    public Entity m_20592_(ServerLevel p_20593_, @Nullable ItemStack p_20594_, @Nullable Player p_20595_, BlockPos p_20596_, MobSpawnType p_20597_, boolean p_20598_, boolean p_20599_) {
+    public Entity spawn(ServerLevel p_20593_, @Nullable ItemStack p_20594_, @Nullable Player p_20595_, BlockPos p_20596_, MobSpawnType p_20597_, boolean p_20598_, boolean p_20599_) {
 +      this.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
-       return this.m_20600_(p_20593_, p_20594_ == null ? null : p_20594_.m_41783_(), p_20594_ != null && p_20594_.m_41788_() ? p_20594_.m_41786_() : null, p_20595_, p_20596_, p_20597_, p_20598_, p_20599_);
+       return this.spawn(p_20593_, p_20594_ == null ? null : p_20594_.getTag(), p_20594_ != null && p_20594_.hasCustomHoverName() ? p_20594_.getHoverName() : null, p_20595_, p_20596_, p_20597_, p_20598_, p_20599_);
     }
  
 +   //Magma start - spawn reason
@@ -79,31 +79,31 @@
 +   //Magma end
 +
     @Nullable
-    public T m_20600_(ServerLevel p_20601_, @Nullable CompoundTag p_20602_, @Nullable Component p_20603_, @Nullable Player p_20604_, BlockPos p_20605_, MobSpawnType p_20606_, boolean p_20607_, boolean p_20608_) {
-       T t = this.m_20655_(p_20601_, p_20602_, p_20603_, p_20604_, p_20605_, p_20606_, p_20607_, p_20608_);
+    public T spawn(ServerLevel p_20601_, @Nullable CompoundTag p_20602_, @Nullable Component p_20603_, @Nullable Player p_20604_, BlockPos p_20605_, MobSpawnType p_20606_, boolean p_20607_, boolean p_20608_) {
+       T t = this.create(p_20601_, p_20602_, p_20603_, p_20604_, p_20605_, p_20606_, p_20607_, p_20608_);
        if (t != null) {
 +         p_20601_.prepareEntity(t, spawn_spawnReason); //Magma - add spawn reason
 +         prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG); //Magma - reset spawn reason
-          p_20601_.m_47205_(t);
+          p_20601_.addFreshEntityWithPassengers(t);
        }
  
 @@ -342,6 +_,7 @@
              Mob mob = (Mob)t;
-             mob.f_20885_ = mob.m_146908_();
-             mob.f_20883_ = mob.m_146908_();
-+            if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(mob, p_20656_, (float) mob.m_20185_(), (float) mob.m_20186_(), (float) mob.m_20189_(), null, p_20661_))
-             mob.m_6518_(p_20656_, p_20656_.m_6436_(mob.m_142538_()), p_20661_, (SpawnGroupData)null, p_20657_);
-             mob.m_8032_();
+             mob.yHeadRot = mob.getYRot();
+             mob.yBodyRot = mob.getYRot();
++            if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(mob, p_20656_, (float) mob.getX(), (float) mob.getY(), (float) mob.getZ(), null, p_20661_))
+             mob.finalizeSpawn(p_20656_, p_20656_.getCurrentDifficultyAt(mob.blockPosition()), p_20661_, (SpawnGroupData)null, p_20657_);
+             mob.playAmbientSound();
           }
 @@ -350,7 +_,11 @@
-             t.m_6593_(p_20658_);
+             t.setCustomName(p_20658_);
           }
  
--         m_20620_(p_20656_, p_20659_, t, p_20657_);
+-         updateCustomEntityTag(p_20656_, p_20659_, t, p_20657_);
 +         try {
-+            m_20620_(p_20656_, p_20659_, t, p_20657_);
++            updateCustomEntityTag(p_20656_, p_20659_, t, p_20657_);
 +         } catch (Throwable t0) {
-+            f_20534_.warn("Error loading spawn eg NBT", t0);
++            LOGGER.warn("Error loading spawn eg NBT", t0);
 +         }
           return t;
        }
@@ -111,18 +111,18 @@
 @@ -544,14 +_,29 @@
     }
  
-    public int m_20681_() {
+    public int clientTrackingRange() {
 +      return trackingRangeSupplier.applyAsInt(this);
 +   }
 +   private int defaultTrackingRangeSupplier() {
-       return this.f_20542_;
+       return this.clientTrackingRange;
     }
  
-    public int m_20682_() {
+    public int updateInterval() {
 +      return updateIntervalSupplier.applyAsInt(this);
 +   }
 +   private int defaultUpdateIntervalSupplier() {
-       return this.f_20543_;
+       return this.updateInterval;
     }
  
 +   // Paper start - timings
@@ -131,29 +131,29 @@
 +   public final co.aikar.timings.Timing passengerTickTimer;
 +   public final co.aikar.timings.Timing passengerInactiveTickTimer;
 +   // Paper end
-    public boolean m_20683_() {
+    public boolean trackDeltas() {
 +      return velocityUpdateSupplier.test(this);
 +   }
 +   private boolean defaultVelocitySupplier() {
-       return this != f_20532_ && this != f_20467_ && this != f_20496_ && this != f_20549_ && this != f_20462_ && this != f_147033_ && this != f_20464_ && this != f_20506_ && this != f_20564_ && this != f_20569_;
+       return this != PLAYER && this != LLAMA_SPIT && this != WITHER && this != BAT && this != ITEM_FRAME && this != GLOW_ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != END_CRYSTAL && this != EVOKER_FANGS;
     }
  
 @@ -574,6 +_,12 @@
-       return this.f_204038_;
+       return this.builtInRegistryHolder;
     }
  
 +   public T customClientSpawn(net.minecraftforge.network.PlayMessages.SpawnEntity packet, Level world) {
-+       if (customClientFactory == null) return this.m_20615_(world);
++       if (customClientFactory == null) return this.create(world);
 +       return customClientFactory.apply(packet, world);
 +   }
-+   public Stream<TagKey<EntityType<?>>> getTags() {return this.m_204041_().m_203616_();}
++   public Stream<TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
 +
     public static class Builder<T extends Entity> {
-       private final EntityType.EntityFactory<T> f_20685_;
-       private final MobCategory f_20686_;
+       private final EntityType.EntityFactory<T> factory;
+       private final MobCategory category;
 @@ -586,6 +_,11 @@
-       private int f_20693_ = 3;
-       private EntityDimensions f_20694_ = EntityDimensions.m_20395_(0.6F, 1.8F);
+       private int updateInterval = 3;
+       private EntityDimensions dimensions = EntityDimensions.scalable(0.6F, 1.8F);
  
 +      private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultVelocitySupplier;
 +      private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
@@ -161,8 +161,8 @@
 +      private java.util.function.BiFunction<net.minecraftforge.network.PlayMessages.SpawnEntity, Level, T> customClientFactory;
 +
        private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
-          this.f_20685_ = p_20696_;
-          this.f_20686_ = p_20697_;
+          this.factory = p_20696_;
+          this.category = p_20697_;
 @@ -642,16 +_,46 @@
           return this;
        }
@@ -191,23 +191,23 @@
 +          return this;
 +      }
 +
-       public EntityType<T> m_20712_(String p_20713_) {
-          if (this.f_20688_) {
-             Util.m_137456_(References.f_16785_, p_20713_);
+       public EntityType<T> build(String p_20713_) {
+          if (this.serialize) {
+             Util.fetchChoiceType(References.ENTITY_TREE, p_20713_);
           }
  
--         return new EntityType<>(this.f_20685_, this.f_20686_, this.f_20688_, this.f_20689_, this.f_20690_, this.f_20691_, this.f_20687_, this.f_20694_, this.f_20692_, this.f_20693_);
-+         return new EntityType<>(this.f_20685_, this.f_20686_, this.f_20688_, this.f_20689_, this.f_20690_, this.f_20691_, this.f_20687_, this.f_20694_, this.f_20692_, this.f_20693_, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory, p_20713_); // Paper - add id
+-         return new EntityType<>(this.factory, this.category, this.serialize, this.summon, this.fireImmune, this.canSpawnFarFromPlayer, this.immuneTo, this.dimensions, this.clientTrackingRange, this.updateInterval);
++         return new EntityType<>(this.factory, this.category, this.serialize, this.summon, this.fireImmune, this.canSpawnFarFromPlayer, this.immuneTo, this.dimensions, this.clientTrackingRange, this.updateInterval, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory, p_20713_); // Paper - add id
        }
     }
  
     public interface EntityFactory<T extends Entity> {
-       T m_20721_(EntityType<T> p_20722_, Level p_20723_);
+       T create(EntityType<T> p_20722_, Level p_20723_);
     }
 +
 +   // Paper start
 +   public static java.util.Set<ResourceLocation> getEntityNameList() {
-+      return Registry.f_122826_.m_6566_();
++      return Registry.ENTITY_TYPE.keySet();
 +   }
 +   // Paper end
  }

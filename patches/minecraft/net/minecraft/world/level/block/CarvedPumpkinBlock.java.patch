@@ -2,60 +2,60 @@
 +++ b/net/minecraft/world/level/block/CarvedPumpkinBlock.java
 @@ -55,17 +_,28 @@
  
-    private void m_51378_(Level p_51379_, BlockPos p_51380_) {
-       BlockPattern.BlockPatternMatch blockpattern$blockpatternmatch = this.m_51393_().m_61184_(p_51379_, p_51380_);
+    private void trySpawnGolem(Level p_51379_, BlockPos p_51380_) {
+       BlockPattern.BlockPatternMatch blockpattern$blockpatternmatch = this.getOrCreateSnowGolemFull().find(p_51379_, p_51380_);
 +      org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator(p_51379_); // CraftBukkit - Use BlockStateListPopulator
        if (blockpattern$blockpatternmatch != null) {
-          for(int i = 0; i < this.m_51393_().m_61202_(); ++i) {
-             BlockInWorld blockinworld = blockpattern$blockpatternmatch.m_61229_(0, i, 0);
--            p_51379_.m_7731_(blockinworld.m_61176_(), Blocks.f_50016_.m_49966_(), 2);
--            p_51379_.m_46796_(2001, blockinworld.m_61176_(), Block.m_49956_(blockinworld.m_61168_()));
-+            blockList.m_7731_(blockinworld.m_61176_(), Blocks.f_50016_.m_49966_(), 2); // CraftBukkit
+          for(int i = 0; i < this.getOrCreateSnowGolemFull().getHeight(); ++i) {
+             BlockInWorld blockinworld = blockpattern$blockpatternmatch.getBlock(0, i, 0);
+-            p_51379_.setBlock(blockinworld.getPos(), Blocks.AIR.defaultBlockState(), 2);
+-            p_51379_.levelEvent(2001, blockinworld.getPos(), Block.getId(blockinworld.getState()));
++            blockList.setBlock(blockinworld.getPos(), Blocks.AIR.defaultBlockState(), 2); // CraftBukkit
 +            //p_51379_.levelEvent(2001, blockinworld.getPos(), Block.getId(blockinworld.getState()));
           }
  
-          SnowGolem snowgolem = EntityType.f_20528_.m_20615_(p_51379_);
-          BlockPos blockpos1 = blockpattern$blockpatternmatch.m_61229_(0, 2, 0).m_61176_();
-          snowgolem.m_7678_((double)blockpos1.m_123341_() + 0.5D, (double)blockpos1.m_123342_() + 0.05D, (double)blockpos1.m_123343_() + 0.5D, 0.0F, 0.0F);
--         p_51379_.m_7967_(snowgolem);
+          SnowGolem snowgolem = EntityType.SNOW_GOLEM.create(p_51379_);
+          BlockPos blockpos1 = blockpattern$blockpatternmatch.getBlock(0, 2, 0).getPos();
+          snowgolem.moveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.05D, (double)blockpos1.getZ() + 0.5D, 0.0F, 0.0F);
+-         p_51379_.addFreshEntity(snowgolem);
 +
 +         // CraftBukkit start
 +         p_51379_.prepareEntity(snowgolem, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
-+         if (!p_51379_.m_7967_(snowgolem)) {
++         if (!p_51379_.addFreshEntity(snowgolem)) {
 +            return;
 +         }
 +         for (BlockPos pos : blockList.getBlocks()) {
-+            p_51379_.m_46796_(2001, pos, Block.m_49956_(p_51379_.m_8055_(pos)));
++            p_51379_.levelEvent(2001, pos, Block.getId(p_51379_.getBlockState(pos)));
 +         }
 +         blockList.updateList();
 +         // CraftBukkit end
  
-          for(ServerPlayer serverplayer : p_51379_.m_45976_(ServerPlayer.class, snowgolem.m_142469_().m_82400_(5.0D))) {
-             CriteriaTriggers.f_10580_.m_68256_(serverplayer, snowgolem);
+          for(ServerPlayer serverplayer : p_51379_.getEntitiesOfClass(ServerPlayer.class, snowgolem.getBoundingBox().inflate(5.0D))) {
+             CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, snowgolem);
 @@ -81,8 +_,8 @@
-             for(int j = 0; j < this.m_51397_().m_61203_(); ++j) {
-                for(int k = 0; k < this.m_51397_().m_61202_(); ++k) {
-                   BlockInWorld blockinworld2 = blockpattern$blockpatternmatch.m_61229_(j, k, 0);
--                  p_51379_.m_7731_(blockinworld2.m_61176_(), Blocks.f_50016_.m_49966_(), 2);
--                  p_51379_.m_46796_(2001, blockinworld2.m_61176_(), Block.m_49956_(blockinworld2.m_61168_()));
-+                  blockList.m_7731_(blockinworld2.m_61176_(), Blocks.f_50016_.m_49966_(), 2); // CraftBukkit
+             for(int j = 0; j < this.getOrCreateIronGolemFull().getWidth(); ++j) {
+                for(int k = 0; k < this.getOrCreateIronGolemFull().getHeight(); ++k) {
+                   BlockInWorld blockinworld2 = blockpattern$blockpatternmatch.getBlock(j, k, 0);
+-                  p_51379_.setBlock(blockinworld2.getPos(), Blocks.AIR.defaultBlockState(), 2);
+-                  p_51379_.levelEvent(2001, blockinworld2.getPos(), Block.getId(blockinworld2.getState()));
++                  blockList.setBlock(blockinworld2.getPos(), Blocks.AIR.defaultBlockState(), 2); // CraftBukkit
 +                  //p_51379_.levelEvent(2001, blockinworld2.getPos(), Block.getId(blockinworld2.getState()));
                 }
              }
  
 @@ -90,7 +_,14 @@
-             IronGolem irongolem = EntityType.f_20460_.m_20615_(p_51379_);
-             irongolem.m_28887_(true);
-             irongolem.m_7678_((double)blockpos.m_123341_() + 0.5D, (double)blockpos.m_123342_() + 0.05D, (double)blockpos.m_123343_() + 0.5D, 0.0F, 0.0F);
--            p_51379_.m_7967_(irongolem);
+             IronGolem irongolem = EntityType.IRON_GOLEM.create(p_51379_);
+             irongolem.setPlayerCreated(true);
+             irongolem.moveTo((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.05D, (double)blockpos.getZ() + 0.5D, 0.0F, 0.0F);
+-            p_51379_.addFreshEntity(irongolem);
 +            // CraftBukkit start
 +            p_51379_.prepareEntity(irongolem, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM); //Magma - add spawn reason
-+            if (!p_51379_.m_7967_(irongolem)) {
++            if (!p_51379_.addFreshEntity(irongolem)) {
 +               return;
 +            }
-+            blockList.getBlocks().forEach(pos -> p_51379_.m_46796_(2001, pos, Block.m_49956_(p_51379_.m_8055_(pos))));
++            blockList.getBlocks().forEach(pos -> p_51379_.levelEvent(2001, pos, Block.getId(p_51379_.getBlockState(pos))));
 +            blockList.updateList();
 +            // CraftBukkit end
  
-             for(ServerPlayer serverplayer1 : p_51379_.m_45976_(ServerPlayer.class, irongolem.m_142469_().m_82400_(5.0D))) {
-                CriteriaTriggers.f_10580_.m_68256_(serverplayer1, irongolem);
+             for(ServerPlayer serverplayer1 : p_51379_.getEntitiesOfClass(ServerPlayer.class, irongolem.getBoundingBox().inflate(5.0D))) {
+                CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer1, irongolem);

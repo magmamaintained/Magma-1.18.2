@@ -4,9 +4,9 @@
     }
  
     public boolean test(LootContext p_81930_) {
--      return p_81930_.m_78933_().nextFloat() < this.f_81921_;
+-      return p_81930_.getRandom().nextFloat() < this.probability;
 +      int i = p_81930_.getLootingModifier();
-+      return p_81930_.m_78933_().nextFloat() < this.f_81921_ + (float) i;
++      return p_81930_.getRandom().nextFloat() < this.probability + (float) i;
     }
  
-    public static LootItemCondition.Builder m_81927_(float p_81928_) {
+    public static LootItemCondition.Builder randomChance(float p_81928_) {

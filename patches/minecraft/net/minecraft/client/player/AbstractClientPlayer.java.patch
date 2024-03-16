@@ -4,7 +4,7 @@
           }
        }
  
--      return Mth.m_14179_(Minecraft.m_91087_().f_91066_.f_92070_, 1.0F, f);
+-      return Mth.lerp(Minecraft.getInstance().options.fovEffectScale, 1.0F, f);
 +      return net.minecraftforge.client.ForgeHooksClient.getFieldOfView(this, f);
     }
  }

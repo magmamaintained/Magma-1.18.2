@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/lighting/DynamicGraphMinFixedPoint.java
 @@ -26,6 +_,7 @@
           for(int i = 0; i < p_75543_; ++i) {
-             this.f_75538_[i] = new LongLinkedOpenHashSet(p_75544_, 0.5F) {
+             this.queues[i] = new LongLinkedOpenHashSet(p_75544_, 0.5F) {
                 protected void rehash(int p_75611_) {
 +                  if (size < 0 || p_75611_ < 0) return; //Magma
                    if (p_75611_ > p_75544_) {
@@ -10,18 +10,18 @@
                    }
 @@ -36,6 +_,7 @@
  
-          this.f_75539_ = new Long2ByteOpenHashMap(p_75545_, 0.5F) {
+          this.computedLevels = new Long2ByteOpenHashMap(p_75545_, 0.5F) {
              protected void rehash(int p_75620_) {
 +               if (size < (containsNullKey ? 1 : 0) || p_75620_ < 0) return; //Magma
                 if (p_75620_ > p_75545_) {
                    super.rehash(p_75620_);
                 }
 @@ -229,4 +_,8 @@
-    protected abstract void m_7351_(long p_75552_, int p_75553_);
+    protected abstract void setLevel(long p_75552_, int p_75553_);
  
-    protected abstract int m_6359_(long p_75590_, long p_75591_, int p_75592_);
+    protected abstract int computeLevelFromNeighbor(long p_75590_, long p_75591_, int p_75592_);
 +
 +   protected int queuedUpdateSize() {
-+      return f_75539_.size();
++      return computedLevels.size();
 +   }
  }

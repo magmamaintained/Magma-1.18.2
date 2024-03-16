@@ -3,7 +3,7 @@
 @@ -49,4 +_,6 @@
     }
  
-    boolean m_183595_();
+    boolean isClientSide();
 +
 +   org.bukkit.craftbukkit.v1_18_R2.inventory.CraftMerchant getCraftMerchant(); // CraftBukkit
  }

@@ -1,39 +1,39 @@
 --- a/net/minecraft/world/entity/projectile/ThrownPotion.java
 +++ b/net/minecraft/world/entity/projectile/ThrownPotion.java
 @@ -87,7 +_,7 @@
-          boolean flag = potion == Potions.f_43599_ && list.isEmpty();
+          boolean flag = potion == Potions.WATER && list.isEmpty();
           if (flag) {
-             this.m_37552_();
+             this.applyWater();
 -         } else if (!list.isEmpty()) {
 +         } else if (true || !list.isEmpty()) { // CraftBukkit - Call event even if no effects to apply
-             if (this.m_37553_()) {
-                this.m_37537_(itemstack, potion);
+             if (this.isLingering()) {
+                this.makeAreaOfEffectCloud(itemstack, potion);
              } else {
 @@ -122,10 +_,11 @@
-    private void m_37547_(List<MobEffectInstance> p_37548_, @Nullable Entity p_37549_) {
-       AABB aabb = this.m_142469_().m_82377_(4.0D, 2.0D, 4.0D);
-       List<LivingEntity> list = this.f_19853_.m_45976_(LivingEntity.class, aabb);
+    private void applySplash(List<MobEffectInstance> p_37548_, @Nullable Entity p_37549_) {
+       AABB aabb = this.getBoundingBox().inflate(4.0D, 2.0D, 4.0D);
+       List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
 +      java.util.Map<org.bukkit.entity.LivingEntity, Double> affected = new java.util.HashMap<org.bukkit.entity.LivingEntity, Double>(); // CraftBukkit
        if (!list.isEmpty()) {
-          Entity entity = this.m_150173_();
+          Entity entity = this.getEffectSource();
  
 -         for(LivingEntity livingentity : list) {
 +         for (LivingEntity livingentity : list) {
-             if (livingentity.m_5801_()) {
-                double d0 = this.m_20280_(livingentity);
+             if (livingentity.isAffectedByPotions()) {
+                double d0 = this.distanceToSqr(livingentity);
                 if (d0 < 16.0D) {
 @@ -134,22 +_,47 @@
                       d1 = 1.0D;
                    }
  
 -                  for(MobEffectInstance mobeffectinstance : p_37548_) {
--                     MobEffect mobeffect = mobeffectinstance.m_19544_();
--                     if (mobeffect.m_8093_()) {
--                        mobeffect.m_19461_(this, this.m_37282_(), livingentity, mobeffectinstance.m_19564_(), d1);
+-                     MobEffect mobeffect = mobeffectinstance.getEffect();
+-                     if (mobeffect.isInstantenous()) {
+-                        mobeffect.applyInstantenousEffect(this, this.getOwner(), livingentity, mobeffectinstance.getAmplifier(), d1);
 -                     } else {
--                        int i = (int)(d1 * (double)mobeffectinstance.m_19557_() + 0.5D);
+-                        int i = (int)(d1 * (double)mobeffectinstance.getDuration() + 0.5D);
 -                        if (i > 20) {
--                           livingentity.m_147207_(new MobEffectInstance(mobeffect, i, mobeffectinstance.m_19564_(), mobeffectinstance.m_19571_(), mobeffectinstance.m_19572_()), entity);
+-                           livingentity.addEffect(new MobEffectInstance(mobeffect, i, mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible()), entity);
 -                        }
 -                     }
 -                  }
@@ -61,10 +61,10 @@
 +            // CraftBukkit end
 +
 +            for (MobEffectInstance effectinstance : p_37548_) {
-+               MobEffect effect = effectinstance.m_19544_();
++               MobEffect effect = effectinstance.getEffect();
 +               // CraftBukkit start - Abide by PVP settings - for players only!
-+               if (!this.f_19853_.pvpMode && this.m_37282_() instanceof net.minecraft.server.level.ServerPlayer && livingentity instanceof net.minecraft.server.level.ServerPlayer && livingentity != this.m_37282_()) {
-+                  int i = MobEffect.m_19459_(effect);
++               if (!this.level.pvpMode && this.getOwner() instanceof net.minecraft.server.level.ServerPlayer && livingentity instanceof net.minecraft.server.level.ServerPlayer && livingentity != this.getOwner()) {
++                  int i = MobEffect.getId(effect);
 +                  // Block SLOWER_MOVEMENT, SLOWER_DIG, HARM, BLINDNESS, HUNGER, WEAKNESS and POISON potions
 +                  if (i == 2 || i == 4 || i == 7 || i == 15 || i == 17 || i == 18 || i == 19) {
 +                     continue;
@@ -72,12 +72,12 @@
 +               }
 +               // CraftBukkit end
 +
-+               if (effect.m_8093_()) {
-+                  effect.m_19461_(this, this.m_37282_(), livingentity, effectinstance.m_19564_(), intensity);
++               if (effect.isInstantenous()) {
++                  effect.applyInstantenousEffect(this, this.getOwner(), livingentity, effectinstance.getAmplifier(), intensity);
 +               } else {
-+                  int i = (int) (intensity * (double) effectinstance.m_19557_() + 0.5D);
++                  int i = (int) (intensity * (double) effectinstance.getDuration() + 0.5D);
 +                  if (i > 20) {
-+                     livingentity.addEffect(new MobEffectInstance(effect, i, effectinstance.m_19564_(), effectinstance.m_19571_(), effectinstance.m_19572_()), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.POTION_SPLASH); // CraftBukkit
++                     livingentity.addEffect(new MobEffectInstance(effect, i, effectinstance.getAmplifier(), effectinstance.isAmbient(), effectinstance.isVisible()), org.bukkit.event.entity.EntityPotionEffectEvent.Cause.POTION_SPLASH); // CraftBukkit
 +                  }
 +               }
 +            }
@@ -85,49 +85,49 @@
 +      }
     }
  
-    private void m_37537_(ItemStack p_37538_, Potion p_37539_) {
+    private void makeAreaOfEffectCloud(ItemStack p_37538_, Potion p_37539_) {
 @@ -174,7 +_,14 @@
-          areaeffectcloud.m_19714_(compoundtag.m_128451_("CustomPotionColor"));
+          areaeffectcloud.setFixedColor(compoundtag.getInt("CustomPotionColor"));
        }
  
--      this.f_19853_.m_7967_(areaeffectcloud);
+-      this.level.addFreshEntity(areaeffectcloud);
 +      // CraftBukkit start
 +      org.bukkit.event.entity.LingeringPotionSplashEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callLingeringPotionSplashEvent(this, areaeffectcloud);
-+      if (!(event.isCancelled() || areaeffectcloud.m_146910_())) {
-+         this.f_19853_.m_7967_(areaeffectcloud);
++      if (!(event.isCancelled() || areaeffectcloud.isRemoved())) {
++         this.level.addFreshEntity(areaeffectcloud);
 +      } else {
-+         areaeffectcloud.m_146870_();
++         areaeffectcloud.discard();
 +      }
 +      // CraftBukkit end
     }
  
-    private boolean m_37553_() {
+    private boolean isLingering() {
 @@ -184,13 +_,25 @@
-    private void m_150192_(BlockPos p_150193_) {
-       BlockState blockstate = this.f_19853_.m_8055_(p_150193_);
-       if (blockstate.m_204336_(BlockTags.f_13076_)) {
--         this.f_19853_.m_7471_(p_150193_, false);
+    private void dowseFire(BlockPos p_150193_) {
+       BlockState blockstate = this.level.getBlockState(p_150193_);
+       if (blockstate.is(BlockTags.FIRE)) {
+-         this.level.removeBlock(p_150193_, false);
 +         // CraftBukkit start
-+         if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(this, p_150193_, net.minecraft.world.level.block.Blocks.f_50016_.m_49966_()).isCancelled()) {
-+            this.f_19853_.m_7471_(p_150193_, false);
++         if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(this, p_150193_, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()).isCancelled()) {
++            this.level.removeBlock(p_150193_, false);
 +         }
 +         // CraftBukkit end
-       } else if (AbstractCandleBlock.m_151933_(blockstate)) {
--         AbstractCandleBlock.m_151899_((Player)null, blockstate, this.f_19853_, p_150193_);
+       } else if (AbstractCandleBlock.isLit(blockstate)) {
+-         AbstractCandleBlock.extinguish((Player)null, blockstate, this.level, p_150193_);
 +         // CraftBukkit start
-+         if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(this, p_150193_, blockstate.m_61124_(AbstractCandleBlock.f_151895_, false)).isCancelled()) {
-+            AbstractCandleBlock.m_151899_((Player) null, blockstate, this.f_19853_, p_150193_);
++         if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(this, p_150193_, blockstate.setValue(AbstractCandleBlock.LIT, false)).isCancelled()) {
++            AbstractCandleBlock.extinguish((Player) null, blockstate, this.level, p_150193_);
 +         }
 +         // CraftBukkit end
-       } else if (CampfireBlock.m_51319_(blockstate)) {
--         this.f_19853_.m_5898_((Player)null, 1009, p_150193_, 0);
--         CampfireBlock.m_152749_(this.m_37282_(), this.f_19853_, p_150193_, blockstate);
--         this.f_19853_.m_46597_(p_150193_, blockstate.m_61124_(CampfireBlock.f_51227_, Boolean.valueOf(false)));
+       } else if (CampfireBlock.isLitCampfire(blockstate)) {
+-         this.level.levelEvent((Player)null, 1009, p_150193_, 0);
+-         CampfireBlock.dowse(this.getOwner(), this.level, p_150193_, blockstate);
+-         this.level.setBlockAndUpdate(p_150193_, blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false)));
 +         // CraftBukkit start
-+         if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(this, p_150193_, blockstate.m_61124_(CampfireBlock.f_51227_, false)).isCancelled()) {
-+            this.f_19853_.m_5898_((Player) null, 1009, p_150193_, 0);
-+            CampfireBlock.m_152749_(this.m_37282_(), this.f_19853_, p_150193_, blockstate);
-+            this.f_19853_.m_46597_(p_150193_, blockstate.m_61124_(CampfireBlock.f_51227_, false));
++         if (!org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(this, p_150193_, blockstate.setValue(CampfireBlock.LIT, false)).isCancelled()) {
++            this.level.levelEvent((Player) null, 1009, p_150193_, 0);
++            CampfireBlock.dowse(this.getOwner(), this.level, p_150193_, blockstate);
++            this.level.setBlockAndUpdate(p_150193_, blockstate.setValue(CampfireBlock.LIT, false));
 +         }
 +         // CraftBukkit end
        }

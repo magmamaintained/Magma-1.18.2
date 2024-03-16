@@ -3,9 +3,9 @@
 @@ -30,7 +_,7 @@
     }
  
-    public Component m_6418_(SocketAddress p_120007_, GameProfile p_120008_) {
--      return (Component)(p_120008_.getName().equalsIgnoreCase(this.m_7873_().m_129791_()) && this.m_11255_(p_120008_.getName()) != null ? new TranslatableComponent("multiplayer.disconnect.name_taken") : super.m_6418_(p_120007_, p_120008_));
+    public Component canPlayerLogin(SocketAddress p_120007_, GameProfile p_120008_) {
+-      return (Component)(p_120008_.getName().equalsIgnoreCase(this.getServer().getSingleplayerName()) && this.getPlayerByName(p_120008_.getName()) != null ? new TranslatableComponent("multiplayer.disconnect.name_taken") : super.canPlayerLogin(p_120007_, p_120008_));
 +      return null;
     }
  
-    public IntegratedServer m_7873_() {
+    public IntegratedServer getServer() {

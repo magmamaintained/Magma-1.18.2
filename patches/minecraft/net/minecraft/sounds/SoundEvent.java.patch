@@ -6,6 +6,6 @@
  
 -public class SoundEvent {
 +public class SoundEvent extends net.minecraftforge.registries.ForgeRegistryEntry<SoundEvent> {
-    public static final Codec<SoundEvent> f_11655_ = ResourceLocation.f_135803_.xmap(SoundEvent::new, (p_11662_) -> {
-       return p_11662_.f_11656_;
+    public static final Codec<SoundEvent> CODEC = ResourceLocation.CODEC.xmap(SoundEvent::new, (p_11662_) -> {
+       return p_11662_.location;
     });

@@ -1,18 +1,18 @@
 --- a/net/minecraft/world/item/SuspiciousStewItem.java
 +++ b/net/minecraft/world/item/SuspiciousStewItem.java
 @@ -22,6 +_,7 @@
-       ListTag listtag = compoundtag.m_128437_("Effects", 9);
+       ListTag listtag = compoundtag.getList("Effects", 9);
        CompoundTag compoundtag1 = new CompoundTag();
-       compoundtag1.m_128344_("EffectId", (byte)MobEffect.m_19459_(p_43260_));
+       compoundtag1.putByte("EffectId", (byte)MobEffect.getId(p_43260_));
 +      net.minecraftforge.common.ForgeHooks.saveMobEffect(compoundtag1, "forge:effect_if", p_43260_);
-       compoundtag1.m_128405_("EffectDuration", p_43261_);
+       compoundtag1.putInt("EffectDuration", p_43261_);
        listtag.add(compoundtag1);
-       compoundtag.m_128365_("Effects", listtag);
+       compoundtag.put("Effects", listtag);
 @@ -41,6 +_,7 @@
              }
  
-             MobEffect mobeffect = MobEffect.m_19453_(compoundtag1.m_128445_("EffectId"));
+             MobEffect mobeffect = MobEffect.byId(compoundtag1.getByte("EffectId"));
 +            mobeffect = net.minecraftforge.common.ForgeHooks.loadMobEffect(compoundtag1, "forge:effect_id", mobeffect);
              if (mobeffect != null) {
-                p_43265_.m_7292_(new MobEffectInstance(mobeffect, j));
+                p_43265_.addEffect(new MobEffectInstance(mobeffect, j));
              }

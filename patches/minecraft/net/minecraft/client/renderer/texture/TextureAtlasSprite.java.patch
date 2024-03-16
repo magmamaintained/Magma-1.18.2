@@ -2,26 +2,26 @@
 +++ b/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 @@ -145,6 +_,7 @@
  
-    void m_118375_(int p_118376_, int p_118377_, NativeImage[] p_118378_) {
-       for(int i = 0; i < this.f_118342_.length; ++i) {
-+         if ((this.f_174723_ >> i <= 0) || (this.f_174724_ >> i <= 0)) break;
-          p_118378_[i].m_85003_(i, this.f_118349_ >> i, this.f_118350_ >> i, p_118376_ >> i, p_118377_ >> i, this.f_174723_ >> i, this.f_174724_ >> i, this.f_118342_.length > 1, false);
+    void upload(int p_118376_, int p_118377_, NativeImage[] p_118378_) {
+       for(int i = 0; i < this.mainImage.length; ++i) {
++         if ((this.width >> i <= 0) || (this.height >> i <= 0)) break;
+          p_118378_[i].upload(i, this.x >> i, this.y >> i, p_118376_ >> i, p_118377_ >> i, this.width >> i, this.height >> i, this.mainImage.length > 1, false);
        }
  
 @@ -389,7 +_,8 @@
-             int j = p_118446_.f_118423_ >> i;
-             int k = p_118446_.f_118424_ >> i;
-             if (this.f_118443_[i] == null) {
--               this.f_118443_[i] = new NativeImage(j, k, false);
+             int j = p_118446_.width >> i;
+             int k = p_118446_.height >> i;
+             if (this.activeFrame[i] == null) {
+-               this.activeFrame[i] = new NativeImage(j, k, false);
 +               // Forge: guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
-+               this.f_118443_[i] = new NativeImage(Math.max(1, j), Math.max(1, k), false);
++               this.activeFrame[i] = new NativeImage(Math.max(1, j), Math.max(1, k), false);
              }
           }
  
 @@ -404,6 +_,8 @@
-             for(int k = 0; k < this.f_118443_.length; ++k) {
-                int l = TextureAtlasSprite.this.f_174723_ >> k;
-                int i1 = TextureAtlasSprite.this.f_174724_ >> k;
+             for(int k = 0; k < this.activeFrame.length; ++k) {
+                int l = TextureAtlasSprite.this.width >> k;
+                int i1 = TextureAtlasSprite.this.height >> k;
 +               // Forge: guard against invalid texture size, because we allow generating mipmaps regardless of texture sizes
 +               if (l == 0 || i1 == 0) continue;
  
@@ -35,11 +35,11 @@
 +
 +   // Forge Start
 +   public int getPixelRGBA(int frameIndex, int x, int y) {
-+       if (this.f_174725_ != null) {
-+           x += this.f_174725_.m_174759_(frameIndex) * this.f_174723_;
-+           y += this.f_174725_.m_174764_(frameIndex) * this.f_174724_;
++       if (this.animatedTexture != null) {
++           x += this.animatedTexture.getFrameX(frameIndex) * this.width;
++           y += this.animatedTexture.getFrameY(frameIndex) * this.height;
 +       }
 +
-+       return this.f_118342_[0].m_84985_(x, y);
++       return this.mainImage[0].getPixelRGBA(x, y);
     }
  }

@@ -1,33 +1,33 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -115,8 +_,10 @@
-    public static final int f_165685_ = 3;
-    public static final int f_165686_ = 4;
-    private final CommandDispatcher<CommandSourceStack> f_82090_ = new CommandDispatcher<>();
+    public static final int LEVEL_ADMINS = 3;
+    public static final int LEVEL_OWNERS = 4;
+    private final CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
 +   private final CommandDispatcher<CommandSourceStack> forgeDispatcher = new CommandDispatcher<>();
  
     public Commands(Commands.CommandSelection p_82093_) {
 +      this(); // CraftBukkit
-       AdvancementCommands.m_136310_(this.f_82090_);
-       AttributeCommand.m_136444_(this.f_82090_);
-       ExecuteCommand.m_137042_(this.f_82090_);
+       AdvancementCommands.register(this.dispatcher);
+       AttributeCommand.register(this.dispatcher);
+       ExecuteCommand.register(this.dispatcher);
 @@ -177,7 +_,7 @@
-          JfrCommand.m_183645_(this.f_82090_);
+          JfrCommand.register(this.dispatcher);
        }
  
--      if (SharedConstants.f_136183_) {
+-      if (SharedConstants.IS_RUNNING_IN_IDE) {
 +      if (net.minecraftforge.gametest.ForgeGameTestHooks.isGametestEnabled()) {
-          TestCommand.m_127946_(this.f_82090_);
+          TestCommand.register(this.dispatcher);
        }
  
 @@ -201,26 +_,85 @@
-       if (p_82093_.f_82144_) {
-          PublishCommand.m_138184_(this.f_82090_);
+       if (p_82093_.includeIntegrated) {
+          PublishCommand.register(this.dispatcher);
        }
 +      net.minecraftforge.event.ForgeEventFactory.onCommandRegister(this.forgeDispatcher, p_82093_);
  
-       this.f_82090_.findAmbiguities((p_82108_, p_82109_, p_82110_, p_82111_) -> {
--         f_82089_.warn("Ambiguity between arguments {} and {} with inputs: {}", this.f_82090_.getPath(p_82109_), this.f_82090_.getPath(p_82110_), p_82111_);
+       this.dispatcher.findAmbiguities((p_82108_, p_82109_, p_82110_, p_82111_) -> {
+-         LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(p_82109_), this.dispatcher.getPath(p_82110_), p_82111_);
 +         // LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(p_82109_), this.dispatcher.getPath(p_82110_), p_82111_); // CraftBukkit
        });
 +
@@ -37,8 +37,8 @@
 +
 +   public Commands() {
 +      // CraftBukkkit end
-       this.f_82090_.setConsumer((p_82104_, p_82105_, p_82106_) -> {
-          p_82104_.getSource().m_81342_(p_82104_, p_82105_, p_82106_);
+       this.dispatcher.setConsumer((p_82104_, p_82105_, p_82106_) -> {
+          p_82104_.getSource().onCommandComplete(p_82104_, p_82105_, p_82106_);
        });
     }
  
@@ -75,7 +75,7 @@
 +      }
 +
 +      // Handle vanilla commands;
-+      if (sender.m_81372_().getCraftServer().getCommandBlockOverride(args[0])) {
++      if (sender.getLevel().getCraftServer().getCommandBlockOverride(args[0])) {
 +         args[0] = "minecraft:" + args[0];
 +      }
 +
@@ -90,7 +90,7 @@
 +   //Magma start - fix mixin inject on original performCommand
 +   private @Nullable String performCommand_label = null;
 +   private boolean performCommand_stripSlash = true;
-    public int m_82117_(CommandSourceStack p_82118_, String p_82119_) {
+    public int performCommand(CommandSourceStack p_82118_, String p_82119_) {
        StringReader stringreader = new StringReader(p_82119_);
 -      if (stringreader.canRead() && stringreader.peek() == '/') {
 +      if (this.performCommand_stripSlash && stringreader.canRead() && stringreader.peek() == '/') {
@@ -98,30 +98,30 @@
 +         // CraftBukkit end
        }
  
-       p_82118_.m_81377_().m_129905_().m_6180_(p_82119_);
+       p_82118_.getServer().getProfiler().push(p_82119_);
  
        try {
           try {
--            return this.f_82090_.execute(stringreader, p_82118_);
+-            return this.dispatcher.execute(stringreader, p_82118_);
 +            if (parseCommand(stringreader, p_82118_).isEmpty())
 +               return 1;
 +            return this.getCurrentDispatcher(stringreader).execute(parseCommand(stringreader, p_82118_).get().getParseResults());
           } catch (CommandRuntimeException commandruntimeexception) {
-             p_82118_.m_81352_(commandruntimeexception.m_79226_());
+             p_82118_.sendFailure(commandruntimeexception.getComponent());
              return 0;
 @@ -229,7 +_,7 @@
              if (commandsyntaxexception.getInput() != null && commandsyntaxexception.getCursor() >= 0) {
                 int j = Math.min(commandsyntaxexception.getInput().length(), commandsyntaxexception.getCursor());
-                MutableComponent mutablecomponent1 = (new TextComponent("")).m_130940_(ChatFormatting.GRAY).m_130938_((p_82134_) -> {
--                  return p_82134_.m_131142_(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, p_82119_));
-+                  return p_82134_.m_131142_(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, this.performCommand_label == null ? p_82119_ : this.performCommand_label)); // CraftBukkit
+                MutableComponent mutablecomponent1 = (new TextComponent("")).withStyle(ChatFormatting.GRAY).withStyle((p_82134_) -> {
+-                  return p_82134_.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, p_82119_));
++                  return p_82134_.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, this.performCommand_label == null ? p_82119_ : this.performCommand_label)); // CraftBukkit
                 });
                 if (j > 10) {
-                   mutablecomponent1.m_130946_("...");
+                   mutablecomponent1.append("...");
 @@ -269,19 +_,100 @@
           return 0;
        } finally {
-          p_82118_.m_81377_().m_129905_().m_7238_();
+          p_82118_.getServer().getProfiler().pop();
 -      }
 -   }
 -
@@ -147,12 +147,12 @@
 +   public int performCommand(CommandSourceStack p_82118_, String p_82119_, String label, boolean stripSlash) {
 +      this.performCommand_label = label;
 +      this.performCommand_stripSlash = stripSlash;
-+      return this.m_82117_(p_82118_, p_82119_);
++      return this.performCommand(p_82118_, p_82119_);
 +   }
 +   //Magma end
 +
 +   //Magma start - rewrite to add forge dispatcher support
-    public void m_82095_(ServerPlayer p_82096_) {
+    public void sendCommands(ServerPlayer p_82096_) {
 -      Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
 +      if ( org.spigotmc.SpigotConfig.tabComplete < 0 ) return; // Spigot
 +      // CraftBukkit start
@@ -160,19 +160,19 @@
 +      Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newIdentityHashMap(); // Use identity to prevent aliasing issues
 +
 +      RootCommandNode<SharedSuggestionProvider> vanillaRoot = new RootCommandNode<>();
-+      Commands vanillaCommands = p_82096_.f_8924_.vanillaCommandDispatcher;
-+      map.put(vanillaCommands.m_82094_().getRoot(), vanillaRoot);
++      Commands vanillaCommands = p_82096_.server.vanillaCommandDispatcher;
++      map.put(vanillaCommands.getDispatcher().getRoot(), vanillaRoot);
 +
 +      // FORGE: Use our own command node merging method to handle redirect nodes properly, see issue #7551
-+      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(vanillaCommands.m_82094_().getRoot(), vanillaRoot, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(vanillaCommands.getDispatcher().getRoot(), vanillaRoot, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.safelySwap((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
 +      // Now build the global commands in a second pass
        RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
-       map.put(this.f_82090_.getRoot(), rootcommandnode);
--      this.m_82112_(this.f_82090_.getRoot(), rootcommandnode, p_82096_.m_20203_(), map);
--      p_82096_.f_8906_.m_141995_(new ClientboundCommandsPacket(rootcommandnode));
+       map.put(this.dispatcher.getRoot(), rootcommandnode);
+-      this.fillUsableCommands(this.dispatcher.getRoot(), rootcommandnode, p_82096_.createCommandSourceStack(), map);
+-      p_82096_.connection.send(new ClientboundCommandsPacket(rootcommandnode));
 +
-+      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.f_82090_.getRoot(), rootcommandnode, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.dispatcher.getRoot(), rootcommandnode, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.safelySwap((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
 +      java.util.LinkedHashSet<String> set = new java.util.LinkedHashSet<>();
 +      for (CommandNode<SharedSuggestionProvider> child : rootcommandnode.getChildren()) {
@@ -193,33 +193,33 @@
 +      RootCommandNode<SharedSuggestionProvider> forgeRoot = new RootCommandNode<>();
 +      map.put(this.forgeDispatcher.getRoot(), forgeRoot);
 +
-+      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.forgeDispatcher.getRoot(), forgeRoot, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
++      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.forgeDispatcher.getRoot(), forgeRoot, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.safelySwap((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
 +      //Add all the forge commands to the root node
 +      forgeRoot.getChildren().forEach(rootcommandnode::addChild);
 +      //ambassador support start
 +      ClientboundCommandsPacket packet = new ClientboundCommandsPacket(rootcommandnode);
 +      try{
-+         net.minecraftforge.network.ConnectionData connectionData = (net.minecraftforge.network.ConnectionData) p_82096_.f_8906_.f_9742_.channel().attr(io.netty.util.AttributeKey.valueOf("fml:conndata")).get();
++         net.minecraftforge.network.ConnectionData connectionData = (net.minecraftforge.network.ConnectionData) p_82096_.connection.connection.channel().attr(io.netty.util.AttributeKey.valueOf("fml:conndata")).get();
 +         if (connectionData == null){
-+            f_82089_.info("Failed to get a channel with the attribute of fml:conndata.");
-+            p_82096_.f_8906_.m_141995_(packet);
++            LOGGER.info("Failed to get a channel with the attribute of fml:conndata.");
++            p_82096_.connection.send(packet);
 +         } else if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new net.minecraft.resources.ResourceLocation("ambassador:commands")))) {
 +            net.minecraft.network.FriendlyByteBuf byteBuf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
 +            packet.write(byteBuf, true);
-+            p_82096_.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket(new net.minecraft.resources.ResourceLocation("ambassador:commands"), byteBuf));
++            p_82096_.connection.send(new net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket(new net.minecraft.resources.ResourceLocation("ambassador:commands"), byteBuf));
 +         } else {
-+            p_82096_.f_8906_.m_141995_(packet);
++            p_82096_.connection.send(packet);
 +         }
 +      }catch (ClassCastException e){
-+            f_82089_.error("Failed to get connection data for player " + p_82096_.m_7755_().getString() + ". Someone registered a channel with the fml:conndata key that isn't a net.minecraftforge.network.ConnectionData object.");
-+            p_82096_.f_8906_.m_141995_(packet);
++            LOGGER.error("Failed to get connection data for player " + p_82096_.getName().getString() + ". Someone registered a channel with the fml:conndata key that isn't a net.minecraftforge.network.ConnectionData object.");
++            p_82096_.connection.send(packet);
 +      }
 +      //ambassador support end
     }
 +   //Magma end
  
-    private void m_82112_(CommandNode<CommandSourceStack> p_82113_, CommandNode<SharedSuggestionProvider> p_82114_, CommandSourceStack p_82115_, Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> p_82116_) {
+    private void fillUsableCommands(CommandNode<CommandSourceStack> p_82113_, CommandNode<SharedSuggestionProvider> p_82114_, CommandSourceStack p_82115_, Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> p_82116_) {
        for(CommandNode<CommandSourceStack> commandnode : p_82113_.getChildren()) {
 +         if ( !org.spigotmc.SpigotConfig.sendNamespaced && commandnode.getName().contains( ":" ) ) continue; // Spigot
           if (commandnode.canUse(p_82115_)) {
@@ -228,10 +228,10 @@
 @@ -335,9 +_,16 @@
     }
  
-    public CommandDispatcher<CommandSourceStack> m_82094_() {
+    public CommandDispatcher<CommandSourceStack> getDispatcher() {
 +      if (org.magmafoundation.magma.commands.DispatcherRedirector.shouldBypass())
 +         return this.forgeDispatcher;
-       return this.f_82090_;
+       return this.dispatcher;
     }
  
 +   //Magma - wrap the forge dispatcher to prevent LuckPerms from using this method as the vanilla dispatcher.. thanks reflection...
@@ -240,7 +240,7 @@
 +   }
 +
     @Nullable
-    public static <S> CommandSyntaxException m_82097_(ParseResults<S> p_82098_) {
+    public static <S> CommandSyntaxException getParseException(ParseResults<S> p_82098_) {
        if (!p_82098_.getReader().canRead()) {
 @@ -362,6 +_,39 @@
           throw new IllegalStateException("Unregistered argument types");
@@ -276,7 +276,7 @@
 +      if (found != null)
 +         return getForgeDispatcher().unwrap();
 +
-+      return m_82094_();
++      return getDispatcher();
 +   }
 +   //Magma end
  

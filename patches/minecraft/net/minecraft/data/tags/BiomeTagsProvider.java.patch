@@ -8,11 +8,11 @@
 +   /** @deprecated Forge: Use the {@link #BiomeTagsProvider(DataGenerator, String, net.minecraftforge.common.data.ExistingFileHelper) mod id variant} */
 +   @Deprecated
     public BiomeTagsProvider(DataGenerator p_211094_) {
-       super(p_211094_, BuiltinRegistries.f_123865_);
+       super(p_211094_, BuiltinRegistries.BIOME);
 +   }
 +
 +   public BiomeTagsProvider(DataGenerator p_211094_, String modId, @org.jetbrains.annotations.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
-+      super(p_211094_, BuiltinRegistries.f_123865_, modId, existingFileHelper);
++      super(p_211094_, BuiltinRegistries.BIOME, modId, existingFileHelper);
     }
  
-    protected void m_6577_() {
+    protected void addTags() {

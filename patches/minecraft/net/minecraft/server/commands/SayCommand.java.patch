@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SayCommand.java
 @@ -13,7 +_,7 @@
  public class SayCommand {
-    public static void m_138409_(CommandDispatcher<CommandSourceStack> p_138410_) {
-       p_138410_.register(Commands.m_82127_("say").requires((p_138414_) -> {
--         return p_138414_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138410_) {
+       p_138410_.register(Commands.literal("say").requires((p_138414_) -> {
+-         return p_138414_.hasPermission(2);
 +         return p_138414_.hasPermission(2,"minecraft.command.say");
-       }).then(Commands.m_82129_("message", MessageArgument.m_96832_()).executes((p_138412_) -> {
-          Component component = MessageArgument.m_96835_(p_138412_, "message");
-          Component component1 = new TranslatableComponent("chat.type.announcement", p_138412_.getSource().m_81357_(), component);
+       }).then(Commands.argument("message", MessageArgument.message()).executes((p_138412_) -> {
+          Component component = MessageArgument.getMessage(p_138412_, "message");
+          Component component1 = new TranslatableComponent("chat.type.announcement", p_138412_.getSource().getDisplayName(), component);

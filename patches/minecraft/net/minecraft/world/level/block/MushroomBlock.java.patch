@@ -3,7 +3,7 @@
 @@ -30,7 +_,7 @@
     }
  
-    public void m_7455_(BlockState p_54884_, ServerLevel p_54885_, BlockPos p_54886_, Random p_54887_) {
+    public void randomTick(BlockState p_54884_, ServerLevel p_54885_, BlockPos p_54886_, Random p_54887_) {
 -      if (p_54887_.nextInt(25) == 0) {
 +      if (p_54887_.nextInt(Math.max(1, (int) (100.0F / p_54885_.spigotConfig.mushroomModifier) * 25)) == 0) { // Spigot
           int i = 5;
@@ -12,28 +12,28 @@
 @@ -54,7 +_,7 @@
           }
  
-          if (p_54885_.m_46859_(blockpos1) && p_54884_.m_60710_(p_54885_, blockpos1)) {
--            p_54885_.m_7731_(blockpos1, p_54884_, 2);
+          if (p_54885_.isEmptyBlock(blockpos1) && p_54884_.canSurvive(p_54885_, blockpos1)) {
+-            p_54885_.setBlock(blockpos1, p_54884_, 2);
 +            org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockSpreadEvent(p_54885_, p_54886_, blockpos1, p_54884_, 2); // CraftBukkit
           }
        }
  
 @@ -70,13 +_,16 @@
-       if (blockstate.m_204336_(BlockTags.f_13057_)) {
+       if (blockstate.is(BlockTags.MUSHROOM_GROW_BLOCK)) {
           return true;
        } else {
--         return p_54881_.m_45524_(p_54882_, 0) < 13 && this.m_6266_(blockstate, p_54881_, blockpos);
-+         return p_54881_.m_45524_(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
+-         return p_54881_.getRawBrightness(p_54882_, 0) < 13 && this.mayPlaceOn(blockstate, p_54881_, blockpos);
++         return p_54881_.getRawBrightness(p_54882_, 0) < 13 && blockstate.canSustainPlant(p_54881_, blockpos, net.minecraft.core.Direction.UP, this);
        }
     }
  
-    public boolean m_54859_(ServerLevel p_54860_, BlockPos p_54861_, BlockState p_54862_, Random p_54863_) {
-+      net.minecraftforge.event.world.SaplingGrowTreeEvent event = net.minecraftforge.event.ForgeEventFactory.blockGrowFeature(p_54860_, p_54863_, p_54861_, this.f_153981_.get());
+    public boolean growMushroom(ServerLevel p_54860_, BlockPos p_54861_, BlockState p_54862_, Random p_54863_) {
++      net.minecraftforge.event.world.SaplingGrowTreeEvent event = net.minecraftforge.event.ForgeEventFactory.blockGrowFeature(p_54860_, p_54863_, p_54861_, this.featureSupplier.get());
 +      if (event.getResult().equals(net.minecraftforge.eventbus.api.Event.Result.DENY)) return false;
-       p_54860_.m_7471_(p_54861_, false);
--      if (this.f_153981_.get().m_203334_().m_65385_(p_54860_, p_54860_.m_7726_().m_8481_(), p_54863_, p_54861_)) {
-+      SaplingBlock.treeType = (this == Blocks.f_50072_) ? org.bukkit.TreeType.BROWN_MUSHROOM : org.bukkit.TreeType.BROWN_MUSHROOM; // CraftBukkit
-+      if (event.getFeature().m_203334_().m_65385_(p_54860_, p_54860_.m_7726_().m_8481_(), p_54863_, p_54861_)) {
+       p_54860_.removeBlock(p_54861_, false);
+-      if (this.featureSupplier.get().value().place(p_54860_, p_54860_.getChunkSource().getGenerator(), p_54863_, p_54861_)) {
++      SaplingBlock.treeType = (this == Blocks.BROWN_MUSHROOM) ? org.bukkit.TreeType.BROWN_MUSHROOM : org.bukkit.TreeType.BROWN_MUSHROOM; // CraftBukkit
++      if (event.getFeature().value().place(p_54860_, p_54860_.getChunkSource().getGenerator(), p_54863_, p_54861_)) {
           return true;
        } else {
-          p_54860_.m_7731_(p_54861_, p_54862_, 3);
+          p_54860_.setBlock(p_54861_, p_54862_, 3);

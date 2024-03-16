@@ -12,30 +12,30 @@
 @@ -54,10 +_,16 @@
     PIGLIN("piglin", "pig", true);
  
-    private static final BannerPattern[] f_58529_ = values();
+    private static final BannerPattern[] VALUES = values();
 +   /** @deprecated Use {@link BannerPattern#values()} and get the length from the array **/
 +   @Deprecated
-    public static final int f_58526_ = f_58529_.length;
+    public static final int COUNT = VALUES.length;
 +   /** @deprecated Subtract {@link net.minecraftforge.common.ForgeHooks#getNonPatternItemCount()} from {@link BannerPattern#values()} **/
 +   @Deprecated
-    public static final int f_58527_ = (int)Arrays.stream(f_58529_).filter((p_58581_) -> {
-       return p_58581_.f_58530_;
+    public static final int PATTERN_ITEM_COUNT = (int)Arrays.stream(VALUES).filter((p_58581_) -> {
+       return p_58581_.hasPatternItem;
     }).count();
 +   /** @deprecated Subtract 1 from {@link net.minecraftforge.common.ForgeHooks#getNonPatternItemCount()} to get the maximum non-pattern item index**/
 +   @Deprecated
-    public static final int f_58528_ = f_58526_ - f_58527_ - 1;
-    public final boolean f_58530_;
-    private final String f_58531_;
+    public static final int AVAILABLE_PATTERNS = COUNT - PATTERN_ITEM_COUNT - 1;
+    public final boolean hasPatternItem;
+    private final String filename;
 @@ -75,7 +_,8 @@
  
-    public ResourceLocation m_58577_(boolean p_58578_) {
+    public ResourceLocation location(boolean p_58578_) {
        String s = p_58578_ ? "banner" : "shield";
--      return new ResourceLocation("entity/" + s + "/" + this.m_58572_());
-+      ResourceLocation fileLoc = new ResourceLocation(this.m_58572_());
-+      return new ResourceLocation(fileLoc.m_135827_(), "entity/" + s + "/" + fileLoc.m_135815_());
+-      return new ResourceLocation("entity/" + s + "/" + this.getFilename());
++      ResourceLocation fileLoc = new ResourceLocation(this.getFilename());
++      return new ResourceLocation(fileLoc.getNamespace(), "entity/" + s + "/" + fileLoc.getPath());
     }
  
-    public String m_58572_() {
+    public String getFilename() {
 @@ -106,6 +_,19 @@
        }
  
