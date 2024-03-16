@@ -1,33 +1,33 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
 @@ -34,13 +_,13 @@
-    public static final LootTable f_79105_ = new LootTable(LootContextParamSets.f_81410_, new LootPool[0], new LootItemFunction[0]);
-    public static final LootContextParamSet f_79106_ = LootContextParamSets.f_81420_;
-    final LootContextParamSet f_79108_;
--   final LootPool[] f_79109_;
-+   private final List<LootPool> f_79109_;
-    final LootItemFunction[] f_79110_;
-    private final BiFunction<ItemStack, LootContext, ItemStack> f_79111_;
+    public static final LootTable EMPTY = new LootTable(LootContextParamSets.EMPTY, new LootPool[0], new LootItemFunction[0]);
+    public static final LootContextParamSet DEFAULT_PARAM_SET = LootContextParamSets.ALL_PARAMS;
+    final LootContextParamSet paramSet;
+-   final LootPool[] pools;
++   private final List<LootPool> pools;
+    final LootItemFunction[] functions;
+    private final BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
  
     LootTable(LootContextParamSet p_79114_, LootPool[] p_79115_, LootItemFunction[] p_79116_) {
-       this.f_79108_ = p_79114_;
--      this.f_79109_ = p_79115_;
-+      this.f_79109_ = Lists.newArrayList(p_79115_);
-       this.f_79110_ = p_79116_;
-       this.f_79111_ = LootItemFunctions.m_80770_(p_79116_);
+       this.paramSet = p_79114_;
+-      this.pools = p_79115_;
++      this.pools = Lists.newArrayList(p_79115_);
+       this.functions = p_79116_;
+       this.compositeFunction = LootItemFunctions.compose(p_79116_);
     }
 @@ -78,6 +_,7 @@
  
     }
  
 +   @Deprecated //Use other method or manually call ForgeHooks.modifyLoot
-    public void m_79148_(LootContext p_79149_, Consumer<ItemStack> p_79150_) {
-       this.m_79131_(p_79149_, m_79142_(p_79150_));
+    public void getRandomItems(LootContext p_79149_, Consumer<ItemStack> p_79150_) {
+       this.getRandomItemsRaw(p_79149_, createStackSplitter(p_79150_));
     }
 @@ -85,6 +_,7 @@
-    public List<ItemStack> m_79129_(LootContext p_79130_) {
+    public List<ItemStack> getRandomItems(LootContext p_79130_) {
        List<ItemStack> list = Lists.newArrayList();
-       this.m_79148_(p_79130_, list::add);
+       this.getRandomItems(p_79130_, list::add);
 +      list = net.minecraftforge.common.ForgeHooks.modifyLoot(this.getLootTableId(), list, p_79130_);
        return list;
     }
@@ -35,26 +35,26 @@
 @@ -93,8 +_,8 @@
     }
  
-    public void m_79136_(ValidationContext p_79137_) {
--      for(int i = 0; i < this.f_79109_.length; ++i) {
--         this.f_79109_[i].m_79051_(p_79137_.m_79365_(".pools[" + i + "]"));
-+      for(int i = 0; i < this.f_79109_.size(); ++i) {
-+         this.f_79109_.get(i).m_79051_(p_79137_.m_79365_(".pools[" + i + "]"));
+    public void validate(ValidationContext p_79137_) {
+-      for(int i = 0; i < this.pools.length; ++i) {
+-         this.pools[i].validate(p_79137_.forChild(".pools[" + i + "]"));
++      for(int i = 0; i < this.pools.size(); ++i) {
++         this.pools.get(i).validate(p_79137_.forChild(".pools[" + i + "]"));
        }
  
-       for(int j = 0; j < this.f_79110_.length; ++j) {
+       for(int j = 0; j < this.functions.length; ++j) {
 @@ -104,8 +_,29 @@
     }
  
-    public void m_79123_(Container p_79124_, LootContext p_79125_) {
+    public void fill(Container p_79124_, LootContext p_79125_) {
 +      // CraftBukkit start
 +      this.fillInventory(p_79124_, p_79125_, false);
 +   }
 +
 +   public void fillInventory(Container p_79124_, LootContext p_79125_, boolean plugin) {
 +      // CraftBukkit end
-       List<ItemStack> list = this.m_79129_(p_79125_);
-       Random random = p_79125_.m_78933_();
+       List<ItemStack> list = this.getRandomItems(p_79125_);
+       Random random = p_79125_.getRandom();
 +
 +      //Magma start - don't fire event if loot context has empty params
 +      if (!p_79125_.isEmptyParams()) {
@@ -70,8 +70,8 @@
 +         // CraftBukkit end
 +      }
 +      //Magma end
-       List<Integer> list1 = this.m_79126_(p_79124_, random);
-       this.m_79138_(list, list1.size(), random);
+       List<Integer> list1 = this.getAvailableSlots(p_79124_, random);
+       this.shuffleAndSplitItems(list, list1.size(), random);
  
 @@ -176,6 +_,48 @@
        return new LootTable.Builder();
@@ -81,7 +81,7 @@
 +   private boolean isFrozen = false;
 +   public void freeze() {
 +      this.isFrozen = true;
-+      this.f_79109_.forEach(LootPool::freeze);
++      this.pools.forEach(LootPool::freeze);
 +   }
 +   public boolean isFrozen(){ return this.isFrozen; }
 +   private void checkFrozen() {
@@ -97,14 +97,14 @@
 +   public ResourceLocation getLootTableId() { return this.lootTableId; }
 +
 +   public LootPool getPool(String name) {
-+      return f_79109_.stream().filter(e -> name.equals(e.getName())).findFirst().orElse(null);
++      return pools.stream().filter(e -> name.equals(e.getName())).findFirst().orElse(null);
 +   }
 +
 +   public LootPool removePool(String name) {
 +      checkFrozen();
-+      for (LootPool pool : this.f_79109_) {
++      for (LootPool pool : this.pools) {
 +         if (name.equals(pool.getName())) {
-+            this.f_79109_.remove(pool);
++            this.pools.remove(pool);
 +            return pool;
 +         }
 +      }
@@ -113,21 +113,21 @@
 +
 +   public void addPool(LootPool pool) {
 +      checkFrozen();
-+      if (f_79109_.stream().anyMatch(e -> e == pool || e.getName() != null && e.getName().equals(pool.getName())))
++      if (pools.stream().anyMatch(e -> e == pool || e.getName() != null && e.getName().equals(pool.getName())))
 +         throw new RuntimeException("Attempted to add a duplicate pool to loot table: " + pool.getName());
-+      this.f_79109_.add(pool);
++      this.pools.add(pool);
 +   }
 +   //======================== FORGE END ===============================================
 +
     public static class Builder implements FunctionUserBuilder<LootTable.Builder> {
-       private final List<LootPool> f_79156_ = Lists.newArrayList();
-       private final List<LootItemFunction> f_79157_ = Lists.newArrayList();
+       private final List<LootPool> pools = Lists.newArrayList();
+       private final List<LootItemFunction> functions = Lists.newArrayList();
 @@ -230,7 +_,7 @@
              }
           }
  
--         if (p_79177_.f_79109_.length > 0) {
-+         if (!p_79177_.f_79109_.isEmpty()) {
-             jsonobject.add("pools", p_79179_.serialize(p_79177_.f_79109_));
+-         if (p_79177_.pools.length > 0) {
++         if (!p_79177_.pools.isEmpty()) {
+             jsonobject.add("pools", p_79179_.serialize(p_79177_.pools));
           }
  

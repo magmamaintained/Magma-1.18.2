@@ -3,26 +3,26 @@
 @@ -49,12 +_,13 @@
     }
  
-    public void m_7455_(BlockState p_54937_, ServerLevel p_54938_, BlockPos p_54939_, Random p_54940_) {
--      if (p_54938_.m_6042_().m_63956_() && p_54938_.m_46469_().m_46207_(GameRules.f_46134_) && p_54940_.nextInt(2000) < p_54938_.m_46791_().m_19028_()) {
-+      if (p_54938_.spigotConfig.enableZombiePigmenPortalSpawns && p_54938_.m_6042_().m_63956_() && p_54938_.m_46469_().m_46207_(GameRules.f_46134_) && p_54940_.nextInt(2000) < p_54938_.m_46791_().m_19028_()) { // Spigot
-          while(p_54938_.m_8055_(p_54939_).m_60713_(this)) {
-             p_54939_ = p_54939_.m_7495_();
+    public void randomTick(BlockState p_54937_, ServerLevel p_54938_, BlockPos p_54939_, Random p_54940_) {
+-      if (p_54938_.dimensionType().natural() && p_54938_.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && p_54940_.nextInt(2000) < p_54938_.getDifficulty().getId()) {
++      if (p_54938_.spigotConfig.enableZombiePigmenPortalSpawns && p_54938_.dimensionType().natural() && p_54938_.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && p_54940_.nextInt(2000) < p_54938_.getDifficulty().getId()) { // Spigot
+          while(p_54938_.getBlockState(p_54939_).is(this)) {
+             p_54939_ = p_54939_.below();
           }
  
-          if (p_54938_.m_8055_(p_54939_).m_60643_(p_54938_, p_54939_, EntityType.f_20531_)) {
-+            EntityType.f_20531_.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NETHER_PORTAL); //Magma - spawn reason
-             Entity entity = EntityType.f_20531_.m_20600_(p_54938_, (CompoundTag)null, (Component)null, (Player)null, p_54939_.m_7494_(), MobSpawnType.STRUCTURE, false, false);
+          if (p_54938_.getBlockState(p_54939_).isValidSpawn(p_54938_, p_54939_, EntityType.ZOMBIFIED_PIGLIN)) {
++            EntityType.ZOMBIFIED_PIGLIN.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NETHER_PORTAL); //Magma - spawn reason
+             Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(p_54938_, (CompoundTag)null, (Component)null, (Player)null, p_54939_.above(), MobSpawnType.STRUCTURE, false, false);
              if (entity != null) {
-                entity.m_20091_();
+                entity.setPortalCooldown();
 @@ -73,6 +_,10 @@
  
-    public void m_7892_(BlockState p_54915_, Level p_54916_, BlockPos p_54917_, Entity p_54918_) {
-       if (!p_54918_.m_20159_() && !p_54918_.m_20160_() && p_54918_.m_6072_()) {
+    public void entityInside(BlockState p_54915_, Level p_54916_, BlockPos p_54917_, Entity p_54918_) {
+       if (!p_54918_.isPassenger() && !p_54918_.isVehicle() && p_54918_.canChangeDimensions()) {
 +         // CraftBukkit start - Entity in portal
-+         org.bukkit.event.entity.EntityPortalEnterEvent event = new org.bukkit.event.entity.EntityPortalEnterEvent(p_54918_.getBukkitEntity(), new org.bukkit.Location(p_54916_.getWorld(), p_54917_.m_123341_(), p_54917_.m_123342_(), p_54917_.m_123343_()));
++         org.bukkit.event.entity.EntityPortalEnterEvent event = new org.bukkit.event.entity.EntityPortalEnterEvent(p_54918_.getBukkitEntity(), new org.bukkit.Location(p_54916_.getWorld(), p_54917_.getX(), p_54917_.getY(), p_54917_.getZ()));
 +         p_54916_.getCraftServer().getPluginManager().callEvent(event);
 +         // CraftBukkit end
-          p_54918_.m_20221_(p_54917_);
+          p_54918_.handleInsidePortal(p_54917_);
        }
  

@@ -6,6 +6,6 @@
  
 -public class Schedule {
 +public class Schedule extends net.minecraftforge.registries.ForgeRegistryEntry<Schedule> {
-    public static final int f_150241_ = 2000;
-    public static final int f_150242_ = 7000;
-    public static final Schedule f_38012_ = m_38029_("empty").m_38040_(0, Activity.f_37979_).m_38039_();
+    public static final int WORK_START_TIME = 2000;
+    public static final int TOTAL_WORK_TIME = 7000;
+    public static final Schedule EMPTY = register("empty").changeActivityAt(0, Activity.IDLE).build();

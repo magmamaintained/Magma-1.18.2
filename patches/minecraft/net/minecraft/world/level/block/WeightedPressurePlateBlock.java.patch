@@ -3,16 +3,16 @@
 @@ -25,7 +_,23 @@
     }
  
-    protected int m_6693_(Level p_58213_, BlockPos p_58214_) {
--      int i = Math.min(p_58213_.m_45976_(Entity.class, f_49287_.m_82338_(p_58214_)).size(), this.f_58199_);
+    protected int getSignalStrength(Level p_58213_, BlockPos p_58214_) {
+-      int i = Math.min(p_58213_.getEntitiesOfClass(Entity.class, TOUCH_AABB.move(p_58214_)).size(), this.maxWeight);
 +      // CraftBukkit start
 +      int i = 0;
-+      for (Entity entity : p_58213_.m_45976_(Entity.class, f_49287_.m_82338_(p_58214_))) {
++      for (Entity entity : p_58213_.getEntitiesOfClass(Entity.class, TOUCH_AABB.move(p_58214_))) {
 +         org.bukkit.event.Cancellable cancellable;
 +         if (entity instanceof Player) {
 +            cancellable = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, p_58214_, null, null, null);
 +         } else {
-+            cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), p_58213_.getWorld().getBlockAt(p_58214_.m_123341_(), p_58214_.m_123342_(), p_58214_.m_123343_()));
++            cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), p_58213_.getWorld().getBlockAt(p_58214_.getX(), p_58214_.getY(), p_58214_.getZ()));
 +            p_58213_.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
 +         }
 +         // We only want to block turning the plate on if all events are cancelled
@@ -20,8 +20,8 @@
 +            i++;
 +         }
 +      }
-+      i = Math.min(i, this.f_58199_);
++      i = Math.min(i, this.maxWeight);
 +      // CraftBukkit end
        if (i > 0) {
-          float f = (float)Math.min(this.f_58199_, i) / (float)this.f_58199_;
-          return Mth.m_14167_(f * 15.0F);
+          float f = (float)Math.min(this.maxWeight, i) / (float)this.maxWeight;
+          return Mth.ceil(f * 15.0F);

@@ -2,13 +2,13 @@
 +++ b/net/minecraft/world/level/block/CoralPlantBlock.java
 @@ -29,6 +_,11 @@
  
-    public void m_7458_(BlockState p_52178_, ServerLevel p_52179_, BlockPos p_52180_, Random p_52181_) {
-       if (!m_49186_(p_52178_, p_52179_, p_52180_)) {
+    public void tick(BlockState p_52178_, ServerLevel p_52179_, BlockPos p_52180_, Random p_52181_) {
+       if (!scanForWater(p_52178_, p_52179_, p_52180_)) {
 +         // CraftBukkit start
-+         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_52179_, p_52180_, this.f_52172_.m_49966_().m_61124_(CoralPlantBlock.f_49158_, false)).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_52179_, p_52180_, this.deadBlock.defaultBlockState().setValue(CoralPlantBlock.WATERLOGGED, false)).isCancelled()) {
 +            return;
 +         }
 +         // CraftBukkit end
-          p_52179_.m_7731_(p_52180_, this.f_52172_.m_49966_().m_61124_(f_49158_, Boolean.valueOf(false)), 2);
+          p_52179_.setBlock(p_52180_, this.deadBlock.defaultBlockState().setValue(WATERLOGGED, Boolean.valueOf(false)), 2);
        }
  

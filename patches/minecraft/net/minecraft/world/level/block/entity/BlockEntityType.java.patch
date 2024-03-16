@@ -6,6 +6,6 @@
  
 -public class BlockEntityType<T extends BlockEntity> {
 +public class BlockEntityType<T extends BlockEntity> extends net.minecraftforge.registries.ForgeRegistryEntry<BlockEntityType<?>> {
-    private static final Logger f_58913_ = LogUtils.getLogger();
-    public static final BlockEntityType<FurnaceBlockEntity> f_58917_ = m_58956_("furnace", BlockEntityType.Builder.m_155273_(FurnaceBlockEntity::new, Blocks.f_50094_));
-    public static final BlockEntityType<ChestBlockEntity> f_58918_ = m_58956_("chest", BlockEntityType.Builder.m_155273_(ChestBlockEntity::new, Blocks.f_50087_));
+    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final BlockEntityType<FurnaceBlockEntity> FURNACE = register("furnace", BlockEntityType.Builder.of(FurnaceBlockEntity::new, Blocks.FURNACE));
+    public static final BlockEntityType<ChestBlockEntity> CHEST = register("chest", BlockEntityType.Builder.of(ChestBlockEntity::new, Blocks.CHEST));

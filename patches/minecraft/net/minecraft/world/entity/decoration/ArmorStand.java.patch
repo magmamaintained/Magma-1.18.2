@@ -1,66 +1,66 @@
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
 @@ -71,7 +_,7 @@
-    public static final EntityDataAccessor<Rotations> f_31550_ = SynchedEntityData.m_135353_(ArmorStand.class, EntityDataSerializers.f_135037_);
-    public static final EntityDataAccessor<Rotations> f_31527_ = SynchedEntityData.m_135353_(ArmorStand.class, EntityDataSerializers.f_135037_);
-    private static final Predicate<Entity> f_31537_ = (p_31582_) -> {
--      return p_31582_ instanceof AbstractMinecart && ((AbstractMinecart)p_31582_).m_6064_() == AbstractMinecart.Type.RIDEABLE;
+    public static final EntityDataAccessor<Rotations> DATA_LEFT_LEG_POSE = SynchedEntityData.defineId(ArmorStand.class, EntityDataSerializers.ROTATIONS);
+    public static final EntityDataAccessor<Rotations> DATA_RIGHT_LEG_POSE = SynchedEntityData.defineId(ArmorStand.class, EntityDataSerializers.ROTATIONS);
+    private static final Predicate<Entity> RIDABLE_MINECARTS = (p_31582_) -> {
+-      return p_31582_ instanceof AbstractMinecart && ((AbstractMinecart)p_31582_).getMinecartType() == AbstractMinecart.Type.RIDEABLE;
 +      return p_31582_ instanceof AbstractMinecart && ((AbstractMinecart)p_31582_).canBeRidden();
     };
-    private final NonNullList<ItemStack> f_31538_ = NonNullList.m_122780_(2, ItemStack.f_41583_);
-    private final NonNullList<ItemStack> f_31539_ = NonNullList.m_122780_(4, ItemStack.f_41583_);
+    private final NonNullList<ItemStack> handItems = NonNullList.withSize(2, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
 @@ -95,6 +_,13 @@
-       this.m_6034_(p_31557_, p_31558_, p_31559_);
+       this.setPos(p_31557_, p_31558_, p_31559_);
     }
  
 +   // CraftBukkit start - SPIGOT-3607, SPIGOT-3637
 +   @Override
 +   public float getBukkitYaw() {
-+      return this.m_146908_();
++      return this.getYRot();
 +   }
 +   // CraftBukkit end
 +
-    public void m_6210_() {
-       double d0 = this.m_20185_();
-       double d1 = this.m_20186_();
+    public void refreshDimensions() {
+       double d0 = this.getX();
+       double d1 = this.getY();
 @@ -141,18 +_,25 @@
        }
     }
  
 +   @Override
-    public void m_8061_(EquipmentSlot p_31584_, ItemStack p_31585_) {
-       this.m_181122_(p_31585_);
--      switch(p_31584_.m_20743_()) {
+    public void setItemSlot(EquipmentSlot p_31584_, ItemStack p_31585_) {
+       this.verifyEquippedItem(p_31585_);
+-      switch(p_31584_.getType()) {
 -      case HAND:
--         this.m_147218_(p_31585_);
--         this.f_31538_.set(p_31584_.m_20749_(), p_31585_);
+-         this.equipEventAndSound(p_31585_);
+-         this.handItems.set(p_31584_.getIndex(), p_31585_);
 -         break;
 -      case ARMOR:
--         this.m_147218_(p_31585_);
--         this.f_31539_.set(p_31584_.m_20749_(), p_31585_);
-+      switch (p_31584_.m_20743_()) {
+-         this.equipEventAndSound(p_31585_);
+-         this.armorItems.set(p_31584_.getIndex(), p_31585_);
++      switch (p_31584_.getType()) {
 +         case HAND:
-+            this.m_147218_(p_31585_);
-+            this.f_31538_.set(p_31584_.m_20749_(), p_31585_);
++            this.equipEventAndSound(p_31585_);
++            this.handItems.set(p_31584_.getIndex(), p_31585_);
 +            break;
 +         case ARMOR:
-+            this.m_147218_(p_31585_);
-+            this.f_31539_.set(p_31584_.m_20749_(), p_31585_);
++            this.equipEventAndSound(p_31585_);
++            this.armorItems.set(p_31584_.getIndex(), p_31585_);
        }
 +   }
  
 +   @Override
 +   public void setItemSlot(EquipmentSlot p_31584_, ItemStack p_31585_, boolean silent) {
 +      silenceEquipSound(silent);
-+      this.m_8061_(p_31584_, p_31585_);
++      this.setItemSlot(p_31584_, p_31585_);
 +      silenceEquipSound(false); //reset
     }
  
-    public boolean m_7066_(ItemStack p_31638_) {
+    public boolean canTakeItem(ItemStack p_31638_) {
 @@ -355,6 +_,20 @@
-       if (!itemstack.m_41619_() && (this.f_31541_ & 1 << p_31590_.m_20750_() + 8) != 0) {
+       if (!itemstack.isEmpty() && (this.disabledSlots & 1 << p_31590_.getFilterFlag() + 8) != 0) {
           return false;
-       } else if (itemstack.m_41619_() && (this.f_31541_ & 1 << p_31590_.m_20750_() + 16) != 0) {
+       } else if (itemstack.isEmpty() && (this.disabledSlots & 1 << p_31590_.getFilterFlag() + 16) != 0) {
 +
 +         // CraftBukkit start
 +         org.bukkit.inventory.ItemStack armorStandItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(itemstack);
@@ -69,91 +69,91 @@
 +         org.bukkit.entity.ArmorStand self = (org.bukkit.entity.ArmorStand) this.getBukkitEntity();
 +         org.bukkit.inventory.EquipmentSlot slot = org.bukkit.craftbukkit.v1_18_R2.CraftEquipmentSlot.getSlot(p_31590_);
 +         org.bukkit.event.player.PlayerArmorStandManipulateEvent armorStandManipulateEvent = new org.bukkit.event.player.PlayerArmorStandManipulateEvent(player,self,playerHeldItem,armorStandItem,slot);
-+         this.f_19853_.getCraftServer().getPluginManager().callEvent(armorStandManipulateEvent);
++         this.level.getCraftServer().getPluginManager().callEvent(armorStandManipulateEvent);
 +         if (armorStandManipulateEvent.isCancelled()) {
 +            return true;
 +         }
 +         // CraftBukkit end
 +
           return false;
-       } else if (p_31589_.m_150110_().f_35937_ && itemstack.m_41619_() && !p_31591_.m_41619_()) {
-          ItemStack itemstack2 = p_31591_.m_41777_();
+       } else if (p_31589_.getAbilities().instabuild && itemstack.isEmpty() && !p_31591_.isEmpty()) {
+          ItemStack itemstack2 = p_31591_.copy();
 @@ -381,9 +_,19 @@
-    public boolean m_6469_(DamageSource p_31579_, float p_31580_) {
-       if (!this.f_19853_.f_46443_ && !this.m_146910_()) {
-          if (DamageSource.f_19317_.equals(p_31579_)) {
+    public boolean hurt(DamageSource p_31579_, float p_31580_) {
+       if (!this.level.isClientSide && !this.isRemoved()) {
+          if (DamageSource.OUT_OF_WORLD.equals(p_31579_)) {
 +            // CraftBukkit start
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, p_31579_, p_31580_)) {
 +               return false;
 +            }
 +            // CraftBukkit end
-             this.m_6074_();
+             this.kill();
              return false;
--         } else if (!this.m_6673_(p_31579_) && !this.f_31540_ && !this.m_31677_()) {
-+         } else if (!this.m_6673_(p_31579_) && (true || !this.f_31540_) && !this.m_31677_()) { // CraftBukkit
+-         } else if (!this.isInvulnerableTo(p_31579_) && !this.invisible && !this.isMarker()) {
++         } else if (!this.isInvulnerableTo(p_31579_) && (true || !this.invisible) && !this.isMarker()) { // CraftBukkit
 +            // CraftBukkit start
-+            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, p_31579_, p_31580_, true, this.f_31540_)) {
++            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, p_31579_, p_31580_, true, this.invisible)) {
 +               return false;
 +            }
 +            // CraftBukkit end
-             if (p_31579_.m_19372_()) {
-                this.m_31653_(p_31579_);
-                this.m_6074_();
+             if (p_31579_.isExplosion()) {
+                this.brokenByAnything(p_31579_);
+                this.kill();
 @@ -410,7 +_,7 @@
-                } else if (p_31579_.m_19390_()) {
-                   this.m_31566_();
-                   this.m_31565_();
--                  this.m_6074_();
-+                  this.m_146870_(); // CraftBukkit - SPIGOT-4890: remain as this.die() since above damagesource method will call death event
+                } else if (p_31579_.isCreativePlayer()) {
+                   this.playBrokenSound();
+                   this.showBreakingParticles();
+-                  this.kill();
++                  this.discard(); // CraftBukkit - SPIGOT-4890: remain as this.die() since above damagesource method will call death event
                    return flag1;
                 } else {
-                   long i = this.f_19853_.m_46467_();
+                   long i = this.level.getGameTime();
 @@ -478,18 +_,18 @@
     }
  
-    private void m_31646_(DamageSource p_31647_) {
--      Block.m_49840_(this.f_19853_, this.m_142538_(), new ItemStack(Items.f_42650_));
-+      drops.add(org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy(new ItemStack(Items.f_42650_))); // CraftBukkit - add to drops
-       this.m_31653_(p_31647_);
+    private void brokenByPlayer(DamageSource p_31647_) {
+-      Block.popResource(this.level, this.blockPosition(), new ItemStack(Items.ARMOR_STAND));
++      drops.add(org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy(new ItemStack(Items.ARMOR_STAND))); // CraftBukkit - add to drops
+       this.brokenByAnything(p_31647_);
     }
  
-    private void m_31653_(DamageSource p_31654_) {
-       this.m_31566_();
--      this.m_6668_(p_31654_);
+    private void brokenByAnything(DamageSource p_31654_) {
+       this.playBrokenSound();
+-      this.dropAllDeathLoot(p_31654_);
 +      // this.dropAllDeathLoot(p_31654_); // CraftBukkit - moved down
  
-       for(int i = 0; i < this.f_31538_.size(); ++i) {
-          ItemStack itemstack = this.f_31538_.get(i);
-          if (!itemstack.m_41619_()) {
--            Block.m_49840_(this.f_19853_, this.m_142538_().m_7494_(), itemstack);
+       for(int i = 0; i < this.handItems.size(); ++i) {
+          ItemStack itemstack = this.handItems.get(i);
+          if (!itemstack.isEmpty()) {
+-            Block.popResource(this.level, this.blockPosition().above(), itemstack);
 +            drops.add(org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy(itemstack)); // CraftBukkit - add to drops
-             this.f_31538_.set(i, ItemStack.f_41583_);
+             this.handItems.set(i, ItemStack.EMPTY);
           }
        }
 @@ -497,10 +_,11 @@
-       for(int j = 0; j < this.f_31539_.size(); ++j) {
-          ItemStack itemstack1 = this.f_31539_.get(j);
-          if (!itemstack1.m_41619_()) {
--            Block.m_49840_(this.f_19853_, this.m_142538_().m_7494_(), itemstack1);
+       for(int j = 0; j < this.armorItems.size(); ++j) {
+          ItemStack itemstack1 = this.armorItems.get(j);
+          if (!itemstack1.isEmpty()) {
+-            Block.popResource(this.level, this.blockPosition().above(), itemstack1);
 +            drops.add(org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy(itemstack1)); // CraftBukkit - add to drops
-             this.f_31539_.set(j, ItemStack.f_41583_);
+             this.armorItems.set(j, ItemStack.EMPTY);
           }
        }
-+      this.m_6668_(p_31654_); // CraftBukkit - moved from above
++      this.dropAllDeathLoot(p_31654_); // CraftBukkit - moved from above
  
     }
  
 @@ -584,6 +_,13 @@
-    public boolean m_6162_() {
-       return this.m_31666_();
+    public boolean isBaby() {
+       return this.isSmall();
     }
 +
 +   // CraftBukkit start
 +   @Override
-+   protected boolean m_6149_() {
++   protected boolean shouldDropExperience() {
 +      return true; // MC-157395, SPIGOT-5193 even baby (small) armor stands should drop
 +   }
 +   // CraftBukkit end
  
-    public void m_6074_() {
-       this.m_142687_(Entity.RemovalReason.KILLED);
+    public void kill() {
+       this.remove(Entity.RemovalReason.KILLED);

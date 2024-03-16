@@ -2,37 +2,37 @@
 +++ b/net/minecraft/client/renderer/FogRenderer.java
 @@ -173,24 +_,43 @@
  
-       if (f_109010_ != 0.0F && f_109011_ != 0.0F && f_109012_ != 0.0F) {
-          float f8 = Math.min(1.0F / f_109010_, Math.min(1.0F / f_109011_, 1.0F / f_109012_));
+       if (fogRed != 0.0F && fogGreen != 0.0F && fogBlue != 0.0F) {
+          float f8 = Math.min(1.0F / fogRed, Math.min(1.0F / fogGreen, 1.0F / fogBlue));
 +         // Forge: fix MC-4647 and MC-10480
 +         if (Float.isInfinite(f8)) f8 = Math.nextAfter(f8, 0.0);
-          f_109010_ = f_109010_ * (1.0F - f6) + f_109010_ * f8 * f6;
-          f_109011_ = f_109011_ * (1.0F - f6) + f_109011_ * f8 * f6;
-          f_109012_ = f_109012_ * (1.0F - f6) + f_109012_ * f8 * f6;
+          fogRed = fogRed * (1.0F - f6) + fogRed * f8 * f6;
+          fogGreen = fogGreen * (1.0F - f6) + fogGreen * f8 * f6;
+          fogBlue = fogBlue * (1.0F - f6) + fogBlue * f8 * f6;
        }
  
-+      net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(p_109019_, p_109020_, f_109010_, f_109011_, f_109012_);
++      net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(p_109019_, p_109020_, fogRed, fogGreen, fogBlue);
 +      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +
-+      f_109010_ = event.getRed();
-+      f_109011_ = event.getGreen();
-+      f_109012_ = event.getBlue();
++      fogRed = event.getRed();
++      fogGreen = event.getGreen();
++      fogBlue = event.getBlue();
 +
-       RenderSystem.m_69424_(f_109010_, f_109011_, f_109012_, 0.0F);
+       RenderSystem.clearColor(fogRed, fogGreen, fogBlue, 0.0F);
     }
  
-    public static void m_109017_() {
-       RenderSystem.m_157445_(Float.MAX_VALUE);
+    public static void setupNoFog() {
+       RenderSystem.setShaderFogStart(Float.MAX_VALUE);
     }
 -
 +   @Deprecated // FORGE: Pass in partialTicks
-    public static void m_109024_(Camera p_109025_, FogRenderer.FogMode p_109026_, float p_109027_, boolean p_109028_) {
+    public static void setupFog(Camera p_109025_, FogRenderer.FogMode p_109026_, float p_109027_, boolean p_109028_) {
 +      setupFog(p_109025_, p_109026_, p_109027_, p_109028_, 0);
 +   }
 +
 +   public static void setupFog(Camera p_109025_, FogRenderer.FogMode p_109026_, float p_109027_, boolean p_109028_, float partialTicks) {
-       FogType fogtype = p_109025_.m_167685_();
-       Entity entity = p_109025_.m_90592_();
+       FogType fogtype = p_109025_.getFluidInCamera();
+       Entity entity = p_109025_.getEntity();
        FogShape fogshape = FogShape.SPHERE;
        float f;
        float f1;
@@ -43,13 +43,13 @@
 +         f1 = hook * 0.5F;
 +      } else
        if (fogtype == FogType.LAVA) {
-          if (entity.m_5833_()) {
+          if (entity.isSpectator()) {
              f = -8.0F;
 @@ -253,6 +_,7 @@
-       RenderSystem.m_157445_(f);
-       RenderSystem.m_157443_(f1);
-       RenderSystem.m_202160_(fogshape);
+       RenderSystem.setShaderFogStart(f);
+       RenderSystem.setShaderFogEnd(f1);
+       RenderSystem.setShaderFogShape(fogshape);
 +      net.minecraftforge.client.ForgeHooksClient.onFogRender(p_109026_, p_109025_, partialTicks, f1);
     }
  
-    public static void m_109036_() {
+    public static void levelFogColor() {

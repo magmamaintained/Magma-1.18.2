@@ -2,50 +2,50 @@
 +++ b/net/minecraft/server/commands/SpreadPlayersCommand.java
 @@ -45,7 +_,7 @@
  
-    public static void m_138696_(CommandDispatcher<CommandSourceStack> p_138697_) {
-       p_138697_.register(Commands.m_82127_("spreadplayers").requires((p_201852_) -> {
--         return p_201852_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138697_) {
+       p_138697_.register(Commands.literal("spreadplayers").requires((p_201852_) -> {
+-         return p_201852_.hasPermission(2);
 +         return p_201852_.hasPermission(2,"minecraft.command.spreadplayers");
-       }).then(Commands.m_82129_("center", Vec2Argument.m_120822_()).then(Commands.m_82129_("spreadDistance", FloatArgumentType.floatArg(0.0F)).then(Commands.m_82129_("maxRange", FloatArgumentType.floatArg(1.0F)).then(Commands.m_82129_("respectTeams", BoolArgumentType.bool()).then(Commands.m_82129_("targets", EntityArgument.m_91460_()).executes((p_138699_) -> {
-          return m_138702_(p_138699_.getSource(), Vec2Argument.m_120825_(p_138699_, "center"), FloatArgumentType.getFloat(p_138699_, "spreadDistance"), FloatArgumentType.getFloat(p_138699_, "maxRange"), p_138699_.getSource().m_81372_().m_151558_(), BoolArgumentType.getBool(p_138699_, "respectTeams"), EntityArgument.m_91461_(p_138699_, "targets"));
-       }))).then(Commands.m_82127_("under").then(Commands.m_82129_("maxHeight", IntegerArgumentType.integer()).then(Commands.m_82129_("respectTeams", BoolArgumentType.bool()).then(Commands.m_82129_("targets", EntityArgument.m_91460_()).executes((p_201850_) -> {
+       }).then(Commands.argument("center", Vec2Argument.vec2()).then(Commands.argument("spreadDistance", FloatArgumentType.floatArg(0.0F)).then(Commands.argument("maxRange", FloatArgumentType.floatArg(1.0F)).then(Commands.argument("respectTeams", BoolArgumentType.bool()).then(Commands.argument("targets", EntityArgument.entities()).executes((p_138699_) -> {
+          return spreadPlayers(p_138699_.getSource(), Vec2Argument.getVec2(p_138699_, "center"), FloatArgumentType.getFloat(p_138699_, "spreadDistance"), FloatArgumentType.getFloat(p_138699_, "maxRange"), p_138699_.getSource().getLevel().getMaxBuildHeight(), BoolArgumentType.getBool(p_138699_, "respectTeams"), EntityArgument.getEntities(p_138699_, "targets"));
+       }))).then(Commands.literal("under").then(Commands.argument("maxHeight", IntegerArgumentType.integer()).then(Commands.argument("respectTeams", BoolArgumentType.bool()).then(Commands.argument("targets", EntityArgument.entities()).executes((p_201850_) -> {
 @@ -173,7 +_,8 @@
              spreadplayerscommand$position = p_138732_[i++];
           }
  
--         entity.m_20324_((double)Mth.m_14107_(spreadplayerscommand$position.f_138749_) + 0.5D, (double)spreadplayerscommand$position.m_138758_(p_138731_, p_138733_), (double)Mth.m_14107_(spreadplayerscommand$position.f_138750_) + 0.5D);
-+         net.minecraftforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.minecraftforge.event.ForgeEventFactory.onEntityTeleportSpreadPlayersCommand(entity, (double)Mth.m_14107_(spreadplayerscommand$position.f_138749_) + 0.5D, (double)spreadplayerscommand$position.m_138758_(p_138731_, p_138733_), (double)Mth.m_14107_(spreadplayerscommand$position.f_138750_) + 0.5D);
-+         if (!event.isCanceled()) entity.m_20324_(event.getTargetX(), event.getTargetY(), event.getTargetZ());
+-         entity.teleportToWithTicket((double)Mth.floor(spreadplayerscommand$position.x) + 0.5D, (double)spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_), (double)Mth.floor(spreadplayerscommand$position.z) + 0.5D);
++         net.minecraftforge.event.entity.EntityTeleportEvent.SpreadPlayersCommand event = net.minecraftforge.event.ForgeEventFactory.onEntityTeleportSpreadPlayersCommand(entity, (double)Mth.floor(spreadplayerscommand$position.x) + 0.5D, (double)spreadplayerscommand$position.getSpawnY(p_138731_, p_138733_), (double)Mth.floor(spreadplayerscommand$position.z) + 0.5D);
++         if (!event.isCanceled()) entity.teleportToWithTicket(event.getTargetX(), event.getTargetY(), event.getTargetZ());
           double d2 = Double.MAX_VALUE;
  
           for(SpreadPlayersCommand.Position spreadplayerscommand$position1 : p_138732_) {
 @@ -255,7 +_,7 @@
           boolean flag2;
-          for(boolean flag1 = p_138759_.m_8055_(blockpos$mutableblockpos).m_60795_(); blockpos$mutableblockpos.m_123342_() > p_138759_.m_141937_(); flag1 = flag2) {
-             blockpos$mutableblockpos.m_122173_(Direction.DOWN);
--            flag2 = p_138759_.m_8055_(blockpos$mutableblockpos).m_60795_();
-+            flag2 = getBlockState(p_138759_, blockpos$mutableblockpos).m_60795_();
+          for(boolean flag1 = p_138759_.getBlockState(blockpos$mutableblockpos).isAir(); blockpos$mutableblockpos.getY() > p_138759_.getMinBuildHeight(); flag1 = flag2) {
+             blockpos$mutableblockpos.move(Direction.DOWN);
+-            flag2 = p_138759_.getBlockState(blockpos$mutableblockpos).isAir();
++            flag2 = getBlockState(p_138759_, blockpos$mutableblockpos).isAir();
              if (!flag2 && flag1 && flag) {
-                return blockpos$mutableblockpos.m_123342_() + 1;
+                return blockpos$mutableblockpos.getY() + 1;
              }
 @@ -268,7 +_,7 @@
  
-       public boolean m_138773_(BlockGetter p_138774_, int p_138775_) {
-          BlockPos blockpos = new BlockPos(this.f_138749_, (double)(this.m_138758_(p_138774_, p_138775_) - 1), this.f_138750_);
--         BlockState blockstate = p_138774_.m_8055_(blockpos);
+       public boolean isSafe(BlockGetter p_138774_, int p_138775_) {
+          BlockPos blockpos = new BlockPos(this.x, (double)(this.getSpawnY(p_138774_, p_138775_) - 1), this.z);
+-         BlockState blockstate = p_138774_.getBlockState(blockpos);
 +         BlockState blockstate = getBlockState(p_138774_, blockpos);
-          Material material = blockstate.m_60767_();
-          return blockpos.m_123342_() < p_138775_ && !material.m_76332_() && material != Material.f_76309_;
+          Material material = blockstate.getMaterial();
+          return blockpos.getY() < p_138775_ && !material.isLiquid() && material != Material.FIRE;
        }
 @@ -277,5 +_,12 @@
-          this.f_138749_ = Mth.m_14064_(p_138762_, p_138763_, p_138765_);
-          this.f_138750_ = Mth.m_14064_(p_138762_, p_138764_, p_138766_);
+          this.x = Mth.nextDouble(p_138762_, p_138763_, p_138765_);
+          this.z = Mth.nextDouble(p_138762_, p_138764_, p_138766_);
        }
 +
 +      // CraftBukkit start - add a version of getBlockState which force loads chunks
 +      private static BlockState getBlockState(BlockGetter iblockaccess, BlockPos position) {
-+         ((ServerLevel) iblockaccess).m_7726_().m_62227_(position.m_123341_() >> 4, position.m_123343_() >> 4, true);
-+         return iblockaccess.m_8055_(position);
++         ((ServerLevel) iblockaccess).getChunkSource().getChunk(position.getX() >> 4, position.getZ() >> 4, true);
++         return iblockaccess.getBlockState(position);
 +      }
 +      // CraftBukkit end
     }

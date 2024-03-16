@@ -10,7 +10,7 @@
 +
 +   @Override
 +   public java.util.List<ItemStack> getContents() {
-+      return this.f_58591_;
++      return this.items;
 +   }
 +
 +   @Override
@@ -29,7 +29,7 @@
 +   }
 +
 +   @Override
-+   public int m_6893_() {
++   public int getMaxStackSize() {
 +      return maxStack;
 +   }
 +
@@ -41,5 +41,5 @@
 +   // CraftBukkit end
 +
     public BarrelBlockEntity(BlockPos p_155052_, BlockState p_155053_) {
-       super(BlockEntityType.f_58942_, p_155052_, p_155053_);
+       super(BlockEntityType.BARREL, p_155052_, p_155053_);
     }

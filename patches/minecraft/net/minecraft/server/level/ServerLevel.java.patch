@@ -1,14 +1,14 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -181,23 +_,44 @@
-    private final List<CustomSpawner> f_8558_;
+    private final List<CustomSpawner> customSpawners;
     @Nullable
-    private final EndDragonFight f_8559_;
--   final Int2ObjectMap<EnderDragonPart> f_143247_ = new Int2ObjectOpenHashMap<>();
-+   final Int2ObjectMap<net.minecraftforge.entity.PartEntity<?>> f_143247_ = new Int2ObjectOpenHashMap<>();
-    private final StructureFeatureManager f_8560_;
-    private final StructureCheck f_196556_;
-    private final boolean f_8561_;
+    private final EndDragonFight dragonFight;
+-   final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
++   final Int2ObjectMap<net.minecraftforge.entity.PartEntity<?>> dragonParts = new Int2ObjectOpenHashMap<>();
+    private final StructureFeatureManager structureFeatureManager;
+    private final StructureCheck structureCheck;
+    private final boolean tickTime;
 +   private net.minecraftforge.common.util.WorldCapabilityData capabilityData;
 +
 +   // CraftBukkit start
@@ -18,44 +18,44 @@
 +   public final UUID uuid;
 +
 +   public LevelChunk getChunkIfLoaded(int x, int z) {
-+      return this.f_8547_.m_62227_(x, z, false);
++      return this.chunkSource.getChunk(x, z, false);
 +   }
  
     public ServerLevel(MinecraftServer p_203762_, Executor p_203763_, LevelStorageSource.LevelStorageAccess p_203764_, ServerLevelData p_203765_, ResourceKey<Level> p_203766_, Holder<DimensionType> p_203767_, ChunkProgressListener p_203768_, ChunkGenerator p_203769_, boolean p_203770_, long p_203771_, List<CustomSpawner> p_203772_, boolean p_203773_) {
-       super(p_203765_, p_203766_, p_203767_, p_203762_::m_129905_, false, p_203770_, p_203771_);
+       super(p_203765_, p_203766_, p_203767_, p_203762_::getProfiler, false, p_203770_, p_203771_);
 +      convertable = p_203764_;
 +      setGeneratorAndEnv(generator, org.magmafoundation.magma.forge.ForgeInject.environments.getOrDefault(getTypeKey(), org.bukkit.World.Environment.CUSTOM));
-+      this.pvpMode = p_203762_.m_129799_();
++      this.pvpMode = p_203762_.isPvpAllowed();
 +      if (org.magmafoundation.magma.configuration.MagmaConfig.instance.forceRandomizedUUIDForDimensions.getValues() && p_203765_ instanceof net.minecraft.world.level.storage.DerivedLevelData)
-+         uuid = org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID.getUUID(p_203764_.m_197394_(p_203766_).toFile());
-+      else uuid = org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID.getUUID(p_203764_.f_78271_.toFile());
++         uuid = org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID.getUUID(p_203764_.getDimensionPath(p_203766_).toFile());
++      else uuid = org.bukkit.craftbukkit.v1_18_R2.util.WorldUUID.getUUID(p_203764_.levelPath.toFile());
 +      // CraftBukkit end
-       this.f_8561_ = p_203773_;
-       this.f_8548_ = p_203762_;
-       this.f_8558_ = p_203772_;
-       this.f_8549_ = p_203765_;
+       this.tickTime = p_203773_;
+       this.server = p_203762_;
+       this.customSpawners = p_203772_;
+       this.serverLevelData = p_203765_;
 +      if (generator != null)
 +         p_203769_ = new org.bukkit.craftbukkit.v1_18_R2.generator.CustomChunkGenerator(this, p_203769_, generator);
 +      p_203769_.conf = spigotConfig; // Spigot
-       p_203769_.m_211700_();
-       boolean flag = p_203762_.m_6365_();
-       DataFixer datafixer = p_203762_.m_129933_();
-       EntityPersistentStorage<Entity> entitypersistentstorage = new EntityStorage(this, p_203764_.m_197394_(p_203766_).resolve("entities"), datafixer, flag, p_203762_);
-       this.f_143244_ = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage);
--      this.f_8547_ = new ServerChunkCache(this, p_203764_, datafixer, p_203762_.m_129909_(), p_203763_, p_203769_, p_203762_.m_6846_().m_11312_(), p_203762_.m_6846_().m_184213_(), flag, p_203768_, this.f_143244_::m_157524_, () -> {
-+      this.f_8547_ = new ServerChunkCache(this, p_203764_, datafixer, p_203762_.m_129909_(), p_203763_, p_203769_, this.spigotConfig.viewDistance, this.spigotConfig.simulationDistance, flag, p_203768_, this.f_143244_::m_157524_, () -> { // Spigot
-          return p_203762_.m_129783_().m_8895_();
+       p_203769_.ensureStructuresGenerated();
+       boolean flag = p_203762_.forceSynchronousWrites();
+       DataFixer datafixer = p_203762_.getFixerUpper();
+       EntityPersistentStorage<Entity> entitypersistentstorage = new EntityStorage(this, p_203764_.getDimensionPath(p_203766_).resolve("entities"), datafixer, flag, p_203762_);
+       this.entityManager = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage);
+-      this.chunkSource = new ServerChunkCache(this, p_203764_, datafixer, p_203762_.getStructureManager(), p_203763_, p_203769_, p_203762_.getPlayerList().getViewDistance(), p_203762_.getPlayerList().getSimulationDistance(), flag, p_203768_, this.entityManager::updateChunkStatus, () -> {
++      this.chunkSource = new ServerChunkCache(this, p_203764_, datafixer, p_203762_.getStructureManager(), p_203763_, p_203769_, this.spigotConfig.viewDistance, this.spigotConfig.simulationDistance, flag, p_203768_, this.entityManager::updateChunkStatus, () -> { // Spigot
+          return p_203762_.overworld().getDataStorage();
        });
-       this.f_8552_ = new PortalForcer(this);
+       this.portalForcer = new PortalForcer(this);
 @@ -223,6 +_,30 @@
        }
  
-       this.f_143245_ = new SleepStatus();
+       this.sleepStatus = new SleepStatus();
 +      this.initCapabilities();
 +
 +      // CraftBukkit start
 +      this.world = new org.bukkit.craftbukkit.v1_18_R2.CraftWorld((ServerLevel) this, generator, biomeProvider, environment);
-+      m_6857_().world = this;
++      getWorldBorder().world = this;
 +      // CraftBukkit end
 +
 +      this.getCraftServer().addWorld(this.getWorld()); //Magma - add world to bukkit's world list
@@ -77,151 +77,151 @@
 +      return super.getTypeKey();
     }
  
-    public void m_8606_(int p_8607_, int p_8608_, boolean p_8609_, boolean p_8610_) {
+    public void setWeatherParameters(int p_8607_, int p_8608_, boolean p_8609_, boolean p_8610_) {
 @@ -251,8 +_,8 @@
-       int i = this.m_46469_().m_46215_(GameRules.f_151486_);
-       if (this.f_143245_.m_144002_(i) && this.f_143245_.m_144004_(i, this.f_8546_)) {
-          if (this.m_46469_().m_46207_(GameRules.f_46140_)) {
--            long j = this.f_46442_.m_6792_() + 24000L;
--            this.m_8615_(j - j % 24000L);
-+            long j = this.m_46468_() + 24000L;
-+            this.m_8615_(net.minecraftforge.event.ForgeEventFactory.onSleepFinished(this, j - j % 24000L, this.m_46468_()));
+       int i = this.getGameRules().getInt(GameRules.RULE_PLAYERS_SLEEPING_PERCENTAGE);
+       if (this.sleepStatus.areEnoughSleeping(i) && this.sleepStatus.areEnoughDeepSleeping(i, this.players)) {
+          if (this.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
+-            long j = this.levelData.getDayTime() + 24000L;
+-            this.setDayTime(j - j % 24000L);
++            long j = this.getDayTime() + 24000L;
++            this.setDayTime(net.minecraftforge.event.ForgeEventFactory.onSleepFinished(this, j - j % 24000L, this.getDayTime()));
           }
  
-          this.m_8804_();
+          this.wakeUpAllPlayers();
 @@ -264,6 +_,7 @@
-       this.m_46465_();
-       this.m_8809_();
-       profilerfiller.m_6182_("tickPending");
+       this.updateSkyBrightness();
+       this.tickTime();
+       profilerfiller.popPush("tickPending");
 +      timings.scheduledBlocks.startTiming(); // Paper
-       if (!this.m_46659_()) {
-          long k = this.m_46467_();
-          profilerfiller.m_6180_("blockTicks");
+       if (!this.isDebug()) {
+          long k = this.getGameTime();
+          profilerfiller.push("blockTicks");
 @@ -272,28 +_,38 @@
-          this.f_184047_.m_193225_(k, 65536, this::m_184076_);
-          profilerfiller.m_7238_();
+          this.fluidTicks.tick(k, 65536, this::tickFluid);
+          profilerfiller.pop();
        }
 +      timings.scheduledBlocks.stopTiming(); // Paper
  
-       profilerfiller.m_6182_("raid");
+       profilerfiller.popPush("raid");
 +      this.timings.raids.startTiming(); // Paper - timings
-       this.f_8565_.m_37957_();
+       this.raids.tick();
 +      this.timings.raids.stopTiming(); // Paper - timings
-       profilerfiller.m_6182_("chunkSource");
+       profilerfiller.popPush("chunkSource");
 +      this.timings.chunkProviderTick.startTiming(); // Paper - timings
-       this.m_7726_().m_201698_(p_8794_, true);
+       this.getChunkSource().tick(p_8794_, true);
 +      this.timings.chunkProviderTick.stopTiming(); // Paper - timings
-       profilerfiller.m_6182_("blockEvents");
+       profilerfiller.popPush("blockEvents");
 +      timings.doSounds.startTiming(); // Spigot
-       this.m_8807_();
+       this.runBlockEvents();
 +      timings.doSounds.stopTiming(); // Spigot
-       this.f_8557_ = false;
-       profilerfiller.m_7238_();
--      boolean flag = !this.f_8546_.isEmpty() || !this.m_8902_().isEmpty();
-+      boolean flag = !this.f_8546_.isEmpty() || net.minecraftforge.common.world.ForgeChunkManager.hasForcedChunks(this); //Forge: Replace vanilla's has forced chunk check with forge's that checks both the vanilla and forge added ones
+       this.handlingTick = false;
+       profilerfiller.pop();
+-      boolean flag = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
++      boolean flag = !this.players.isEmpty() || net.minecraftforge.common.world.ForgeChunkManager.hasForcedChunks(this); //Forge: Replace vanilla's has forced chunk check with forge's that checks both the vanilla and forge added ones
        if (flag) {
-          this.m_8886_();
+          this.resetEmptyTime();
        }
  
-       if (flag || this.f_8551_++ < 300) {
-          profilerfiller.m_6180_("entities");
+       if (flag || this.emptyTime++ < 300) {
+          profilerfiller.push("entities");
 +         timings.tickEntities.startTiming(); // Spigot
-          if (this.f_8559_ != null) {
-             profilerfiller.m_6180_("dragonFight");
-             this.f_8559_.m_64095_();
-             profilerfiller.m_7238_();
+          if (this.dragonFight != null) {
+             profilerfiller.push("dragonFight");
+             this.dragonFight.tick();
+             profilerfiller.pop();
           }
  
 +         org.spigotmc.ActivationRange.activateEntities(this); // Spigot
 +         timings.entityTick.startTiming(); // Spigot
-          this.f_143243_.m_156910_((p_184065_) -> {
-             if (!p_184065_.m_146910_()) {
-                if (this.m_143342_(p_184065_)) {
+          this.entityTickList.forEach((p_184065_) -> {
+             if (!p_184065_.isRemoved()) {
+                if (this.shouldDiscardEntity(p_184065_)) {
 @@ -313,12 +_,16 @@
                       }
  
-                      profilerfiller.m_6180_("tick");
--                     this.m_46653_(this::m_8647_, p_184065_);
-+                     if (!p_184065_.m_146910_() && !(p_184065_ instanceof net.minecraftforge.entity.PartEntity)) {
-+                        this.m_46653_(this::m_8647_, p_184065_);
+                      profilerfiller.push("tick");
+-                     this.guardEntityTick(this::tickNonPassenger, p_184065_);
++                     if (!p_184065_.isRemoved() && !(p_184065_ instanceof net.minecraftforge.entity.PartEntity)) {
++                        this.guardEntityTick(this::tickNonPassenger, p_184065_);
 +                     }
-                      profilerfiller.m_7238_();
+                      profilerfiller.pop();
                    }
                 }
              }
           });
 +         timings.entityTick.stopTiming(); // Spigot
 +         timings.tickEntities.stopTiming(); // Spigot
-          profilerfiller.m_7238_();
-          this.m_46463_();
+          profilerfiller.pop();
+          this.tickBlockEntities();
        }
 @@ -377,7 +_,7 @@
-       int j = chunkpos.m_45605_();
-       ProfilerFiller profilerfiller = this.m_46473_();
-       profilerfiller.m_6180_("thunder");
--      if (flag && this.m_46470_() && this.f_46441_.nextInt(100000) == 0) {
-+      if (flag && this.m_46470_() && this.spigotConfig.thunderChance > 0 && this.f_46441_.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot
-          BlockPos blockpos = this.m_143288_(this.m_46496_(i, 0, j, 15));
-          if (this.m_46758_(blockpos)) {
-             DifficultyInstance difficultyinstance = this.m_6436_(blockpos);
+       int j = chunkpos.getMinBlockZ();
+       ProfilerFiller profilerfiller = this.getProfiler();
+       profilerfiller.push("thunder");
+-      if (flag && this.isThundering() && this.random.nextInt(100000) == 0) {
++      if (flag && this.isThundering() && this.spigotConfig.thunderChance > 0 && this.random.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot
+          BlockPos blockpos = this.findLightningTargetAround(this.getBlockRandomPos(i, 0, j, 15));
+          if (this.isRainingAt(blockpos)) {
+             DifficultyInstance difficultyinstance = this.getCurrentDifficultyAt(blockpos);
 @@ -402,6 +_,7 @@
-          BlockPos blockpos2 = this.m_5452_(Heightmap.Types.MOTION_BLOCKING, this.m_46496_(i, 0, j, 15));
-          BlockPos blockpos3 = blockpos2.m_7495_();
-          Biome biome = this.m_204166_(blockpos2).m_203334_();
+          BlockPos blockpos2 = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.getBlockRandomPos(i, 0, j, 15));
+          BlockPos blockpos3 = blockpos2.below();
+          Biome biome = this.getBiome(blockpos2).value();
 +         if (this.isAreaLoaded(blockpos2, 1)) // Forge: check area to avoid loading neighbors in unloaded chunks
-          if (biome.m_47477_(this, blockpos3)) {
-             this.m_46597_(blockpos3, Blocks.f_50126_.m_49966_());
+          if (biome.shouldFreeze(this, blockpos3)) {
+             this.setBlockAndUpdate(blockpos3, Blocks.ICE.defaultBlockState());
           }
 @@ -422,6 +_,7 @@
        }
  
-       profilerfiller.m_6182_("tickBlocks");
+       profilerfiller.popPush("tickBlocks");
 +      timings.chunkTicksBlocks.startTiming(); // Paper
        if (p_8716_ > 0) {
-          for(LevelChunkSection levelchunksection : p_8715_.m_7103_()) {
-             if (levelchunksection.m_63014_()) {
+          for(LevelChunkSection levelchunksection : p_8715_.getSections()) {
+             if (levelchunksection.isRandomlyTicking()) {
 @@ -446,6 +_,7 @@
           }
        }
  
 +      timings.chunkTicksBlocks.stopTiming(); // Paper
-       profilerfiller.m_7238_();
+       profilerfiller.pop();
     }
  
 @@ -592,15 +_,19 @@
-          this.f_8548_.m_6846_().m_11270_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132161_, this.f_46440_), this.m_46472_());
+          this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
        }
  
 +      /* The function in use here has been replaced in order to only send the weather info to players in the correct dimension,
 +       * rather than to all players on the server. This is what causes the client-side rain, as the
 +       * client believes that it has started raining locally, rather than in another dimension.
 +       */
-       if (flag != this.m_46471_()) {
+       if (flag != this.isRaining()) {
           if (flag) {
--            this.f_8548_.m_6846_().m_11268_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132155_, 0.0F));
-+            this.f_8548_.m_6846_().m_11270_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132155_, 0.0F), this.m_46472_());
+-            this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.STOP_RAINING, 0.0F));
++            this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.STOP_RAINING, 0.0F), this.dimension());
           } else {
--            this.f_8548_.m_6846_().m_11268_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132154_, 0.0F));
-+            this.f_8548_.m_6846_().m_11270_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132154_, 0.0F), this.m_46472_());
+-            this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F));
++            this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F), this.dimension());
           }
  
--         this.f_8548_.m_6846_().m_11268_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132160_, this.f_46438_));
--         this.f_8548_.m_6846_().m_11268_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132161_, this.f_46440_));
-+         this.f_8548_.m_6846_().m_11270_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132160_, this.f_46438_), this.m_46472_());
-+         this.f_8548_.m_6846_().m_11270_(new ClientboundGameEventPacket(ClientboundGameEventPacket.f_132161_, this.f_46440_), this.m_46472_());
+-         this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.RAIN_LEVEL_CHANGE, this.rainLevel));
+-         this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel));
++         this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.RAIN_LEVEL_CHANGE, this.rainLevel), this.dimension());
++         this.server.getPlayerList().broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
        }
  
     }
 @@ -633,6 +_,22 @@
     }
  
-    public void m_8647_(Entity p_8648_) {
+    public void tickNonPassenger(Entity p_8648_) {
 +      ++co.aikar.timings.TimingHistory.entityTicks; // Paper - timings
 +      // Spigot start
 +      co.aikar.timings.Timing timer; // Paper
 +      if (!org.spigotmc.ActivationRange.checkIfActive(p_8648_)) {
-+         p_8648_.f_19797_++;
-+         timer = p_8648_.m_6095_().inactiveTickTimer.startTiming(); try { // Paper - timings
++         p_8648_.tickCount++;
++         timer = p_8648_.getType().inactiveTickTimer.startTiming(); try { // Paper - timings
 +         p_8648_.inactiveTick();
 +         } finally { timer.stopTiming(); } // Paper
 +         return;
@@ -229,62 +229,62 @@
 +      // Spigot end
 +      // Paper start- timings
 +      co.aikar.timings.TimingHistory.activatedEntityTicks++;
-+      timer = p_8648_.m_20202_() != null ? p_8648_.m_6095_().passengerTickTimer.startTiming() : p_8648_.m_6095_().tickTimer.startTiming();
++      timer = p_8648_.getVehicle() != null ? p_8648_.getType().passengerTickTimer.startTiming() : p_8648_.getType().tickTimer.startTiming();
 +      try {
 +         // Paper end - timings
-       p_8648_.m_146867_();
-       ProfilerFiller profilerfiller = this.m_46473_();
-       ++p_8648_.f_19797_;
+       p_8648_.setOldPosAndRot();
+       ProfilerFiller profilerfiller = this.getProfiler();
+       ++p_8648_.tickCount;
 @@ -641,12 +_,13 @@
        });
-       profilerfiller.m_6174_("tickNonPassenger");
-       p_8648_.m_8119_();
+       profilerfiller.incrementCounter("tickNonPassenger");
+       p_8648_.tick();
 +      p_8648_.postTick(); // CraftBukkit
-       this.m_46473_().m_7238_();
+       this.getProfiler().pop();
  
-       for(Entity entity : p_8648_.m_20197_()) {
-          this.m_8662_(p_8648_, entity);
+       for(Entity entity : p_8648_.getPassengers()) {
+          this.tickPassenger(p_8648_, entity);
        }
 -
 +      } finally { timer.stopTiming(); } // Paper - timings
     }
  
-    private void m_8662_(Entity p_8663_, Entity p_8664_) {
+    private void tickPassenger(Entity p_8663_, Entity p_8664_) {
 @@ -656,10 +_,12 @@
-             ++p_8664_.f_19797_;
-             ProfilerFiller profilerfiller = this.m_46473_();
-             profilerfiller.m_6521_(() -> {
--               return Registry.f_122826_.m_7981_(p_8664_.m_6095_()).toString();
-+               return p_8664_.m_6095_().getRegistryName() == null ? p_8664_.m_6095_().toString() : p_8664_.m_6095_().getRegistryName().toString();
+             ++p_8664_.tickCount;
+             ProfilerFiller profilerfiller = this.getProfiler();
+             profilerfiller.push(() -> {
+-               return Registry.ENTITY_TYPE.getKey(p_8664_.getType()).toString();
++               return p_8664_.getType().getRegistryName() == null ? p_8664_.getType().toString() : p_8664_.getType().getRegistryName().toString();
              });
-             profilerfiller.m_6174_("tickPassenger");
+             profilerfiller.incrementCounter("tickPassenger");
 +            if (p_8664_.canUpdate())
-             p_8664_.m_6083_();
+             p_8664_.rideTick();
 +            p_8664_.postTick(); // CraftBukkit
-             profilerfiller.m_7238_();
+             profilerfiller.pop();
  
-             for(Entity entity : p_8664_.m_20197_()) {
+             for(Entity entity : p_8664_.getPassengers()) {
 @@ -679,6 +_,8 @@
-    public void m_8643_(@Nullable ProgressListener p_8644_, boolean p_8645_, boolean p_8646_) {
-       ServerChunkCache serverchunkcache = this.m_7726_();
+    public void save(@Nullable ProgressListener p_8644_, boolean p_8645_, boolean p_8646_) {
+       ServerChunkCache serverchunkcache = this.getChunkSource();
        if (!p_8646_) {
 +         org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
 +         try (co.aikar.timings.Timing ignored = timings.worldSave.startTiming()) { // Paper
           if (p_8644_ != null) {
-             p_8644_.m_6309_(new TranslatableComponent("menu.savingLevel"));
+             p_8644_.progressStartNoAbort(new TranslatableComponent("menu.savingLevel"));
           }
 @@ -688,13 +_,17 @@
-             p_8644_.m_6307_(new TranslatableComponent("menu.savingChunks"));
+             p_8644_.progressStage(new TranslatableComponent("menu.savingChunks"));
           }
  
 +         timings.worldSaveChunks.startTiming(); // Paper
-          serverchunkcache.m_8419_(p_8645_);
+          serverchunkcache.save(p_8645_);
 +            timings.worldSaveChunks.stopTiming(); // Paper
 +         }// Paper
           if (p_8645_) {
-             this.f_143244_.m_157561_();
+             this.entityManager.saveAll();
           } else {
-             this.f_143244_.m_157554_();
+             this.entityManager.autoSave();
           }
  
 +         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Save(this));
@@ -294,32 +294,32 @@
 @@ -740,15 +_,39 @@
     }
  
-    public boolean m_7967_(Entity p_8837_) {
--      return this.m_8872_(p_8837_);
+    public boolean addFreshEntity(Entity p_8837_) {
+-      return this.addEntity(p_8837_);
 +      // CraftBukkit start
 +      return this.addFreshEntity(p_8837_, p_8837_.spawnReason);
 +   }
 +
 +   public boolean addFreshEntity(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
 +      prepareAddEntity(reason);
-+      return this.m_8872_(entity);
++      return this.addEntity(entity);
 +      // CraftBukkit end
     }
  
-    public boolean m_8847_(Entity p_8848_) {
--      return this.m_8872_(p_8848_);
+    public boolean addWithUUID(Entity p_8848_) {
+-      return this.addEntity(p_8848_);
 +      // CraftBukkit start
 +      return this.addWithUUID(p_8848_, p_8848_.spawnReason);
 +   }
 +
 +   public boolean addWithUUID(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
 +      prepareAddEntity(reason);
-+      return this.m_8872_(entity);
++      return this.addEntity(entity);
 +      // CraftBukkit end
     }
  
-    public void m_143334_(Entity p_143335_) {
--      this.m_8872_(p_143335_);
+    public void addDuringTeleport(Entity p_143335_) {
+-      this.addEntity(p_143335_);
 +      // CraftBukkit start
 +      // SPIGOT-6415: Don't call spawn event for entities which travel trough worlds,
 +      // since it is only an implementation detail, that a new entity is created when
@@ -329,19 +329,19 @@
 +
 +   public void addDuringTeleport(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
 +      prepareAddEntity(reason);
-+      this.m_8872_(entity);
++      this.addEntity(entity);
 +      // CraftBukkit end
     }
  
-    public void m_8622_(ServerPlayer p_8623_) {
+    public void addDuringCommandTeleport(ServerPlayer p_8623_) {
 @@ -767,7 +_,55 @@
-       this.m_8853_(p_8846_);
+       this.addPlayer(p_8846_);
     }
  
 +   /** @deprecated To be removed in 1.19. See {@link #removePlayerImmediately(ServerPlayer, Entity.RemovalReason)} as a possible replacement. */
 +   @Deprecated(forRemoval = true, since = "1.18.1")
 +   public void removePlayer(ServerPlayer p_8850_, boolean keepData) {
-+      p_8850_.m_146870_();
++      p_8850_.discard();
 +      this.removeEntity(p_8850_, keepData);
 +   }
 +
@@ -350,22 +350,22 @@
 +   public void removeEntityComplete(Entity p_8865_, boolean keepData) {
 +      if(p_8865_.isMultipartEntity()) {
 +         for(net.minecraftforge.entity.PartEntity<?> parts : p_8865_.getParts()) {
-+            parts.m_146870_();
++            parts.discard();
 +         }
 +      }
 +
-+      this.m_7726_().m_8443_(p_8865_);
++      this.getChunkSource().removeEntity(p_8865_);
 +      if (p_8865_ instanceof ServerPlayer) {
 +         ServerPlayer serverplayerentity = (ServerPlayer)p_8865_;
-+         this.f_8546_.remove(serverplayerentity);
++         this.players.remove(serverplayerentity);
 +      }
 +
-+      this.m_6188_().m_83420_(p_8865_);
++      this.getScoreboard().entityRemoved(p_8865_);
 +      if (p_8865_ instanceof Mob) {
-+         this.f_143246_.remove(((Mob)p_8865_).m_21573_());
++         this.navigatingMobs.remove(((Mob)p_8865_).getNavigation());
 +      }
 +
-+      p_8865_.m_146870_();
++      p_8865_.discard();
 +      // onRemovedFromWorld and EntityLeaveWorldEvent are called by discard, so no need to do it ourselves here lest we double-call
 +   }
 +
@@ -378,27 +378,27 @@
 +   /** @deprecated To be removed in 1.19. See {@link Entity#setRemoved(Entity.RemovalReason)} as a possible replacement. */
 +   @Deprecated(forRemoval = true, since = "1.18.1")
 +   public void removeEntity(Entity p_8868_, boolean keepData) {
-+      if (this.f_8557_) {
-+         throw (IllegalStateException) net.minecraft.Util.m_137570_(new IllegalStateException("Removing entity while ticking!"));
++      if (this.handlingTick) {
++         throw (IllegalStateException) net.minecraft.Util.pauseInIde(new IllegalStateException("Removing entity while ticking!"));
 +      } else {
 +         removeEntityComplete(p_8868_, keepData);
 +      }
 +   }
 +
-    private void m_8853_(ServerPlayer p_8854_) {
+    private void addPlayer(ServerPlayer p_8854_) {
 +      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(p_8854_, this))) return;
-       Entity entity = this.m_142646_().m_142694_(p_8854_.m_142081_());
+       Entity entity = this.getEntities().get(p_8854_.getUUID());
        if (entity != null) {
-          f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_142081_().toString());
+          LOGGER.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.getUUID().toString());
 @@ -775,28 +_,73 @@
-          this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
+          this.removePlayerImmediately((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
  
--      this.f_143244_.m_157533_(p_8854_);
+-      this.entityManager.addNewEntity(p_8854_);
 -   }
 -
--   private boolean m_8872_(Entity p_8873_) {
-+      this.f_143244_.addNewEntityWithoutEvent(p_8854_);
+-   private boolean addEntity(Entity p_8873_) {
++      this.entityManager.addNewEntityWithoutEvent(p_8854_);
 +      p_8854_.onAddedToWorld();
 +   }
 +
@@ -409,14 +409,14 @@
 +   }
 +
 +   // CraftBukkit start
-+   public boolean m_8872_(Entity p_8873_) {
++   public boolean addEntity(Entity p_8873_) {
 +      org.spigotmc.AsyncCatcher.catchOp("entity add"); // Spigot
-       if (p_8873_.m_146910_()) {
--         f_8566_.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.m_20613_(p_8873_.m_6095_()));
+       if (p_8873_.isRemoved()) {
+-         LOGGER.warn("Tried to add entity {} but it was marked as removed already", (Object)EntityType.getKey(p_8873_.getType()));
 +         // WorldServer.LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityTypes.getKey(entity.getType())); // CraftBukkit
           return false;
        } else {
--         return this.f_143244_.m_157533_(p_8873_);
+-         return this.entityManager.addNewEntity(p_8873_);
 +         org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason = addEntity_spawnReason;
 +         addEntity_spawnReason = null; //reset
 +         //Magma end
@@ -427,7 +427,7 @@
 +         }
 +         // CraftBukkit end
 +
-+         if (this.f_143244_.m_157533_(p_8873_)) {
++         if (this.entityManager.addNewEntity(p_8873_)) {
 +            p_8873_.onAddedToWorld();
 +            return true;
 +         } else {
@@ -442,24 +442,24 @@
 +      trySpawnReason.set(spawnReason);
     }
  
-    public boolean m_8860_(Entity p_8861_) {
-       if (p_8861_.m_142428_().map(Entity::m_142081_).anyMatch(this.f_143244_::m_157550_)) {
+    public boolean tryAddFreshEntityWithPassengers(Entity p_8861_) {
+       if (p_8861_.getSelfAndPassengers().map(Entity::getUUID).anyMatch(this.entityManager::isLoaded)) {
           return false;
        } else {
 +         this.prepareEntity(p_8861_, trySpawnReason.getAndSet(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT)); // Magma - add spawn reason
-          this.m_47205_(p_8861_);
+          this.addFreshEntityWithPassengers(p_8861_);
           return true;
        }
     }
  
 +   public boolean tryAddFreshEntityWithPassengers(Entity p_8861_, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
 +      trySpawnReason.set(reason);
-+      return m_8860_(p_8861_);
++      return tryAddFreshEntityWithPassengers(p_8861_);
 +   }
 +
-    public void m_8712_(LevelChunk p_8713_) {
+    public void unload(LevelChunk p_8713_) {
 +      // Spigot Start
-+      for (net.minecraft.world.level.block.entity.BlockEntity tileentity : p_8713_.m_62954_().values()) {
++      for (net.minecraft.world.level.block.entity.BlockEntity tileentity : p_8713_.getBlockEntities().values()) {
 +         if (tileentity instanceof net.minecraft.world.Container) {
 +            for (org.bukkit.entity.HumanEntity h : Lists.newArrayList(((net.minecraft.world.Container) tileentity).getViewers())) {
 +               h.closeInventory();
@@ -467,11 +467,11 @@
 +         }
 +      }
 +      // Spigot End
-       p_8713_.m_187957_();
-       p_8713_.m_187979_(this);
+       p_8713_.clearAllBlockEntities();
+       p_8713_.unregisterTickContainerFromLevel(this);
     }
 @@ -805,12 +_,41 @@
-       p_143262_.m_142687_(p_143263_);
+       p_143262_.remove(p_143263_);
     }
  
 +   // CraftBukkit start
@@ -486,22 +486,22 @@
 +         return false;
 +      }
 +
-+      return this.m_7967_(entitylightning);
++      return this.addFreshEntity(entitylightning);
 +   }
 +   // CraftBukkit end
 +
-    public void m_6801_(int p_8612_, BlockPos p_8613_, int p_8614_) {
+    public void destroyBlockProgress(int p_8612_, BlockPos p_8613_, int p_8614_) {
 +      // CraftBukkit start
 +      Player entityhuman = null;
-+      Entity entity = this.m_6815_(p_8612_);
++      Entity entity = this.getEntity(p_8612_);
 +      if (entity instanceof Player) entityhuman = (Player) entity;
 +      // CraftBukkit end
 +
-       for(ServerPlayer serverplayer : this.f_8548_.m_6846_().m_11314_()) {
-          if (serverplayer != null && serverplayer.f_19853_ == this && serverplayer.m_142049_() != p_8612_) {
-             double d0 = (double)p_8613_.m_123341_() - serverplayer.m_20185_();
-             double d1 = (double)p_8613_.m_123342_() - serverplayer.m_20186_();
-             double d2 = (double)p_8613_.m_123343_() - serverplayer.m_20189_();
+       for(ServerPlayer serverplayer : this.server.getPlayerList().getPlayers()) {
+          if (serverplayer != null && serverplayer.level == this && serverplayer.getId() != p_8612_) {
+             double d0 = (double)p_8613_.getX() - serverplayer.getX();
+             double d1 = (double)p_8613_.getY() - serverplayer.getY();
+             double d2 = (double)p_8613_.getZ() - serverplayer.getZ();
 +
 +            // CraftBukkit start
 +            if (entityhuman != null && !serverplayer.getBukkitEntity().canSee(entityhuman.getBukkitEntity())) {
@@ -510,58 +510,58 @@
 +            // CraftBukkit end
 +
              if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
-                serverplayer.f_8906_.m_141995_(new ClientboundBlockDestructionPacket(p_8612_, p_8613_, p_8614_));
+                serverplayer.connection.send(new ClientboundBlockDestructionPacket(p_8612_, p_8613_, p_8614_));
              }
 @@ -820,10 +_,20 @@
     }
  
-    public void m_6263_(@Nullable Player p_8675_, double p_8676_, double p_8677_, double p_8678_, SoundEvent p_8679_, SoundSource p_8680_, float p_8681_, float p_8682_) {
+    public void playSound(@Nullable Player p_8675_, double p_8676_, double p_8677_, double p_8678_, SoundEvent p_8679_, SoundSource p_8680_, float p_8681_, float p_8682_) {
 +      net.minecraftforge.event.entity.PlaySoundAtEntityEvent event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(p_8675_, p_8679_, p_8680_, p_8681_, p_8682_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_8679_ = event.getSound();
 +      p_8680_ = event.getCategory();
 +      p_8681_ = event.getVolume();
-       this.f_8548_.m_6846_().m_11241_(p_8675_, p_8676_, p_8677_, p_8678_, p_8681_ > 1.0F ? (double)(16.0F * p_8681_) : 16.0D, this.m_46472_(), new ClientboundSoundPacket(p_8679_, p_8680_, p_8676_, p_8677_, p_8678_, p_8681_, p_8682_));
+       this.server.getPlayerList().broadcast(p_8675_, p_8676_, p_8677_, p_8678_, p_8681_ > 1.0F ? (double)(16.0F * p_8681_) : 16.0D, this.dimension(), new ClientboundSoundPacket(p_8679_, p_8680_, p_8676_, p_8677_, p_8678_, p_8681_, p_8682_));
     }
  
-    public void m_6269_(@Nullable Player p_8689_, Entity p_8690_, SoundEvent p_8691_, SoundSource p_8692_, float p_8693_, float p_8694_) {
+    public void playSound(@Nullable Player p_8689_, Entity p_8690_, SoundEvent p_8691_, SoundSource p_8692_, float p_8693_, float p_8694_) {
 +      net.minecraftforge.event.entity.PlaySoundAtEntityEvent event = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(p_8689_, p_8691_, p_8692_, p_8693_, p_8694_);
 +      if (event.isCanceled() || event.getSound() == null) return;
 +      p_8691_ = event.getSound();
 +      p_8692_ = event.getCategory();
 +      p_8693_ = event.getVolume();
-       this.f_8548_.m_6846_().m_11241_(p_8689_, p_8690_.m_20185_(), p_8690_.m_20186_(), p_8690_.m_20189_(), p_8693_ > 1.0F ? (double)(16.0F * p_8693_) : 16.0D, this.m_46472_(), new ClientboundSoundEntityPacket(p_8691_, p_8692_, p_8690_, p_8693_, p_8694_));
+       this.server.getPlayerList().broadcast(p_8689_, p_8690_.getX(), p_8690_.getY(), p_8690_.getZ(), p_8693_ > 1.0F ? (double)(16.0F * p_8693_) : 16.0D, this.dimension(), new ClientboundSoundEntityPacket(p_8691_, p_8692_, p_8690_, p_8693_, p_8694_));
     }
  
 @@ -840,6 +_,7 @@
     }
  
-    public void m_142346_(@Nullable Entity p_143268_, GameEvent p_143269_, BlockPos p_143270_) {
+    public void gameEvent(@Nullable Entity p_143268_, GameEvent p_143269_, BlockPos p_143270_) {
 +      if (net.minecraftforge.common.ForgeHooks.onVanillaGameEvent(this, p_143268_, p_143269_, p_143270_))
-       this.m_151513_(p_143268_, p_143269_, p_143270_, p_143269_.m_157827_());
+       this.postGameEventInRadius(p_143268_, p_143269_, p_143270_, p_143269_.getNotificationRadius());
     }
  
 @@ -875,6 +_,35 @@
        }
     }
  
-+   public void m_46672_(BlockPos p_215045_, Block p_215046_) {
++   public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
 +      if (!org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues()) {
-+         super.m_46672_(p_215045_, p_215046_);
++         super.updateNeighborsAt(p_215045_, p_215046_);
 +         return;
 +      }
-+      net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215045_, this.m_8055_(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
++      net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215045_, this.getBlockState(p_215045_), java.util.EnumSet.allOf(Direction.class), false).isCanceled();
 +      this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215045_, p_215046_, (Direction)null);
 +   }
 +
-+   public void m_46590_(BlockPos p_215052_, Block p_215053_, Direction p_215054_) {
++   public void updateNeighborsAtExceptFromFacing(BlockPos p_215052_, Block p_215053_, Direction p_215054_) {
 +      if (!org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues()) {
-+         super.m_46590_(p_215052_, p_215053_, p_215054_);
++         super.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
 +         return;
 +      }
 +      java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf(Direction.class);
 +      directions.remove(p_215054_);
-+      if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215052_, this.m_8055_(p_215052_), directions, false).isCanceled())
++      if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(this, p_215052_, this.getBlockState(p_215052_), directions, false).isCanceled())
 +         return;
 +      this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_);
 +   }
@@ -574,21 +574,21 @@
 +      this.neighborUpdater.neighborChanged(p_215035_, p_215036_, p_215037_, p_215038_, p_215039_);
 +   }
 +
-    public void m_7605_(Entity p_8650_, byte p_8651_) {
-       this.m_7726_().m_8394_(p_8650_, new ClientboundEntityEventPacket(p_8650_, p_8651_));
+    public void broadcastEntityEvent(Entity p_8650_, byte p_8651_) {
+       this.getChunkSource().broadcastAndSend(p_8650_, new ClientboundEntityEventPacket(p_8650_, p_8651_));
     }
 @@ -885,6 +_,7 @@
  
-    public Explosion m_7703_(@Nullable Entity p_8653_, @Nullable DamageSource p_8654_, @Nullable ExplosionDamageCalculator p_8655_, double p_8656_, double p_8657_, double p_8658_, float p_8659_, boolean p_8660_, Explosion.BlockInteraction p_8661_) {
+    public Explosion explode(@Nullable Entity p_8653_, @Nullable DamageSource p_8654_, @Nullable ExplosionDamageCalculator p_8655_, double p_8656_, double p_8657_, double p_8658_, float p_8659_, boolean p_8660_, Explosion.BlockInteraction p_8661_) {
        Explosion explosion = new Explosion(this, p_8653_, p_8654_, p_8655_, p_8656_, p_8657_, p_8658_, p_8659_, p_8660_, p_8661_);
 +      if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this, explosion)) return explosion;
-       explosion.m_46061_();
-       explosion.m_46075_(false);
+       explosion.explode();
+       explosion.finalizeExplosion(false);
        if (p_8661_ == Explosion.BlockInteraction.NONE) {
 @@ -956,12 +_,21 @@
     }
  
-    public <T extends ParticleOptions> int m_8767_(T p_8768_, double p_8769_, double p_8770_, double p_8771_, int p_8772_, double p_8773_, double p_8774_, double p_8775_, double p_8776_) {
+    public <T extends ParticleOptions> int sendParticles(T p_8768_, double p_8769_, double p_8770_, double p_8771_, int p_8772_, double p_8773_, double p_8774_, double p_8775_, double p_8776_) {
 -      ClientboundLevelParticlesPacket clientboundlevelparticlespacket = new ClientboundLevelParticlesPacket(p_8768_, false, p_8769_, p_8770_, p_8771_, (float)p_8773_, (float)p_8774_, (float)p_8775_, (float)p_8776_, p_8772_);
 +
 +      // CraftBukkit - visibility api support
@@ -600,46 +600,46 @@
 +      // CraftBukkit end
        int i = 0;
  
-       for(int j = 0; j < this.f_8546_.size(); ++j) {
-          ServerPlayer serverplayer = this.f_8546_.get(j);
--         if (this.m_8636_(serverplayer, false, p_8769_, p_8770_, p_8771_, clientboundlevelparticlespacket)) {
+       for(int j = 0; j < this.players.size(); ++j) {
+          ServerPlayer serverplayer = this.players.get(j);
+-         if (this.sendParticles(serverplayer, false, p_8769_, p_8770_, p_8771_, clientboundlevelparticlespacket)) {
 +         if (sender != null && !serverplayer.getBukkitEntity().canSee(sender.getBukkitEntity())) continue; // CraftBukkit
 +
-+         if (this.m_8636_(serverplayer, force, p_8769_, p_8770_, p_8771_, clientboundlevelparticlespacket)) {  // CraftBukkit
++         if (this.sendParticles(serverplayer, force, p_8769_, p_8770_, p_8771_, clientboundlevelparticlespacket)) {  // CraftBukkit
              ++i;
           }
        }
 @@ -1048,6 +_,7 @@
     }
  
-    public void m_142325_(String p_143305_, MapItemSavedData p_143306_) {
+    public void setMapData(String p_143305_, MapItemSavedData p_143306_) {
 +      p_143306_.id = p_143305_; // CraftBukkit
-       this.m_142572_().m_129783_().m_8895_().m_164855_(p_143305_, p_143306_);
+       this.getServer().overworld().getDataStorage().set(p_143305_, p_143306_);
     }
  
 @@ -1400,19 +_,42 @@
     }
  
-    public static void m_8617_(ServerLevel p_8618_) {
+    public static void makeObsidianPlatform(ServerLevel p_8618_) {
 +      // CraftBukkit start
 +      ServerLevel.makeObsidianPlatform(p_8618_, null);
 +   }
 +
 +   public static void makeObsidianPlatform(ServerLevel p_8618_, Entity entity) {
 +      // CraftBukkit end
-       BlockPos blockpos = f_8562_;
-       int i = blockpos.m_123341_();
-       int j = blockpos.m_123342_() - 2;
-       int k = blockpos.m_123343_();
+       BlockPos blockpos = END_SPAWN_POINT;
+       int i = blockpos.getX();
+       int j = blockpos.getY() - 2;
+       int k = blockpos.getZ();
 +      // CraftBukkit start
 +      org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator blockList = new org.bukkit.craftbukkit.v1_18_R2.util.BlockStateListPopulator(p_8618_);
-       BlockPos.m_121976_(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach((p_207578_) -> {
--         p_8618_.m_46597_(p_207578_, Blocks.f_50016_.m_49966_());
-+         blockList.m_7731_(p_207578_, Blocks.f_50016_.m_49966_(), 3);
+       BlockPos.betweenClosed(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach((p_207578_) -> {
+-         p_8618_.setBlockAndUpdate(p_207578_, Blocks.AIR.defaultBlockState());
++         blockList.setBlock(p_207578_, Blocks.AIR.defaultBlockState(), 3);
        });
-       BlockPos.m_121976_(i - 2, j, k - 2, i + 2, j, k + 2).forEach((p_184101_) -> {
--         p_8618_.m_46597_(p_184101_, Blocks.f_50080_.m_49966_());
-+         blockList.m_7731_(p_184101_, Blocks.f_50080_.m_49966_(), 3);
+       BlockPos.betweenClosed(i - 2, j, k - 2, i + 2, j, k + 2).forEach((p_184101_) -> {
+-         p_8618_.setBlockAndUpdate(p_184101_, Blocks.OBSIDIAN.defaultBlockState());
++         blockList.setBlock(p_184101_, Blocks.OBSIDIAN.defaultBlockState(), 3);
        });
 +      org.bukkit.World bworld = p_8618_.getWorld();
 +      org.bukkit.event.world.PortalCreateEvent portalEvent = new org.bukkit.event.world.PortalCreateEvent((List<org.bukkit.block.BlockState>) (List) blockList.getList(), bworld, (entity == null) ? null : entity.getBukkitEntity(), org.bukkit.event.world.PortalCreateEvent.CreateReason.END_PLATFORM);
@@ -653,90 +653,90 @@
 +
 +   protected void initCapabilities() {
 +      this.gatherCapabilities();
-+      capabilityData = this.m_8895_().m_164861_(e -> net.minecraftforge.common.util.WorldCapabilityData.load(e, getCapabilities()), () -> new net.minecraftforge.common.util.WorldCapabilityData(getCapabilities()), net.minecraftforge.common.util.WorldCapabilityData.ID);
++      capabilityData = this.getDataStorage().computeIfAbsent(e -> net.minecraftforge.common.util.WorldCapabilityData.load(e, getCapabilities()), () -> new net.minecraftforge.common.util.WorldCapabilityData(getCapabilities()), net.minecraftforge.common.util.WorldCapabilityData.ID);
 +      capabilityData.setCapabilities(getCapabilities());
     }
  
-    public LevelEntityGetter<Entity> m_142646_() {
+    public LevelEntityGetter<Entity> getEntities() {
 +      org.spigotmc.AsyncCatcher.catchOp("Chunk getEntities call"); // Spigot
-       return this.f_143244_.m_157567_();
+       return this.entityManager.getEntityGetter();
     }
  
 @@ -1480,6 +_,7 @@
        }
  
-       public void m_141985_(Entity p_143371_) {
+       public void onTrackingStart(Entity p_143371_) {
 +         org.spigotmc.AsyncCatcher.catchOp("entity register"); // Spigot
-          ServerLevel.this.m_7726_().m_8463_(p_143371_);
+          ServerLevel.this.getChunkSource().addEntity(p_143371_);
           if (p_143371_ instanceof ServerPlayer) {
              ServerPlayer serverplayer = (ServerPlayer)p_143371_;
 @@ -1497,17 +_,41 @@
-             ServerLevel.this.f_143246_.add(mob);
+             ServerLevel.this.navigatingMobs.add(mob);
           }
  
 -         if (p_143371_ instanceof EnderDragon) {
 -            EnderDragon enderdragon = (EnderDragon)p_143371_;
 -
--            for(EnderDragonPart enderdragonpart : enderdragon.m_31156_()) {
+-            for(EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
 +         if (p_143371_.isMultipartEntity()) {
 +            for(net.minecraftforge.entity.PartEntity<?> enderdragonpart : p_143371_.getParts()) {
-                ServerLevel.this.f_143247_.put(enderdragonpart.m_142049_(), enderdragonpart);
+                ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
              }
           }
  
 +         p_143371_.valid = true; // CraftBukkit
        }
  
-       public void m_141981_(Entity p_143375_) {
+       public void onTrackingEnd(Entity p_143375_) {
 +         org.spigotmc.AsyncCatcher.catchOp("entity unregister"); // Spigot
 +         // Spigot start
 +         if ( p_143375_ instanceof Player )
 +         {
-+            m_142572_().f_129762_.values().stream().map( ServerLevel::m_8895_ ).forEach( (worldData) ->
++            getServer().levels.values().stream().map( ServerLevel::getDataStorage ).forEach( (worldData) ->
 +            {
-+               for (Object o : worldData.f_78144_.values() )
++               for (Object o : worldData.cache.values() )
 +               {
 +                  if ( o instanceof MapItemSavedData )
 +                  {
 +                     MapItemSavedData map = (MapItemSavedData) o;
-+                     map.f_77896_.remove( (Player) p_143375_ );
-+                     map.f_77893_.removeIf( holdingPlayer -> holdingPlayer.f_77959_ == p_143375_ );
++                     map.carriedByPlayers.remove( (Player) p_143375_ );
++                     map.carriedBy.removeIf( holdingPlayer -> holdingPlayer.player == p_143375_ );
 +                  }
 +               }
 +            } );
 +         }
 +         // Spigot end
 +         // Spigot Start
-+         if (p_143375_.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(p_143375_ instanceof ServerPlayer) || p_143375_.m_146911_() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
++         if (p_143375_.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(p_143375_ instanceof ServerPlayer) || p_143375_.getRemovalReason() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
 +            for (org.bukkit.entity.HumanEntity h : Lists.newArrayList(((org.bukkit.inventory.InventoryHolder) p_143375_.getBukkitEntity()).getInventory().getViewers())) {
 +               h.closeInventory();
 +            }
 +         }
 +         // Spigot End
-          ServerLevel.this.m_7726_().m_8443_(p_143375_);
+          ServerLevel.this.getChunkSource().removeEntity(p_143375_);
           if (p_143375_ instanceof ServerPlayer) {
              ServerPlayer serverplayer = (ServerPlayer)p_143375_;
 @@ -1525,10 +_,8 @@
-             ServerLevel.this.f_143246_.remove(mob);
+             ServerLevel.this.navigatingMobs.remove(mob);
           }
  
 -         if (p_143375_ instanceof EnderDragon) {
 -            EnderDragon enderdragon = (EnderDragon)p_143375_;
 -
--            for(EnderDragonPart enderdragonpart : enderdragon.m_31156_()) {
+-            for(EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
 +         if (p_143375_.isMultipartEntity()) {
 +            for(net.minecraftforge.entity.PartEntity<?> enderdragonpart : p_143375_.getParts()) {
-                ServerLevel.this.f_143247_.remove(enderdragonpart.m_142049_());
+                ServerLevel.this.dragonParts.remove(enderdragonpart.getId());
              }
           }
 @@ -1538,6 +_,22 @@
-             gameeventlistenerregistrar.m_157854_(p_143375_.f_19853_);
+             gameeventlistenerregistrar.onListenerRemoved(p_143375_.level);
           }
  
 +         // CraftBukkit start
 +         p_143375_.valid = false;
 +         if (!(p_143375_ instanceof ServerPlayer)) {
-+            for (ServerPlayer player : f_8546_) {
++            for (ServerPlayer player : players) {
 +               player.getBukkitEntity().onEntityRemove(p_143375_);
 +            }
 +         }
@@ -749,6 +749,6 @@
 +
 +   @Override
 +   public java.util.Collection<net.minecraftforge.entity.PartEntity<?>> getPartEntities() {
-+      return this.f_143247_.values();
++      return this.dragonParts.values();
     }
  }

@@ -4,14 +4,14 @@
              return false;
           } else {
              BlockPos blockpos = optional.get();
--            if (!this.f_157889_.m_142008_(p_157901_, this, p_157904_, p_157902_, p_157903_)) {
+-            if (!this.config.shouldListen(p_157901_, this, p_157904_, p_157902_, p_157903_)) {
 +            // CraftBukkit start
-+            boolean defaultCancel = !this.f_157889_.m_142008_(p_157901_, this, p_157904_, p_157902_, p_157903_);
-+            org.bukkit.event.block.BlockReceiveGameEvent event = new org.bukkit.event.block.BlockReceiveGameEvent(org.bukkit.GameEvent.getByKey(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(net.minecraft.core.Registry.f_175412_.m_7981_(p_157902_))), org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(p_157901_, blockpos), (p_157903_ == null) ? null : p_157903_.getBukkitEntity());
++            boolean defaultCancel = !this.config.shouldListen(p_157901_, this, p_157904_, p_157902_, p_157903_);
++            org.bukkit.event.block.BlockReceiveGameEvent event = new org.bukkit.event.block.BlockReceiveGameEvent(org.bukkit.GameEvent.getByKey(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(net.minecraft.core.Registry.GAME_EVENT.getKey(p_157902_))), org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(p_157901_, blockpos), (p_157903_ == null) ? null : p_157903_.getBukkitEntity());
 +            event.setCancelled(defaultCancel);
 +            p_157901_.getCraftServer().getPluginManager().callEvent(event);
 +            if (event.isCancelled()) {
 +               // CraftBukkit end
                 return false;
-             } else if (this.m_157910_(p_157901_, p_157904_, blockpos)) {
+             } else if (this.isOccluded(p_157901_, p_157904_, blockpos)) {
                 return false;

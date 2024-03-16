@@ -2,13 +2,13 @@
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
 @@ -64,6 +_,16 @@
     @Nullable
-    private List<Entity> f_36702_;
+    private List<Entity> piercedAndKilledEntities;
  
 +   // Spigot Start
 +   @Override
 +   public void inactiveTick() {
-+      if (this.f_36703_) {
-+         this.f_36697_ += 1;
++      if (this.inGround) {
++         this.life += 1;
 +      }
 +      super.inactiveTick();
 +   }
@@ -22,26 +22,26 @@
              }
  
 -            if (hitresult != null && !flag) {
--               this.m_6532_(hitresult);
-+            if (hitresult != null && hitresult.m_6662_() != HitResult.Type.MISS && !flag && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+-               this.onHit(hitresult);
++            if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
 +               this.preOnHit(hitresult); // CraftBukkit - projectile hit event
-                this.f_19812_ = true;
+                this.hasImpulse = true;
              }
  
 @@ -262,7 +_,7 @@
  
-    protected void m_6901_() {
-       ++this.f_36697_;
--      if (this.f_36697_ >= 1200) {
-+      if (this.f_36697_ >= ((this instanceof ThrownTrident) ? f_19853_.spigotConfig.tridentDespawnRate : f_19853_.spigotConfig.arrowDespawnRate)) { // Spigot
-          this.m_146870_();
+    protected void tickDespawn() {
+       ++this.life;
+-      if (this.life >= 1200) {
++      if (this.life >= ((this instanceof ThrownTrident) ? level.spigotConfig.tridentDespawnRate : level.spigotConfig.arrowDespawnRate)) { // Spigot
+          this.discard();
        }
  
 @@ -320,7 +_,13 @@
-       boolean flag = entity.m_6095_() == EntityType.f_20566_;
-       int k = entity.m_20094_();
-       if (this.m_6060_() && !flag) {
--         entity.m_20254_(5);
+       boolean flag = entity.getType() == EntityType.ENDERMAN;
+       int k = entity.getRemainingFireTicks();
+       if (this.isOnFire() && !flag) {
+-         entity.setSecondsOnFire(5);
 +         // CraftBukkit start
 +         org.bukkit.event.entity.EntityCombustByEntityEvent combustEvent = new org.bukkit.event.entity.EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), 5);
 +         org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
@@ -51,27 +51,27 @@
 +         // CraftBukkit end
        }
  
-       if (entity.m_6469_(damagesource, (float)i)) {
+       if (entity.hurt(damagesource, (float)i)) {
 @@ -472,7 +_,21 @@
  
-    public void m_6123_(Player p_36766_) {
-       if (!this.f_19853_.f_46443_ && (this.f_36703_ || this.m_36797_()) && this.f_36706_ <= 0) {
--         if (this.m_142470_(p_36766_)) {
+    public void playerTouch(Player p_36766_) {
+       if (!this.level.isClientSide && (this.inGround || this.isNoPhysics()) && this.shakeTime <= 0) {
+-         if (this.tryPickup(p_36766_)) {
 +         // CraftBukkit start
-+         ItemStack itemstack = this.m_7941_();
-+         if (this.f_36705_ == Pickup.ALLOWED && !itemstack.m_41619_() && p_36766_.m_150109_().canHold(itemstack) > 0) {
-+            net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(this.f_19853_, this.m_20185_(), this.m_20186_(), this.m_20189_(), itemstack);
-+            org.bukkit.event.player.PlayerPickupArrowEvent event = new org.bukkit.event.player.PlayerPickupArrowEvent((org.bukkit.entity.Player) p_36766_.getBukkitEntity(), new org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem(this.f_19853_.getCraftServer(), this, item), (org.bukkit.entity.AbstractArrow) this.getBukkitEntity());
++         ItemStack itemstack = this.getPickupItem();
++         if (this.pickup == Pickup.ALLOWED && !itemstack.isEmpty() && p_36766_.getInventory().canHold(itemstack) > 0) {
++            net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), itemstack);
++            org.bukkit.event.player.PlayerPickupArrowEvent event = new org.bukkit.event.player.PlayerPickupArrowEvent((org.bukkit.entity.Player) p_36766_.getBukkitEntity(), new org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem(this.level.getCraftServer(), this, item), (org.bukkit.entity.AbstractArrow) this.getBukkitEntity());
 +            // event.setCancelled(!p_36766_.canPickUpLoot); TODO
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
++            this.level.getCraftServer().getPluginManager().callEvent(event);
 +
 +            if (event.isCancelled()) {
 +               return;
 +            }
-+            itemstack = item.m_32055_();
++            itemstack = item.getItem();
 +         }
-+         if ((this.f_36705_ == AbstractArrow.Pickup.ALLOWED && p_36766_.m_150109_().m_36054_(itemstack)) || (this.f_36705_ == AbstractArrow.Pickup.CREATIVE_ONLY && p_36766_.m_150110_().f_35937_)) {
++         if ((this.pickup == AbstractArrow.Pickup.ALLOWED && p_36766_.getInventory().add(itemstack)) || (this.pickup == AbstractArrow.Pickup.CREATIVE_ONLY && p_36766_.getAbilities().instabuild)) {
 +            // CraftBukkit end
-             p_36766_.m_7938_(this, 1);
-             this.m_146870_();
+             p_36766_.take(this, 1);
+             this.discard();
           }

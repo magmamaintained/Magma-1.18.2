@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/OpCommand.java
 @@ -17,7 +_,7 @@
  
-    public static void m_138079_(CommandDispatcher<CommandSourceStack> p_138080_) {
-       p_138080_.register(Commands.m_82127_("op").requires((p_138087_) -> {
--         return p_138087_.m_6761_(3);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138080_) {
+       p_138080_.register(Commands.literal("op").requires((p_138087_) -> {
+-         return p_138087_.hasPermission(3);
 +         return p_138087_.hasPermission(3,"minecraft.command.op");
-       }).then(Commands.m_82129_("targets", GameProfileArgument.m_94584_()).suggests((p_138084_, p_138085_) -> {
-          PlayerList playerlist = p_138084_.getSource().m_81377_().m_6846_();
-          return SharedSuggestionProvider.m_82981_(playerlist.m_11314_().stream().filter((p_180428_) -> {
+       }).then(Commands.argument("targets", GameProfileArgument.gameProfile()).suggests((p_138084_, p_138085_) -> {
+          PlayerList playerlist = p_138084_.getSource().getServer().getPlayerList();
+          return SharedSuggestionProvider.suggest(playerlist.getPlayers().stream().filter((p_180428_) -> {

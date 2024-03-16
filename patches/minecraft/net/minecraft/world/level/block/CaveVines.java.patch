@@ -1,34 +1,34 @@
 --- a/net/minecraft/world/level/block/CaveVines.java
 +++ b/net/minecraft/world/level/block/CaveVines.java
 @@ -20,11 +_,29 @@
-    BooleanProperty f_152949_ = BlockStateProperties.f_155977_;
+    BooleanProperty BERRIES = BlockStateProperties.BERRIES;
  
-    static InteractionResult m_152953_(BlockState p_152954_, Level p_152955_, BlockPos p_152956_) {
+    static InteractionResult use(BlockState p_152954_, Level p_152955_, BlockPos p_152956_) {
 +      net.minecraft.world.entity.Entity entity = org.magmafoundation.magma.helpers.InterfaceHelper.tempNMSEntity.getAndSet(null);
-       if (p_152954_.m_61143_(f_152949_)) {
--         Block.m_49840_(p_152955_, p_152956_, new ItemStack(Items.f_151079_, 1));
+       if (p_152954_.getValue(BERRIES)) {
+-         Block.popResource(p_152955_, p_152956_, new ItemStack(Items.GLOW_BERRIES, 1));
 +         // CraftBukkit start
 +         //Magma - add null check
-+         if (entity != null && org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(entity, p_152956_, (BlockState) p_152954_.m_61124_(CaveVines.f_152949_, false)).isCancelled()) {
++         if (entity != null && org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(entity, p_152956_, (BlockState) p_152954_.setValue(CaveVines.BERRIES, false)).isCancelled()) {
 +            return InteractionResult.SUCCESS;
 +         }
 +
 +         if (entity instanceof Player) {
-+            org.bukkit.event.player.PlayerHarvestBlockEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerHarvestBlockEvent(p_152955_, p_152956_, (Player) entity, java.util.Collections.singletonList(new ItemStack(Items.f_151079_, 1)));
++            org.bukkit.event.player.PlayerHarvestBlockEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerHarvestBlockEvent(p_152955_, p_152956_, (Player) entity, java.util.Collections.singletonList(new ItemStack(Items.GLOW_BERRIES, 1)));
 +            if (event.isCancelled()) {
 +               return InteractionResult.SUCCESS; // We need to return a success either way, because making it PASS or FAIL will result in a bug where cancelling while harvesting w/ block in hand places block
 +            }
 +            for (org.bukkit.inventory.ItemStack itemStack : event.getItemsHarvested()) {
-+               Block.m_49840_(p_152955_, p_152956_, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(itemStack));
++               Block.popResource(p_152955_, p_152956_, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(itemStack));
 +            }
 +         } else {
-+            Block.m_49840_(p_152955_, p_152956_, new ItemStack(Items.f_151079_, 1));
++            Block.popResource(p_152955_, p_152956_, new ItemStack(Items.GLOW_BERRIES, 1));
 +         }
 +         // CraftBukkit end
-          float f = Mth.m_144924_(p_152955_.f_46441_, 0.8F, 1.2F);
-          p_152955_.m_5594_((Player)null, p_152956_, SoundEvents.f_144088_, SoundSource.BLOCKS, 1.0F, f);
--         p_152955_.m_7731_(p_152956_, p_152954_.m_61124_(f_152949_, Boolean.valueOf(false)), 2);
-+         p_152955_.m_7731_(p_152956_, p_152954_.m_61124_(f_152949_, false), 2);
-          return InteractionResult.m_19078_(p_152955_.f_46443_);
+          float f = Mth.randomBetween(p_152955_.random, 0.8F, 1.2F);
+          p_152955_.playSound((Player)null, p_152956_, SoundEvents.CAVE_VINES_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, f);
+-         p_152955_.setBlock(p_152956_, p_152954_.setValue(BERRIES, Boolean.valueOf(false)), 2);
++         p_152955_.setBlock(p_152956_, p_152954_.setValue(BERRIES, false), 2);
+          return InteractionResult.sidedSuccess(p_152955_.isClientSide);
        } else {
           return InteractionResult.PASS;

@@ -2,9 +2,9 @@
 +++ b/net/minecraft/world/item/crafting/UpgradeRecipe.java
 @@ -68,11 +_,20 @@
  
-    public boolean m_142505_() {
-       return Stream.of(this.f_44518_, this.f_44519_).anyMatch((p_151284_) -> {
--         return p_151284_.m_43908_().length == 0;
+    public boolean isIncomplete() {
+       return Stream.of(this.base, this.addition).anyMatch((p_151284_) -> {
+-         return p_151284_.getItems().length == 0;
 +         return net.minecraftforge.common.ForgeHooks.hasNoElements(p_151284_);
        });
     }
@@ -13,13 +13,13 @@
 +   // CraftBukkit start
 +   @Override
 +   public org.bukkit.inventory.Recipe toBukkitRecipe() {
-+      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.f_44520_);
-+      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(this.f_44521_), result, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.f_44518_), org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.f_44519_));
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.result);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftSmithingRecipe(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(this.id), result, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.base), org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.addition));
 +      return recipe;
 +   }
 +   // CraftBukkit end
 +
 +   public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<UpgradeRecipe> {
-       public UpgradeRecipe m_6729_(ResourceLocation p_44562_, JsonObject p_44563_) {
-          Ingredient ingredient = Ingredient.m_43917_(GsonHelper.m_13930_(p_44563_, "base"));
-          Ingredient ingredient1 = Ingredient.m_43917_(GsonHelper.m_13930_(p_44563_, "addition"));
+       public UpgradeRecipe fromJson(ResourceLocation p_44562_, JsonObject p_44563_) {
+          Ingredient ingredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(p_44563_, "base"));
+          Ingredient ingredient1 = Ingredient.fromJson(GsonHelper.getAsJsonObject(p_44563_, "addition"));

@@ -2,18 +2,18 @@
 +++ b/net/minecraft/server/commands/SummonCommand.java
 @@ -29,7 +_,7 @@
  
-    public static void m_138814_(CommandDispatcher<CommandSourceStack> p_138815_) {
-       p_138815_.register(Commands.m_82127_("summon").requires((p_138819_) -> {
--         return p_138819_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138815_) {
+       p_138815_.register(Commands.literal("summon").requires((p_138819_) -> {
+-         return p_138819_.hasPermission(2);
 +         return p_138819_.hasPermission(2,"minecraft.command.summon");
-       }).then(Commands.m_82129_("entity", EntitySummonArgument.m_93335_()).suggests(SuggestionProviders.f_121645_).executes((p_138832_) -> {
-          return m_138820_(p_138832_.getSource(), EntitySummonArgument.m_93338_(p_138832_, "entity"), p_138832_.getSource().m_81371_(), new CompoundTag(), true);
-       }).then(Commands.m_82129_("pos", Vec3Argument.m_120841_()).executes((p_138830_) -> {
+       }).then(Commands.argument("entity", EntitySummonArgument.id()).suggests(SuggestionProviders.SUMMONABLE_ENTITIES).executes((p_138832_) -> {
+          return spawnEntity(p_138832_.getSource(), EntitySummonArgument.getSummonableEntity(p_138832_, "entity"), p_138832_.getSource().getPosition(), new CompoundTag(), true);
+       }).then(Commands.argument("pos", Vec3Argument.vec3()).executes((p_138830_) -> {
 @@ -58,6 +_,7 @@
-                ((Mob)entity).m_6518_(p_138821_.m_81372_(), p_138821_.m_81372_().m_6436_(entity.m_142538_()), MobSpawnType.COMMAND, (SpawnGroupData)null, (CompoundTag)null);
+                ((Mob)entity).finalizeSpawn(p_138821_.getLevel(), p_138821_.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, (SpawnGroupData)null, (CompoundTag)null);
              }
  
 +            serverlevel.prepareEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.COMMAND); // Magma - add spawn reason
-             if (!serverlevel.m_8860_(entity)) {
-                throw f_138811_.create();
+             if (!serverlevel.tryAddFreshEntityWithPassengers(entity)) {
+                throw ERROR_DUPLICATE_UUID.create();
              } else {

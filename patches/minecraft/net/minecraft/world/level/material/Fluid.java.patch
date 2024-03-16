@@ -6,13 +6,13 @@
  
 -public abstract class Fluid {
 +public abstract class Fluid extends net.minecraftforge.registries.ForgeRegistryEntry<Fluid> implements net.minecraftforge.common.extensions.IForgeFluid {
-    public static final IdMapper<FluidState> f_76104_ = new IdMapper<>();
-    protected final StateDefinition<Fluid, FluidState> f_76105_;
-    private FluidState f_76103_;
+    public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
+    protected final StateDefinition<Fluid, FluidState> stateDefinition;
+    private FluidState defaultFluidState;
 @@ -101,6 +_,22 @@
     }
  
-    public abstract VoxelShape m_7999_(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
+    public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
 +
 +   /**
 +    * Creates the fluid attributes object, which wilAl contain all the extended values for the fluid that aren't part of the vanilla system.
@@ -30,5 +30,5 @@
 +      return forgeFluidAttributes;
 +   }
  
-    public Optional<SoundEvent> m_142520_() {
+    public Optional<SoundEvent> getPickupSound() {
        return Optional.empty();

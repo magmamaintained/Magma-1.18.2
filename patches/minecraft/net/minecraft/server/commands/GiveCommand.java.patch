@@ -2,19 +2,19 @@
 +++ b/net/minecraft/server/commands/GiveCommand.java
 @@ -22,7 +_,7 @@
  
-    public static void m_137772_(CommandDispatcher<CommandSourceStack> p_137773_) {
-       p_137773_.register(Commands.m_82127_("give").requires((p_137777_) -> {
--         return p_137777_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_137773_) {
+       p_137773_.register(Commands.literal("give").requires((p_137777_) -> {
+-         return p_137777_.hasPermission(2);
 +         return p_137777_.hasPermission(2,"minecraft.command.give");
-       }).then(Commands.m_82129_("targets", EntityArgument.m_91470_()).then(Commands.m_82129_("item", ItemArgument.m_120960_()).executes((p_137784_) -> {
-          return m_137778_(p_137784_.getSource(), ItemArgument.m_120963_(p_137784_, "item"), EntityArgument.m_91477_(p_137784_, "targets"), 1);
-       }).then(Commands.m_82129_("count", IntegerArgumentType.integer(1)).executes((p_137775_) -> {
+       }).then(Commands.argument("targets", EntityArgument.players()).then(Commands.argument("item", ItemArgument.item()).executes((p_137784_) -> {
+          return giveItem(p_137784_.getSource(), ItemArgument.getItem(p_137784_, "item"), EntityArgument.getPlayers(p_137784_, "targets"), 1);
+       }).then(Commands.argument("count", IntegerArgumentType.integer(1)).executes((p_137775_) -> {
 @@ -47,7 +_,7 @@
-                boolean flag = serverplayer.m_150109_().m_36054_(itemstack);
-                if (flag && itemstack.m_41619_()) {
-                   itemstack.m_41764_(1);
--                  ItemEntity itementity1 = serverplayer.m_36176_(itemstack, false);
+                boolean flag = serverplayer.getInventory().add(itemstack);
+                if (flag && itemstack.isEmpty()) {
+                   itemstack.setCount(1);
+-                  ItemEntity itementity1 = serverplayer.drop(itemstack, false);
 +                  ItemEntity itementity1 = serverplayer.drop(itemstack, false, false, false); // SPIGOT-2942: Add boolean to call event
                    if (itementity1 != null) {
-                      itementity1.m_32065_();
+                      itementity1.makeFakeItem();
                    }

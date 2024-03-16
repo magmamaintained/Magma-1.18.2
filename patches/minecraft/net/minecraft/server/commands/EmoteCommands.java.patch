@@ -3,11 +3,11 @@
 @@ -15,7 +_,9 @@
  
  public class EmoteCommands {
-    public static void m_136985_(CommandDispatcher<CommandSourceStack> p_136986_) {
--      p_136986_.register(Commands.m_82127_("me").then(Commands.m_82129_("action", StringArgumentType.greedyString()).executes((p_136988_) -> {
-+      p_136986_.register(Commands.m_82127_("me")
+    public static void register(CommandDispatcher<CommandSourceStack> p_136986_) {
+-      p_136986_.register(Commands.literal("me").then(Commands.argument("action", StringArgumentType.greedyString()).executes((p_136988_) -> {
++      p_136986_.register(Commands.literal("me")
 +              .requires(commandSourceStack -> commandSourceStack.hasPermission(0,"minecraft.command.me"))
-+              .then(Commands.m_82129_("action", StringArgumentType.greedyString()).executes((p_136988_) -> {
++              .then(Commands.argument("action", StringArgumentType.greedyString()).executes((p_136988_) -> {
           String s = StringArgumentType.getString(p_136988_, "action");
-          Entity entity = p_136988_.getSource().m_81373_();
-          MinecraftServer minecraftserver = p_136988_.getSource().m_81377_();
+          Entity entity = p_136988_.getSource().getEntity();
+          MinecraftServer minecraftserver = p_136988_.getSource().getServer();

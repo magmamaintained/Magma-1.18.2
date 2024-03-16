@@ -3,28 +3,28 @@
 @@ -64,7 +_,7 @@
  
  public class ArgumentTypes {
-    private static final Logger f_121582_ = LogUtils.getLogger();
--   private static final Map<Class<?>, ArgumentTypes.Entry<?>> f_121583_ = Maps.newHashMap();
-+   public static final Map<Class<?>, ArgumentTypes.Entry<?>> f_121583_ = Maps.newHashMap();
-    private static final Map<ResourceLocation, ArgumentTypes.Entry<?>> f_121584_ = Maps.newHashMap();
+    private static final Logger LOGGER = LogUtils.getLogger();
+-   private static final Map<Class<?>, ArgumentTypes.Entry<?>> BY_CLASS = Maps.newHashMap();
++   public static final Map<Class<?>, ArgumentTypes.Entry<?>> BY_CLASS = Maps.newHashMap();
+    private static final Map<ResourceLocation, ArgumentTypes.Entry<?>> BY_NAME = Maps.newHashMap();
  
-    public static <T extends ArgumentType<?>> void m_121601_(String p_121602_, Class<T> p_121603_, ArgumentSerializer<T> p_121604_) {
+    public static <T extends ArgumentType<?>> void register(String p_121602_, Class<T> p_121603_, ArgumentSerializer<T> p_121604_) {
 @@ -122,7 +_,7 @@
-       m_121601_("uuid", UuidArgument.class, new EmptyArgumentSerializer<>(UuidArgument::m_113850_));
-       m_121601_("resource", m_211031_(ResourceKeyArgument.class), new ResourceKeyArgument.Serializer());
-       m_121601_("resource_or_tag", m_211031_(ResourceOrTagLocationArgument.class), new ResourceOrTagLocationArgument.Serializer());
--      if (SharedConstants.f_136183_) {
+       register("uuid", UuidArgument.class, new EmptyArgumentSerializer<>(UuidArgument::uuid));
+       register("resource", fixClassType(ResourceKeyArgument.class), new ResourceKeyArgument.Serializer());
+       register("resource_or_tag", fixClassType(ResourceOrTagLocationArgument.class), new ResourceOrTagLocationArgument.Serializer());
+-      if (SharedConstants.IS_RUNNING_IN_IDE) {
 +      if (net.minecraftforge.gametest.ForgeGameTestHooks.isGametestEnabled()) {
-          m_121601_("test_argument", TestFunctionArgument.class, new EmptyArgumentSerializer<>(TestFunctionArgument::m_128088_));
-          m_121601_("test_class", TestClassNameArgument.class, new EmptyArgumentSerializer<>(TestClassNameArgument::m_127917_));
+          register("test_argument", TestFunctionArgument.class, new EmptyArgumentSerializer<>(TestFunctionArgument::testFunctionArgument));
+          register("test_class", TestClassNameArgument.class, new EmptyArgumentSerializer<>(TestClassNameArgument::testClassName));
        }
 @@ -139,7 +_,7 @@
     }
  
     @Nullable
--   private static ArgumentTypes.Entry<?> m_121616_(ArgumentType<?> p_121617_) {
-+   public static ArgumentTypes.Entry<?> m_121616_(ArgumentType<?> p_121617_) {
-       return f_121583_.get(p_121617_.getClass());
+-   private static ArgumentTypes.Entry<?> get(ArgumentType<?> p_121617_) {
++   public static ArgumentTypes.Entry<?> get(ArgumentType<?> p_121617_) {
+       return BY_CLASS.get(p_121617_.getClass());
     }
  
 @@ -254,7 +_,7 @@
@@ -33,16 +33,16 @@
  
 -   static class Entry<T extends ArgumentType<?>> {
 +   public static class Entry<T extends ArgumentType<?>> {
-       public final ArgumentSerializer<T> f_121619_;
-       public final ResourceLocation f_121620_;
+       public final ArgumentSerializer<T> serializer;
+       public final ResourceLocation name;
  
 @@ -262,5 +_,9 @@
-          this.f_121619_ = p_211034_;
-          this.f_121620_ = p_211035_;
+          this.serializer = p_211034_;
+          this.name = p_211035_;
        }
 +   }
 +   @javax.annotation.Nullable public static ResourceLocation getId(ArgumentType<?> type) {
-+      Entry<?> entry = m_121616_(type);
-+      return entry == null ? null : entry.f_121620_;
++      Entry<?> entry = get(type);
++      return entry == null ? null : entry.name;
     }
  }

@@ -1,29 +1,29 @@
 --- a/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerStatusPacketListenerImpl.java
 @@ -33,7 +_,44 @@
-          this.f_10083_.m_129507_(f_10081_);
+          this.connection.disconnect(DISCONNECT_REASON);
        } else {
-          this.f_10084_ = true;
--         this.f_10083_.m_129512_(new ClientboundStatusResponsePacket(this.f_10082_.m_129928_()));
+          this.hasRequestedStatus = true;
+-         this.connection.send(new ClientboundStatusResponsePacket(this.server.getStatus()));
 +//         this.connection.send(new ClientboundStatusResponsePacket(this.server.getStatus()));
 +         // CraftBukkit start
-+         org.magmafoundation.magma.craftbukkit.ServerListPingEventImpl event = new org.magmafoundation.magma.craftbukkit.ServerListPingEventImpl(f_10083_, f_10082_);
-+         this.f_10082_.server.getPluginManager().callEvent(event);
++         org.magmafoundation.magma.craftbukkit.ServerListPingEventImpl event = new org.magmafoundation.magma.craftbukkit.ServerListPingEventImpl(connection, server);
++         this.server.server.getPluginManager().callEvent(event);
 +
 +         java.util.List<com.mojang.authlib.GameProfile> profiles = new java.util.ArrayList<com.mojang.authlib.GameProfile>(event.getPlayers().length);
 +         for (Object player : event.getPlayers()) {
 +            if (player != null) {
 +               net.minecraft.server.level.ServerPlayer entityPlayer = ((net.minecraft.server.level.ServerPlayer) player);
-+               if (entityPlayer.m_184128_()) {
-+                  profiles.add(entityPlayer.m_36316_());
++               if (entityPlayer.allowsListing()) {
++                  profiles.add(entityPlayer.getGameProfile());
 +               } else {
-+                  profiles.add(MinecraftServer.f_195496_);
++                  profiles.add(MinecraftServer.ANONYMOUS_PLAYER_PROFILE);
 +               }
 +            }
 +         }
 +
 +         net.minecraft.network.protocol.status.ServerStatus.Players playerSample = new net.minecraft.network.protocol.status.ServerStatus.Players(event.getMaxPlayers(), profiles.size());
-+         if (!this.f_10082_.m_183306_()) {
++         if (!this.server.hidesOnlinePlayers()) {
 +            // Spigot Start
 +            if ( !profiles.isEmpty() )
 +            {
@@ -31,17 +31,17 @@
 +               profiles = profiles.subList( 0, Math.min( profiles.size(), org.spigotmc.SpigotConfig.playerSample ) ); // Cap the sample to n (or less) displayed players, ie: Vanilla behaviour
 +            }
 +            // Spigot End
-+            playerSample.m_134924_(profiles.toArray(new com.mojang.authlib.GameProfile[profiles.size()]));
++            playerSample.setSample(profiles.toArray(new com.mojang.authlib.GameProfile[profiles.size()]));
 +         }
 +
 +         net.minecraft.network.protocol.status.ServerStatus ping = new net.minecraft.network.protocol.status.ServerStatus();
-+         ping.m_134906_(event.icon.value);
-+         ping.m_134908_(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromString(event.getMotd(), true)[0]);
-+         ping.m_134910_(playerSample);
-+         int version = net.minecraft.SharedConstants.m_183709_().getProtocolVersion();
-+         ping.m_134912_(new net.minecraft.network.protocol.status.ServerStatus.Version(f_10082_.m_130001_() + " " + f_10082_.m_7630_(), version));
-+         ping.setForgeData(this.f_10082_.m_129928_().getForgeData());
-+         this.f_10083_.m_129512_(new ClientboundStatusResponsePacket(ping));
++         ping.setFavicon(event.icon.value);
++         ping.setDescription(org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromString(event.getMotd(), true)[0]);
++         ping.setPlayers(playerSample);
++         int version = net.minecraft.SharedConstants.getCurrentVersion().getProtocolVersion();
++         ping.setVersion(new net.minecraft.network.protocol.status.ServerStatus.Version(server.getServerModName() + " " + server.getServerVersion(), version));
++         ping.setForgeData(this.server.getStatus().getForgeData());
++         this.connection.send(new ClientboundStatusResponsePacket(ping));
 +         // CraftBukkit end
        }
     }

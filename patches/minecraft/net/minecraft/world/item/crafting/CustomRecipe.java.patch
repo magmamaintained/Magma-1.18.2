@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/item/crafting/CustomRecipe.java
 +++ b/net/minecraft/world/item/crafting/CustomRecipe.java
 @@ -21,4 +_,12 @@
-    public ItemStack m_8043_() {
-       return ItemStack.f_41583_;
+    public ItemStack getResultItem() {
+       return ItemStack.EMPTY;
     }
 +
 +   // CraftBukkit start

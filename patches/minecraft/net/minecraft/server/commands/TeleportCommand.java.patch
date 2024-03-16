@@ -2,37 +2,37 @@
 +++ b/net/minecraft/server/commands/TeleportCommand.java
 @@ -38,7 +_,7 @@
  
-    public static void m_139008_(CommandDispatcher<CommandSourceStack> p_139009_) {
-       LiteralCommandNode<CommandSourceStack> literalcommandnode = p_139009_.register(Commands.m_82127_("teleport").requires((p_139039_) -> {
--         return p_139039_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_139009_) {
+       LiteralCommandNode<CommandSourceStack> literalcommandnode = p_139009_.register(Commands.literal("teleport").requires((p_139039_) -> {
+-         return p_139039_.hasPermission(2);
 +         return p_139039_.hasPermission(2,"minecraft.command.teleport");
-       }).then(Commands.m_82129_("location", Vec3Argument.m_120841_()).executes((p_139051_) -> {
-          return m_139025_(p_139051_.getSource(), Collections.singleton(p_139051_.getSource().m_81374_()), p_139051_.getSource().m_81372_(), Vec3Argument.m_120849_(p_139051_, "location"), WorldCoordinates.m_120898_(), (TeleportCommand.LookAt)null);
-       })).then(Commands.m_82129_("destination", EntityArgument.m_91449_()).executes((p_139049_) -> {
+       }).then(Commands.argument("location", Vec3Argument.vec3()).executes((p_139051_) -> {
+          return teleportToPos(p_139051_.getSource(), Collections.singleton(p_139051_.getSource().getEntityOrException()), p_139051_.getSource().getLevel(), Vec3Argument.getCoordinates(p_139051_, "location"), WorldCoordinates.current(), (TeleportCommand.LookAt)null);
+       })).then(Commands.argument("destination", EntityArgument.entity()).executes((p_139049_) -> {
 @@ -126,6 +_,9 @@
     }
  
-    private static void m_139014_(CommandSourceStack p_139015_, Entity p_139016_, ServerLevel p_139017_, double p_139018_, double p_139019_, double p_139020_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_139021_, float p_139022_, float p_139023_, @Nullable TeleportCommand.LookAt p_139024_) throws CommandSyntaxException {
+    private static void performTeleport(CommandSourceStack p_139015_, Entity p_139016_, ServerLevel p_139017_, double p_139018_, double p_139019_, double p_139020_, Set<ClientboundPlayerPositionPacket.RelativeArgument> p_139021_, float p_139022_, float p_139023_, @Nullable TeleportCommand.LookAt p_139024_) throws CommandSyntaxException {
 +      net.minecraftforge.event.entity.EntityTeleportEvent.TeleportCommand event = net.minecraftforge.event.ForgeEventFactory.onEntityTeleportCommand(p_139016_, p_139018_, p_139019_, p_139020_);
 +      if (event.isCanceled()) return;
 +      p_139018_ = event.getTargetX(); p_139019_ = event.getTargetY(); p_139020_ = event.getTargetZ();
        BlockPos blockpos = new BlockPos(p_139018_, p_139019_, p_139020_);
-       if (!Level.m_46741_(blockpos)) {
-          throw f_139006_.create();
+       if (!Level.isInSpawnableBounds(blockpos)) {
+          throw INVALID_POSITION.create();
 @@ -141,14 +_,29 @@
              }
  
-             if (p_139017_ == p_139016_.f_19853_) {
--               ((ServerPlayer)p_139016_).f_8906_.m_9780_(p_139018_, p_139019_, p_139020_, f, f1, p_139021_);
-+               ((ServerPlayer)p_139016_).f_8906_.teleport(p_139018_, p_139019_, p_139020_, f, f1, p_139021_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
+             if (p_139017_ == p_139016_.level) {
+-               ((ServerPlayer)p_139016_).connection.teleport(p_139018_, p_139019_, p_139020_, f, f1, p_139021_);
++               ((ServerPlayer)p_139016_).connection.teleport(p_139018_, p_139019_, p_139020_, f, f1, p_139021_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
              } else {
--               ((ServerPlayer)p_139016_).m_8999_(p_139017_, p_139018_, p_139019_, p_139020_, f, f1);
+-               ((ServerPlayer)p_139016_).teleportTo(p_139017_, p_139018_, p_139019_, p_139020_, f, f1);
 +               ((ServerPlayer)p_139016_).teleportTo(p_139017_, p_139018_, p_139019_, p_139020_, f, f1, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); //CraftBukkit
              }
  
-             p_139016_.m_5616_(f);
+             p_139016_.setYHeadRot(f);
           } else {
-             float f2 = Mth.m_14036_(f1, -90.0F, 90.0F);
+             float f2 = Mth.clamp(f1, -90.0F, 90.0F);
 +            // CraftBukkit start - Teleport event
 +            org.bukkit.Location to = new org.bukkit.Location(p_139017_.getWorld(), p_139018_, p_139019_, p_139020_, f1, f2);
 +            org.bukkit.event.entity.EntityTeleportEvent bevent = new org.bukkit.event.entity.EntityTeleportEvent(p_139016_.getBukkitEntity(), p_139016_.getBukkitEntity().getLocation(), to);
@@ -48,6 +48,6 @@
 +            f2 = to.getPitch();
 +            p_139017_ = ((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) to.getWorld()).getHandle();
 +            // CraftBukkit end
-             if (p_139017_ == p_139016_.f_19853_) {
-                p_139016_.m_7678_(p_139018_, p_139019_, p_139020_, f, f2);
-                p_139016_.m_5616_(f);
+             if (p_139017_ == p_139016_.level) {
+                p_139016_.moveTo(p_139018_, p_139019_, p_139020_, f, f2);
+                p_139016_.setYHeadRot(f);

@@ -2,9 +2,9 @@
 +++ b/net/minecraft/server/commands/GameModeCommand.java
 @@ -20,7 +_,7 @@
  
-    public static void m_137729_(CommandDispatcher<CommandSourceStack> p_137730_) {
-       LiteralArgumentBuilder<CommandSourceStack> literalargumentbuilder = Commands.m_82127_("gamemode").requires((p_137736_) -> {
--         return p_137736_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_137730_) {
+       LiteralArgumentBuilder<CommandSourceStack> literalargumentbuilder = Commands.literal("gamemode").requires((p_137736_) -> {
+-         return p_137736_.hasPermission(2);
 +         return p_137736_.hasPermission(2,"minecraft.command.gamemode");
        });
  

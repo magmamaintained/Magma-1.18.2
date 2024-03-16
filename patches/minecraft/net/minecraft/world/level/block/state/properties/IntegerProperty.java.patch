@@ -3,7 +3,7 @@
 @@ -8,9 +_,15 @@
  
  public class IntegerProperty extends Property<Integer> {
-    private final ImmutableSet<Integer> f_61621_;
+    private final ImmutableSet<Integer> values;
 +   // CraftBukkit start
 +   public final int min;
 +   public final int max;

@@ -3,215 +3,215 @@
 @@ -259,6 +_,11 @@
     }
  
-    private void m_109703_(LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
-+      net.minecraftforge.client.IWeatherRenderHandler renderHandler = f_109465_.m_104583_().getWeatherRenderHandler();
+    private void renderSnowAndRain(LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
++      net.minecraftforge.client.IWeatherRenderHandler renderHandler = level.effects().getWeatherRenderHandler();
 +      if (renderHandler != null) {
-+         renderHandler.render(f_109477_, p_109705_, f_109465_, f_109461_, p_109704_, p_109706_, p_109707_, p_109708_);
++         renderHandler.render(ticks, p_109705_, level, minecraft, p_109704_, p_109706_, p_109707_, p_109708_);
 +         return;
 +      }
-       float f = this.f_109461_.f_91073_.m_46722_(p_109705_);
+       float f = this.minecraft.level.getRainLevel(p_109705_);
        if (!(f <= 0.0F)) {
-          p_109704_.m_109896_();
+          p_109704_.turnOnLightLayer();
 @@ -379,6 +_,11 @@
     }
  
-    public void m_109693_(Camera p_109694_) {
-+      net.minecraftforge.client.IWeatherParticleRenderHandler renderHandler = f_109465_.m_104583_().getWeatherParticleRenderHandler();
+    public void tickRain(Camera p_109694_) {
++      net.minecraftforge.client.IWeatherParticleRenderHandler renderHandler = level.effects().getWeatherParticleRenderHandler();
 +      if (renderHandler != null) {
-+         renderHandler.render(f_109477_, f_109465_, f_109461_, p_109694_);
++         renderHandler.render(ticks, level, minecraft, p_109694_);
 +         return;
 +      }
-       float f = this.f_109461_.f_91073_.m_46722_(1.0F) / (Minecraft.m_91405_() ? 1.0F : 2.0F);
+       float f = this.minecraft.level.getRainLevel(1.0F) / (Minecraft.useFancyGraphics() ? 1.0F : 2.0F);
        if (!(f <= 0.0F)) {
-          Random random = new Random((long)this.f_109477_ * 312987231L);
+          Random random = new Random((long)this.ticks * 312987231L);
 @@ -1134,20 +_,24 @@
-       RenderSystem.m_69421_(16640, Minecraft.f_91002_);
-       float f = p_109605_.m_109152_();
-       boolean flag2 = this.f_109461_.f_91073_.m_104583_().m_5781_(Mth.m_14107_(d0), Mth.m_14107_(d1)) || this.f_109461_.f_91065_.m_93090_().m_93715_();
+       RenderSystem.clear(16640, Minecraft.ON_OSX);
+       float f = p_109605_.getRenderDistance();
+       boolean flag2 = this.minecraft.level.effects().isFoggyAt(Mth.floor(d0), Mth.floor(d1)) || this.minecraft.gui.getBossOverlay().shouldCreateWorldFog();
 +      FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_SKY, f, flag2, p_109601_);
-       profilerfiller.m_6182_("sky");
-       RenderSystem.m_157427_(GameRenderer::m_172808_);
-       this.m_202423_(p_109600_, p_109607_, p_109601_, p_109604_, flag2, () -> {
--         FogRenderer.m_109024_(p_109604_, FogRenderer.FogMode.FOG_SKY, f, flag2);
+       profilerfiller.popPush("sky");
+       RenderSystem.setShader(GameRenderer::getPositionShader);
+       this.renderSky(p_109600_, p_109607_, p_109601_, p_109604_, flag2, () -> {
+-         FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_SKY, f, flag2);
 +         FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_SKY, f, flag2, p_109601_);
        });
-+      net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY, this, p_109600_, p_109607_, this.f_109477_, p_109604_, frustum);
-       profilerfiller.m_6182_("fog");
--      FogRenderer.m_109024_(p_109604_, FogRenderer.FogMode.FOG_TERRAIN, Math.max(f, 32.0F), flag2);
++      net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY, this, p_109600_, p_109607_, this.ticks, p_109604_, frustum);
+       profilerfiller.popPush("fog");
+-      FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_TERRAIN, Math.max(f, 32.0F), flag2);
 +      FogRenderer.setupFog(p_109604_, FogRenderer.FogMode.FOG_TERRAIN, Math.max(f, 32.0F), flag2, p_109601_);
-       profilerfiller.m_6182_("terrain_setup");
-       this.m_194338_(p_109604_, frustum, flag1, this.f_109461_.f_91074_.m_5833_());
-       profilerfiller.m_6182_("compilechunks");
-       this.m_194370_(p_109604_);
-       profilerfiller.m_6182_("terrain");
-       this.m_172993_(RenderType.m_110451_(), p_109600_, d0, d1, d2, p_109607_);
-+      this.f_109461_.m_91304_().m_119428_(TextureAtlas.f_118259_).setBlurMipmap(false, this.f_109461_.f_91066_.f_92027_ > 0); // FORGE: fix flickering leaves when mods mess up the blurMipmap settings
-       this.m_172993_(RenderType.m_110457_(), p_109600_, d0, d1, d2, p_109607_);
-+      this.f_109461_.m_91304_().m_119428_(TextureAtlas.f_118259_).restoreLastBlurMipmap();
-       this.m_172993_(RenderType.m_110463_(), p_109600_, d0, d1, d2, p_109607_);
-       if (this.f_109465_.m_104583_().m_108885_()) {
-          Lighting.m_84925_(p_109600_.m_85850_().m_85861_());
+       profilerfiller.popPush("terrain_setup");
+       this.setupRender(p_109604_, frustum, flag1, this.minecraft.player.isSpectator());
+       profilerfiller.popPush("compilechunks");
+       this.compileChunks(p_109604_);
+       profilerfiller.popPush("terrain");
+       this.renderChunkLayer(RenderType.solid(), p_109600_, d0, d1, d2, p_109607_);
++      this.minecraft.getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).setBlurMipmap(false, this.minecraft.options.mipmapLevels > 0); // FORGE: fix flickering leaves when mods mess up the blurMipmap settings
+       this.renderChunkLayer(RenderType.cutoutMipped(), p_109600_, d0, d1, d2, p_109607_);
++      this.minecraft.getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).restoreLastBlurMipmap();
+       this.renderChunkLayer(RenderType.cutout(), p_109600_, d0, d1, d2, p_109607_);
+       if (this.level.effects().constantAmbientLight()) {
+          Lighting.setupNetherLevel(p_109600_.last().pose());
 @@ -1179,7 +_,7 @@
-       for(Entity entity : this.f_109465_.m_104735_()) {
-          if (this.f_109463_.m_114397_(entity, frustum, d0, d1, d2) || entity.m_20367_(this.f_109461_.f_91074_)) {
-             BlockPos blockpos = entity.m_142538_();
--            if ((this.f_109465_.m_151562_(blockpos.m_123342_()) || this.m_202430_(blockpos)) && (entity != p_109604_.m_90592_() || p_109604_.m_90594_() || p_109604_.m_90592_() instanceof LivingEntity && ((LivingEntity)p_109604_.m_90592_()).m_5803_()) && (!(entity instanceof LocalPlayer) || p_109604_.m_90592_() == entity)) {
-+            if ((this.f_109465_.m_151562_(blockpos.m_123342_()) || this.m_202430_(blockpos)) && (entity != p_109604_.m_90592_() || p_109604_.m_90594_() || p_109604_.m_90592_() instanceof LivingEntity && ((LivingEntity)p_109604_.m_90592_()).m_5803_()) && (!(entity instanceof LocalPlayer) || p_109604_.m_90592_() == entity || (entity == f_109461_.f_91074_ && !f_109461_.f_91074_.m_5833_()))) { //FORGE: render local player entity when it is not the renderViewEntity
-                ++this.f_109439_;
-                if (entity.f_19797_ == 0) {
-                   entity.f_19790_ = entity.m_20185_();
+       for(Entity entity : this.level.entitiesForRendering()) {
+          if (this.entityRenderDispatcher.shouldRender(entity, frustum, d0, d1, d2) || entity.hasIndirectPassenger(this.minecraft.player)) {
+             BlockPos blockpos = entity.blockPosition();
+-            if ((this.level.isOutsideBuildHeight(blockpos.getY()) || this.isChunkCompiled(blockpos)) && (entity != p_109604_.getEntity() || p_109604_.isDetached() || p_109604_.getEntity() instanceof LivingEntity && ((LivingEntity)p_109604_.getEntity()).isSleeping()) && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity)) {
++            if ((this.level.isOutsideBuildHeight(blockpos.getY()) || this.isChunkCompiled(blockpos)) && (entity != p_109604_.getEntity() || p_109604_.isDetached() || p_109604_.getEntity() instanceof LivingEntity && ((LivingEntity)p_109604_.getEntity()).isSleeping()) && (!(entity instanceof LocalPlayer) || p_109604_.getEntity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { //FORGE: render local player entity when it is not the renderViewEntity
+                ++this.renderedEntities;
+                if (entity.tickCount == 0) {
+                   entity.xOld = entity.getX();
 @@ -1219,6 +_,7 @@
-          List<BlockEntity> list = levelrenderer$renderchunkinfo.f_109839_.m_112835_().m_112773_();
+          List<BlockEntity> list = levelrenderer$renderchunkinfo.chunk.getCompiledChunk().getRenderableBlockEntities();
           if (!list.isEmpty()) {
              for(BlockEntity blockentity1 : list) {
-+               if(!frustum.m_113029_(blockentity1.getRenderBoundingBox())) continue;
-                BlockPos blockpos4 = blockentity1.m_58899_();
++               if(!frustum.isVisible(blockentity1.getRenderBoundingBox())) continue;
+                BlockPos blockpos4 = blockentity1.getBlockPos();
                 MultiBufferSource multibuffersource1 = multibuffersource$buffersource;
-                p_109600_.m_85836_();
+                p_109600_.pushPose();
 @@ -1244,6 +_,7 @@
  
-       synchronized(this.f_109468_) {
-          for(BlockEntity blockentity : this.f_109468_) {
-+            if(!frustum.m_113029_(blockentity.getRenderBoundingBox())) continue;
-             BlockPos blockpos3 = blockentity.m_58899_();
-             p_109600_.m_85836_();
-             p_109600_.m_85837_((double)blockpos3.m_123341_() - d0, (double)blockpos3.m_123342_() - d1, (double)blockpos3.m_123343_() - d2);
+       synchronized(this.globalBlockEntities) {
+          for(BlockEntity blockentity : this.globalBlockEntities) {
++            if(!frustum.isVisible(blockentity.getRenderBoundingBox())) continue;
+             BlockPos blockpos3 = blockentity.getBlockPos();
+             p_109600_.pushPose();
+             p_109600_.translate((double)blockpos3.getX() - d0, (double)blockpos3.getY() - d1, (double)blockpos3.getZ() - d2);
 @@ -1295,10 +_,13 @@
-          profilerfiller.m_6182_("outline");
-          BlockPos blockpos1 = ((BlockHitResult)hitresult).m_82425_();
-          BlockState blockstate = this.f_109465_.m_8055_(blockpos1);
+          profilerfiller.popPush("outline");
+          BlockPos blockpos1 = ((BlockHitResult)hitresult).getBlockPos();
+          BlockState blockstate = this.level.getBlockState(blockpos1);
 +         if (!net.minecraftforge.client.ForgeHooksClient.onDrawHighlight(this, p_109604_, hitresult, p_109601_, p_109600_, multibuffersource$buffersource))
-          if (!blockstate.m_60795_() && this.f_109465_.m_6857_().m_61937_(blockpos1)) {
-             VertexConsumer vertexconsumer2 = multibuffersource$buffersource.m_6299_(RenderType.m_110504_());
-             this.m_109637_(p_109600_, vertexconsumer2, p_109604_.m_90592_(), d0, d1, d2, blockpos1, blockstate);
+          if (!blockstate.isAir() && this.level.getWorldBorder().isWithinBounds(blockpos1)) {
+             VertexConsumer vertexconsumer2 = multibuffersource$buffersource.getBuffer(RenderType.lines());
+             this.renderHitOutline(p_109600_, vertexconsumer2, p_109604_.getEntity(), d0, d1, d2, blockpos1, blockstate);
           }
-+      } else if (hitresult != null && hitresult.m_6662_() == HitResult.Type.ENTITY) {
++      } else if (hitresult != null && hitresult.getType() == HitResult.Type.ENTITY) {
 +         net.minecraftforge.client.ForgeHooksClient.onDrawHighlight(this, p_109604_, hitresult, p_109601_, p_109600_, multibuffersource$buffersource);
        }
  
-       PoseStack posestack = RenderSystem.m_157191_();
+       PoseStack posestack = RenderSystem.getModelViewStack();
 @@ -1333,7 +_,8 @@
-          this.f_109415_.m_83945_(this.f_109461_.m_91385_());
-          RenderStateShard.f_110126_.m_110185_();
-          profilerfiller.m_6182_("particles");
--         this.f_109461_.f_91061_.m_107336_(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_);
-+         this.f_109461_.f_91061_.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_, frustum);
-+         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_109600_, p_109607_, this.f_109477_, p_109604_, frustum);
-          RenderStateShard.f_110126_.m_110188_();
+          this.particlesTarget.copyDepthFrom(this.minecraft.getMainRenderTarget());
+          RenderStateShard.PARTICLES_TARGET.setupRenderState();
+          profilerfiller.popPush("particles");
+-         this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_);
++         this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_, frustum);
++         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_109600_, p_109607_, this.ticks, p_109604_, frustum);
+          RenderStateShard.PARTICLES_TARGET.clearRenderState();
        } else {
-          profilerfiller.m_6182_("translucent");
+          profilerfiller.popPush("translucent");
 @@ -1347,7 +_,8 @@
-          profilerfiller.m_6182_("string");
-          this.m_172993_(RenderType.m_110503_(), p_109600_, d0, d1, d2, p_109607_);
-          profilerfiller.m_6182_("particles");
--         this.f_109461_.f_91061_.m_107336_(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_);
-+         this.f_109461_.f_91061_.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_, frustum);
-+         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_109600_, p_109607_, this.f_109477_, p_109604_, frustum);
+          profilerfiller.popPush("string");
+          this.renderChunkLayer(RenderType.tripwire(), p_109600_, d0, d1, d2, p_109607_);
+          profilerfiller.popPush("particles");
+-         this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_);
++         this.minecraft.particleEngine.render(p_109600_, multibuffersource$buffersource, p_109606_, p_109604_, p_109601_, frustum);
++         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, p_109600_, p_109607_, this.ticks, p_109604_, frustum);
        }
  
-       posestack.m_85836_();
+       posestack.pushPose();
 @@ -1370,6 +_,7 @@
-       if (this.f_109418_ != null) {
-          RenderStateShard.f_110127_.m_110185_();
-          profilerfiller.m_6182_("weather");
-+         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, p_109600_, p_109607_, this.f_109477_, p_109604_, frustum);
-          this.m_109703_(p_109606_, p_109601_, d0, d1, d2);
-          this.m_173012_(p_109604_);
-          RenderStateShard.f_110127_.m_110188_();
+       if (this.transparencyChain != null) {
+          RenderStateShard.WEATHER_TARGET.setupRenderState();
+          profilerfiller.popPush("weather");
++         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, p_109600_, p_109607_, this.ticks, p_109604_, frustum);
+          this.renderSnowAndRain(p_109606_, p_109601_, d0, d1, d2);
+          this.renderWorldBorder(p_109604_);
+          RenderStateShard.WEATHER_TARGET.clearRenderState();
 @@ -1379,6 +_,7 @@
-          RenderSystem.m_69458_(false);
-          profilerfiller.m_6182_("weather");
-          this.m_109703_(p_109606_, p_109601_, d0, d1, d2);
-+         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, p_109600_, p_109607_, this.f_109477_, p_109604_, frustum);
-          this.m_173012_(p_109604_);
-          RenderSystem.m_69458_(true);
+          RenderSystem.depthMask(false);
+          profilerfiller.popPush("weather");
+          this.renderSnowAndRain(p_109606_, p_109601_, d0, d1, d2);
++         net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, this, p_109600_, p_109607_, this.ticks, p_109604_, frustum);
+          this.renderWorldBorder(p_109604_);
+          RenderSystem.depthMask(true);
        }
 @@ -1521,6 +_,7 @@
-       VertexBuffer.m_85931_();
-       VertexBuffer.m_166875_();
-       this.f_109461_.m_91307_().m_7238_();
-+      net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(p_172994_, this, p_172995_, p_172999_, this.f_109477_, this.f_109461_.f_91063_.m_109153_(), this.f_109442_ != null ? this.f_109442_ : this.f_172938_);
-       p_172994_.m_110188_();
+       VertexBuffer.unbind();
+       VertexBuffer.unbindVertexArray();
+       this.minecraft.getProfiler().pop();
++      net.minecraftforge.client.ForgeHooksClient.dispatchRenderStage(p_172994_, this, p_172995_, p_172999_, this.ticks, this.minecraft.gameRenderer.getMainCamera(), this.capturedFrustum != null ? this.capturedFrustum : this.cullingFrustum);
+       p_172994_.clearRenderState();
     }
  
 @@ -1783,6 +_,11 @@
  
-    public void m_202423_(PoseStack p_202424_, Matrix4f p_202425_, float p_202426_, Camera p_202427_, boolean p_202428_, Runnable p_202429_) {
+    public void renderSky(PoseStack p_202424_, Matrix4f p_202425_, float p_202426_, Camera p_202427_, boolean p_202428_, Runnable p_202429_) {
        p_202429_.run();
-+      net.minecraftforge.client.ISkyRenderHandler renderHandler = f_109465_.m_104583_().getSkyRenderHandler();
++      net.minecraftforge.client.ISkyRenderHandler renderHandler = level.effects().getSkyRenderHandler();
 +      if (renderHandler != null) {
-+         renderHandler.render(f_109477_, p_202426_, p_202424_, f_109465_, f_109461_);
++         renderHandler.render(ticks, p_202426_, p_202424_, level, minecraft);
 +         return;
 +      }
        if (!p_202428_) {
-          FogType fogtype = p_202427_.m_167685_();
+          FogType fogtype = p_202427_.getFluidInCamera();
           if (fogtype != FogType.POWDER_SNOW && fogtype != FogType.LAVA) {
 @@ -1910,6 +_,11 @@
     }
  
-    public void m_172954_(PoseStack p_172955_, Matrix4f p_172956_, float p_172957_, double p_172958_, double p_172959_, double p_172960_) {
-+      net.minecraftforge.client.ICloudRenderHandler renderHandler = f_109465_.m_104583_().getCloudRenderHandler();
+    public void renderClouds(PoseStack p_172955_, Matrix4f p_172956_, float p_172957_, double p_172958_, double p_172959_, double p_172960_) {
++      net.minecraftforge.client.ICloudRenderHandler renderHandler = level.effects().getCloudRenderHandler();
 +      if (renderHandler != null) {
-+         renderHandler.render(f_109477_, p_172957_, p_172955_, f_109465_, f_109461_, p_172958_, p_172959_, p_172960_);
++         renderHandler.render(ticks, p_172957_, p_172955_, level, minecraft, p_172958_, p_172959_, p_172960_);
 +         return;
 +      }
-       float f = this.f_109465_.m_104583_().m_108871_();
+       float f = this.level.effects().getCloudHeight();
        if (!Float.isNaN(f)) {
-          RenderSystem.m_69464_();
+          RenderSystem.disableCull();
 @@ -2095,7 +_,7 @@
                 }
              } else {
-                BlockPos blockpos1 = chunkrenderdispatcher$renderchunk.m_112839_().m_142082_(8, 8, 8);
--               flag = blockpos1.m_123331_(blockpos) < 768.0D || chunkrenderdispatcher$renderchunk.m_112842_();
-+               flag = !net.minecraftforge.common.ForgeConfig.CLIENT.alwaysSetupTerrainOffThread.get() && (blockpos1.m_123331_(blockpos) < 768.0D || chunkrenderdispatcher$renderchunk.m_112842_()); // the target is the else block below, so invert the forge addition to get there early
+                BlockPos blockpos1 = chunkrenderdispatcher$renderchunk.getOrigin().offset(8, 8, 8);
+-               flag = blockpos1.distSqr(blockpos) < 768.0D || chunkrenderdispatcher$renderchunk.isDirtyFromPlayer();
++               flag = !net.minecraftforge.common.ForgeConfig.CLIENT.alwaysSetupTerrainOffThread.get() && (blockpos1.distSqr(blockpos) < 768.0D || chunkrenderdispatcher$renderchunk.isDirtyFromPlayer()); // the target is the else block below, so invert the forge addition to get there early
              }
  
              if (flag) {
 @@ -2393,7 +_,12 @@
-       this.f_109469_.m_110859_(p_109502_, p_109503_, p_109504_, p_109505_);
+       this.viewArea.setDirty(p_109502_, p_109503_, p_109504_, p_109505_);
     }
  
 +   @Deprecated // Forge: use item aware function below
-    public void m_109514_(@Nullable SoundEvent p_109515_, BlockPos p_109516_) {
-+      this.playStreamingMusic(p_109515_, p_109516_, p_109515_ == null? null : RecordItem.m_43040_(p_109515_));
+    public void playStreamingMusic(@Nullable SoundEvent p_109515_, BlockPos p_109516_) {
++      this.playStreamingMusic(p_109515_, p_109516_, p_109515_ == null? null : RecordItem.getBySound(p_109515_));
 +   }
 +
 +   public void playStreamingMusic(@Nullable SoundEvent p_109515_, BlockPos p_109516_, @Nullable RecordItem musicDiscItem) {
-       SoundInstance soundinstance = this.f_109410_.get(p_109516_);
+       SoundInstance soundinstance = this.playingRecords.get(p_109516_);
        if (soundinstance != null) {
-          this.f_109461_.m_91106_().m_120399_(soundinstance);
+          this.minecraft.getSoundManager().stop(soundinstance);
 @@ -2401,7 +_,7 @@
        }
  
        if (p_109515_ != null) {
--         RecordItem recorditem = RecordItem.m_43040_(p_109515_);
+-         RecordItem recorditem = RecordItem.getBySound(p_109515_);
 +         RecordItem recorditem = musicDiscItem;
           if (recorditem != null) {
-             this.f_109461_.f_91065_.m_93055_(recorditem.m_43050_());
+             this.minecraft.gui.setNowPlaying(recorditem.getDisplayName());
           }
 @@ -2553,7 +_,7 @@
           break;
        case 1010:
-          if (Item.m_41445_(p_109536_) instanceof RecordItem) {
--            this.m_109514_(((RecordItem)Item.m_41445_(p_109536_)).m_43051_(), p_109535_);
-+            this.playStreamingMusic(((RecordItem)Item.m_41445_(p_109536_)).m_43051_(), p_109535_, (RecordItem) Item.m_41445_(p_109536_));
+          if (Item.byId(p_109536_) instanceof RecordItem) {
+-            this.playStreamingMusic(((RecordItem)Item.byId(p_109536_)).getSound(), p_109535_);
++            this.playStreamingMusic(((RecordItem)Item.byId(p_109536_)).getSound(), p_109535_, (RecordItem) Item.byId(p_109536_));
           } else {
-             this.m_109514_((SoundEvent)null, p_109535_);
+             this.playStreamingMusic((SoundEvent)null, p_109535_);
           }
 @@ -2723,7 +_,7 @@
        case 2001:
-          BlockState blockstate = Block.m_49803_(p_109536_);
-          if (!blockstate.m_60795_()) {
--            SoundType soundtype = blockstate.m_60827_();
-+            SoundType soundtype = blockstate.getSoundType(this.f_109465_, p_109535_, null);
-             this.f_109465_.m_104677_(p_109535_, soundtype.m_56775_(), SoundSource.BLOCKS, (soundtype.m_56773_() + 1.0F) / 2.0F, soundtype.m_56774_() * 0.8F, false);
+          BlockState blockstate = Block.stateById(p_109536_);
+          if (!blockstate.isAir()) {
+-            SoundType soundtype = blockstate.getSoundType();
++            SoundType soundtype = blockstate.getSoundType(this.level, p_109535_, null);
+             this.level.playLocalSound(p_109535_, soundtype.getBreakSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F, false);
           }
  
 @@ -2888,7 +_,7 @@
        } else {
-          int i = p_109538_.m_45517_(LightLayer.SKY, p_109540_);
-          int j = p_109538_.m_45517_(LightLayer.BLOCK, p_109540_);
--         int k = p_109539_.m_60791_();
+          int i = p_109538_.getBrightness(LightLayer.SKY, p_109540_);
+          int j = p_109538_.getBrightness(LightLayer.BLOCK, p_109540_);
+-         int k = p_109539_.getLightEmission();
 +         int k = p_109539_.getLightEmission(p_109538_, p_109540_);
           if (j < k) {
              j = k;

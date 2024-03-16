@@ -6,13 +6,13 @@
  @OnlyIn(Dist.CLIENT)
 -public class BakedQuad {
 +public class BakedQuad implements net.minecraftforge.client.model.pipeline.IVertexProducer {
-    protected final int[] f_111292_;
-    protected final int f_111293_;
-    protected final Direction f_111294_;
+    protected final int[] vertices;
+    protected final int tintIndex;
+    protected final Direction direction;
 @@ -39,6 +_,11 @@
  
-    public Direction m_111306_() {
-       return this.f_111294_;
+    public Direction getDirection() {
+       return this.direction;
 +   }
 +
 +   @Override
@@ -20,4 +20,4 @@
 +      net.minecraftforge.client.model.pipeline.LightUtil.putBakedQuad(consumer, this);
     }
  
-    public boolean m_111307_() {
+    public boolean isShade() {

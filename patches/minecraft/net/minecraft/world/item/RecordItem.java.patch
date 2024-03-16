@@ -5,19 +5,19 @@
  
  public class RecordItem extends Item {
 +   @Deprecated // Forge: refer to WorldRender#playRecord. Modders: there's no need to reflectively modify this map!
-    private static final Map<SoundEvent, RecordItem> f_43032_ = Maps.newHashMap();
-    private final int f_43033_;
+    private static final Map<SoundEvent, RecordItem> BY_NAME = Maps.newHashMap();
+    private final int analogOutput;
 +   @Deprecated // Forge: refer to soundSupplier
-    private final SoundEvent f_43034_;
+    private final SoundEvent sound;
 +   private final java.util.function.Supplier<SoundEvent> soundSupplier;
  
 +   @Deprecated // Forge: Use the constructor that takes a supplier instead
     public RecordItem(int p_43037_, SoundEvent p_43038_, Item.Properties p_43039_) {
        super(p_43039_);
-       this.f_43033_ = p_43037_;
-       this.f_43034_ = p_43038_;
-       f_43032_.put(this.f_43034_, this);
-+      this.soundSupplier = this.f_43034_.delegate;
+       this.analogOutput = p_43037_;
+       this.sound = p_43038_;
+       BY_NAME.put(this.sound, this);
++      this.soundSupplier = this.sound.delegate;
 +   }
 +
 +   /**
@@ -33,36 +33,36 @@
 +   public RecordItem(int comparatorValue, java.util.function.Supplier<SoundEvent> soundSupplier, Item.Properties builder)
 +   {
 +      super(builder);
-+      this.f_43033_ = comparatorValue;
-+      this.f_43034_ = null;
++      this.analogOutput = comparatorValue;
++      this.sound = null;
 +      this.soundSupplier = soundSupplier;
     }
  
-    public InteractionResult m_6225_(UseOnContext p_43048_) {
+    public InteractionResult useOn(UseOnContext p_43048_) {
 @@ -38,13 +_,15 @@
-       if (blockstate.m_60713_(Blocks.f_50131_) && !blockstate.m_61143_(JukeboxBlock.f_54254_)) {
-          ItemStack itemstack = p_43048_.m_43722_();
-          if (!level.f_46443_) {
--            ((JukeboxBlock)Blocks.f_50131_).m_54269_(level, blockpos, blockstate, itemstack);
--            level.m_5898_((Player)null, 1010, blockpos, Item.m_41393_(this));
--            itemstack.m_41774_(1);
+       if (blockstate.is(Blocks.JUKEBOX) && !blockstate.getValue(JukeboxBlock.HAS_RECORD)) {
+          ItemStack itemstack = p_43048_.getItemInHand();
+          if (!level.isClientSide) {
+-            ((JukeboxBlock)Blocks.JUKEBOX).setRecord(level, blockpos, blockstate, itemstack);
+-            level.levelEvent((Player)null, 1010, blockpos, Item.getId(this));
+-            itemstack.shrink(1);
 +            //Magma - move before return
-             Player player = p_43048_.m_43723_();
+             Player player = p_43048_.getPlayer();
              if (player != null) {
-                player.m_36220_(Stats.f_12965_);
+                player.awardStat(Stats.PLAY_RECORD);
              }
 +            if (true) return InteractionResult.SUCCESS; // CraftBukkit - handled in ItemStack
-+            ((JukeboxBlock)Blocks.f_50131_).m_54269_(level, blockpos, blockstate, itemstack);
-+            level.m_5898_((Player)null, 1010, blockpos, Item.m_41393_(this));
-+            itemstack.m_41774_(1);
++            ((JukeboxBlock)Blocks.JUKEBOX).setRecord(level, blockpos, blockstate, itemstack);
++            level.levelEvent((Player)null, 1010, blockpos, Item.getId(this));
++            itemstack.shrink(1);
           }
  
-          return InteractionResult.m_19078_(level.f_46443_);
+          return InteractionResult.sidedSuccess(level.isClientSide);
 @@ -71,6 +_,6 @@
     }
  
-    public SoundEvent m_43051_() {
--      return this.f_43034_;
+    public SoundEvent getSound() {
+-      return this.sound;
 +      return this.soundSupplier.get();
     }
  }

@@ -4,9 +4,9 @@
              }
  
              if (i > 0) {
--               ((LivingEntity)p_32257_).m_147207_(new MobEffectInstance(MobEffects.f_19614_, i * 20, 0), this);
+-               ((LivingEntity)p_32257_).addEffect(new MobEffectInstance(MobEffects.POISON, i * 20, 0), this);
 +               ((LivingEntity)p_32257_).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
-+               ((LivingEntity)p_32257_).m_147207_(new MobEffectInstance(MobEffects.f_19614_, i * 20, 0), this); // CraftBukkit
++               ((LivingEntity)p_32257_).addEffect(new MobEffectInstance(MobEffects.POISON, i * 20, 0), this); // CraftBukkit
              }
           }
  

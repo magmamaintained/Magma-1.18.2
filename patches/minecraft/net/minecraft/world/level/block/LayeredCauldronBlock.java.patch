@@ -4,133 +4,133 @@
  import net.minecraft.world.level.material.Fluids;
  
  public class LayeredCauldronBlock extends AbstractCauldronBlock {
--   public static final int f_153512_ = 1;
--   public static final int f_153513_ = 3;
--   public static final IntegerProperty f_153514_ = BlockStateProperties.f_61418_;
--   private static final int f_153517_ = 6;
--   private static final double f_153518_ = 3.0D;
--   public static final Predicate<Biome.Precipitation> f_153515_ = (p_153553_) -> {
+-   public static final int MIN_FILL_LEVEL = 1;
+-   public static final int MAX_FILL_LEVEL = 3;
+-   public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_CAULDRON;
+-   private static final int BASE_CONTENT_HEIGHT = 6;
+-   private static final double HEIGHT_PER_LEVEL = 3.0D;
+-   public static final Predicate<Biome.Precipitation> RAIN = (p_153553_) -> {
 -      return p_153553_ == Biome.Precipitation.RAIN;
 -   };
--   public static final Predicate<Biome.Precipitation> f_153516_ = (p_153526_) -> {
+-   public static final Predicate<Biome.Precipitation> SNOW = (p_153526_) -> {
 -      return p_153526_ == Biome.Precipitation.SNOW;
 -   };
--   private final Predicate<Biome.Precipitation> f_153519_;
+-   private final Predicate<Biome.Precipitation> fillPredicate;
 -
 -   public LayeredCauldronBlock(BlockBehaviour.Properties p_153522_, Predicate<Biome.Precipitation> p_153523_, Map<Item, CauldronInteraction> p_153524_) {
 -      super(p_153522_, p_153524_);
--      this.f_153519_ = p_153523_;
--      this.m_49959_(this.f_49792_.m_61090_().m_61124_(f_153514_, Integer.valueOf(1)));
+-      this.fillPredicate = p_153523_;
+-      this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(1)));
 -   }
 -
--   public boolean m_142596_(BlockState p_153555_) {
--      return p_153555_.m_61143_(f_153514_) == 3;
+-   public boolean isFull(BlockState p_153555_) {
+-      return p_153555_.getValue(LEVEL) == 3;
 -   }
 -
--   protected boolean m_142087_(Fluid p_153551_) {
--      return p_153551_ == Fluids.f_76193_ && this.f_153519_ == f_153515_;
+-   protected boolean canReceiveStalactiteDrip(Fluid p_153551_) {
+-      return p_153551_ == Fluids.WATER && this.fillPredicate == RAIN;
 -   }
 -
--   protected double m_142446_(BlockState p_153528_) {
--      return (6.0D + (double)p_153528_.m_61143_(f_153514_).intValue() * 3.0D) / 16.0D;
+-   protected double getContentHeight(BlockState p_153528_) {
+-      return (6.0D + (double)p_153528_.getValue(LEVEL).intValue() * 3.0D) / 16.0D;
 -   }
 -
--   public void m_7892_(BlockState p_153534_, Level p_153535_, BlockPos p_153536_, Entity p_153537_) {
--      if (!p_153535_.f_46443_ && p_153537_.m_6060_() && this.m_151979_(p_153534_, p_153536_, p_153537_)) {
--         p_153537_.m_20095_();
--         if (p_153537_.m_142265_(p_153535_, p_153536_)) {
--            this.m_142266_(p_153534_, p_153535_, p_153536_);
+-   public void entityInside(BlockState p_153534_, Level p_153535_, BlockPos p_153536_, Entity p_153537_) {
+-      if (!p_153535_.isClientSide && p_153537_.isOnFire() && this.isEntityInsideContent(p_153534_, p_153536_, p_153537_)) {
+-         p_153537_.clearFire();
+-         if (p_153537_.mayInteract(p_153535_, p_153536_)) {
+-            this.handleEntityOnFireInside(p_153534_, p_153535_, p_153536_);
 -         }
 -      }
 -
 -   }
 -
--   protected void m_142266_(BlockState p_153556_, Level p_153557_, BlockPos p_153558_) {
--      m_153559_(p_153556_, p_153557_, p_153558_);
+-   protected void handleEntityOnFireInside(BlockState p_153556_, Level p_153557_, BlockPos p_153558_) {
+-      lowerFillLevel(p_153556_, p_153557_, p_153558_);
 -   }
 -
--   public static void m_153559_(BlockState p_153560_, Level p_153561_, BlockPos p_153562_) {
--      int i = p_153560_.m_61143_(f_153514_) - 1;
--      p_153561_.m_46597_(p_153562_, i == 0 ? Blocks.f_50256_.m_49966_() : p_153560_.m_61124_(f_153514_, Integer.valueOf(i)));
+-   public static void lowerFillLevel(BlockState p_153560_, Level p_153561_, BlockPos p_153562_) {
+-      int i = p_153560_.getValue(LEVEL) - 1;
+-      p_153561_.setBlockAndUpdate(p_153562_, i == 0 ? Blocks.CAULDRON.defaultBlockState() : p_153560_.setValue(LEVEL, Integer.valueOf(i)));
 -   }
 -
--   public void m_141997_(BlockState p_153539_, Level p_153540_, BlockPos p_153541_, Biome.Precipitation p_153542_) {
--      if (CauldronBlock.m_182450_(p_153540_, p_153542_) && p_153539_.m_61143_(f_153514_) != 3 && this.f_153519_.test(p_153542_)) {
--         p_153540_.m_46597_(p_153541_, p_153539_.m_61122_(f_153514_));
+-   public void handlePrecipitation(BlockState p_153539_, Level p_153540_, BlockPos p_153541_, Biome.Precipitation p_153542_) {
+-      if (CauldronBlock.shouldHandlePrecipitation(p_153540_, p_153542_) && p_153539_.getValue(LEVEL) != 3 && this.fillPredicate.test(p_153542_)) {
+-         p_153540_.setBlockAndUpdate(p_153541_, p_153539_.cycle(LEVEL));
 -      }
 -   }
 -
--   public int m_6782_(BlockState p_153530_, Level p_153531_, BlockPos p_153532_) {
--      return p_153530_.m_61143_(f_153514_);
+-   public int getAnalogOutputSignal(BlockState p_153530_, Level p_153531_, BlockPos p_153532_) {
+-      return p_153530_.getValue(LEVEL);
 -   }
 -
--   protected void m_7926_(StateDefinition.Builder<Block, BlockState> p_153549_) {
--      p_153549_.m_61104_(f_153514_);
+-   protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_153549_) {
+-      p_153549_.add(LEVEL);
 -   }
 -
--   protected void m_142310_(BlockState p_153544_, Level p_153545_, BlockPos p_153546_, Fluid p_153547_) {
--      if (!this.m_142596_(p_153544_)) {
--         p_153545_.m_46597_(p_153546_, p_153544_.m_61124_(f_153514_, Integer.valueOf(p_153544_.m_61143_(f_153514_) + 1)));
--         p_153545_.m_46796_(1047, p_153546_, 0);
+-   protected void receiveStalactiteDrip(BlockState p_153544_, Level p_153545_, BlockPos p_153546_, Fluid p_153547_) {
+-      if (!this.isFull(p_153544_)) {
+-         p_153545_.setBlockAndUpdate(p_153546_, p_153544_.setValue(LEVEL, Integer.valueOf(p_153544_.getValue(LEVEL) + 1)));
+-         p_153545_.levelEvent(1047, p_153546_, 0);
 -      }
 -   }
-+    public static final int f_153512_ = 1;
-+    public static final int f_153513_ = 3;
-+    public static final IntegerProperty f_153514_ = BlockStateProperties.f_61418_;
-+    private static final int f_153517_ = 6;
-+    private static final double f_153518_ = 3.0D;
-+    public static final Predicate<Biome.Precipitation> f_153515_ = (p_153553_) -> {
++    public static final int MIN_FILL_LEVEL = 1;
++    public static final int MAX_FILL_LEVEL = 3;
++    public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_CAULDRON;
++    private static final int BASE_CONTENT_HEIGHT = 6;
++    private static final double HEIGHT_PER_LEVEL = 3.0D;
++    public static final Predicate<Biome.Precipitation> RAIN = (p_153553_) -> {
 +        return p_153553_ == Biome.Precipitation.RAIN;
 +    };
-+    public static final Predicate<Biome.Precipitation> f_153516_ = (p_153526_) -> {
++    public static final Predicate<Biome.Precipitation> SNOW = (p_153526_) -> {
 +        return p_153526_ == Biome.Precipitation.SNOW;
 +    };
-+    private final Predicate<Biome.Precipitation> f_153519_;
++    private final Predicate<Biome.Precipitation> fillPredicate;
 +
 +    public LayeredCauldronBlock(BlockBehaviour.Properties p_153522_, Predicate<Biome.Precipitation> p_153523_, Map<Item, CauldronInteraction> p_153524_) {
 +        super(p_153522_, p_153524_);
-+        this.f_153519_ = p_153523_;
-+        this.m_49959_(this.f_49792_.m_61090_().m_61124_(f_153514_, Integer.valueOf(1)));
++        this.fillPredicate = p_153523_;
++        this.registerDefaultState(this.stateDefinition.any().setValue(LEVEL, Integer.valueOf(1)));
 +    }
 +
-+    public boolean m_142596_(BlockState p_153555_) {
-+        return p_153555_.m_61143_(f_153514_) == 3;
++    public boolean isFull(BlockState p_153555_) {
++        return p_153555_.getValue(LEVEL) == 3;
 +    }
 +
-+    protected boolean m_142087_(Fluid p_153551_) {
-+        return p_153551_ == Fluids.f_76193_ && this.f_153519_ == f_153515_;
++    protected boolean canReceiveStalactiteDrip(Fluid p_153551_) {
++        return p_153551_ == Fluids.WATER && this.fillPredicate == RAIN;
 +    }
 +
-+    protected double m_142446_(BlockState p_153528_) {
-+        return (6.0D + (double) p_153528_.m_61143_(f_153514_).intValue() * 3.0D) / 16.0D;
++    protected double getContentHeight(BlockState p_153528_) {
++        return (6.0D + (double) p_153528_.getValue(LEVEL).intValue() * 3.0D) / 16.0D;
 +    }
 +
-+    public void m_7892_(BlockState p_153534_, Level p_153535_, BlockPos p_153536_, Entity p_153537_) {
-+        if (!p_153535_.f_46443_ && p_153537_.m_6060_() && this.m_151979_(p_153534_, p_153536_, p_153537_)) {
++    public void entityInside(BlockState p_153534_, Level p_153535_, BlockPos p_153536_, Entity p_153537_) {
++        if (!p_153535_.isClientSide && p_153537_.isOnFire() && this.isEntityInsideContent(p_153534_, p_153536_, p_153537_)) {
 +            // CraftBukkit start
-+            if (p_153537_.m_142265_(p_153535_, p_153536_)) {
++            if (p_153537_.mayInteract(p_153535_, p_153536_)) {
 +                if (!lowerFillLevel(p_153534_, p_153535_, p_153536_, p_153537_, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.EXTINGUISH)) {
 +                    return;
 +                }
 +            }
-+            p_153537_.m_20095_();
++            p_153537_.clearFire();
 +            // CraftBukkit end
 +        }
 +
 +    }
 +
-+    protected void m_142266_(BlockState p_153556_, Level p_153557_, BlockPos p_153558_) {
-+        m_153559_(p_153556_, p_153557_, p_153558_);
++    protected void handleEntityOnFireInside(BlockState p_153556_, Level p_153557_, BlockPos p_153558_) {
++        lowerFillLevel(p_153556_, p_153557_, p_153558_);
 +    }
 +
-+    public static void m_153559_(BlockState p_153560_, Level p_153561_, BlockPos p_153562_) {
++    public static void lowerFillLevel(BlockState p_153560_, Level p_153561_, BlockPos p_153562_) {
 +        // CraftBukkit start
 +        lowerFillLevel(p_153560_, p_153561_, p_153562_, null, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.UNKNOWN);
 +    }
 +
 +    public static boolean lowerFillLevel(BlockState p_153560_, Level p_153561_, BlockPos p_153562_, Entity entity, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason reason) {
-+        int i = p_153560_.m_61143_(f_153514_) - 1;
-+        return changeLevel(p_153560_, p_153561_, p_153562_, i == 0 ? Blocks.f_50256_.m_49966_() : p_153560_.m_61124_(LayeredCauldronBlock.f_153514_, i), entity, reason);
++        int i = p_153560_.getValue(LEVEL) - 1;
++        return changeLevel(p_153560_, p_153561_, p_153562_, i == 0 ? Blocks.CAULDRON.defaultBlockState() : p_153560_.setValue(LayeredCauldronBlock.LEVEL, i), entity, reason);
 +    }
 +
 +    // CraftBukkit start
@@ -139,7 +139,7 @@
 +        newState.setData(newBlock);
 +
 +        org.bukkit.event.block.CauldronLevelChangeEvent event = new org.bukkit.event.block.CauldronLevelChangeEvent(
-+                world.getWorld().getBlockAt(blockposition.m_123341_(), blockposition.m_123342_(), blockposition.m_123343_()),
++                world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()),
 +                (entity == null) ? null : entity.getBukkitEntity(), reason, newState
 +        );
 +        world.getCraftServer().getPluginManager().callEvent(event);
@@ -152,28 +152,28 @@
 +    // CraftBukkit end
 +
 +
-+    public void m_141997_(BlockState p_153539_, Level p_153540_, BlockPos p_153541_, Biome.Precipitation p_153542_) {
-+        if (CauldronBlock.m_182450_(p_153540_, p_153542_) && p_153539_.m_61143_(f_153514_) != 3 && this.f_153519_.test(p_153542_)) {
-+           changeLevel(p_153539_, p_153540_, p_153541_, (BlockState) p_153539_.m_61122_(LayeredCauldronBlock.f_153514_), null, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL); // CraftBukkit
++    public void handlePrecipitation(BlockState p_153539_, Level p_153540_, BlockPos p_153541_, Biome.Precipitation p_153542_) {
++        if (CauldronBlock.shouldHandlePrecipitation(p_153540_, p_153542_) && p_153539_.getValue(LEVEL) != 3 && this.fillPredicate.test(p_153542_)) {
++           changeLevel(p_153539_, p_153540_, p_153541_, (BlockState) p_153539_.cycle(LayeredCauldronBlock.LEVEL), null, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL); // CraftBukkit
 +        }
 +    }
 +
-+    public int m_6782_(BlockState p_153530_, Level p_153531_, BlockPos p_153532_) {
-+        return p_153530_.m_61143_(f_153514_);
++    public int getAnalogOutputSignal(BlockState p_153530_, Level p_153531_, BlockPos p_153532_) {
++        return p_153530_.getValue(LEVEL);
 +    }
 +
-+    protected void m_7926_(StateDefinition.Builder<Block, BlockState> p_153549_) {
-+        p_153549_.m_61104_(f_153514_);
++    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_153549_) {
++        p_153549_.add(LEVEL);
 +    }
 +
-+    protected void m_142310_(BlockState p_153544_, Level p_153545_, BlockPos p_153546_, Fluid p_153547_) {
-+        if (!this.m_142596_(p_153544_)) {
++    protected void receiveStalactiteDrip(BlockState p_153544_, Level p_153545_, BlockPos p_153546_, Fluid p_153547_) {
++        if (!this.isFull(p_153544_)) {
 +            // CraftBukkit start
-+            if (!changeLevel(p_153544_, p_153545_, p_153546_, (BlockState) p_153544_.m_61124_(LayeredCauldronBlock.f_153514_, (Integer) p_153544_.m_61143_(LayeredCauldronBlock.f_153514_) + 1), null, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL)) {
++            if (!changeLevel(p_153544_, p_153545_, p_153546_, (BlockState) p_153544_.setValue(LayeredCauldronBlock.LEVEL, (Integer) p_153544_.getValue(LayeredCauldronBlock.LEVEL) + 1), null, org.bukkit.event.block.CauldronLevelChangeEvent.ChangeReason.NATURAL_FILL)) {
 +                return;
 +            }
 +            // CraftBukkit end
-+            p_153545_.m_46796_(1047, p_153546_, 0);
++            p_153545_.levelEvent(1047, p_153546_, 0);
 +        }
 +    }
  }

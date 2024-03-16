@@ -3,13 +3,13 @@
 @@ -127,7 +_,8 @@
     }
  
-    private static Material m_173385_(WoodType p_173386_) {
--      return new Material(f_110739_, new ResourceLocation("entity/signs/" + p_173386_.m_61846_()));
-+      ResourceLocation location = new ResourceLocation(p_173386_.m_61846_());
-+      return new Material(f_110739_, new ResourceLocation(location.m_135827_(), "entity/signs/" + location.m_135815_()));
+    private static Material createSignMaterial(WoodType p_173386_) {
+-      return new Material(SIGN_SHEET, new ResourceLocation("entity/signs/" + p_173386_.name()));
++      ResourceLocation location = new ResourceLocation(p_173386_.name());
++      return new Material(SIGN_SHEET, new ResourceLocation(location.getNamespace(), "entity/signs/" + location.getPath()));
     }
  
-    public static Material m_173381_(WoodType p_173382_) {
+    public static Material getSignMaterial(WoodType p_173382_) {
 @@ -174,5 +_,12 @@
        default:
           return p_110773_;
@@ -20,6 +20,6 @@
 +    * Not threadsafe. Enqueue it in client setup.
 +    */
 +   public static void addWoodType(WoodType woodType) {
-+      f_110743_.put(woodType, m_173385_(woodType));
++      SIGN_MATERIALS.put(woodType, createSignMaterial(woodType));
     }
  }

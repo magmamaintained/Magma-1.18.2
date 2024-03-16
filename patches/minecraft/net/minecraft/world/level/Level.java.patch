@@ -5,103 +5,103 @@
  import net.minecraft.world.scores.Scoreboard;
  
 -public abstract class Level implements LevelAccessor, AutoCloseable {
--   public static final Codec<ResourceKey<Level>> f_46427_ = ResourceLocation.f_135803_.xmap(ResourceKey.m_135797_(Registry.f_122819_), ResourceKey::m_135782_);
--   public static final ResourceKey<Level> f_46428_ = ResourceKey.m_135785_(Registry.f_122819_, new ResourceLocation("overworld"));
--   public static final ResourceKey<Level> f_46429_ = ResourceKey.m_135785_(Registry.f_122819_, new ResourceLocation("the_nether"));
--   public static final ResourceKey<Level> f_46430_ = ResourceKey.m_135785_(Registry.f_122819_, new ResourceLocation("the_end"));
--   public static final int f_151505_ = 30000000;
--   public static final int f_151506_ = 512;
--   public static final int f_151507_ = 32;
--   private static final Direction[] f_46422_ = Direction.values();
--   public static final int f_151508_ = 15;
--   public static final int f_151509_ = 24000;
--   public static final int f_151510_ = 20000000;
--   public static final int f_151511_ = -20000000;
--   protected final List<TickingBlockEntity> f_151512_ = Lists.newArrayList();
--   private final List<TickingBlockEntity> f_151503_ = Lists.newArrayList();
--   private boolean f_151504_;
--   private final Thread f_46423_;
--   private final boolean f_46424_;
--   private int f_46425_;
--   protected int f_46435_ = (new Random()).nextInt();
--   protected final int f_46436_ = 1013904223;
--   public float f_46437_;
--   public float f_46438_;
--   public float f_46439_;
--   public float f_46440_;
--   public final Random f_46441_ = new Random();
--   final DimensionType f_46445_;
--   private final Holder<DimensionType> f_204147_;
--   public final WritableLevelData f_46442_;
--   private final Supplier<ProfilerFiller> f_46446_;
--   public final boolean f_46443_;
--   private final WorldBorder f_46447_;
--   private final BiomeManager f_46420_;
--   private final ResourceKey<Level> f_46421_;
--   private long f_186455_;
+-   public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey.elementKey(Registry.DIMENSION_REGISTRY), ResourceKey::location);
+-   public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("overworld"));
+-   public static final ResourceKey<Level> NETHER = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("the_nether"));
+-   public static final ResourceKey<Level> END = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("the_end"));
+-   public static final int MAX_LEVEL_SIZE = 30000000;
+-   public static final int LONG_PARTICLE_CLIP_RANGE = 512;
+-   public static final int SHORT_PARTICLE_CLIP_RANGE = 32;
+-   private static final Direction[] DIRECTIONS = Direction.values();
+-   public static final int MAX_BRIGHTNESS = 15;
+-   public static final int TICKS_PER_DAY = 24000;
+-   public static final int MAX_ENTITY_SPAWN_Y = 20000000;
+-   public static final int MIN_ENTITY_SPAWN_Y = -20000000;
+-   protected final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList();
+-   private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
+-   private boolean tickingBlockEntities;
+-   private final Thread thread;
+-   private final boolean isDebug;
+-   private int skyDarken;
+-   protected int randValue = (new Random()).nextInt();
+-   protected final int addend = 1013904223;
+-   public float oRainLevel;
+-   public float rainLevel;
+-   public float oThunderLevel;
+-   public float thunderLevel;
+-   public final Random random = new Random();
+-   final DimensionType dimensionType;
+-   private final Holder<DimensionType> dimensionTypeRegistration;
+-   public final WritableLevelData levelData;
+-   private final Supplier<ProfilerFiller> profiler;
+-   public final boolean isClientSide;
+-   private final WorldBorder worldBorder;
+-   private final BiomeManager biomeManager;
+-   private final ResourceKey<Level> dimension;
+-   private long subTickCount;
 -
 -   protected Level(WritableLevelData p_204149_, ResourceKey<Level> p_204150_, Holder<DimensionType> p_204151_, Supplier<ProfilerFiller> p_204152_, boolean p_204153_, boolean p_204154_, long p_204155_) {
--      this.f_46446_ = p_204152_;
--      this.f_46442_ = p_204149_;
--      this.f_204147_ = p_204151_;
--      this.f_46445_ = p_204151_.m_203334_();
--      this.f_46421_ = p_204150_;
--      this.f_46443_ = p_204153_;
--      if (this.f_46445_.m_63959_() != 1.0D) {
--         this.f_46447_ = new WorldBorder() {
--            public double m_6347_() {
--               return super.m_6347_() / Level.this.f_46445_.m_63959_();
+-      this.profiler = p_204152_;
+-      this.levelData = p_204149_;
+-      this.dimensionTypeRegistration = p_204151_;
+-      this.dimensionType = p_204151_.value();
+-      this.dimension = p_204150_;
+-      this.isClientSide = p_204153_;
+-      if (this.dimensionType.coordinateScale() != 1.0D) {
+-         this.worldBorder = new WorldBorder() {
+-            public double getCenterX() {
+-               return super.getCenterX() / Level.this.dimensionType.coordinateScale();
 -            }
 -
--            public double m_6345_() {
--               return super.m_6345_() / Level.this.f_46445_.m_63959_();
+-            public double getCenterZ() {
+-               return super.getCenterZ() / Level.this.dimensionType.coordinateScale();
 -            }
 -         };
 -      } else {
--         this.f_46447_ = new WorldBorder();
+-         this.worldBorder = new WorldBorder();
 -      }
 -
--      this.f_46423_ = Thread.currentThread();
--      this.f_46420_ = new BiomeManager(this, p_204155_);
--      this.f_46424_ = p_204154_;
+-      this.thread = Thread.currentThread();
+-      this.biomeManager = new BiomeManager(this, p_204155_);
+-      this.isDebug = p_204154_;
 -   }
 -
--   public boolean m_5776_() {
--      return this.f_46443_;
+-   public boolean isClientSide() {
+-      return this.isClientSide;
 -   }
 -
 -   @Nullable
--   public MinecraftServer m_142572_() {
+-   public MinecraftServer getServer() {
 -      return null;
 -   }
 -
--   public boolean m_46739_(BlockPos p_46740_) {
--      return !this.m_151570_(p_46740_) && m_46457_(p_46740_);
+-   public boolean isInWorldBounds(BlockPos p_46740_) {
+-      return !this.isOutsideBuildHeight(p_46740_) && isInWorldBoundsHorizontal(p_46740_);
 -   }
 -
--   public static boolean m_46741_(BlockPos p_46742_) {
--      return !m_46724_(p_46742_.m_123342_()) && m_46457_(p_46742_);
+-   public static boolean isInSpawnableBounds(BlockPos p_46742_) {
+-      return !isOutsideSpawnableHeight(p_46742_.getY()) && isInWorldBoundsHorizontal(p_46742_);
 -   }
 -
--   private static boolean m_46457_(BlockPos p_46458_) {
--      return p_46458_.m_123341_() >= -30000000 && p_46458_.m_123343_() >= -30000000 && p_46458_.m_123341_() < 30000000 && p_46458_.m_123343_() < 30000000;
+-   private static boolean isInWorldBoundsHorizontal(BlockPos p_46458_) {
+-      return p_46458_.getX() >= -30000000 && p_46458_.getZ() >= -30000000 && p_46458_.getX() < 30000000 && p_46458_.getZ() < 30000000;
 -   }
 -
--   private static boolean m_46724_(int p_46725_) {
+-   private static boolean isOutsideSpawnableHeight(int p_46725_) {
 -      return p_46725_ < -20000000 || p_46725_ >= 20000000;
 -   }
 -
--   public LevelChunk m_46745_(BlockPos p_46746_) {
--      return this.m_6325_(SectionPos.m_123171_(p_46746_.m_123341_()), SectionPos.m_123171_(p_46746_.m_123343_()));
+-   public LevelChunk getChunkAt(BlockPos p_46746_) {
+-      return this.getChunk(SectionPos.blockToSectionCoord(p_46746_.getX()), SectionPos.blockToSectionCoord(p_46746_.getZ()));
 -   }
 -
--   public LevelChunk m_6325_(int p_46727_, int p_46728_) {
--      return (LevelChunk)this.m_46819_(p_46727_, p_46728_, ChunkStatus.f_62326_);
+-   public LevelChunk getChunk(int p_46727_, int p_46728_) {
+-      return (LevelChunk)this.getChunk(p_46727_, p_46728_, ChunkStatus.FULL);
 -   }
 -
 -   @Nullable
--   public ChunkAccess m_6522_(int p_46502_, int p_46503_, ChunkStatus p_46504_, boolean p_46505_) {
--      ChunkAccess chunkaccess = this.m_7726_().m_7587_(p_46502_, p_46503_, p_46504_, p_46505_);
+-   public ChunkAccess getChunk(int p_46502_, int p_46503_, ChunkStatus p_46504_, boolean p_46505_) {
+-      ChunkAccess chunkaccess = this.getChunkSource().getChunk(p_46502_, p_46503_, p_46504_, p_46505_);
 -      if (chunkaccess == null && p_46505_) {
 -         throw new IllegalStateException("Should always be able to create a chunk!");
 -      } else {
@@ -109,92 +109,92 @@
 -      }
 -   }
 -
--   public boolean m_7731_(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {
--      return this.m_6933_(p_46601_, p_46602_, p_46603_, 512);
+-   public boolean setBlock(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {
+-      return this.setBlock(p_46601_, p_46602_, p_46603_, 512);
 -   }
 -
--   public boolean m_6933_(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {
--      if (this.m_151570_(p_46605_)) {
+-   public boolean setBlock(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {
+-      if (this.isOutsideBuildHeight(p_46605_)) {
 -         return false;
--      } else if (!this.f_46443_ && this.m_46659_()) {
+-      } else if (!this.isClientSide && this.isDebug()) {
 -         return false;
 -      } else {
--         LevelChunk levelchunk = this.m_46745_(p_46605_);
--         Block block = p_46606_.m_60734_();
--         BlockState blockstate = levelchunk.m_6978_(p_46605_, p_46606_, (p_46607_ & 64) != 0);
+-         LevelChunk levelchunk = this.getChunkAt(p_46605_);
+-         Block block = p_46606_.getBlock();
+-         BlockState blockstate = levelchunk.setBlockState(p_46605_, p_46606_, (p_46607_ & 64) != 0);
 -         if (blockstate == null) {
 -            return false;
 -         } else {
--            BlockState blockstate1 = this.m_8055_(p_46605_);
--            if ((p_46607_ & 128) == 0 && blockstate1 != blockstate && (blockstate1.m_60739_(this, p_46605_) != blockstate.m_60739_(this, p_46605_) || blockstate1.m_60791_() != blockstate.m_60791_() || blockstate1.m_60787_() || blockstate.m_60787_())) {
--               this.m_46473_().m_6180_("queueCheckLight");
--               this.m_7726_().m_7827_().m_142202_(p_46605_);
--               this.m_46473_().m_7238_();
+-            BlockState blockstate1 = this.getBlockState(p_46605_);
+-            if ((p_46607_ & 128) == 0 && blockstate1 != blockstate && (blockstate1.getLightBlock(this, p_46605_) != blockstate.getLightBlock(this, p_46605_) || blockstate1.getLightEmission() != blockstate.getLightEmission() || blockstate1.useShapeForLightOcclusion() || blockstate.useShapeForLightOcclusion())) {
+-               this.getProfiler().push("queueCheckLight");
+-               this.getChunkSource().getLightEngine().checkBlock(p_46605_);
+-               this.getProfiler().pop();
 -            }
 -
 -            if (blockstate1 == p_46606_) {
 -               if (blockstate != blockstate1) {
--                  this.m_6550_(p_46605_, blockstate, blockstate1);
+-                  this.setBlocksDirty(p_46605_, blockstate, blockstate1);
 -               }
 -
--               if ((p_46607_ & 2) != 0 && (!this.f_46443_ || (p_46607_ & 4) == 0) && (this.f_46443_ || levelchunk.m_6708_() != null && levelchunk.m_6708_().m_140114_(ChunkHolder.FullChunkStatus.TICKING))) {
--                  this.m_7260_(p_46605_, blockstate, p_46606_, p_46607_);
+-               if ((p_46607_ & 2) != 0 && (!this.isClientSide || (p_46607_ & 4) == 0) && (this.isClientSide || levelchunk.getFullStatus() != null && levelchunk.getFullStatus().isOrAfter(ChunkHolder.FullChunkStatus.TICKING))) {
+-                  this.sendBlockUpdated(p_46605_, blockstate, p_46606_, p_46607_);
 -               }
 -
 -               if ((p_46607_ & 1) != 0) {
--                  this.m_6289_(p_46605_, blockstate.m_60734_());
--                  if (!this.f_46443_ && p_46606_.m_60807_()) {
--                     this.m_46717_(p_46605_, block);
+-                  this.blockUpdated(p_46605_, blockstate.getBlock());
+-                  if (!this.isClientSide && p_46606_.hasAnalogOutputSignal()) {
+-                     this.updateNeighbourForOutputSignal(p_46605_, block);
 -                  }
 -               }
 -
 -               if ((p_46607_ & 16) == 0 && p_46608_ > 0) {
 -                  int i = p_46607_ & -34;
--                  blockstate.m_60762_(this, p_46605_, i, p_46608_ - 1);
--                  p_46606_.m_60705_(this, p_46605_, i, p_46608_ - 1);
--                  p_46606_.m_60762_(this, p_46605_, i, p_46608_ - 1);
+-                  blockstate.updateIndirectNeighbourShapes(this, p_46605_, i, p_46608_ - 1);
+-                  p_46606_.updateNeighbourShapes(this, p_46605_, i, p_46608_ - 1);
+-                  p_46606_.updateIndirectNeighbourShapes(this, p_46605_, i, p_46608_ - 1);
 -               }
 -
--               this.m_6559_(p_46605_, blockstate, blockstate1);
+-               this.onBlockStateChange(p_46605_, blockstate, blockstate1);
 -            }
 -
 +
 +public abstract class Level extends net.minecraftforge.common.capabilities.CapabilityProvider<Level> implements LevelAccessor, AutoCloseable, net.minecraftforge.common.extensions.IForgeLevel {
-+    public static final Codec<ResourceKey<Level>> f_46427_ = ResourceLocation.f_135803_.xmap( ResourceKey.m_135797_( Registry.f_122819_ ), ResourceKey::m_135782_ );
-+    public static final ResourceKey<Level> f_46428_ = ResourceKey.m_135785_( Registry.f_122819_, new ResourceLocation( "overworld" ) );
-+    public static final ResourceKey<Level> f_46429_ = ResourceKey.m_135785_( Registry.f_122819_, new ResourceLocation( "the_nether" ) );
-+    public static final ResourceKey<Level> f_46430_ = ResourceKey.m_135785_( Registry.f_122819_, new ResourceLocation( "the_end" ) );
-+    public static final int f_151505_ = 30000000;
-+    public static final int f_151506_ = 512;
-+    public static final int f_151507_ = 32;
-+    private static final Direction[] f_46422_ = Direction.values();
-+    public static final int f_151508_ = 15;
-+    public static final int f_151509_ = 24000;
-+    public static final int f_151510_ = 20000000;
-+    public static final int f_151511_ = -20000000;
-+    protected final List<TickingBlockEntity> f_151512_ = Lists.newArrayList();
++    public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceLocation.CODEC.xmap( ResourceKey.elementKey( Registry.DIMENSION_REGISTRY ), ResourceKey::location );
++    public static final ResourceKey<Level> OVERWORLD = ResourceKey.create( Registry.DIMENSION_REGISTRY, new ResourceLocation( "overworld" ) );
++    public static final ResourceKey<Level> NETHER = ResourceKey.create( Registry.DIMENSION_REGISTRY, new ResourceLocation( "the_nether" ) );
++    public static final ResourceKey<Level> END = ResourceKey.create( Registry.DIMENSION_REGISTRY, new ResourceLocation( "the_end" ) );
++    public static final int MAX_LEVEL_SIZE = 30000000;
++    public static final int LONG_PARTICLE_CLIP_RANGE = 512;
++    public static final int SHORT_PARTICLE_CLIP_RANGE = 32;
++    private static final Direction[] DIRECTIONS = Direction.values();
++    public static final int MAX_BRIGHTNESS = 15;
++    public static final int TICKS_PER_DAY = 24000;
++    public static final int MAX_ENTITY_SPAWN_Y = 20000000;
++    public static final int MIN_ENTITY_SPAWN_Y = -20000000;
++    protected final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList();
 +    protected final org.magmafoundation.magma.mcpatch.updatesuppression.NeighborUpdater neighborUpdater;
-+    private final List<TickingBlockEntity> f_151503_ = Lists.newArrayList();
-+    private boolean f_151504_;
-+    private final Thread f_46423_;
-+    private final boolean f_46424_;
-+    private int f_46425_;
-+    protected int f_46435_ = (new Random()).nextInt();
-+    protected final int f_46436_ = 1013904223;
-+    public float f_46437_;
-+    public float f_46438_;
-+    public float f_46439_;
-+    public float f_46440_;
-+    public final Random f_46441_ = new Random();
-+    final DimensionType f_46445_;
-+    private final Holder<DimensionType> f_204147_;
-+    public final WritableLevelData f_46442_;
-+    private final Supplier<ProfilerFiller> f_46446_;
-+    public final boolean f_46443_;
-+    private final WorldBorder f_46447_;
-+    private final BiomeManager f_46420_;
-+    private final ResourceKey<Level> f_46421_;
-+    private long f_186455_;
++    private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
++    private boolean tickingBlockEntities;
++    private final Thread thread;
++    private final boolean isDebug;
++    private int skyDarken;
++    protected int randValue = (new Random()).nextInt();
++    protected final int addend = 1013904223;
++    public float oRainLevel;
++    public float rainLevel;
++    public float oThunderLevel;
++    public float thunderLevel;
++    public final Random random = new Random();
++    final DimensionType dimensionType;
++    private final Holder<DimensionType> dimensionTypeRegistration;
++    public final WritableLevelData levelData;
++    private final Supplier<ProfilerFiller> profiler;
++    public final boolean isClientSide;
++    private final WorldBorder worldBorder;
++    private final BiomeManager biomeManager;
++    private final ResourceKey<Level> dimension;
++    private long subTickCount;
 +    public boolean restoringBlockSnapshots = false;
 +    public boolean captureBlockSnapshots = false;
 +    public java.util.ArrayList<net.minecraftforge.common.util.BlockSnapshot> capturedBlockSnapshots = new java.util.ArrayList<>();
@@ -238,7 +238,7 @@
 +
 +    //Magma - remove abstract modifier to fix abstract method error
 +    public ResourceKey<net.minecraft.world.level.dimension.LevelStem> getTypeKey() {
-+        return net.minecraft.world.level.levelgen.WorldGenSettings.m_190052_(typeKey);
++        return net.minecraft.world.level.levelgen.WorldGenSettings.levelToLevelStem(typeKey);
 +    }
 +
 +    public static void setGeneratorAndEnv(org.bukkit.generator.ChunkGenerator gen, org.bukkit.World.Environment env) {
@@ -252,7 +252,7 @@
 +        super( Level.class );
 +        this.typeKey = p_204150_;
 +        try {
-+            this.init_levelName = p_204149_ == null ? org.apache.logging.log4j.util.Strings.EMPTY : ((net.minecraft.world.level.storage.ServerLevelData) p_204149_).m_5462_();
++            this.init_levelName = p_204149_ == null ? org.apache.logging.log4j.util.Strings.EMPTY : ((net.minecraft.world.level.storage.ServerLevelData) p_204149_).getLevelName();
 +        } catch (ClassCastException e) {
 +            org.magmafoundation.magma.Magma.LOGGER.error("Failed to get level name from WritableLevelData, using empty string instead", e);
 +            this.init_levelName = org.apache.logging.log4j.util.Strings.EMPTY;
@@ -267,71 +267,71 @@
 +            }
 +        }
 +        if (generator == null && p_204150_ != null) { //Magma
-+            generator = getCraftServer().getGenerator( p_204150_.getRegistryName().m_135827_() );
++            generator = getCraftServer().getGenerator( p_204150_.getRegistryName().getNamespace() );
 +        }
 +        if (environment == null) {
 +            environment = org.magmafoundation.magma.forge.ForgeInject.environments.getOrDefault(getTypeKey(), org.bukkit.World.Environment.CUSTOM);
 +        }
 +        // CraftBukkit end
-+        this.f_46446_ = p_204152_;
-+        this.f_46442_ = p_204149_;
-+        this.f_204147_ = p_204151_;
-+        this.f_46445_ = p_204151_.m_203334_();
-+        this.f_46421_ = p_204150_;
-+        this.f_46443_ = p_204153_;
-+        if (this.f_46445_.m_63959_() != 1.0D) {
-+            this.f_46447_ = new WorldBorder() {
-+                public double m_6347_() {
-+                    return super.m_6347_(); // CraftBukkit
++        this.profiler = p_204152_;
++        this.levelData = p_204149_;
++        this.dimensionTypeRegistration = p_204151_;
++        this.dimensionType = p_204151_.value();
++        this.dimension = p_204150_;
++        this.isClientSide = p_204153_;
++        if (this.dimensionType.coordinateScale() != 1.0D) {
++            this.worldBorder = new WorldBorder() {
++                public double getCenterX() {
++                    return super.getCenterX(); // CraftBukkit
 +                }
 +
-+                public double m_6345_() {
-+                    return super.m_6345_(); // CraftBukkit
++                public double getCenterZ() {
++                    return super.getCenterZ(); // CraftBukkit
 +                }
 +            };
 +        } else {
-+            this.f_46447_ = new WorldBorder();
++            this.worldBorder = new WorldBorder();
 +        }
 +
-+        this.f_46423_ = Thread.currentThread();
-+        this.f_46420_ = new BiomeManager( this, p_204155_ );
-+        this.f_46424_ = p_204154_;
++        this.thread = Thread.currentThread();
++        this.biomeManager = new BiomeManager( this, p_204155_ );
++        this.isDebug = p_204154_;
 +        this.neighborUpdater = new org.magmafoundation.magma.mcpatch.updatesuppression.CollectingNeighborUpdater(this, org.magmafoundation.magma.configuration.MagmaConfig.instance.updateSuppressionMaxUpdates.getValues());
 +        // CraftBukkit start
-+        m_6857_().world = this; //Magma - fix ClassCastException
++        getWorldBorder().world = this; //Magma - fix ClassCastException
 +        // From PlayerList.setPlayerFileData
-+        m_6857_().m_61929_( new net.minecraft.world.level.border.BorderChangeListener() {
++        getWorldBorder().addListener( new net.minecraft.world.level.border.BorderChangeListener() {
 +            @Override
-+            public void m_6312_(WorldBorder worldborder, double d0) {
++            public void onBorderSizeSet(WorldBorder worldborder, double d0) {
 +                getCraftServer().getHandle().broadcastAll( new net.minecraft.network.protocol.game.ClientboundSetBorderSizePacket( worldborder ), worldborder.world );
 +            }
 +
 +            @Override
-+            public void m_6689_(WorldBorder worldborder, double d0, double d1, long i) {
++            public void onBorderSizeLerping(WorldBorder worldborder, double d0, double d1, long i) {
 +                getCraftServer().getHandle().broadcastAll( new net.minecraft.network.protocol.game.ClientboundSetBorderLerpSizePacket( worldborder ), worldborder.world );
 +            }
 +
 +            @Override
-+            public void m_7721_(WorldBorder worldborder, double d0, double d1) {
++            public void onBorderCenterSet(WorldBorder worldborder, double d0, double d1) {
 +                getCraftServer().getHandle().broadcastAll( new net.minecraft.network.protocol.game.ClientboundSetBorderCenterPacket( worldborder ), worldborder.world );
 +            }
 +
 +            @Override
-+            public void m_5904_(WorldBorder worldborder, int i) {
++            public void onBorderSetWarningTime(WorldBorder worldborder, int i) {
 +                getCraftServer().getHandle().broadcastAll( new net.minecraft.network.protocol.game.ClientboundSetBorderWarningDelayPacket( worldborder ), worldborder.world );
 +            }
 +
 +            @Override
-+            public void m_5903_(WorldBorder worldborder, int i) {
++            public void onBorderSetWarningBlocks(WorldBorder worldborder, int i) {
 +                getCraftServer().getHandle().broadcastAll( new net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePacket( worldborder ), worldborder.world );
 +            }
 +
 +            @Override
-+            public void m_6315_(WorldBorder worldborder, double d0) {
++            public void onBorderSetDamagePerBlock(WorldBorder worldborder, double d0) {
 +            }
 +
 +            @Override
-+            public void m_6313_(WorldBorder worldborder, double d0) {
++            public void onBorderSetDamageSafeZOne(WorldBorder worldborder, double d0) {
 +            }
 +        } );
 +        // CraftBukkit end
@@ -341,42 +341,42 @@
 +        this.tileLimiter = new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime);
 +    }
 +
-+    public boolean m_5776_() {
-+        return this.f_46443_;
++    public boolean isClientSide() {
++        return this.isClientSide;
 +    }
 +
 +    @Nullable
-+    public MinecraftServer m_142572_() {
++    public MinecraftServer getServer() {
 +        return MinecraftServer.getServer();
 +    }
 +
-+    public boolean m_46739_(BlockPos p_46740_) {
-+        return !this.m_151570_( p_46740_ ) && m_46457_( p_46740_ );
++    public boolean isInWorldBounds(BlockPos p_46740_) {
++        return !this.isOutsideBuildHeight( p_46740_ ) && isInWorldBoundsHorizontal( p_46740_ );
 +    }
 +
-+    public static boolean m_46741_(BlockPos p_46742_) {
-+        return !m_46724_( p_46742_.m_123342_() ) && m_46457_( p_46742_ );
++    public static boolean isInSpawnableBounds(BlockPos p_46742_) {
++        return !isOutsideSpawnableHeight( p_46742_.getY() ) && isInWorldBoundsHorizontal( p_46742_ );
 +    }
 +
-+    private static boolean m_46457_(BlockPos p_46458_) {
-+        return p_46458_.m_123341_() >= -30000000 && p_46458_.m_123343_() >= -30000000 && p_46458_.m_123341_() < 30000000 && p_46458_.m_123343_() < 30000000;
++    private static boolean isInWorldBoundsHorizontal(BlockPos p_46458_) {
++        return p_46458_.getX() >= -30000000 && p_46458_.getZ() >= -30000000 && p_46458_.getX() < 30000000 && p_46458_.getZ() < 30000000;
 +    }
 +
-+    private static boolean m_46724_(int p_46725_) {
++    private static boolean isOutsideSpawnableHeight(int p_46725_) {
 +        return p_46725_ < -20000000 || p_46725_ >= 20000000;
 +    }
 +
-+    public LevelChunk m_46745_(BlockPos p_46746_) {
-+        return this.m_6325_( SectionPos.m_123171_( p_46746_.m_123341_() ), SectionPos.m_123171_( p_46746_.m_123343_() ) );
++    public LevelChunk getChunkAt(BlockPos p_46746_) {
++        return this.getChunk( SectionPos.blockToSectionCoord( p_46746_.getX() ), SectionPos.blockToSectionCoord( p_46746_.getZ() ) );
 +    }
 +
-+    public LevelChunk m_6325_(int p_46727_, int p_46728_) {
-+        return (LevelChunk) this.m_46819_( p_46727_, p_46728_, ChunkStatus.f_62326_ );
++    public LevelChunk getChunk(int p_46727_, int p_46728_) {
++        return (LevelChunk) this.getChunk( p_46727_, p_46728_, ChunkStatus.FULL );
 +    }
 +
 +    @Nullable
-+    public ChunkAccess m_6522_(int p_46502_, int p_46503_, ChunkStatus p_46504_, boolean p_46505_) {
-+        ChunkAccess chunkaccess = this.m_7726_().m_7587_( p_46502_, p_46503_, p_46504_, p_46505_ );
++    public ChunkAccess getChunk(int p_46502_, int p_46503_, ChunkStatus p_46504_, boolean p_46505_) {
++        ChunkAccess chunkaccess = this.getChunkSource().getChunk( p_46502_, p_46503_, p_46504_, p_46505_ );
 +        if (chunkaccess == null && p_46505_) {
 +            throw new IllegalStateException( "Should always be able to create a chunk!" );
 +        } else {
@@ -384,17 +384,17 @@
 +        }
 +    }
 +
-+    public boolean m_7731_(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {
-+        return this.m_6933_(p_46601_, p_46602_, p_46603_, 512);
++    public boolean setBlock(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {
++        return this.setBlock(p_46601_, p_46602_, p_46603_, 512);
 +    }
 +
-+    public boolean m_6933_(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {
++    public boolean setBlock(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {
 +        // CraftBukkit start - tree generation
 +        if (this.captureTreeGeneration) {
 +            org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState blockstate = capturedBlockStates.get(p_46605_);
 +            if (blockstate == null) {
 +                blockstate = org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState.getTreeBlockState(this, p_46605_, p_46607_);
-+                this.capturedBlockStates.put(p_46605_.m_7949_(), blockstate);
++                this.capturedBlockStates.put(p_46605_.immutable(), blockstate);
 +            }
 +            blockstate.setData(p_46606_);
              return true;
@@ -402,324 +402,324 @@
 -      }
 -   }
 -
--   public void m_6559_(BlockPos p_46609_, BlockState p_46610_, BlockState p_46611_) {
+-   public void onBlockStateChange(BlockPos p_46609_, BlockState p_46610_, BlockState p_46611_) {
 -   }
 -
--   public boolean m_7471_(BlockPos p_46623_, boolean p_46624_) {
--      FluidState fluidstate = this.m_6425_(p_46623_);
--      return this.m_7731_(p_46623_, fluidstate.m_76188_(), 3 | (p_46624_ ? 64 : 0));
+-   public boolean removeBlock(BlockPos p_46623_, boolean p_46624_) {
+-      FluidState fluidstate = this.getFluidState(p_46623_);
+-      return this.setBlock(p_46623_, fluidstate.createLegacyBlock(), 3 | (p_46624_ ? 64 : 0));
 -   }
 -
--   public boolean m_7740_(BlockPos p_46626_, boolean p_46627_, @Nullable Entity p_46628_, int p_46629_) {
--      BlockState blockstate = this.m_8055_(p_46626_);
--      if (blockstate.m_60795_()) {
+-   public boolean destroyBlock(BlockPos p_46626_, boolean p_46627_, @Nullable Entity p_46628_, int p_46629_) {
+-      BlockState blockstate = this.getBlockState(p_46626_);
+-      if (blockstate.isAir()) {
 -         return false;
 -      } else {
--         FluidState fluidstate = this.m_6425_(p_46626_);
--         if (!(blockstate.m_60734_() instanceof BaseFireBlock)) {
--            this.m_46796_(2001, p_46626_, Block.m_49956_(blockstate));
+-         FluidState fluidstate = this.getFluidState(p_46626_);
+-         if (!(blockstate.getBlock() instanceof BaseFireBlock)) {
+-            this.levelEvent(2001, p_46626_, Block.getId(blockstate));
 -         }
 -
 -         if (p_46627_) {
--            BlockEntity blockentity = blockstate.m_155947_() ? this.m_7702_(p_46626_) : null;
--            Block.m_49881_(blockstate, this, p_46626_, blockentity, p_46628_, ItemStack.f_41583_);
+-            BlockEntity blockentity = blockstate.hasBlockEntity() ? this.getBlockEntity(p_46626_) : null;
+-            Block.dropResources(blockstate, this, p_46626_, blockentity, p_46628_, ItemStack.EMPTY);
 -         }
 -
--         boolean flag = this.m_6933_(p_46626_, fluidstate.m_76188_(), 3, p_46629_);
+-         boolean flag = this.setBlock(p_46626_, fluidstate.createLegacyBlock(), 3, p_46629_);
 -         if (flag) {
--            this.m_142346_(p_46628_, GameEvent.f_157794_, p_46626_);
+-            this.gameEvent(p_46628_, GameEvent.BLOCK_DESTROY, p_46626_);
 -         }
 -
 -         return flag;
 -      }
 -   }
 -
--   public void m_142052_(BlockPos p_151531_, BlockState p_151532_) {
+-   public void addDestroyBlockEffect(BlockPos p_151531_, BlockState p_151532_) {
 -   }
 -
--   public boolean m_46597_(BlockPos p_46598_, BlockState p_46599_) {
--      return this.m_7731_(p_46598_, p_46599_, 3);
+-   public boolean setBlockAndUpdate(BlockPos p_46598_, BlockState p_46599_) {
+-      return this.setBlock(p_46598_, p_46599_, 3);
 -   }
 -
--   public abstract void m_7260_(BlockPos p_46612_, BlockState p_46613_, BlockState p_46614_, int p_46615_);
+-   public abstract void sendBlockUpdated(BlockPos p_46612_, BlockState p_46613_, BlockState p_46614_, int p_46615_);
 -
--   public void m_6550_(BlockPos p_46678_, BlockState p_46679_, BlockState p_46680_) {
+-   public void setBlocksDirty(BlockPos p_46678_, BlockState p_46679_, BlockState p_46680_) {
 -   }
 -
--   public void m_46672_(BlockPos p_46673_, Block p_46674_) {
--      this.m_46586_(p_46673_.m_142125_(), p_46674_, p_46673_);
--      this.m_46586_(p_46673_.m_142126_(), p_46674_, p_46673_);
--      this.m_46586_(p_46673_.m_7495_(), p_46674_, p_46673_);
--      this.m_46586_(p_46673_.m_7494_(), p_46674_, p_46673_);
--      this.m_46586_(p_46673_.m_142127_(), p_46674_, p_46673_);
--      this.m_46586_(p_46673_.m_142128_(), p_46674_, p_46673_);
+-   public void updateNeighborsAt(BlockPos p_46673_, Block p_46674_) {
+-      this.neighborChanged(p_46673_.west(), p_46674_, p_46673_);
+-      this.neighborChanged(p_46673_.east(), p_46674_, p_46673_);
+-      this.neighborChanged(p_46673_.below(), p_46674_, p_46673_);
+-      this.neighborChanged(p_46673_.above(), p_46674_, p_46673_);
+-      this.neighborChanged(p_46673_.north(), p_46674_, p_46673_);
+-      this.neighborChanged(p_46673_.south(), p_46674_, p_46673_);
 -   }
 -
--   public void m_46590_(BlockPos p_46591_, Block p_46592_, Direction p_46593_) {
+-   public void updateNeighborsAtExceptFromFacing(BlockPos p_46591_, Block p_46592_, Direction p_46593_) {
 -      if (p_46593_ != Direction.WEST) {
--         this.m_46586_(p_46591_.m_142125_(), p_46592_, p_46591_);
+-         this.neighborChanged(p_46591_.west(), p_46592_, p_46591_);
 -      }
 -
 -      if (p_46593_ != Direction.EAST) {
--         this.m_46586_(p_46591_.m_142126_(), p_46592_, p_46591_);
+-         this.neighborChanged(p_46591_.east(), p_46592_, p_46591_);
 -      }
 -
 -      if (p_46593_ != Direction.DOWN) {
--         this.m_46586_(p_46591_.m_7495_(), p_46592_, p_46591_);
+-         this.neighborChanged(p_46591_.below(), p_46592_, p_46591_);
 -      }
 -
 -      if (p_46593_ != Direction.UP) {
--         this.m_46586_(p_46591_.m_7494_(), p_46592_, p_46591_);
+-         this.neighborChanged(p_46591_.above(), p_46592_, p_46591_);
 -      }
 -
 -      if (p_46593_ != Direction.NORTH) {
--         this.m_46586_(p_46591_.m_142127_(), p_46592_, p_46591_);
+-         this.neighborChanged(p_46591_.north(), p_46592_, p_46591_);
 -      }
 -
 -      if (p_46593_ != Direction.SOUTH) {
--         this.m_46586_(p_46591_.m_142128_(), p_46592_, p_46591_);
+-         this.neighborChanged(p_46591_.south(), p_46592_, p_46591_);
 -      }
 -
 -   }
 -
--   public void m_46586_(BlockPos p_46587_, Block p_46588_, BlockPos p_46589_) {
--      if (!this.f_46443_) {
--         BlockState blockstate = this.m_8055_(p_46587_);
+-   public void neighborChanged(BlockPos p_46587_, Block p_46588_, BlockPos p_46589_) {
+-      if (!this.isClientSide) {
+-         BlockState blockstate = this.getBlockState(p_46587_);
 -
 -         try {
--            blockstate.m_60690_(this, p_46587_, p_46588_, p_46589_, false);
+-            blockstate.neighborChanged(this, p_46587_, p_46588_, p_46589_, false);
 -         } catch (Throwable throwable) {
--            CrashReport crashreport = CrashReport.m_127521_(throwable, "Exception while updating neighbours");
--            CrashReportCategory crashreportcategory = crashreport.m_127514_("Block being updated");
--            crashreportcategory.m_128165_("Source block type", () -> {
+-            CrashReport crashreport = CrashReport.forThrowable(throwable, "Exception while updating neighbours");
+-            CrashReportCategory crashreportcategory = crashreport.addCategory("Block being updated");
+-            crashreportcategory.setDetail("Source block type", () -> {
 -               try {
--                  return String.format("ID #%s (%s // %s)", Registry.f_122824_.m_7981_(p_46588_), p_46588_.m_7705_(), p_46588_.getClass().getCanonicalName());
+-                  return String.format("ID #%s (%s // %s)", Registry.BLOCK.getKey(p_46588_), p_46588_.getDescriptionId(), p_46588_.getClass().getCanonicalName());
 -               } catch (Throwable throwable1) {
--                  return "ID #" + Registry.f_122824_.m_7981_(p_46588_);
+-                  return "ID #" + Registry.BLOCK.getKey(p_46588_);
 -               }
 -            });
--            CrashReportCategory.m_178950_(crashreportcategory, this, p_46587_, blockstate);
+-            CrashReportCategory.populateBlockDetails(crashreportcategory, this, p_46587_, blockstate);
 -            throw new ReportedException(crashreport);
 -         }
 -      }
 -   }
 -
--   public int m_6924_(Heightmap.Types p_46571_, int p_46572_, int p_46573_) {
+-   public int getHeight(Heightmap.Types p_46571_, int p_46572_, int p_46573_) {
 -      int i;
 -      if (p_46572_ >= -30000000 && p_46573_ >= -30000000 && p_46572_ < 30000000 && p_46573_ < 30000000) {
--         if (this.m_7232_(SectionPos.m_123171_(p_46572_), SectionPos.m_123171_(p_46573_))) {
--            i = this.m_6325_(SectionPos.m_123171_(p_46572_), SectionPos.m_123171_(p_46573_)).m_5885_(p_46571_, p_46572_ & 15, p_46573_ & 15) + 1;
+-         if (this.hasChunk(SectionPos.blockToSectionCoord(p_46572_), SectionPos.blockToSectionCoord(p_46573_))) {
+-            i = this.getChunk(SectionPos.blockToSectionCoord(p_46572_), SectionPos.blockToSectionCoord(p_46573_)).getHeight(p_46571_, p_46572_ & 15, p_46573_ & 15) + 1;
 -         } else {
--            i = this.m_141937_();
+-            i = this.getMinBuildHeight();
 -         }
 -      } else {
--         i = this.m_5736_() + 1;
+-         i = this.getSeaLevel() + 1;
 -      }
 -
 -      return i;
 -   }
 -
--   public LevelLightEngine m_5518_() {
--      return this.m_7726_().m_7827_();
+-   public LevelLightEngine getLightEngine() {
+-      return this.getChunkSource().getLightEngine();
 -   }
 -
--   public BlockState m_8055_(BlockPos p_46732_) {
--      if (this.m_151570_(p_46732_)) {
--         return Blocks.f_50626_.m_49966_();
+-   public BlockState getBlockState(BlockPos p_46732_) {
+-      if (this.isOutsideBuildHeight(p_46732_)) {
+-         return Blocks.VOID_AIR.defaultBlockState();
 -      } else {
--         LevelChunk levelchunk = this.m_6325_(SectionPos.m_123171_(p_46732_.m_123341_()), SectionPos.m_123171_(p_46732_.m_123343_()));
--         return levelchunk.m_8055_(p_46732_);
+-         LevelChunk levelchunk = this.getChunk(SectionPos.blockToSectionCoord(p_46732_.getX()), SectionPos.blockToSectionCoord(p_46732_.getZ()));
+-         return levelchunk.getBlockState(p_46732_);
 -      }
 -   }
 -
--   public FluidState m_6425_(BlockPos p_46671_) {
--      if (this.m_151570_(p_46671_)) {
--         return Fluids.f_76191_.m_76145_();
+-   public FluidState getFluidState(BlockPos p_46671_) {
+-      if (this.isOutsideBuildHeight(p_46671_)) {
+-         return Fluids.EMPTY.defaultFluidState();
 -      } else {
--         LevelChunk levelchunk = this.m_46745_(p_46671_);
--         return levelchunk.m_6425_(p_46671_);
+-         LevelChunk levelchunk = this.getChunkAt(p_46671_);
+-         return levelchunk.getFluidState(p_46671_);
 -      }
 -   }
 -
--   public boolean m_46461_() {
--      return !this.m_6042_().m_63967_() && this.f_46425_ < 4;
+-   public boolean isDay() {
+-      return !this.dimensionType().hasFixedTime() && this.skyDarken < 4;
 -   }
 -
--   public boolean m_46462_() {
--      return !this.m_6042_().m_63967_() && !this.m_46461_();
+-   public boolean isNight() {
+-      return !this.dimensionType().hasFixedTime() && !this.isDay();
 -   }
 -
--   public void m_5594_(@Nullable Player p_46560_, BlockPos p_46561_, SoundEvent p_46562_, SoundSource p_46563_, float p_46564_, float p_46565_) {
--      this.m_6263_(p_46560_, (double)p_46561_.m_123341_() + 0.5D, (double)p_46561_.m_123342_() + 0.5D, (double)p_46561_.m_123343_() + 0.5D, p_46562_, p_46563_, p_46564_, p_46565_);
+-   public void playSound(@Nullable Player p_46560_, BlockPos p_46561_, SoundEvent p_46562_, SoundSource p_46563_, float p_46564_, float p_46565_) {
+-      this.playSound(p_46560_, (double)p_46561_.getX() + 0.5D, (double)p_46561_.getY() + 0.5D, (double)p_46561_.getZ() + 0.5D, p_46562_, p_46563_, p_46564_, p_46565_);
 -   }
 -
--   public abstract void m_6263_(@Nullable Player p_46543_, double p_46544_, double p_46545_, double p_46546_, SoundEvent p_46547_, SoundSource p_46548_, float p_46549_, float p_46550_);
+-   public abstract void playSound(@Nullable Player p_46543_, double p_46544_, double p_46545_, double p_46546_, SoundEvent p_46547_, SoundSource p_46548_, float p_46549_, float p_46550_);
 -
--   public abstract void m_6269_(@Nullable Player p_46551_, Entity p_46552_, SoundEvent p_46553_, SoundSource p_46554_, float p_46555_, float p_46556_);
+-   public abstract void playSound(@Nullable Player p_46551_, Entity p_46552_, SoundEvent p_46553_, SoundSource p_46554_, float p_46555_, float p_46556_);
 -
--   public void m_7785_(double p_46482_, double p_46483_, double p_46484_, SoundEvent p_46485_, SoundSource p_46486_, float p_46487_, float p_46488_, boolean p_46489_) {
+-   public void playLocalSound(double p_46482_, double p_46483_, double p_46484_, SoundEvent p_46485_, SoundSource p_46486_, float p_46487_, float p_46488_, boolean p_46489_) {
 -   }
 -
--   public void m_7106_(ParticleOptions p_46631_, double p_46632_, double p_46633_, double p_46634_, double p_46635_, double p_46636_, double p_46637_) {
+-   public void addParticle(ParticleOptions p_46631_, double p_46632_, double p_46633_, double p_46634_, double p_46635_, double p_46636_, double p_46637_) {
 -   }
 -
--   public void m_6493_(ParticleOptions p_46638_, boolean p_46639_, double p_46640_, double p_46641_, double p_46642_, double p_46643_, double p_46644_, double p_46645_) {
+-   public void addParticle(ParticleOptions p_46638_, boolean p_46639_, double p_46640_, double p_46641_, double p_46642_, double p_46643_, double p_46644_, double p_46645_) {
 -   }
 -
--   public void m_7107_(ParticleOptions p_46684_, double p_46685_, double p_46686_, double p_46687_, double p_46688_, double p_46689_, double p_46690_) {
+-   public void addAlwaysVisibleParticle(ParticleOptions p_46684_, double p_46685_, double p_46686_, double p_46687_, double p_46688_, double p_46689_, double p_46690_) {
 -   }
 -
--   public void m_6485_(ParticleOptions p_46691_, boolean p_46692_, double p_46693_, double p_46694_, double p_46695_, double p_46696_, double p_46697_, double p_46698_) {
+-   public void addAlwaysVisibleParticle(ParticleOptions p_46691_, boolean p_46692_, double p_46693_, double p_46694_, double p_46695_, double p_46696_, double p_46697_, double p_46698_) {
 -   }
 -
--   public float m_46490_(float p_46491_) {
--      float f = this.m_46942_(p_46491_);
+-   public float getSunAngle(float p_46491_) {
+-      float f = this.getTimeOfDay(p_46491_);
 -      return f * ((float)Math.PI * 2F);
 -   }
 -
--   public void m_151525_(TickingBlockEntity p_151526_) {
--      (this.f_151504_ ? this.f_151503_ : this.f_151512_).add(p_151526_);
+-   public void addBlockEntityTicker(TickingBlockEntity p_151526_) {
+-      (this.tickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add(p_151526_);
 -   }
 -
--   protected void m_46463_() {
--      ProfilerFiller profilerfiller = this.m_46473_();
--      profilerfiller.m_6180_("blockEntities");
--      this.f_151504_ = true;
--      if (!this.f_151503_.isEmpty()) {
--         this.f_151512_.addAll(this.f_151503_);
--         this.f_151503_.clear();
+-   protected void tickBlockEntities() {
+-      ProfilerFiller profilerfiller = this.getProfiler();
+-      profilerfiller.push("blockEntities");
+-      this.tickingBlockEntities = true;
+-      if (!this.pendingBlockEntityTickers.isEmpty()) {
+-         this.blockEntityTickers.addAll(this.pendingBlockEntityTickers);
+-         this.pendingBlockEntityTickers.clear();
 -      }
 -
--      Iterator<TickingBlockEntity> iterator = this.f_151512_.iterator();
+-      Iterator<TickingBlockEntity> iterator = this.blockEntityTickers.iterator();
 -
 -      while(iterator.hasNext()) {
 -         TickingBlockEntity tickingblockentity = iterator.next();
--         if (tickingblockentity.m_142220_()) {
+-         if (tickingblockentity.isRemoved()) {
 -            iterator.remove();
--         } else if (this.m_183438_(ChunkPos.m_151388_(tickingblockentity.m_142689_()))) {
--            tickingblockentity.m_142224_();
+-         } else if (this.shouldTickBlocksAt(ChunkPos.asLong(tickingblockentity.getPos()))) {
+-            tickingblockentity.tick();
 -         }
 -      }
 -
--      this.f_151504_ = false;
--      profilerfiller.m_7238_();
+-      this.tickingBlockEntities = false;
+-      profilerfiller.pop();
 -   }
 -
--   public <T extends Entity> void m_46653_(Consumer<T> p_46654_, T p_46655_) {
+-   public <T extends Entity> void guardEntityTick(Consumer<T> p_46654_, T p_46655_) {
 -      try {
 -         p_46654_.accept(p_46655_);
 -      } catch (Throwable throwable) {
--         CrashReport crashreport = CrashReport.m_127521_(throwable, "Ticking entity");
--         CrashReportCategory crashreportcategory = crashreport.m_127514_("Entity being ticked");
--         p_46655_.m_7976_(crashreportcategory);
+-         CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking entity");
+-         CrashReportCategory crashreportcategory = crashreport.addCategory("Entity being ticked");
+-         p_46655_.fillCrashReportCategory(crashreportcategory);
 -         throw new ReportedException(crashreport);
 -      }
 -   }
 -
--   public boolean m_183599_(Entity p_186458_) {
+-   public boolean shouldTickDeath(Entity p_186458_) {
 -      return true;
 -   }
 -
--   public boolean m_183438_(long p_186456_) {
+-   public boolean shouldTickBlocksAt(long p_186456_) {
 -      return true;
 -   }
 -
--   public Explosion m_46511_(@Nullable Entity p_46512_, double p_46513_, double p_46514_, double p_46515_, float p_46516_, Explosion.BlockInteraction p_46517_) {
--      return this.m_7703_(p_46512_, (DamageSource)null, (ExplosionDamageCalculator)null, p_46513_, p_46514_, p_46515_, p_46516_, false, p_46517_);
+-   public Explosion explode(@Nullable Entity p_46512_, double p_46513_, double p_46514_, double p_46515_, float p_46516_, Explosion.BlockInteraction p_46517_) {
+-      return this.explode(p_46512_, (DamageSource)null, (ExplosionDamageCalculator)null, p_46513_, p_46514_, p_46515_, p_46516_, false, p_46517_);
 -   }
 -
--   public Explosion m_46518_(@Nullable Entity p_46519_, double p_46520_, double p_46521_, double p_46522_, float p_46523_, boolean p_46524_, Explosion.BlockInteraction p_46525_) {
--      return this.m_7703_(p_46519_, (DamageSource)null, (ExplosionDamageCalculator)null, p_46520_, p_46521_, p_46522_, p_46523_, p_46524_, p_46525_);
+-   public Explosion explode(@Nullable Entity p_46519_, double p_46520_, double p_46521_, double p_46522_, float p_46523_, boolean p_46524_, Explosion.BlockInteraction p_46525_) {
+-      return this.explode(p_46519_, (DamageSource)null, (ExplosionDamageCalculator)null, p_46520_, p_46521_, p_46522_, p_46523_, p_46524_, p_46525_);
 -   }
 -
--   public Explosion m_7703_(@Nullable Entity p_46526_, @Nullable DamageSource p_46527_, @Nullable ExplosionDamageCalculator p_46528_, double p_46529_, double p_46530_, double p_46531_, float p_46532_, boolean p_46533_, Explosion.BlockInteraction p_46534_) {
+-   public Explosion explode(@Nullable Entity p_46526_, @Nullable DamageSource p_46527_, @Nullable ExplosionDamageCalculator p_46528_, double p_46529_, double p_46530_, double p_46531_, float p_46532_, boolean p_46533_, Explosion.BlockInteraction p_46534_) {
 -      Explosion explosion = new Explosion(this, p_46526_, p_46527_, p_46528_, p_46529_, p_46530_, p_46531_, p_46532_, p_46533_, p_46534_);
--      explosion.m_46061_();
--      explosion.m_46075_(true);
+-      explosion.explode();
+-      explosion.finalizeExplosion(true);
 -      return explosion;
 -   }
 -
--   public abstract String m_46464_();
+-   public abstract String gatherChunkSourceStats();
 -
 -   @Nullable
--   public BlockEntity m_7702_(BlockPos p_46716_) {
--      if (this.m_151570_(p_46716_)) {
+-   public BlockEntity getBlockEntity(BlockPos p_46716_) {
+-      if (this.isOutsideBuildHeight(p_46716_)) {
 -         return null;
 -      } else {
--         return !this.f_46443_ && Thread.currentThread() != this.f_46423_ ? null : this.m_46745_(p_46716_).m_5685_(p_46716_, LevelChunk.EntityCreationType.IMMEDIATE);
+-         return !this.isClientSide && Thread.currentThread() != this.thread ? null : this.getChunkAt(p_46716_).getBlockEntity(p_46716_, LevelChunk.EntityCreationType.IMMEDIATE);
 -      }
 -   }
 -
--   public void m_151523_(BlockEntity p_151524_) {
--      BlockPos blockpos = p_151524_.m_58899_();
--      if (!this.m_151570_(blockpos)) {
--         this.m_46745_(blockpos).m_142170_(p_151524_);
+-   public void setBlockEntity(BlockEntity p_151524_) {
+-      BlockPos blockpos = p_151524_.getBlockPos();
+-      if (!this.isOutsideBuildHeight(blockpos)) {
+-         this.getChunkAt(blockpos).addAndRegisterBlockEntity(p_151524_);
 -      }
 -   }
 -
--   public void m_46747_(BlockPos p_46748_) {
--      if (!this.m_151570_(p_46748_)) {
--         this.m_46745_(p_46748_).m_8114_(p_46748_);
+-   public void removeBlockEntity(BlockPos p_46748_) {
+-      if (!this.isOutsideBuildHeight(p_46748_)) {
+-         this.getChunkAt(p_46748_).removeBlockEntity(p_46748_);
 -      }
 -   }
 -
--   public boolean m_46749_(BlockPos p_46750_) {
--      return this.m_151570_(p_46750_) ? false : this.m_7726_().m_5563_(SectionPos.m_123171_(p_46750_.m_123341_()), SectionPos.m_123171_(p_46750_.m_123343_()));
+-   public boolean isLoaded(BlockPos p_46750_) {
+-      return this.isOutsideBuildHeight(p_46750_) ? false : this.getChunkSource().hasChunk(SectionPos.blockToSectionCoord(p_46750_.getX()), SectionPos.blockToSectionCoord(p_46750_.getZ()));
 -   }
 -
--   public boolean m_46578_(BlockPos p_46579_, Entity p_46580_, Direction p_46581_) {
--      if (this.m_151570_(p_46579_)) {
+-   public boolean loadedAndEntityCanStandOnFace(BlockPos p_46579_, Entity p_46580_, Direction p_46581_) {
+-      if (this.isOutsideBuildHeight(p_46579_)) {
 -         return false;
 -      } else {
--         ChunkAccess chunkaccess = this.m_6522_(SectionPos.m_123171_(p_46579_.m_123341_()), SectionPos.m_123171_(p_46579_.m_123343_()), ChunkStatus.f_62326_, false);
--         return chunkaccess == null ? false : chunkaccess.m_8055_(p_46579_).m_60638_(this, p_46579_, p_46580_, p_46581_);
+-         ChunkAccess chunkaccess = this.getChunk(SectionPos.blockToSectionCoord(p_46579_.getX()), SectionPos.blockToSectionCoord(p_46579_.getZ()), ChunkStatus.FULL, false);
+-         return chunkaccess == null ? false : chunkaccess.getBlockState(p_46579_).entityCanStandOnFace(this, p_46579_, p_46580_, p_46581_);
 -      }
 -   }
 -
--   public boolean m_46575_(BlockPos p_46576_, Entity p_46577_) {
--      return this.m_46578_(p_46576_, p_46577_, Direction.UP);
+-   public boolean loadedAndEntityCanStandOn(BlockPos p_46576_, Entity p_46577_) {
+-      return this.loadedAndEntityCanStandOnFace(p_46576_, p_46577_, Direction.UP);
 -   }
 -
--   public void m_46465_() {
--      double d0 = 1.0D - (double)(this.m_46722_(1.0F) * 5.0F) / 16.0D;
--      double d1 = 1.0D - (double)(this.m_46661_(1.0F) * 5.0F) / 16.0D;
--      double d2 = 0.5D + 2.0D * Mth.m_14008_((double)Mth.m_14089_(this.m_46942_(1.0F) * ((float)Math.PI * 2F)), -0.25D, 0.25D);
--      this.f_46425_ = (int)((1.0D - d2 * d0 * d1) * 11.0D);
+-   public void updateSkyBrightness() {
+-      double d0 = 1.0D - (double)(this.getRainLevel(1.0F) * 5.0F) / 16.0D;
+-      double d1 = 1.0D - (double)(this.getThunderLevel(1.0F) * 5.0F) / 16.0D;
+-      double d2 = 0.5D + 2.0D * Mth.clamp((double)Mth.cos(this.getTimeOfDay(1.0F) * ((float)Math.PI * 2F)), -0.25D, 0.25D);
+-      this.skyDarken = (int)((1.0D - d2 * d0 * d1) * 11.0D);
 -   }
 -
--   public void m_46703_(boolean p_46704_, boolean p_46705_) {
--      this.m_7726_().m_6707_(p_46704_, p_46705_);
+-   public void setSpawnSettings(boolean p_46704_, boolean p_46705_) {
+-      this.getChunkSource().setSpawnSettings(p_46704_, p_46705_);
 -   }
 -
--   protected void m_46466_() {
--      if (this.f_46442_.m_6533_()) {
--         this.f_46438_ = 1.0F;
--         if (this.f_46442_.m_6534_()) {
--            this.f_46440_ = 1.0F;
+-   protected void prepareWeather() {
+-      if (this.levelData.isRaining()) {
+-         this.rainLevel = 1.0F;
+-         if (this.levelData.isThundering()) {
+-            this.thunderLevel = 1.0F;
 -         }
 -      }
 -
 -   }
 -
 -   public void close() throws IOException {
--      this.m_7726_().close();
+-      this.getChunkSource().close();
 -   }
 -
 -   @Nullable
--   public BlockGetter m_7925_(int p_46711_, int p_46712_) {
--      return this.m_6522_(p_46711_, p_46712_, ChunkStatus.f_62326_, false);
+-   public BlockGetter getChunkForCollisions(int p_46711_, int p_46712_) {
+-      return this.getChunk(p_46711_, p_46712_, ChunkStatus.FULL, false);
 -   }
 -
--   public List<Entity> m_6249_(@Nullable Entity p_46536_, AABB p_46537_, Predicate<? super Entity> p_46538_) {
--      this.m_46473_().m_6174_("getEntities");
+-   public List<Entity> getEntities(@Nullable Entity p_46536_, AABB p_46537_, Predicate<? super Entity> p_46538_) {
+-      this.getProfiler().incrementCounter("getEntities");
 -      List<Entity> list = Lists.newArrayList();
--      this.m_142646_().m_142232_(p_46537_, (p_151522_) -> {
+-      this.getEntities().get(p_46537_, (p_151522_) -> {
 -         if (p_151522_ != p_46536_ && p_46538_.test(p_151522_)) {
 -            list.add(p_151522_);
 -         }
 -
 -         if (p_151522_ instanceof EnderDragon) {
--            for(EnderDragonPart enderdragonpart : ((EnderDragon)p_151522_).m_31156_()) {
+-            for(EnderDragonPart enderdragonpart : ((EnderDragon)p_151522_).getSubEntities()) {
 -               if (p_151522_ != p_46536_ && p_46538_.test(enderdragonpart)) {
 -                  list.add(enderdragonpart);
 -               }
@@ -730,10 +730,10 @@
 -      return list;
 -   }
 -
--   public <T extends Entity> List<T> m_142425_(EntityTypeTest<Entity, T> p_151528_, AABB p_151529_, Predicate<? super T> p_151530_) {
--      this.m_46473_().m_6174_("getEntities");
+-   public <T extends Entity> List<T> getEntities(EntityTypeTest<Entity, T> p_151528_, AABB p_151529_, Predicate<? super T> p_151530_) {
+-      this.getProfiler().incrementCounter("getEntities");
 -      List<T> list = Lists.newArrayList();
--      this.m_142646_().m_142137_(p_151528_, p_151529_, (p_151539_) -> {
+-      this.getEntities().get(p_151528_, p_151529_, (p_151539_) -> {
 -         if (p_151530_.test(p_151539_)) {
 -            list.add(p_151539_);
 -         }
@@ -741,8 +741,8 @@
 -         if (p_151539_ instanceof EnderDragon) {
 -            EnderDragon enderdragon = (EnderDragon)p_151539_;
 -
--            for(EnderDragonPart enderdragonpart : enderdragon.m_31156_()) {
--               T t = p_151528_.m_141992_(enderdragonpart);
+-            for(EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
+-               T t = p_151528_.tryCast(enderdragonpart);
 -               if (t != null && p_151530_.test(t)) {
 -                  list.add(t);
 -               }
@@ -754,59 +754,59 @@
 -   }
 -
 -   @Nullable
--   public abstract Entity m_6815_(int p_46492_);
+-   public abstract Entity getEntity(int p_46492_);
 -
--   public void m_151543_(BlockPos p_151544_) {
--      if (this.m_46805_(p_151544_)) {
--         this.m_46745_(p_151544_).m_8092_(true);
+-   public void blockEntityChanged(BlockPos p_151544_) {
+-      if (this.hasChunkAt(p_151544_)) {
+-         this.getChunkAt(p_151544_).setUnsaved(true);
 -      }
 -
 -   }
 -
--   public int m_5736_() {
+-   public int getSeaLevel() {
 -      return 63;
 -   }
 -
--   public int m_46751_(BlockPos p_46752_) {
+-   public int getDirectSignalTo(BlockPos p_46752_) {
 -      int i = 0;
--      i = Math.max(i, this.m_46852_(p_46752_.m_7495_(), Direction.DOWN));
+-      i = Math.max(i, this.getDirectSignal(p_46752_.below(), Direction.DOWN));
 -      if (i >= 15) {
 -         return i;
 -      } else {
--         i = Math.max(i, this.m_46852_(p_46752_.m_7494_(), Direction.UP));
+-         i = Math.max(i, this.getDirectSignal(p_46752_.above(), Direction.UP));
 -         if (i >= 15) {
 +        }
 +        // CraftBukkit end
-+        if (this.m_151570_(p_46605_)) {
++        if (this.isOutsideBuildHeight(p_46605_)) {
 +            return false;
-+        } else if (!this.f_46443_ && this.m_46659_()) {
++        } else if (!this.isClientSide && this.isDebug()) {
 +            return false;
 +        } else {
-+            LevelChunk levelchunk = this.m_46745_(p_46605_);
-+            Block block = p_46606_.m_60734_();
++            LevelChunk levelchunk = this.getChunkAt(p_46605_);
++            Block block = p_46606_.getBlock();
 +
-+            p_46605_ = p_46605_.m_7949_(); // Forge - prevent mutable BlockPos leaks
++            p_46605_ = p_46605_.immutable(); // Forge - prevent mutable BlockPos leaks
 +            net.minecraftforge.common.util.BlockSnapshot blockSnapshot = null;
-+            if (this.captureBlockSnapshots && !this.f_46443_) {
-+                blockSnapshot = net.minecraftforge.common.util.BlockSnapshot.create(this.f_46421_, this, p_46605_, p_46607_);
++            if (this.captureBlockSnapshots && !this.isClientSide) {
++                blockSnapshot = net.minecraftforge.common.util.BlockSnapshot.create(this.dimension, this, p_46605_, p_46607_);
 +                this.capturedBlockSnapshots.add(blockSnapshot);
 +            }
 +
-+            BlockState old = m_8055_(p_46605_);
++            BlockState old = getBlockState(p_46605_);
 +            int oldLight = old.getLightEmission(this, p_46605_);
-+            int oldOpacity = old.m_60739_(this, p_46605_);
++            int oldOpacity = old.getLightBlock(this, p_46605_);
 +
 +            // CraftBukkit start - capture blockstates
 +            boolean captured = false;
 +            if (this.captureBlockStates && !this.capturedBlockStates.containsKey(p_46605_)) {
 +                org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState blockstate = org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState.getBlockState(this, p_46605_, p_46607_);
-+                this.capturedBlockStates.put(p_46605_.m_7949_(), blockstate);
++                this.capturedBlockStates.put(p_46605_.immutable(), blockstate);
 +                captured = true;
 +            }
 +            // CraftBukkit end
 +            if ((p_46607_ & 1024) == 0) //Magma - doplace call
 +                levelchunk.doPlace();
-+            BlockState blockstate = levelchunk.m_6978_(p_46605_, p_46606_, (p_46607_ & 64) != 0);
++            BlockState blockstate = levelchunk.setBlockState(p_46605_, p_46606_, (p_46607_ & 64) != 0);
 +
 +            if (blockstate == null) {
 +                // CraftBukkit start - remove blockstate if failed (or the same)
@@ -817,11 +817,11 @@
 +                if (blockSnapshot != null) this.capturedBlockSnapshots.remove(blockSnapshot);
 +                return false;
 +            } else {
-+                BlockState blockstate1 = this.m_8055_( p_46605_ );
-+                if ((p_46607_ & 128) == 0 && blockstate1 != blockstate && (blockstate1.m_60739_(this, p_46605_) != oldOpacity || blockstate1.getLightEmission(this, p_46605_) != oldLight || blockstate1.m_60787_() || blockstate.m_60787_())) {
-+                    this.m_46473_().m_6180_("queueCheckLight");
-+                    this.m_7726_().m_7827_().m_142202_(p_46605_);
-+                    this.m_46473_().m_7238_();
++                BlockState blockstate1 = this.getBlockState( p_46605_ );
++                if ((p_46607_ & 128) == 0 && blockstate1 != blockstate && (blockstate1.getLightBlock(this, p_46605_) != oldOpacity || blockstate1.getLightEmission(this, p_46605_) != oldLight || blockstate1.useShapeForLightOcclusion() || blockstate.useShapeForLightOcclusion())) {
++                    this.getProfiler().push("queueCheckLight");
++                    this.getChunkSource().getLightEngine().checkBlock(p_46605_);
++                    this.getProfiler().pop();
 +                }
 +
 +                if (blockSnapshot == null) { // Don't notify clients or update physics while capturing blockstates
@@ -841,34 +841,34 @@
 +
 +    // Split off from original setBlockState(BlockPos, BlockState, int, int) method in order to directly send client and physic updates
 +    public void markAndNotifyBlock(BlockPos p_46605_, @Nullable LevelChunk levelchunk, BlockState blockstate, BlockState p_46606_, int p_46607_, int p_46608_) {
-+        Block block = p_46606_.m_60734_();
-+        BlockState blockstate1 = m_8055_( p_46605_ );
++        Block block = p_46606_.getBlock();
++        BlockState blockstate1 = getBlockState( p_46605_ );
 +        {
 +            {
 +                if (blockstate1 == p_46606_) {
 +                    if (blockstate != blockstate1) {
-+                        this.m_6550_( p_46605_, blockstate, blockstate1 );
++                        this.setBlocksDirty( p_46605_, blockstate, blockstate1 );
 +                    }
 +
-+                    if ((p_46607_ & 2) != 0 && (!this.f_46443_ || (p_46607_ & 4) == 0) && (this.f_46443_ || levelchunk.m_6708_() != null && levelchunk.m_6708_().m_140114_( ChunkHolder.FullChunkStatus.TICKING ))) {
-+                        this.m_7260_( p_46605_, blockstate, p_46606_, p_46607_ );
++                    if ((p_46607_ & 2) != 0 && (!this.isClientSide || (p_46607_ & 4) == 0) && (this.isClientSide || levelchunk.getFullStatus() != null && levelchunk.getFullStatus().isOrAfter( ChunkHolder.FullChunkStatus.TICKING ))) {
++                        this.sendBlockUpdated( p_46605_, blockstate, p_46606_, p_46607_ );
 +                    }
 +
 +                    if ((p_46607_ & 1) != 0) {
-+                        this.m_6289_( p_46605_, blockstate.m_60734_() );
-+                        if (!this.f_46443_ && p_46606_.m_60807_()) {
-+                            this.m_46717_( p_46605_, block );
++                        this.blockUpdated( p_46605_, blockstate.getBlock() );
++                        if (!this.isClientSide && p_46606_.hasAnalogOutputSignal()) {
++                            this.updateNeighbourForOutputSignal( p_46605_, block );
 +                        }
 +                    }
 +
 +                    if ((p_46607_ & 16) == 0 && p_46608_ > 0) {
 +                        int i = p_46607_ & -34;
-+                        blockstate.m_60762_( this, p_46605_, i, p_46608_ - 1 );
++                        blockstate.updateIndirectNeighbourShapes( this, p_46605_, i, p_46608_ - 1 );
 +
 +                        // CraftBukkit start
 +                        org.bukkit.craftbukkit.v1_18_R2.CraftWorld world = ((net.minecraft.server.level.ServerLevel) this).getWorld();
 +                        if (world != null) {
-+                            org.bukkit.event.block.BlockPhysicsEvent event = new org.bukkit.event.block.BlockPhysicsEvent( world.getBlockAt( p_46605_.m_123341_(), p_46605_.m_123342_(), p_46605_.m_123343_() ), org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData.fromData( p_46606_ ) );
++                            org.bukkit.event.block.BlockPhysicsEvent event = new org.bukkit.event.block.BlockPhysicsEvent( world.getBlockAt( p_46605_.getX(), p_46605_.getY(), p_46605_.getZ() ), org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData.fromData( p_46606_ ) );
 +                            this.getCraftServer().getPluginManager().callEvent( event );
 +                            if (event.isCancelled()) {
 +                                return;
@@ -876,132 +876,132 @@
 +                        }
 +                        // CraftBukkit end
 +
-+                        p_46606_.m_60705_( this, p_46605_, i, p_46608_ - 1 );
-+                        p_46606_.m_60762_( this, p_46605_, i, p_46608_ - 1 );
++                        p_46606_.updateNeighbourShapes( this, p_46605_, i, p_46608_ - 1 );
++                        p_46606_.updateIndirectNeighbourShapes( this, p_46605_, i, p_46608_ - 1 );
 +                    }
 +
-+                    this.m_6559_( p_46605_, blockstate, blockstate1 );
++                    this.onBlockStateChange( p_46605_, blockstate, blockstate1 );
 +                    p_46606_.onBlockStateChange(this, p_46605_, blockstate);
 +                }
 +            }
 +        }
 +    }
 +
-+    public void m_6559_(BlockPos p_46609_, BlockState p_46610_, BlockState p_46611_) {
++    public void onBlockStateChange(BlockPos p_46609_, BlockState p_46610_, BlockState p_46611_) {
 +    }
 +
-+    public boolean m_7471_(BlockPos p_46623_, boolean p_46624_) {
-+        FluidState fluidstate = this.m_6425_( p_46623_ );
-+        return this.m_7731_( p_46623_, fluidstate.m_76188_(), 3 | (p_46624_ ? 64 : 0) );
++    public boolean removeBlock(BlockPos p_46623_, boolean p_46624_) {
++        FluidState fluidstate = this.getFluidState( p_46623_ );
++        return this.setBlock( p_46623_, fluidstate.createLegacyBlock(), 3 | (p_46624_ ? 64 : 0) );
 +    }
 +
-+    public boolean m_7740_(BlockPos p_46626_, boolean p_46627_, @Nullable Entity p_46628_, int p_46629_) {
-+        BlockState blockstate = this.m_8055_( p_46626_ );
-+        if (blockstate.m_60795_()) {
++    public boolean destroyBlock(BlockPos p_46626_, boolean p_46627_, @Nullable Entity p_46628_, int p_46629_) {
++        BlockState blockstate = this.getBlockState( p_46626_ );
++        if (blockstate.isAir()) {
 +            return false;
 +        } else {
-+            FluidState fluidstate = this.m_6425_( p_46626_ );
-+            if (!(blockstate.m_60734_() instanceof BaseFireBlock)) {
-+                this.m_46796_( 2001, p_46626_, Block.m_49956_( blockstate ) );
++            FluidState fluidstate = this.getFluidState( p_46626_ );
++            if (!(blockstate.getBlock() instanceof BaseFireBlock)) {
++                this.levelEvent( 2001, p_46626_, Block.getId( blockstate ) );
 +            }
 +
 +            if (p_46627_) {
-+                BlockEntity blockentity = blockstate.m_155947_() ? this.m_7702_( p_46626_ ) : null;
-+                Block.m_49881_( blockstate, this, p_46626_, blockentity, p_46628_, ItemStack.f_41583_ );
++                BlockEntity blockentity = blockstate.hasBlockEntity() ? this.getBlockEntity( p_46626_ ) : null;
++                Block.dropResources( blockstate, this, p_46626_, blockentity, p_46628_, ItemStack.EMPTY );
 +            }
 +
-+            boolean flag = this.m_6933_( p_46626_, fluidstate.m_76188_(), 3, p_46629_ );
++            boolean flag = this.setBlock( p_46626_, fluidstate.createLegacyBlock(), 3, p_46629_ );
 +            if (flag) {
-+                this.m_142346_( p_46628_, GameEvent.f_157794_, p_46626_ );
++                this.gameEvent( p_46628_, GameEvent.BLOCK_DESTROY, p_46626_ );
 +            }
 +
 +            return flag;
 +        }
 +    }
 +
-+    public void m_142052_(BlockPos p_151531_, BlockState p_151532_) {
++    public void addDestroyBlockEffect(BlockPos p_151531_, BlockState p_151532_) {
 +    }
 +
-+    public boolean m_46597_(BlockPos p_46598_, BlockState p_46599_) {
-+        return this.m_7731_( p_46598_, p_46599_, 3 );
++    public boolean setBlockAndUpdate(BlockPos p_46598_, BlockState p_46599_) {
++        return this.setBlock( p_46598_, p_46599_, 3 );
 +    }
 +
-+    public abstract void m_7260_(BlockPos p_46612_, BlockState p_46613_, BlockState p_46614_, int p_46615_);
++    public abstract void sendBlockUpdated(BlockPos p_46612_, BlockState p_46613_, BlockState p_46614_, int p_46615_);
 +
-+    public void m_6550_(BlockPos p_46678_, BlockState p_46679_, BlockState p_46680_) {
++    public void setBlocksDirty(BlockPos p_46678_, BlockState p_46679_, BlockState p_46680_) {
 +    }
 +
-+    public void m_46672_(BlockPos p_46673_, Block p_46674_) {
-+        net.minecraftforge.event.ForgeEventFactory.onNeighborNotify( this, p_46673_, this.m_8055_( p_46673_ ), java.util.EnumSet.allOf( Direction.class ), false ).isCanceled();
++    public void updateNeighborsAt(BlockPos p_46673_, Block p_46674_) {
++        net.minecraftforge.event.ForgeEventFactory.onNeighborNotify( this, p_46673_, this.getBlockState( p_46673_ ), java.util.EnumSet.allOf( Direction.class ), false ).isCanceled();
 +        if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues())
 +            return;
-+        this.m_46586_( p_46673_.m_142125_(), p_46674_, p_46673_ );
-+        this.m_46586_( p_46673_.m_142126_(), p_46674_, p_46673_ );
-+        this.m_46586_( p_46673_.m_7495_(), p_46674_, p_46673_ );
-+        this.m_46586_( p_46673_.m_7494_(), p_46674_, p_46673_ );
-+        this.m_46586_( p_46673_.m_142127_(), p_46674_, p_46673_ );
-+        this.m_46586_( p_46673_.m_142128_(), p_46674_, p_46673_ );
++        this.neighborChanged( p_46673_.west(), p_46674_, p_46673_ );
++        this.neighborChanged( p_46673_.east(), p_46674_, p_46673_ );
++        this.neighborChanged( p_46673_.below(), p_46674_, p_46673_ );
++        this.neighborChanged( p_46673_.above(), p_46674_, p_46673_ );
++        this.neighborChanged( p_46673_.north(), p_46674_, p_46673_ );
++        this.neighborChanged( p_46673_.south(), p_46674_, p_46673_ );
 +    }
 +
-+    public void m_46590_(BlockPos p_46591_, Block p_46592_, Direction p_46593_) {
++    public void updateNeighborsAtExceptFromFacing(BlockPos p_46591_, Block p_46592_, Direction p_46593_) {
 +        if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues())
 +            return;
 +
 +        java.util.EnumSet<Direction> directions = java.util.EnumSet.allOf( Direction.class );
 +        directions.remove( p_46593_ );
-+        if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify( this, p_46591_, this.m_8055_( p_46591_ ), directions, false ).isCanceled())
++        if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify( this, p_46591_, this.getBlockState( p_46591_ ), directions, false ).isCanceled())
 +            return;
 +
 +        if (p_46593_ != Direction.WEST) {
-+            this.m_46586_( p_46591_.m_142125_(), p_46592_, p_46591_ );
++            this.neighborChanged( p_46591_.west(), p_46592_, p_46591_ );
 +        }
 +
 +        if (p_46593_ != Direction.EAST) {
-+            this.m_46586_( p_46591_.m_142126_(), p_46592_, p_46591_ );
++            this.neighborChanged( p_46591_.east(), p_46592_, p_46591_ );
 +        }
 +
 +        if (p_46593_ != Direction.DOWN) {
-+            this.m_46586_( p_46591_.m_7495_(), p_46592_, p_46591_ );
++            this.neighborChanged( p_46591_.below(), p_46592_, p_46591_ );
 +        }
 +
 +        if (p_46593_ != Direction.UP) {
-+            this.m_46586_( p_46591_.m_7494_(), p_46592_, p_46591_ );
++            this.neighborChanged( p_46591_.above(), p_46592_, p_46591_ );
 +        }
 +
 +        if (p_46593_ != Direction.NORTH) {
-+            this.m_46586_( p_46591_.m_142127_(), p_46592_, p_46591_ );
++            this.neighborChanged( p_46591_.north(), p_46592_, p_46591_ );
 +        }
 +
 +        if (p_46593_ != Direction.SOUTH) {
-+            this.m_46586_( p_46591_.m_142128_(), p_46592_, p_46591_ );
++            this.neighborChanged( p_46591_.south(), p_46592_, p_46591_ );
 +        }
 +
 +    }
 +
-+    public void m_46586_(BlockPos p_46587_, Block p_46588_, BlockPos p_46589_) {
-+        if (!this.f_46443_) {
-+            BlockState blockstate = this.m_8055_( p_46587_ );
++    public void neighborChanged(BlockPos p_46587_, Block p_46588_, BlockPos p_46589_) {
++        if (!this.isClientSide) {
++            BlockState blockstate = this.getBlockState( p_46587_ );
 +
 +            try {
 +                if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues())
 +                    this.neighborChanged(blockstate, p_46587_, p_46588_, p_46589_, false);
 +                else
-+                    blockstate.m_60690_(this, p_46587_, p_46588_, p_46589_, false);
++                    blockstate.neighborChanged(this, p_46587_, p_46588_, p_46589_, false);
 +                // Spigot Start
 +            } catch (StackOverflowError ex) {
 +                lastPhysicsProblem = new BlockPos(p_46587_);
 +                // Spigot End
 +            } catch (Throwable throwable) {
-+                CrashReport crashreport = CrashReport.m_127521_( throwable, "Exception while updating neighbours" );
-+                CrashReportCategory crashreportcategory = crashreport.m_127514_( "Block being updated" );
-+                crashreportcategory.m_128165_( "Source block type", () -> {
++                CrashReport crashreport = CrashReport.forThrowable( throwable, "Exception while updating neighbours" );
++                CrashReportCategory crashreportcategory = crashreport.addCategory( "Block being updated" );
++                crashreportcategory.setDetail( "Source block type", () -> {
 +                    try {
-+                        return String.format( "ID #%s (%s // %s)", p_46588_.getRegistryName(), p_46588_.m_7705_(), p_46588_.getClass().getCanonicalName() );
++                        return String.format( "ID #%s (%s // %s)", p_46588_.getRegistryName(), p_46588_.getDescriptionId(), p_46588_.getClass().getCanonicalName() );
 +                    } catch (Throwable throwable1) {
 +                        return "ID #" + p_46588_.getRegistryName();
 +                    }
 +                } );
-+                CrashReportCategory.m_178950_( crashreportcategory, this, p_46587_, blockstate );
++                CrashReportCategory.populateBlockDetails( crashreportcategory, this, p_46587_, blockstate );
 +                throw new ReportedException( crashreport );
 +            }
 +        }
@@ -1011,7 +1011,7 @@
 +        // CraftBukkit start
 +        org.bukkit.craftbukkit.v1_18_R2.CraftWorld world = ((net.minecraft.server.level.ServerLevel) this).getWorld();
 +        if (world != null) {
-+            org.bukkit.event.block.BlockPhysicsEvent event = new org.bukkit.event.block.BlockPhysicsEvent( world.getBlockAt( p_220380_.m_123341_(), p_220380_.m_123342_(), p_220380_.m_123343_() ), org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData.fromData( p_220379_ ), world.getBlockAt( p_220382_.m_123341_(), p_220382_.m_123342_(), p_220382_.m_123343_() ) );
++            org.bukkit.event.block.BlockPhysicsEvent event = new org.bukkit.event.block.BlockPhysicsEvent( world.getBlockAt( p_220380_.getX(), p_220380_.getY(), p_220380_.getZ() ), org.bukkit.craftbukkit.v1_18_R2.block.data.CraftBlockData.fromData( p_220379_ ), world.getBlockAt( p_220382_.getX(), p_220382_.getY(), p_220382_.getZ() ) );
 +            this.getCraftServer().getPluginManager().callEvent( event );
 +
 +            if (event.isCancelled()) {
@@ -1025,26 +1025,26 @@
 +        this.neighborUpdater.shapeUpdate(p_220385_, p_220386_, p_220387_, p_220388_, p_220389_, p_220390_);
 +    }
 +
-+    public int m_6924_(Heightmap.Types p_46571_, int p_46572_, int p_46573_) {
++    public int getHeight(Heightmap.Types p_46571_, int p_46572_, int p_46573_) {
 +        int i;
 +        if (p_46572_ >= -30000000 && p_46573_ >= -30000000 && p_46572_ < 30000000 && p_46573_ < 30000000) {
-+            if (this.m_7232_( SectionPos.m_123171_( p_46572_ ), SectionPos.m_123171_( p_46573_ ) )) {
-+                i = this.m_6325_( SectionPos.m_123171_( p_46572_ ), SectionPos.m_123171_( p_46573_ ) ).m_5885_( p_46571_, p_46572_ & 15, p_46573_ & 15 ) + 1;
++            if (this.hasChunk( SectionPos.blockToSectionCoord( p_46572_ ), SectionPos.blockToSectionCoord( p_46573_ ) )) {
++                i = this.getChunk( SectionPos.blockToSectionCoord( p_46572_ ), SectionPos.blockToSectionCoord( p_46573_ ) ).getHeight( p_46571_, p_46572_ & 15, p_46573_ & 15 ) + 1;
 +            } else {
-+                i = this.m_141937_();
++                i = this.getMinBuildHeight();
 +            }
 +        } else {
-+            i = this.m_5736_() + 1;
++            i = this.getSeaLevel() + 1;
 +        }
 +
 +        return i;
 +    }
 +
-+    public LevelLightEngine m_5518_() {
-+        return this.m_7726_().m_7827_();
++    public LevelLightEngine getLightEngine() {
++        return this.getChunkSource().getLightEngine();
 +    }
 +
-+    public BlockState m_8055_(BlockPos p_46732_) {
++    public BlockState getBlockState(BlockPos p_46732_) {
 +        // CraftBukkit start - tree generation
 +        if (captureTreeGeneration) {
 +            org.bukkit.craftbukkit.v1_18_R2.block.CapturedBlockState previous = capturedBlockStates.get( p_46732_ );
@@ -1053,137 +1053,137 @@
 +            }
 +        }
 +        // CraftBukkit end
-+        if (this.m_151570_( p_46732_ )) {
-+            return Blocks.f_50626_.m_49966_();
++        if (this.isOutsideBuildHeight( p_46732_ )) {
++            return Blocks.VOID_AIR.defaultBlockState();
 +        } else {
-+            LevelChunk levelchunk = this.m_6325_( SectionPos.m_123171_( p_46732_.m_123341_() ), SectionPos.m_123171_( p_46732_.m_123343_() ) );
-+            return levelchunk.m_8055_( p_46732_ );
++            LevelChunk levelchunk = this.getChunk( SectionPos.blockToSectionCoord( p_46732_.getX() ), SectionPos.blockToSectionCoord( p_46732_.getZ() ) );
++            return levelchunk.getBlockState( p_46732_ );
 +        }
 +    }
 +
-+    public FluidState m_6425_(BlockPos p_46671_) {
-+        if (this.m_151570_( p_46671_ )) {
-+            return Fluids.f_76191_.m_76145_();
++    public FluidState getFluidState(BlockPos p_46671_) {
++        if (this.isOutsideBuildHeight( p_46671_ )) {
++            return Fluids.EMPTY.defaultFluidState();
 +        } else {
-+            LevelChunk levelchunk = this.m_46745_( p_46671_ );
-+            return levelchunk.m_6425_( p_46671_ );
++            LevelChunk levelchunk = this.getChunkAt( p_46671_ );
++            return levelchunk.getFluidState( p_46671_ );
 +        }
 +    }
 +
-+    public boolean m_46461_() {
-+        return !this.m_6042_().m_63967_() && this.f_46425_ < 4;
++    public boolean isDay() {
++        return !this.dimensionType().hasFixedTime() && this.skyDarken < 4;
 +    }
 +
-+    public boolean m_46462_() {
-+        return !this.m_6042_().m_63967_() && !this.m_46461_();
++    public boolean isNight() {
++        return !this.dimensionType().hasFixedTime() && !this.isDay();
 +    }
 +
-+    public void m_5594_(@Nullable Player p_46560_, BlockPos p_46561_, SoundEvent p_46562_, SoundSource p_46563_, float p_46564_, float p_46565_) {
-+        this.m_6263_( p_46560_, (double) p_46561_.m_123341_() + 0.5D, (double) p_46561_.m_123342_() + 0.5D, (double) p_46561_.m_123343_() + 0.5D, p_46562_, p_46563_, p_46564_, p_46565_ );
++    public void playSound(@Nullable Player p_46560_, BlockPos p_46561_, SoundEvent p_46562_, SoundSource p_46563_, float p_46564_, float p_46565_) {
++        this.playSound( p_46560_, (double) p_46561_.getX() + 0.5D, (double) p_46561_.getY() + 0.5D, (double) p_46561_.getZ() + 0.5D, p_46562_, p_46563_, p_46564_, p_46565_ );
 +    }
 +
-+    public abstract void m_6263_(@Nullable Player p_46543_, double p_46544_, double p_46545_, double p_46546_, SoundEvent p_46547_, SoundSource p_46548_, float p_46549_, float p_46550_);
++    public abstract void playSound(@Nullable Player p_46543_, double p_46544_, double p_46545_, double p_46546_, SoundEvent p_46547_, SoundSource p_46548_, float p_46549_, float p_46550_);
 +
-+    public abstract void m_6269_(@Nullable Player p_46551_, Entity p_46552_, SoundEvent p_46553_, SoundSource p_46554_, float p_46555_, float p_46556_);
++    public abstract void playSound(@Nullable Player p_46551_, Entity p_46552_, SoundEvent p_46553_, SoundSource p_46554_, float p_46555_, float p_46556_);
 +
-+    public void m_7785_(double p_46482_, double p_46483_, double p_46484_, SoundEvent p_46485_, SoundSource p_46486_, float p_46487_, float p_46488_, boolean p_46489_) {
++    public void playLocalSound(double p_46482_, double p_46483_, double p_46484_, SoundEvent p_46485_, SoundSource p_46486_, float p_46487_, float p_46488_, boolean p_46489_) {
 +    }
 +
-+    public void m_7106_(ParticleOptions p_46631_, double p_46632_, double p_46633_, double p_46634_, double p_46635_, double p_46636_, double p_46637_) {
++    public void addParticle(ParticleOptions p_46631_, double p_46632_, double p_46633_, double p_46634_, double p_46635_, double p_46636_, double p_46637_) {
 +    }
 +
-+    public void m_6493_(ParticleOptions p_46638_, boolean p_46639_, double p_46640_, double p_46641_, double p_46642_, double p_46643_, double p_46644_, double p_46645_) {
++    public void addParticle(ParticleOptions p_46638_, boolean p_46639_, double p_46640_, double p_46641_, double p_46642_, double p_46643_, double p_46644_, double p_46645_) {
 +    }
 +
-+    public void m_7107_(ParticleOptions p_46684_, double p_46685_, double p_46686_, double p_46687_, double p_46688_, double p_46689_, double p_46690_) {
++    public void addAlwaysVisibleParticle(ParticleOptions p_46684_, double p_46685_, double p_46686_, double p_46687_, double p_46688_, double p_46689_, double p_46690_) {
 +    }
 +
-+    public void m_6485_(ParticleOptions p_46691_, boolean p_46692_, double p_46693_, double p_46694_, double p_46695_, double p_46696_, double p_46697_, double p_46698_) {
++    public void addAlwaysVisibleParticle(ParticleOptions p_46691_, boolean p_46692_, double p_46693_, double p_46694_, double p_46695_, double p_46696_, double p_46697_, double p_46698_) {
 +    }
 +
-+    public float m_46490_(float p_46491_) {
-+        float f = this.m_46942_( p_46491_ );
++    public float getSunAngle(float p_46491_) {
++        float f = this.getTimeOfDay( p_46491_ );
 +        return f * ((float) Math.PI * 2F);
 +    }
 +
-+    public void m_151525_(TickingBlockEntity p_151526_) {
-+        (this.f_151504_ ? this.f_151503_ : this.f_151512_).add( p_151526_ );
++    public void addBlockEntityTicker(TickingBlockEntity p_151526_) {
++        (this.tickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add( p_151526_ );
 +    }
 +
 +    public void addFreshBlockEntities(java.util.Collection<BlockEntity> beList) {
-+        if (this.f_151504_) {
++        if (this.tickingBlockEntities) {
 +            this.pendingFreshBlockEntities.addAll( beList );
 +        } else {
 +            this.freshBlockEntities.addAll( beList );
 +        }
 +    }
 +
-+    protected void m_46463_() {
-+        ProfilerFiller profilerfiller = this.m_46473_();
-+        profilerfiller.m_6180_( "blockEntities" );
++    protected void tickBlockEntities() {
++        ProfilerFiller profilerfiller = this.getProfiler();
++        profilerfiller.push( "blockEntities" );
 +        timings.tileEntityPending.startTiming(); // Spigot
 +        if (!this.pendingFreshBlockEntities.isEmpty()) {
 +            this.freshBlockEntities.addAll( this.pendingFreshBlockEntities );
 +            this.pendingFreshBlockEntities.clear();
 +        }
 +
-+        this.f_151504_ = true;
++        this.tickingBlockEntities = true;
 +        if (!this.freshBlockEntities.isEmpty()) {
 +            this.freshBlockEntities.forEach( BlockEntity::onLoad );
 +            this.freshBlockEntities.clear();
 +        }
-+        if (!this.f_151503_.isEmpty()) {
-+            this.f_151512_.addAll( this.f_151503_ );
-+            this.f_151503_.clear();
++        if (!this.pendingBlockEntityTickers.isEmpty()) {
++            this.blockEntityTickers.addAll( this.pendingBlockEntityTickers );
++            this.pendingBlockEntityTickers.clear();
 +        }
 +        timings.tileEntityPending.stopTiming(); // Spigot
 +
 +        timings.tileEntityTick.startTiming(); // Spigot
-+        Iterator<TickingBlockEntity> iterator = this.f_151512_.iterator();
++        Iterator<TickingBlockEntity> iterator = this.blockEntityTickers.iterator();
 +
 +        // Spigot start
 +        int tilesThisCycle = 0;
 +        for (tileLimiter.initTick();
-+             tilesThisCycle < f_151512_.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
++             tilesThisCycle < blockEntityTickers.size() && (tilesThisCycle % 10 != 0 || tileLimiter.shouldContinue());
 +             tileTickPosition++, tilesThisCycle++) {
-+            tileTickPosition = (tileTickPosition < f_151512_.size()) ? tileTickPosition : 0;
-+            TickingBlockEntity tickingblockentity = (TickingBlockEntity) this.f_151512_.get(tileTickPosition);
++            tileTickPosition = (tileTickPosition < blockEntityTickers.size()) ? tileTickPosition : 0;
++            TickingBlockEntity tickingblockentity = (TickingBlockEntity) this.blockEntityTickers.get(tileTickPosition);
 +            // Spigot start
 +            if (tickingblockentity == null) {
 +                getCraftServer().getLogger().severe( "Spigot has detected a null entity and has removed it, preventing a crash" );
 +                tilesThisCycle--;
-+                this.f_151512_.remove(tileTickPosition--);
++                this.blockEntityTickers.remove(tileTickPosition--);
 +                continue;
 +            }
 +            // Spigot end
-+            if (tickingblockentity.m_142220_()) {
++            if (tickingblockentity.isRemoved()) {
 +                // Spigot start
 +                tilesThisCycle--;
-+                this.f_151512_.remove(tileTickPosition--);
++                this.blockEntityTickers.remove(tileTickPosition--);
 +                // Spigot end
-+            } else if (this.m_183438_( ChunkPos.m_151388_( tickingblockentity.m_142689_() ) )) {
-+                tickingblockentity.m_142224_();
++            } else if (this.shouldTickBlocksAt( ChunkPos.asLong( tickingblockentity.getPos() ) )) {
++                tickingblockentity.tick();
 +            }
 +        }
 +
 +        timings.tileEntityTick.stopTiming(); // Spigot
-+        this.f_151504_ = false;
-+        co.aikar.timings.TimingHistory.tileEntityTicks += this.f_151512_.size(); // Paper
-+        profilerfiller.m_7238_();
++        this.tickingBlockEntities = false;
++        co.aikar.timings.TimingHistory.tileEntityTicks += this.blockEntityTickers.size(); // Paper
++        profilerfiller.pop();
 +        spigotConfig.currentPrimedTnt = 0; // Spigot
 +    }
 +
-+    public <T extends Entity> void m_46653_(Consumer<T> p_46654_, T p_46655_) {
++    public <T extends Entity> void guardEntityTick(Consumer<T> p_46654_, T p_46655_) {
 +        try {
 +            net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackStart( p_46655_ );
 +            p_46654_.accept( p_46655_ );
 +        } catch (Throwable throwable) {
-+            CrashReport crashreport = CrashReport.m_127521_( throwable, "Ticking entity" );
-+            CrashReportCategory crashreportcategory = crashreport.m_127514_( "Entity being ticked" );
-+            p_46655_.m_7976_( crashreportcategory );
++            CrashReport crashreport = CrashReport.forThrowable( throwable, "Ticking entity" );
++            CrashReportCategory crashreportcategory = crashreport.addCategory( "Entity being ticked" );
++            p_46655_.fillCrashReportCategory( crashreportcategory );
 +            if (net.minecraftforge.common.ForgeConfig.SERVER.removeErroringEntities.get()) {
-+                com.mojang.logging.LogUtils.getLogger().error( "{}", crashreport.m_127526_() );
-+                p_46655_.m_146870_();
++                com.mojang.logging.LogUtils.getLogger().error( "{}", crashreport.getFriendlyReport() );
++                p_46655_.discard();
 +            } else
 +                throw new ReportedException( crashreport );
 +        } finally {
@@ -1191,11 +1191,11 @@
 +        }
 +    }
 +
-+    public boolean m_183599_(Entity p_186458_) {
++    public boolean shouldTickDeath(Entity p_186458_) {
 +        return true;
 +    }
 +
-+    public boolean m_183438_(long p_186456_) {
++    public boolean shouldTickBlocksAt(long p_186456_) {
 +        return true;
 +    }
 +
@@ -1205,29 +1205,29 @@
 +        explosion_createFire = fire;
 +    }
 +
-+    public Explosion m_46511_(@Nullable Entity p_46512_, double p_46513_, double p_46514_, double p_46515_, float p_46516_, Explosion.BlockInteraction p_46517_) {
++    public Explosion explode(@Nullable Entity p_46512_, double p_46513_, double p_46514_, double p_46515_, float p_46516_, Explosion.BlockInteraction p_46517_) {
 +        boolean temp = explosion_createFire;
 +        explosion_createFire = false;
-+        return this.m_7703_( p_46512_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46513_, p_46514_, p_46515_, p_46516_, temp, p_46517_ );
++        return this.explode( p_46512_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46513_, p_46514_, p_46515_, p_46516_, temp, p_46517_ );
 +    }
 +    //Magma end
 +
-+    public Explosion m_46518_(@Nullable Entity p_46519_, double p_46520_, double p_46521_, double p_46522_, float p_46523_, boolean p_46524_, Explosion.BlockInteraction p_46525_) {
-+        return this.m_7703_( p_46519_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46520_, p_46521_, p_46522_, p_46523_, p_46524_, p_46525_ );
++    public Explosion explode(@Nullable Entity p_46519_, double p_46520_, double p_46521_, double p_46522_, float p_46523_, boolean p_46524_, Explosion.BlockInteraction p_46525_) {
++        return this.explode( p_46519_, (DamageSource) null, (ExplosionDamageCalculator) null, p_46520_, p_46521_, p_46522_, p_46523_, p_46524_, p_46525_ );
 +    }
 +
-+    public Explosion m_7703_(@Nullable Entity p_46526_, @Nullable DamageSource p_46527_, @Nullable ExplosionDamageCalculator p_46528_, double p_46529_, double p_46530_, double p_46531_, float p_46532_, boolean p_46533_, Explosion.BlockInteraction p_46534_) {
++    public Explosion explode(@Nullable Entity p_46526_, @Nullable DamageSource p_46527_, @Nullable ExplosionDamageCalculator p_46528_, double p_46529_, double p_46530_, double p_46531_, float p_46532_, boolean p_46533_, Explosion.BlockInteraction p_46534_) {
 +        Explosion explosion = new Explosion( this, p_46526_, p_46527_, p_46528_, p_46529_, p_46530_, p_46531_, p_46532_, p_46533_, p_46534_ );
 +        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart( this, explosion )) return explosion;
-+        explosion.m_46061_();
-+        explosion.m_46075_( true );
++        explosion.explode();
++        explosion.finalizeExplosion( true );
 +        return explosion;
 +    }
 +
-+    public abstract String m_46464_();
++    public abstract String gatherChunkSourceStats();
 +
 +    @Nullable
-+    public BlockEntity m_7702_(BlockPos p_46716_) {
++    public BlockEntity getBlockEntity(BlockPos p_46716_) {
 +        // CraftBukkit start - org.magmafoundation.magma.Magma - doing this is weird validate is never used so why is it here? should we remove it?
 +        return getBlockEntity( p_46716_, true );
 +    }
@@ -1238,91 +1238,91 @@
 +            return capturedTileEntities.get( p_46716_ );
 +        }
 +        // CraftBukkit end
-+        if (this.m_151570_( p_46716_ )) {
++        if (this.isOutsideBuildHeight( p_46716_ )) {
 +            return null;
 +        } else {
-+            return !this.f_46443_ && Thread.currentThread() != this.f_46423_ ? null : this.m_46745_( p_46716_ ).m_5685_( p_46716_, LevelChunk.EntityCreationType.IMMEDIATE );
++            return !this.isClientSide && Thread.currentThread() != this.thread ? null : this.getChunkAt( p_46716_ ).getBlockEntity( p_46716_, LevelChunk.EntityCreationType.IMMEDIATE );
 +        }
 +    }
 +
-+    public void m_151523_(BlockEntity p_151524_) {
-+        BlockPos blockpos = p_151524_.m_58899_();
-+        if (!this.m_151570_( blockpos )) {
++    public void setBlockEntity(BlockEntity p_151524_) {
++        BlockPos blockpos = p_151524_.getBlockPos();
++        if (!this.isOutsideBuildHeight( blockpos )) {
 +            // CraftBukkit start
 +            if (captureBlockStates) {
-+                capturedTileEntities.put( blockpos.m_7949_(), p_151524_ );
++                capturedTileEntities.put( blockpos.immutable(), p_151524_ );
 +                return;
 +            }
 +            // CraftBukkit end
-+            this.m_46745_( blockpos ).m_142170_( p_151524_ );
++            this.getChunkAt( blockpos ).addAndRegisterBlockEntity( p_151524_ );
 +        }
 +    }
 +
-+    public void m_46747_(BlockPos p_46748_) {
-+        if (!this.m_151570_( p_46748_ )) {
-+            this.m_46745_( p_46748_ ).m_8114_( p_46748_ );
++    public void removeBlockEntity(BlockPos p_46748_) {
++        if (!this.isOutsideBuildHeight( p_46748_ )) {
++            this.getChunkAt( p_46748_ ).removeBlockEntity( p_46748_ );
 +        }
-+        this.m_46717_( p_46748_, m_8055_( p_46748_ ).m_60734_() ); //Notify neighbors of changes
++        this.updateNeighbourForOutputSignal( p_46748_, getBlockState( p_46748_ ).getBlock() ); //Notify neighbors of changes
 +    }
 +
-+    public boolean m_46749_(BlockPos p_46750_) {
-+        return this.m_151570_( p_46750_ ) ? false : this.m_7726_().m_5563_( SectionPos.m_123171_( p_46750_.m_123341_() ), SectionPos.m_123171_( p_46750_.m_123343_() ) );
++    public boolean isLoaded(BlockPos p_46750_) {
++        return this.isOutsideBuildHeight( p_46750_ ) ? false : this.getChunkSource().hasChunk( SectionPos.blockToSectionCoord( p_46750_.getX() ), SectionPos.blockToSectionCoord( p_46750_.getZ() ) );
 +    }
 +
-+    public boolean m_46578_(BlockPos p_46579_, Entity p_46580_, Direction p_46581_) {
-+        if (this.m_151570_( p_46579_ )) {
++    public boolean loadedAndEntityCanStandOnFace(BlockPos p_46579_, Entity p_46580_, Direction p_46581_) {
++        if (this.isOutsideBuildHeight( p_46579_ )) {
 +            return false;
 +        } else {
-+            ChunkAccess chunkaccess = this.m_6522_( SectionPos.m_123171_( p_46579_.m_123341_() ), SectionPos.m_123171_( p_46579_.m_123343_() ), ChunkStatus.f_62326_, false );
-+            return chunkaccess == null ? false : chunkaccess.m_8055_( p_46579_ ).m_60638_( this, p_46579_, p_46580_, p_46581_ );
++            ChunkAccess chunkaccess = this.getChunk( SectionPos.blockToSectionCoord( p_46579_.getX() ), SectionPos.blockToSectionCoord( p_46579_.getZ() ), ChunkStatus.FULL, false );
++            return chunkaccess == null ? false : chunkaccess.getBlockState( p_46579_ ).entityCanStandOnFace( this, p_46579_, p_46580_, p_46581_ );
 +        }
 +    }
 +
-+    public boolean m_46575_(BlockPos p_46576_, Entity p_46577_) {
-+        return this.m_46578_( p_46576_, p_46577_, Direction.UP );
++    public boolean loadedAndEntityCanStandOn(BlockPos p_46576_, Entity p_46577_) {
++        return this.loadedAndEntityCanStandOnFace( p_46576_, p_46577_, Direction.UP );
 +    }
 +
-+    public void m_46465_() {
-+        double d0 = 1.0D - (double) (this.m_46722_( 1.0F ) * 5.0F) / 16.0D;
-+        double d1 = 1.0D - (double) (this.m_46661_( 1.0F ) * 5.0F) / 16.0D;
-+        double d2 = 0.5D + 2.0D * Mth.m_14008_( (double) Mth.m_14089_( this.m_46942_( 1.0F ) * ((float) Math.PI * 2F) ), -0.25D, 0.25D );
-+        this.f_46425_ = (int) ((1.0D - d2 * d0 * d1) * 11.0D);
++    public void updateSkyBrightness() {
++        double d0 = 1.0D - (double) (this.getRainLevel( 1.0F ) * 5.0F) / 16.0D;
++        double d1 = 1.0D - (double) (this.getThunderLevel( 1.0F ) * 5.0F) / 16.0D;
++        double d2 = 0.5D + 2.0D * Mth.clamp( (double) Mth.cos( this.getTimeOfDay( 1.0F ) * ((float) Math.PI * 2F) ), -0.25D, 0.25D );
++        this.skyDarken = (int) ((1.0D - d2 * d0 * d1) * 11.0D);
 +    }
 +
-+    public void m_46703_(boolean p_46704_, boolean p_46705_) {
-+        this.m_7726_().m_6707_( p_46704_, p_46705_ );
++    public void setSpawnSettings(boolean p_46704_, boolean p_46705_) {
++        this.getChunkSource().setSpawnSettings( p_46704_, p_46705_ );
 +    }
 +
-+    protected void m_46466_() {
-+        if (this.f_46442_.m_6533_()) {
-+            this.f_46438_ = 1.0F;
-+            if (this.f_46442_.m_6534_()) {
-+                this.f_46440_ = 1.0F;
++    protected void prepareWeather() {
++        if (this.levelData.isRaining()) {
++            this.rainLevel = 1.0F;
++            if (this.levelData.isThundering()) {
++                this.thunderLevel = 1.0F;
 +            }
 +        }
 +
 +    }
 +
 +    public void close() throws IOException {
-+        this.m_7726_().close();
++        this.getChunkSource().close();
 +    }
 +
 +    @Nullable
-+    public BlockGetter m_7925_(int p_46711_, int p_46712_) {
-+        return this.m_6522_( p_46711_, p_46712_, ChunkStatus.f_62326_, false );
++    public BlockGetter getChunkForCollisions(int p_46711_, int p_46712_) {
++        return this.getChunk( p_46711_, p_46712_, ChunkStatus.FULL, false );
 +    }
 +
-+    public List<Entity> m_6249_(@Nullable Entity p_46536_, AABB p_46537_, Predicate<? super Entity> p_46538_) {
-+        this.m_46473_().m_6174_( "getEntities" );
++    public List<Entity> getEntities(@Nullable Entity p_46536_, AABB p_46537_, Predicate<? super Entity> p_46538_) {
++        this.getProfiler().incrementCounter( "getEntities" );
 +        List<Entity> list = Lists.newArrayList();
-+        this.m_142646_().m_142232_( p_46537_, (p_151522_) -> {
++        this.getEntities().get( p_46537_, (p_151522_) -> {
 +            if (p_151522_ != p_46536_ && p_46538_.test( p_151522_ )) {
 +                list.add( p_151522_ );
 +            }
 +
 +            if (false)
 +                if (p_151522_ instanceof EnderDragon) {
-+                    for (EnderDragonPart enderdragonpart : ((EnderDragon) p_151522_).m_31156_()) {
++                    for (EnderDragonPart enderdragonpart : ((EnderDragon) p_151522_).getSubEntities()) {
 +                        if (p_151522_ != p_46536_ && p_46538_.test( enderdragonpart )) {
 +                            list.add( enderdragonpart );
 +                        }
@@ -1331,17 +1331,17 @@
 +
 +        } );
 +        for (net.minecraftforge.entity.PartEntity<?> p : this.getPartEntities()) {
-+            if (p != p_46536_ && p.m_142469_().m_82381_( p_46537_ ) && p_46538_.test( p )) {
++            if (p != p_46536_ && p.getBoundingBox().intersects( p_46537_ ) && p_46538_.test( p )) {
 +                list.add( p );
 +            }
 +        }
 +        return list;
 +    }
 +
-+    public <T extends Entity> List<T> m_142425_(EntityTypeTest<Entity, T> p_151528_, AABB p_151529_, Predicate<? super T> p_151530_) {
-+        this.m_46473_().m_6174_( "getEntities" );
++    public <T extends Entity> List<T> getEntities(EntityTypeTest<Entity, T> p_151528_, AABB p_151529_, Predicate<? super T> p_151530_) {
++        this.getProfiler().incrementCounter( "getEntities" );
 +        List<T> list = Lists.newArrayList();
-+        this.m_142646_().m_142137_( p_151528_, p_151529_, (p_151539_) -> {
++        this.getEntities().get( p_151528_, p_151529_, (p_151539_) -> {
 +            if (p_151530_.test( p_151539_ )) {
 +                list.add( p_151539_ );
 +            }
@@ -1351,8 +1351,8 @@
 +                if (p_151539_ instanceof EnderDragon) {
 +                    EnderDragon enderdragon = (EnderDragon) p_151539_;
 +
-+                    for (EnderDragonPart enderdragonpart : enderdragon.m_31156_()) {
-+                        T t = p_151528_.m_141992_( enderdragonpart );
++                    for (EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
++                        T t = p_151528_.tryCast( enderdragonpart );
 +                        if (t != null && p_151530_.test( t )) {
 +                            list.add( t );
 +                        }
@@ -1361,8 +1361,8 @@
 +
 +        } );
 +        for (net.minecraftforge.entity.PartEntity<?> p : this.getPartEntities()) {
-+            T t = p_151528_.m_141992_( p );
-+            if (t != null && t.m_142469_().m_82381_( p_151529_ ) && p_151530_.test( t )) {
++            T t = p_151528_.tryCast( p );
++            if (t != null && t.getBoundingBox().intersects( p_151529_ ) && p_151530_.test( t )) {
 +                list.add( t );
 +            }
 +        }
@@ -1370,47 +1370,47 @@
 +    }
 +
 +    @Nullable
-+    public abstract Entity m_6815_(int p_46492_);
++    public abstract Entity getEntity(int p_46492_);
 +
 +    public void blockEntityChangedWithoutNeighborUpdates(BlockPos p_151544_) {
-+        if (this.m_46805_(p_151544_)) {
-+            this.m_46745_(p_151544_).m_8092_(true);
++        if (this.hasChunkAt(p_151544_)) {
++            this.getChunkAt(p_151544_).setUnsaved(true);
 +        }
 +    }
 +
 +    /** @deprecated Call {@link #blockEntityChangedWithoutNeighborUpdates(BlockPos)} instead. See <a href="https://github.com/MinecraftForge/MinecraftForge/pull/9235">#9235</a> for details. */
 +    @Deprecated
-+    public void m_151543_(BlockPos p_151544_) {
++    public void blockEntityChanged(BlockPos p_151544_) {
 +        this.blockEntityChangedWithoutNeighborUpdates(p_151544_);
-+        this.m_46717_(p_151544_, m_8055_(p_151544_).m_60734_()); //Notify neighbors of changes
++        this.updateNeighbourForOutputSignal(p_151544_, getBlockState(p_151544_).getBlock()); //Notify neighbors of changes
 +    }
 +
-+    public int m_5736_() {
++    public int getSeaLevel() {
 +        return 63;
 +    }
 +
-+    public int m_46751_(BlockPos p_46752_) {
++    public int getDirectSignalTo(BlockPos p_46752_) {
 +        int i = 0;
-+        i = Math.max( i, this.m_46852_( p_46752_.m_7495_(), Direction.DOWN ) );
++        i = Math.max( i, this.getDirectSignal( p_46752_.below(), Direction.DOWN ) );
 +        if (i >= 15) {
              return i;
 -         } else {
--            i = Math.max(i, this.m_46852_(p_46752_.m_142127_(), Direction.NORTH));
+-            i = Math.max(i, this.getDirectSignal(p_46752_.north(), Direction.NORTH));
 +        } else {
-+            i = Math.max( i, this.m_46852_( p_46752_.m_7494_(), Direction.UP ) );
++            i = Math.max( i, this.getDirectSignal( p_46752_.above(), Direction.UP ) );
              if (i >= 15) {
 -               return i;
 +                return i;
              } else {
--               i = Math.max(i, this.m_46852_(p_46752_.m_142128_(), Direction.SOUTH));
+-               i = Math.max(i, this.getDirectSignal(p_46752_.south(), Direction.SOUTH));
 -               if (i >= 15) {
 -                  return i;
 -               } else {
--                  i = Math.max(i, this.m_46852_(p_46752_.m_142125_(), Direction.WEST));
+-                  i = Math.max(i, this.getDirectSignal(p_46752_.west(), Direction.WEST));
 -                  if (i >= 15) {
 -                     return i;
 -                  } else {
--                     i = Math.max(i, this.m_46852_(p_46752_.m_142126_(), Direction.EAST));
+-                     i = Math.max(i, this.getDirectSignal(p_46752_.east(), Direction.EAST));
 -                     return i >= 15 ? i : i;
 -                  }
 -               }
@@ -1419,37 +1419,37 @@
 -      }
 -   }
 -
--   public boolean m_46616_(BlockPos p_46617_, Direction p_46618_) {
--      return this.m_46681_(p_46617_, p_46618_) > 0;
+-   public boolean hasSignal(BlockPos p_46617_, Direction p_46618_) {
+-      return this.getSignal(p_46617_, p_46618_) > 0;
 -   }
 -
--   public int m_46681_(BlockPos p_46682_, Direction p_46683_) {
--      BlockState blockstate = this.m_8055_(p_46682_);
--      int i = blockstate.m_60746_(this, p_46682_, p_46683_);
--      return blockstate.m_60796_(this, p_46682_) ? Math.max(i, this.m_46751_(p_46682_)) : i;
+-   public int getSignal(BlockPos p_46682_, Direction p_46683_) {
+-      BlockState blockstate = this.getBlockState(p_46682_);
+-      int i = blockstate.getSignal(this, p_46682_, p_46683_);
+-      return blockstate.isRedstoneConductor(this, p_46682_) ? Math.max(i, this.getDirectSignalTo(p_46682_)) : i;
 -   }
 -
--   public boolean m_46753_(BlockPos p_46754_) {
--      if (this.m_46681_(p_46754_.m_7495_(), Direction.DOWN) > 0) {
+-   public boolean hasNeighborSignal(BlockPos p_46754_) {
+-      if (this.getSignal(p_46754_.below(), Direction.DOWN) > 0) {
 -         return true;
--      } else if (this.m_46681_(p_46754_.m_7494_(), Direction.UP) > 0) {
+-      } else if (this.getSignal(p_46754_.above(), Direction.UP) > 0) {
 -         return true;
--      } else if (this.m_46681_(p_46754_.m_142127_(), Direction.NORTH) > 0) {
+-      } else if (this.getSignal(p_46754_.north(), Direction.NORTH) > 0) {
 -         return true;
--      } else if (this.m_46681_(p_46754_.m_142128_(), Direction.SOUTH) > 0) {
+-      } else if (this.getSignal(p_46754_.south(), Direction.SOUTH) > 0) {
 -         return true;
--      } else if (this.m_46681_(p_46754_.m_142125_(), Direction.WEST) > 0) {
+-      } else if (this.getSignal(p_46754_.west(), Direction.WEST) > 0) {
 -         return true;
 -      } else {
--         return this.m_46681_(p_46754_.m_142126_(), Direction.EAST) > 0;
+-         return this.getSignal(p_46754_.east(), Direction.EAST) > 0;
 -      }
 -   }
 -
--   public int m_46755_(BlockPos p_46756_) {
+-   public int getBestNeighborSignal(BlockPos p_46756_) {
 -      int i = 0;
 -
--      for(Direction direction : f_46422_) {
--         int j = this.m_46681_(p_46756_.m_142300_(direction), direction);
+-      for(Direction direction : DIRECTIONS) {
+-         int j = this.getSignal(p_46756_.relative(direction), direction);
 -         if (j >= 15) {
 -            return 15;
 -         }
@@ -1462,134 +1462,134 @@
 -      return i;
 -   }
 -
--   public void m_7462_() {
+-   public void disconnect() {
 -   }
 -
--   public long m_46467_() {
--      return this.f_46442_.m_6793_();
+-   public long getGameTime() {
+-      return this.levelData.getGameTime();
 -   }
 -
--   public long m_46468_() {
--      return this.f_46442_.m_6792_();
+-   public long getDayTime() {
+-      return this.levelData.getDayTime();
 -   }
 -
--   public boolean m_7966_(Player p_46557_, BlockPos p_46558_) {
+-   public boolean mayInteract(Player p_46557_, BlockPos p_46558_) {
 -      return true;
 -   }
 -
--   public void m_7605_(Entity p_46509_, byte p_46510_) {
+-   public void broadcastEntityEvent(Entity p_46509_, byte p_46510_) {
 -   }
 -
--   public void m_7696_(BlockPos p_46582_, Block p_46583_, int p_46584_, int p_46585_) {
--      this.m_8055_(p_46582_).m_60677_(this, p_46582_, p_46584_, p_46585_);
+-   public void blockEvent(BlockPos p_46582_, Block p_46583_, int p_46584_, int p_46585_) {
+-      this.getBlockState(p_46582_).triggerEvent(this, p_46582_, p_46584_, p_46585_);
 -   }
 -
--   public LevelData m_6106_() {
--      return this.f_46442_;
+-   public LevelData getLevelData() {
+-      return this.levelData;
 -   }
 -
--   public GameRules m_46469_() {
--      return this.f_46442_.m_5470_();
+-   public GameRules getGameRules() {
+-      return this.levelData.getGameRules();
 -   }
 -
--   public float m_46661_(float p_46662_) {
--      return Mth.m_14179_(p_46662_, this.f_46439_, this.f_46440_) * this.m_46722_(p_46662_);
+-   public float getThunderLevel(float p_46662_) {
+-      return Mth.lerp(p_46662_, this.oThunderLevel, this.thunderLevel) * this.getRainLevel(p_46662_);
 -   }
 -
--   public void m_46707_(float p_46708_) {
--      float f = Mth.m_14036_(p_46708_, 0.0F, 1.0F);
--      this.f_46439_ = f;
--      this.f_46440_ = f;
+-   public void setThunderLevel(float p_46708_) {
+-      float f = Mth.clamp(p_46708_, 0.0F, 1.0F);
+-      this.oThunderLevel = f;
+-      this.thunderLevel = f;
 -   }
 -
--   public float m_46722_(float p_46723_) {
--      return Mth.m_14179_(p_46723_, this.f_46437_, this.f_46438_);
+-   public float getRainLevel(float p_46723_) {
+-      return Mth.lerp(p_46723_, this.oRainLevel, this.rainLevel);
 -   }
 -
--   public void m_46734_(float p_46735_) {
--      float f = Mth.m_14036_(p_46735_, 0.0F, 1.0F);
--      this.f_46437_ = f;
--      this.f_46438_ = f;
+-   public void setRainLevel(float p_46735_) {
+-      float f = Mth.clamp(p_46735_, 0.0F, 1.0F);
+-      this.oRainLevel = f;
+-      this.rainLevel = f;
 -   }
 -
--   public boolean m_46470_() {
--      if (this.m_6042_().m_63935_() && !this.m_6042_().m_63946_()) {
--         return (double)this.m_46661_(1.0F) > 0.9D;
+-   public boolean isThundering() {
+-      if (this.dimensionType().hasSkyLight() && !this.dimensionType().hasCeiling()) {
+-         return (double)this.getThunderLevel(1.0F) > 0.9D;
 -      } else {
 -         return false;
 -      }
 -   }
 -
--   public boolean m_46471_() {
--      return (double)this.m_46722_(1.0F) > 0.2D;
+-   public boolean isRaining() {
+-      return (double)this.getRainLevel(1.0F) > 0.2D;
 -   }
 -
--   public boolean m_46758_(BlockPos p_46759_) {
--      if (!this.m_46471_()) {
+-   public boolean isRainingAt(BlockPos p_46759_) {
+-      if (!this.isRaining()) {
 -         return false;
--      } else if (!this.m_45527_(p_46759_)) {
+-      } else if (!this.canSeeSky(p_46759_)) {
 -         return false;
--      } else if (this.m_5452_(Heightmap.Types.MOTION_BLOCKING, p_46759_).m_123342_() > p_46759_.m_123342_()) {
+-      } else if (this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_46759_).getY() > p_46759_.getY()) {
 -         return false;
 -      } else {
--         Biome biome = this.m_204166_(p_46759_).m_203334_();
--         return biome.m_47530_() == Biome.Precipitation.RAIN && biome.m_198906_(p_46759_);
+-         Biome biome = this.getBiome(p_46759_).value();
+-         return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.warmEnoughToRain(p_46759_);
 -      }
 -   }
 -
--   public boolean m_46761_(BlockPos p_46762_) {
--      Biome biome = this.m_204166_(p_46762_).m_203334_();
--      return biome.m_47533_();
+-   public boolean isHumidAt(BlockPos p_46762_) {
+-      Biome biome = this.getBiome(p_46762_).value();
+-      return biome.isHumid();
 -   }
 -
 -   @Nullable
--   public abstract MapItemSavedData m_7489_(String p_46650_);
+-   public abstract MapItemSavedData getMapData(String p_46650_);
 -
--   public abstract void m_142325_(String p_151533_, MapItemSavedData p_151534_);
+-   public abstract void setMapData(String p_151533_, MapItemSavedData p_151534_);
 -
--   public abstract int m_7354_();
+-   public abstract int getFreeMapId();
 -
--   public void m_6798_(int p_46665_, BlockPos p_46666_, int p_46667_) {
+-   public void globalLevelEvent(int p_46665_, BlockPos p_46666_, int p_46667_) {
 -   }
 -
--   public CrashReportCategory m_6026_(CrashReport p_46656_) {
--      CrashReportCategory crashreportcategory = p_46656_.m_127516_("Affected level", 1);
--      crashreportcategory.m_128165_("All players", () -> {
--         return this.m_6907_().size() + " total; " + this.m_6907_();
+-   public CrashReportCategory fillReportDetails(CrashReport p_46656_) {
+-      CrashReportCategory crashreportcategory = p_46656_.addCategory("Affected level", 1);
+-      crashreportcategory.setDetail("All players", () -> {
+-         return this.players().size() + " total; " + this.players();
 -      });
--      crashreportcategory.m_128165_("Chunk stats", this.m_7726_()::m_6754_);
--      crashreportcategory.m_128165_("Level dimension", () -> {
--         return this.m_46472_().m_135782_().toString();
+-      crashreportcategory.setDetail("Chunk stats", this.getChunkSource()::gatherStats);
+-      crashreportcategory.setDetail("Level dimension", () -> {
+-         return this.dimension().location().toString();
 -      });
 -
 -      try {
--         this.f_46442_.m_142471_(crashreportcategory, this);
+-         this.levelData.fillCrashReportCategory(crashreportcategory, this);
 -      } catch (Throwable throwable) {
--         crashreportcategory.m_128162_("Level Data Unobtainable", throwable);
+-         crashreportcategory.setDetailError("Level Data Unobtainable", throwable);
 -      }
 -
 -      return crashreportcategory;
 -   }
 -
--   public abstract void m_6801_(int p_46506_, BlockPos p_46507_, int p_46508_);
+-   public abstract void destroyBlockProgress(int p_46506_, BlockPos p_46507_, int p_46508_);
 -
--   public void m_7228_(double p_46475_, double p_46476_, double p_46477_, double p_46478_, double p_46479_, double p_46480_, @Nullable CompoundTag p_46481_) {
+-   public void createFireworks(double p_46475_, double p_46476_, double p_46477_, double p_46478_, double p_46479_, double p_46480_, @Nullable CompoundTag p_46481_) {
 -   }
 -
--   public abstract Scoreboard m_6188_();
+-   public abstract Scoreboard getScoreboard();
 -
--   public void m_46717_(BlockPos p_46718_, Block p_46719_) {
+-   public void updateNeighbourForOutputSignal(BlockPos p_46718_, Block p_46719_) {
 -      for(Direction direction : Direction.Plane.HORIZONTAL) {
--         BlockPos blockpos = p_46718_.m_142300_(direction);
--         if (this.m_46805_(blockpos)) {
--            BlockState blockstate = this.m_8055_(blockpos);
--            if (blockstate.m_60713_(Blocks.f_50328_)) {
--               blockstate.m_60690_(this, blockpos, p_46719_, p_46718_, false);
--            } else if (blockstate.m_60796_(this, blockpos)) {
--               blockpos = blockpos.m_142300_(direction);
--               blockstate = this.m_8055_(blockpos);
--               if (blockstate.m_60713_(Blocks.f_50328_)) {
--                  blockstate.m_60690_(this, blockpos, p_46719_, p_46718_, false);
+-         BlockPos blockpos = p_46718_.relative(direction);
+-         if (this.hasChunkAt(blockpos)) {
+-            BlockState blockstate = this.getBlockState(blockpos);
+-            if (blockstate.is(Blocks.COMPARATOR)) {
+-               blockstate.neighborChanged(this, blockpos, p_46719_, p_46718_, false);
+-            } else if (blockstate.isRedstoneConductor(this, blockpos)) {
+-               blockpos = blockpos.relative(direction);
+-               blockstate = this.getBlockState(blockpos);
+-               if (blockstate.is(Blocks.COMPARATOR)) {
+-                  blockstate.neighborChanged(this, blockpos, p_46719_, p_46718_, false);
 -               }
 -            }
 -         }
@@ -1597,100 +1597,100 @@
 -
 -   }
 -
--   public DifficultyInstance m_6436_(BlockPos p_46730_) {
+-   public DifficultyInstance getCurrentDifficultyAt(BlockPos p_46730_) {
 -      long i = 0L;
 -      float f = 0.0F;
--      if (this.m_46805_(p_46730_)) {
--         f = this.m_46940_();
--         i = this.m_46745_(p_46730_).m_6319_();
+-      if (this.hasChunkAt(p_46730_)) {
+-         f = this.getMoonBrightness();
+-         i = this.getChunkAt(p_46730_).getInhabitedTime();
 -      }
 -
--      return new DifficultyInstance(this.m_46791_(), this.m_46468_(), i, f);
+-      return new DifficultyInstance(this.getDifficulty(), this.getDayTime(), i, f);
 -   }
 -
--   public int m_7445_() {
--      return this.f_46425_;
+-   public int getSkyDarken() {
+-      return this.skyDarken;
 -   }
 -
--   public void m_6580_(int p_46709_) {
+-   public void setSkyFlashTime(int p_46709_) {
 -   }
 -
--   public WorldBorder m_6857_() {
--      return this.f_46447_;
+-   public WorldBorder getWorldBorder() {
+-      return this.worldBorder;
 -   }
 -
--   public void m_5503_(Packet<?> p_46657_) {
+-   public void sendPacketToServer(Packet<?> p_46657_) {
 -      throw new UnsupportedOperationException("Can't send packets to server unless you're on the client.");
 -   }
 -
--   public DimensionType m_6042_() {
--      return this.f_46445_;
+-   public DimensionType dimensionType() {
+-      return this.dimensionType;
 -   }
 -
--   public Holder<DimensionType> m_204156_() {
--      return this.f_204147_;
+-   public Holder<DimensionType> dimensionTypeRegistration() {
+-      return this.dimensionTypeRegistration;
 -   }
 -
--   public ResourceKey<Level> m_46472_() {
--      return this.f_46421_;
+-   public ResourceKey<Level> dimension() {
+-      return this.dimension;
 -   }
 -
--   public Random m_5822_() {
--      return this.f_46441_;
+-   public Random getRandom() {
+-      return this.random;
 -   }
 -
--   public boolean m_7433_(BlockPos p_46620_, Predicate<BlockState> p_46621_) {
--      return p_46621_.test(this.m_8055_(p_46620_));
+-   public boolean isStateAtPosition(BlockPos p_46620_, Predicate<BlockState> p_46621_) {
+-      return p_46621_.test(this.getBlockState(p_46620_));
 -   }
 -
--   public boolean m_142433_(BlockPos p_151541_, Predicate<FluidState> p_151542_) {
--      return p_151542_.test(this.m_6425_(p_151541_));
+-   public boolean isFluidAtPosition(BlockPos p_151541_, Predicate<FluidState> p_151542_) {
+-      return p_151542_.test(this.getFluidState(p_151541_));
 -   }
 -
--   public abstract RecipeManager m_7465_();
+-   public abstract RecipeManager getRecipeManager();
 -
--   public BlockPos m_46496_(int p_46497_, int p_46498_, int p_46499_, int p_46500_) {
--      this.f_46435_ = this.f_46435_ * 3 + 1013904223;
--      int i = this.f_46435_ >> 2;
+-   public BlockPos getBlockRandomPos(int p_46497_, int p_46498_, int p_46499_, int p_46500_) {
+-      this.randValue = this.randValue * 3 + 1013904223;
+-      int i = this.randValue >> 2;
 -      return new BlockPos(p_46497_ + (i & 15), p_46498_ + (i >> 16 & p_46500_), p_46499_ + (i >> 8 & 15));
 -   }
 -
--   public boolean m_7441_() {
+-   public boolean noSave() {
 -      return false;
 -   }
 -
--   public ProfilerFiller m_46473_() {
--      return this.f_46446_.get();
+-   public ProfilerFiller getProfiler() {
+-      return this.profiler.get();
 -   }
 -
--   public Supplier<ProfilerFiller> m_46658_() {
--      return this.f_46446_;
+-   public Supplier<ProfilerFiller> getProfilerSupplier() {
+-      return this.profiler;
 -   }
 -
--   public BiomeManager m_7062_() {
--      return this.f_46420_;
+-   public BiomeManager getBiomeManager() {
+-      return this.biomeManager;
 -   }
 -
--   public final boolean m_46659_() {
--      return this.f_46424_;
+-   public final boolean isDebug() {
+-      return this.isDebug;
 -   }
 -
--   protected abstract LevelEntityGetter<Entity> m_142646_();
+-   protected abstract LevelEntityGetter<Entity> getEntities();
 -
--   protected void m_151513_(@Nullable Entity p_151514_, GameEvent p_151515_, BlockPos p_151516_, int p_151517_) {
--      int i = SectionPos.m_123171_(p_151516_.m_123341_() - p_151517_);
--      int j = SectionPos.m_123171_(p_151516_.m_123343_() - p_151517_);
--      int k = SectionPos.m_123171_(p_151516_.m_123341_() + p_151517_);
--      int l = SectionPos.m_123171_(p_151516_.m_123343_() + p_151517_);
--      int i1 = SectionPos.m_123171_(p_151516_.m_123342_() - p_151517_);
--      int j1 = SectionPos.m_123171_(p_151516_.m_123342_() + p_151517_);
+-   protected void postGameEventInRadius(@Nullable Entity p_151514_, GameEvent p_151515_, BlockPos p_151516_, int p_151517_) {
+-      int i = SectionPos.blockToSectionCoord(p_151516_.getX() - p_151517_);
+-      int j = SectionPos.blockToSectionCoord(p_151516_.getZ() - p_151517_);
+-      int k = SectionPos.blockToSectionCoord(p_151516_.getX() + p_151517_);
+-      int l = SectionPos.blockToSectionCoord(p_151516_.getZ() + p_151517_);
+-      int i1 = SectionPos.blockToSectionCoord(p_151516_.getY() - p_151517_);
+-      int j1 = SectionPos.blockToSectionCoord(p_151516_.getY() + p_151517_);
 -
 -      for(int k1 = i; k1 <= k; ++k1) {
 -         for(int l1 = j; l1 <= l; ++l1) {
--            ChunkAccess chunkaccess = this.m_7726_().m_7131_(k1, l1);
+-            ChunkAccess chunkaccess = this.getChunkSource().getChunkNow(k1, l1);
 -            if (chunkaccess != null) {
 -               for(int i2 = i1; i2 <= j1; ++i2) {
--                  chunkaccess.m_142336_(i2).m_142666_(p_151515_, p_151514_, p_151516_);
+-                  chunkaccess.getEventDispatcher(i2).post(p_151515_, p_151514_, p_151516_);
 -               }
 -            }
 -         }
@@ -1698,22 +1698,22 @@
 -
 -   }
 -
--   public long m_183596_() {
--      return (long)(this.f_186455_++);
+-   public long nextSubTickCount() {
+-      return (long)(this.subTickCount++);
 -   }
-+                i = Math.max( i, this.m_46852_( p_46752_.m_142127_(), Direction.NORTH ) );
++                i = Math.max( i, this.getDirectSignal( p_46752_.north(), Direction.NORTH ) );
 +                if (i >= 15) {
 +                    return i;
 +                } else {
-+                    i = Math.max( i, this.m_46852_( p_46752_.m_142128_(), Direction.SOUTH ) );
++                    i = Math.max( i, this.getDirectSignal( p_46752_.south(), Direction.SOUTH ) );
 +                    if (i >= 15) {
 +                        return i;
 +                    } else {
-+                        i = Math.max( i, this.m_46852_( p_46752_.m_142125_(), Direction.WEST ) );
++                        i = Math.max( i, this.getDirectSignal( p_46752_.west(), Direction.WEST ) );
 +                        if (i >= 15) {
 +                            return i;
 +                        } else {
-+                            i = Math.max( i, this.m_46852_( p_46752_.m_142126_(), Direction.EAST ) );
++                            i = Math.max( i, this.getDirectSignal( p_46752_.east(), Direction.EAST ) );
 +                            return i >= 15 ? i : i;
 +                        }
 +                    }
@@ -1722,37 +1722,37 @@
 +        }
 +    }
 +
-+    public boolean m_46616_(BlockPos p_46617_, Direction p_46618_) {
-+        return this.m_46681_( p_46617_, p_46618_ ) > 0;
++    public boolean hasSignal(BlockPos p_46617_, Direction p_46618_) {
++        return this.getSignal( p_46617_, p_46618_ ) > 0;
 +    }
 +
-+    public int m_46681_(BlockPos p_46682_, Direction p_46683_) {
-+        BlockState blockstate = this.m_8055_( p_46682_ );
-+        int i = blockstate.m_60746_( this, p_46682_, p_46683_ );
-+        return blockstate.shouldCheckWeakPower( this, p_46682_, p_46683_ ) ? Math.max( i, this.m_46751_( p_46682_ ) ) : i;
++    public int getSignal(BlockPos p_46682_, Direction p_46683_) {
++        BlockState blockstate = this.getBlockState( p_46682_ );
++        int i = blockstate.getSignal( this, p_46682_, p_46683_ );
++        return blockstate.shouldCheckWeakPower( this, p_46682_, p_46683_ ) ? Math.max( i, this.getDirectSignalTo( p_46682_ ) ) : i;
 +    }
 +
-+    public boolean m_46753_(BlockPos p_46754_) {
-+        if (this.m_46681_( p_46754_.m_7495_(), Direction.DOWN ) > 0) {
++    public boolean hasNeighborSignal(BlockPos p_46754_) {
++        if (this.getSignal( p_46754_.below(), Direction.DOWN ) > 0) {
 +            return true;
-+        } else if (this.m_46681_( p_46754_.m_7494_(), Direction.UP ) > 0) {
++        } else if (this.getSignal( p_46754_.above(), Direction.UP ) > 0) {
 +            return true;
-+        } else if (this.m_46681_( p_46754_.m_142127_(), Direction.NORTH ) > 0) {
++        } else if (this.getSignal( p_46754_.north(), Direction.NORTH ) > 0) {
 +            return true;
-+        } else if (this.m_46681_( p_46754_.m_142128_(), Direction.SOUTH ) > 0) {
++        } else if (this.getSignal( p_46754_.south(), Direction.SOUTH ) > 0) {
 +            return true;
-+        } else if (this.m_46681_( p_46754_.m_142125_(), Direction.WEST ) > 0) {
++        } else if (this.getSignal( p_46754_.west(), Direction.WEST ) > 0) {
 +            return true;
 +        } else {
-+            return this.m_46681_( p_46754_.m_142126_(), Direction.EAST ) > 0;
++            return this.getSignal( p_46754_.east(), Direction.EAST ) > 0;
 +        }
 +    }
 +
-+    public int m_46755_(BlockPos p_46756_) {
++    public int getBestNeighborSignal(BlockPos p_46756_) {
 +        int i = 0;
 +
-+        for (Direction direction : f_46422_) {
-+            int j = this.m_46681_( p_46756_.m_142300_( direction ), direction );
++        for (Direction direction : DIRECTIONS) {
++            int j = this.getSignal( p_46756_.relative( direction ), direction );
 +            if (j >= 15) {
 +                return 15;
 +            }
@@ -1765,136 +1765,136 @@
 +        return i;
 +    }
 +
-+    public void m_7462_() {
++    public void disconnect() {
 +    }
 +
-+    public long m_46467_() {
-+        return this.f_46442_.m_6793_();
++    public long getGameTime() {
++        return this.levelData.getGameTime();
 +    }
 +
-+    public long m_46468_() {
-+        return this.f_46442_.m_6792_();
++    public long getDayTime() {
++        return this.levelData.getDayTime();
 +    }
 +
-+    public boolean m_7966_(Player p_46557_, BlockPos p_46558_) {
++    public boolean mayInteract(Player p_46557_, BlockPos p_46558_) {
 +        return true;
 +    }
 +
-+    public void m_7605_(Entity p_46509_, byte p_46510_) {
++    public void broadcastEntityEvent(Entity p_46509_, byte p_46510_) {
 +    }
 +
-+    public void m_7696_(BlockPos p_46582_, Block p_46583_, int p_46584_, int p_46585_) {
-+        this.m_8055_( p_46582_ ).m_60677_( this, p_46582_, p_46584_, p_46585_ );
++    public void blockEvent(BlockPos p_46582_, Block p_46583_, int p_46584_, int p_46585_) {
++        this.getBlockState( p_46582_ ).triggerEvent( this, p_46582_, p_46584_, p_46585_ );
 +    }
 +
-+    public LevelData m_6106_() {
-+        return this.f_46442_;
++    public LevelData getLevelData() {
++        return this.levelData;
 +    }
 +
-+    public GameRules m_46469_() {
-+        return this.f_46442_.m_5470_();
++    public GameRules getGameRules() {
++        return this.levelData.getGameRules();
 +    }
 +
-+    public float m_46661_(float p_46662_) {
-+        return Mth.m_14179_( p_46662_, this.f_46439_, this.f_46440_ ) * this.m_46722_( p_46662_ );
++    public float getThunderLevel(float p_46662_) {
++        return Mth.lerp( p_46662_, this.oThunderLevel, this.thunderLevel ) * this.getRainLevel( p_46662_ );
 +    }
 +
-+    public void m_46707_(float p_46708_) {
-+        float f = Mth.m_14036_( p_46708_, 0.0F, 1.0F );
-+        this.f_46439_ = f;
-+        this.f_46440_ = f;
++    public void setThunderLevel(float p_46708_) {
++        float f = Mth.clamp( p_46708_, 0.0F, 1.0F );
++        this.oThunderLevel = f;
++        this.thunderLevel = f;
 +    }
 +
-+    public float m_46722_(float p_46723_) {
-+        return Mth.m_14179_( p_46723_, this.f_46437_, this.f_46438_ );
++    public float getRainLevel(float p_46723_) {
++        return Mth.lerp( p_46723_, this.oRainLevel, this.rainLevel );
 +    }
 +
-+    public void m_46734_(float p_46735_) {
-+        float f = Mth.m_14036_( p_46735_, 0.0F, 1.0F );
-+        this.f_46437_ = f;
-+        this.f_46438_ = f;
++    public void setRainLevel(float p_46735_) {
++        float f = Mth.clamp( p_46735_, 0.0F, 1.0F );
++        this.oRainLevel = f;
++        this.rainLevel = f;
 +    }
 +
-+    public boolean m_46470_() {
-+        if (this.m_6042_().m_63935_() && !this.m_6042_().m_63946_()) {
-+            return (double) this.m_46661_( 1.0F ) > 0.9D;
++    public boolean isThundering() {
++        if (this.dimensionType().hasSkyLight() && !this.dimensionType().hasCeiling()) {
++            return (double) this.getThunderLevel( 1.0F ) > 0.9D;
 +        } else {
 +            return false;
 +        }
 +    }
 +
-+    public boolean m_46471_() {
-+        return (double) this.m_46722_( 1.0F ) > 0.2D;
++    public boolean isRaining() {
++        return (double) this.getRainLevel( 1.0F ) > 0.2D;
 +    }
 +
-+    public boolean m_46758_(BlockPos p_46759_) {
-+        if (!this.m_46471_()) {
++    public boolean isRainingAt(BlockPos p_46759_) {
++        if (!this.isRaining()) {
 +            return false;
-+        } else if (!this.m_45527_( p_46759_ )) {
++        } else if (!this.canSeeSky( p_46759_ )) {
 +            return false;
-+        } else if (this.m_5452_( Heightmap.Types.MOTION_BLOCKING, p_46759_ ).m_123342_() > p_46759_.m_123342_()) {
++        } else if (this.getHeightmapPos( Heightmap.Types.MOTION_BLOCKING, p_46759_ ).getY() > p_46759_.getY()) {
 +            return false;
 +        } else {
-+            Biome biome = this.m_204166_( p_46759_ ).m_203334_();
-+            return biome.m_47530_() == Biome.Precipitation.RAIN && biome.m_198906_( p_46759_ );
++            Biome biome = this.getBiome( p_46759_ ).value();
++            return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.warmEnoughToRain( p_46759_ );
 +        }
 +    }
 +
-+    public boolean m_46761_(BlockPos p_46762_) {
-+        Biome biome = this.m_204166_( p_46762_ ).m_203334_();
-+        return biome.m_47533_();
++    public boolean isHumidAt(BlockPos p_46762_) {
++        Biome biome = this.getBiome( p_46762_ ).value();
++        return biome.isHumid();
 +    }
 +
 +    @Nullable
-+    public abstract MapItemSavedData m_7489_(String p_46650_);
++    public abstract MapItemSavedData getMapData(String p_46650_);
 +
-+    public abstract void m_142325_(String p_151533_, MapItemSavedData p_151534_);
++    public abstract void setMapData(String p_151533_, MapItemSavedData p_151534_);
 +
-+    public abstract int m_7354_();
++    public abstract int getFreeMapId();
 +
-+    public void m_6798_(int p_46665_, BlockPos p_46666_, int p_46667_) {
++    public void globalLevelEvent(int p_46665_, BlockPos p_46666_, int p_46667_) {
 +    }
 +
-+    public CrashReportCategory m_6026_(CrashReport p_46656_) {
-+        CrashReportCategory crashreportcategory = p_46656_.m_127516_( "Affected level", 1 );
-+        crashreportcategory.m_128165_( "All players", () -> {
-+            return this.m_6907_().size() + " total; " + this.m_6907_();
++    public CrashReportCategory fillReportDetails(CrashReport p_46656_) {
++        CrashReportCategory crashreportcategory = p_46656_.addCategory( "Affected level", 1 );
++        crashreportcategory.setDetail( "All players", () -> {
++            return this.players().size() + " total; " + this.players();
 +        } );
-+        crashreportcategory.m_128165_( "Chunk stats", this.m_7726_()::m_6754_ );
-+        crashreportcategory.m_128165_( "Level dimension", () -> {
-+            return this.m_46472_().m_135782_().toString();
++        crashreportcategory.setDetail( "Chunk stats", this.getChunkSource()::gatherStats );
++        crashreportcategory.setDetail( "Level dimension", () -> {
++            return this.dimension().location().toString();
 +        } );
 +
 +        try {
-+            this.f_46442_.m_142471_( crashreportcategory, this );
++            this.levelData.fillCrashReportCategory( crashreportcategory, this );
 +        } catch (Throwable throwable) {
-+            crashreportcategory.m_128162_( "Level Data Unobtainable", throwable );
++            crashreportcategory.setDetailError( "Level Data Unobtainable", throwable );
 +        }
 +
 +        return crashreportcategory;
 +    }
 +
-+    public abstract void m_6801_(int p_46506_, BlockPos p_46507_, int p_46508_);
++    public abstract void destroyBlockProgress(int p_46506_, BlockPos p_46507_, int p_46508_);
 +
-+    public void m_7228_(double p_46475_, double p_46476_, double p_46477_, double p_46478_, double p_46479_, double p_46480_, @Nullable CompoundTag p_46481_) {
++    public void createFireworks(double p_46475_, double p_46476_, double p_46477_, double p_46478_, double p_46479_, double p_46480_, @Nullable CompoundTag p_46481_) {
 +    }
 +
-+    public abstract Scoreboard m_6188_();
++    public abstract Scoreboard getScoreboard();
 +
-+    public void m_46717_(BlockPos p_46718_, Block p_46719_) {
++    public void updateNeighbourForOutputSignal(BlockPos p_46718_, Block p_46719_) {
 +        for (Direction direction : Direction.values()) {
-+            BlockPos blockpos = p_46718_.m_142300_( direction );
-+            if (this.m_46805_( blockpos )) {
-+                BlockState blockstate = this.m_8055_( blockpos );
++            BlockPos blockpos = p_46718_.relative( direction );
++            if (this.hasChunkAt( blockpos )) {
++                BlockState blockstate = this.getBlockState( blockpos );
 +                blockstate.onNeighborChange( this, blockpos, p_46718_ );
-+                if (blockstate.m_60796_( this, blockpos )) {
-+                    blockpos = blockpos.m_142300_( direction );
-+                    blockstate = this.m_8055_( blockpos );
++                if (blockstate.isRedstoneConductor( this, blockpos )) {
++                    blockpos = blockpos.relative( direction );
++                    blockstate = this.getBlockState( blockpos );
 +                    if (blockstate.getWeakChanges( this, blockpos )) {
 +                        if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues())
 +                            this.neighborChanged(blockstate, blockpos, p_46719_, p_46718_, false);
 +                        else
-+                            blockstate.m_60690_( this, blockpos, p_46719_, p_46718_, false );
++                            blockstate.neighborChanged( this, blockpos, p_46719_, p_46718_, false );
 +                    }
 +                }
 +            }
@@ -1902,78 +1902,78 @@
 +
 +    }
 +
-+    public DifficultyInstance m_6436_(BlockPos p_46730_) {
++    public DifficultyInstance getCurrentDifficultyAt(BlockPos p_46730_) {
 +        long i = 0L;
 +        float f = 0.0F;
-+        if (this.m_46805_( p_46730_ )) {
-+            f = this.m_46940_();
-+            i = this.m_46745_( p_46730_ ).m_6319_();
++        if (this.hasChunkAt( p_46730_ )) {
++            f = this.getMoonBrightness();
++            i = this.getChunkAt( p_46730_ ).getInhabitedTime();
 +        }
 +
-+        return new DifficultyInstance( this.m_46791_(), this.m_46468_(), i, f );
++        return new DifficultyInstance( this.getDifficulty(), this.getDayTime(), i, f );
 +    }
 +
-+    public int m_7445_() {
-+        return this.f_46425_;
++    public int getSkyDarken() {
++        return this.skyDarken;
 +    }
 +
-+    public void m_6580_(int p_46709_) {
++    public void setSkyFlashTime(int p_46709_) {
 +    }
 +
-+    public WorldBorder m_6857_() {
-+        return this.f_46447_;
++    public WorldBorder getWorldBorder() {
++        return this.worldBorder;
 +    }
 +
-+    public void m_5503_(Packet<?> p_46657_) {
++    public void sendPacketToServer(Packet<?> p_46657_) {
 +        throw new UnsupportedOperationException( "Can't send packets to server unless you're on the client." );
 +    }
 +
-+    public DimensionType m_6042_() {
-+        return this.f_46445_;
++    public DimensionType dimensionType() {
++        return this.dimensionType;
 +    }
 +
-+    public Holder<DimensionType> m_204156_() {
-+        return this.f_204147_;
++    public Holder<DimensionType> dimensionTypeRegistration() {
++        return this.dimensionTypeRegistration;
 +    }
 +
-+    public ResourceKey<Level> m_46472_() {
-+        return this.f_46421_;
++    public ResourceKey<Level> dimension() {
++        return this.dimension;
 +    }
 +
-+    public Random m_5822_() {
-+        return this.f_46441_;
++    public Random getRandom() {
++        return this.random;
 +    }
 +
-+    public boolean m_7433_(BlockPos p_46620_, Predicate<BlockState> p_46621_) {
-+        return p_46621_.test( this.m_8055_( p_46620_ ) );
++    public boolean isStateAtPosition(BlockPos p_46620_, Predicate<BlockState> p_46621_) {
++        return p_46621_.test( this.getBlockState( p_46620_ ) );
 +    }
 +
-+    public boolean m_142433_(BlockPos p_151541_, Predicate<FluidState> p_151542_) {
-+        return p_151542_.test( this.m_6425_( p_151541_ ) );
++    public boolean isFluidAtPosition(BlockPos p_151541_, Predicate<FluidState> p_151542_) {
++        return p_151542_.test( this.getFluidState( p_151541_ ) );
 +    }
 +
-+    public abstract RecipeManager m_7465_();
++    public abstract RecipeManager getRecipeManager();
 +
-+    public BlockPos m_46496_(int p_46497_, int p_46498_, int p_46499_, int p_46500_) {
-+        this.f_46435_ = this.f_46435_ * 3 + 1013904223;
-+        int i = this.f_46435_ >> 2;
++    public BlockPos getBlockRandomPos(int p_46497_, int p_46498_, int p_46499_, int p_46500_) {
++        this.randValue = this.randValue * 3 + 1013904223;
++        int i = this.randValue >> 2;
 +        return new BlockPos( p_46497_ + (i & 15), p_46498_ + (i >> 16 & p_46500_), p_46499_ + (i >> 8 & 15) );
 +    }
 +
-+    public boolean m_7441_() {
++    public boolean noSave() {
 +        return false;
 +    }
 +
-+    public ProfilerFiller m_46473_() {
-+        return this.f_46446_.get();
++    public ProfilerFiller getProfiler() {
++        return this.profiler.get();
 +    }
 +
-+    public Supplier<ProfilerFiller> m_46658_() {
-+        return this.f_46446_;
++    public Supplier<ProfilerFiller> getProfilerSupplier() {
++        return this.profiler;
 +    }
 +
-+    public BiomeManager m_7062_() {
-+        return this.f_46420_;
++    public BiomeManager getBiomeManager() {
++        return this.biomeManager;
 +    }
 +
 +    private double maxEntityRadius = 2.0D;
@@ -1990,34 +1990,34 @@
 +        return maxEntityRadius;
 +    }
 +
-+    public final boolean m_46659_() {
-+        return this.f_46424_;
++    public final boolean isDebug() {
++        return this.isDebug;
 +    }
 +
-+    public abstract LevelEntityGetter<Entity> m_142646_();
++    public abstract LevelEntityGetter<Entity> getEntities();
 +
-+    protected void m_151513_(@Nullable Entity p_151514_, GameEvent p_151515_, BlockPos p_151516_, int p_151517_) {
++    protected void postGameEventInRadius(@Nullable Entity p_151514_, GameEvent p_151515_, BlockPos p_151516_, int p_151517_) {
 +        // CraftBukkit start
-+        org.bukkit.event.world.GenericGameEvent event = new org.bukkit.event.world.GenericGameEvent( org.bukkit.GameEvent.getByKey( org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft( Registry.f_175412_.m_7981_( p_151515_ ) ) ), new org.bukkit.Location( this.getWorld(), p_151516_.m_123341_(), p_151516_.m_123342_(), p_151516_.m_123343_() ), (p_151514_ == null) ? null : p_151514_.getBukkitEntity(), p_151517_ );
++        org.bukkit.event.world.GenericGameEvent event = new org.bukkit.event.world.GenericGameEvent( org.bukkit.GameEvent.getByKey( org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft( Registry.GAME_EVENT.getKey( p_151515_ ) ) ), new org.bukkit.Location( this.getWorld(), p_151516_.getX(), p_151516_.getY(), p_151516_.getZ() ), (p_151514_ == null) ? null : p_151514_.getBukkitEntity(), p_151517_ );
 +        getCraftServer().getPluginManager().callEvent( event );
 +        if (event.isCancelled()) {
 +            return;
 +        }
 +        p_151517_ = event.getRadius();
 +        // CraftBukkit end
-+        int i = SectionPos.m_123171_( p_151516_.m_123341_() - p_151517_ );
-+        int j = SectionPos.m_123171_( p_151516_.m_123343_() - p_151517_ );
-+        int k = SectionPos.m_123171_( p_151516_.m_123341_() + p_151517_ );
-+        int l = SectionPos.m_123171_( p_151516_.m_123343_() + p_151517_ );
-+        int i1 = SectionPos.m_123171_( p_151516_.m_123342_() - p_151517_ );
-+        int j1 = SectionPos.m_123171_( p_151516_.m_123342_() + p_151517_ );
++        int i = SectionPos.blockToSectionCoord( p_151516_.getX() - p_151517_ );
++        int j = SectionPos.blockToSectionCoord( p_151516_.getZ() - p_151517_ );
++        int k = SectionPos.blockToSectionCoord( p_151516_.getX() + p_151517_ );
++        int l = SectionPos.blockToSectionCoord( p_151516_.getZ() + p_151517_ );
++        int i1 = SectionPos.blockToSectionCoord( p_151516_.getY() - p_151517_ );
++        int j1 = SectionPos.blockToSectionCoord( p_151516_.getY() + p_151517_ );
 +
 +        for (int k1 = i; k1 <= k; ++k1) {
 +            for (int l1 = j; l1 <= l; ++l1) {
-+                ChunkAccess chunkaccess = this.m_7726_().m_7131_( k1, l1 );
++                ChunkAccess chunkaccess = this.getChunkSource().getChunkNow( k1, l1 );
 +                if (chunkaccess != null) {
 +                    for (int i2 = i1; i2 <= j1; ++i2) {
-+                        chunkaccess.m_142336_( i2 ).m_142666_( p_151515_, p_151514_, p_151516_ );
++                        chunkaccess.getEventDispatcher( i2 ).post( p_151515_, p_151514_, p_151516_ );
 +                    }
 +                }
 +            }
@@ -2025,8 +2025,8 @@
 +
 +    }
 +
-+    public long m_183596_() {
-+        return (long) (this.f_186455_++);
++    public long nextSubTickCount() {
++        return (long) (this.subTickCount++);
 +    }
 +
 +    // org.magmafoundation.magma.Magma Stub

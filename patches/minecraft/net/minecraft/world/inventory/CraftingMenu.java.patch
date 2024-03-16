@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/inventory/CraftingMenu.java
 +++ b/net/minecraft/world/inventory/CraftingMenu.java
 @@ -27,6 +_,21 @@
-    public final ContainerLevelAccess f_39350_;
-    private final Player f_39351_;
+    public final ContainerLevelAccess access;
+    private final Player player;
  
 +   // CraftBukkit start
 +   private org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView bukkitEntity = null;
@@ -13,40 +13,40 @@
 +         return bukkitEntity;
 +      }
 +
-+      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting inventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting(this.f_39348_, this.f_39349_);
-+      bukkitEntity = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView(this.f_39351_.getBukkitEntity(), inventory, this);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting inventory = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryCrafting(this.craftSlots, this.resultSlots);
++      bukkitEntity = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryView(this.player.getBukkitEntity(), inventory, this);
 +      return bukkitEntity;
 +   }
 +   // CraftBukkit end
 +
     public CraftingMenu(int p_39353_, Inventory p_39354_) {
-       this(p_39353_, p_39354_, ContainerLevelAccess.f_39287_);
+       this(p_39353_, p_39354_, ContainerLevelAccess.NULL);
     }
 @@ -35,6 +_,10 @@
-       super(MenuType.f_39968_, p_39356_);
-       this.f_39350_ = p_39358_;
-       this.f_39351_ = p_39357_.f_35978_;
+       super(MenuType.CRAFTING, p_39356_);
+       this.access = p_39358_;
+       this.player = p_39357_.player;
 +      // CraftBukkit start - Switched order of IInventory construction and stored player
-+      this.f_39348_.setOwner(this.f_39351_);
-+      this.f_39348_.resultInventory = this.f_39349_;
++      this.craftSlots.setOwner(this.player);
++      this.craftSlots.resultInventory = this.resultSlots;
 +      // CraftBukkit end
-       this.m_38897_(new ResultSlot(p_39357_.f_35978_, this.f_39348_, this.f_39349_, 0, 124, 35));
+       this.addSlot(new ResultSlot(p_39357_.player, this.craftSlots, this.resultSlots, 0, 124, 35));
  
        for(int i = 0; i < 3; ++i) {
 @@ -66,7 +_,7 @@
-                itemstack = craftingrecipe.m_5874_(p_150550_);
+                itemstack = craftingrecipe.assemble(p_150550_);
              }
           }
 -
 +         itemstack = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPreCraftEvent(p_150550_, p_150551_, itemstack, p_150547_.getBukkitView(), optional.orElse(null) instanceof net.minecraft.world.item.crafting.RepairItemRecipe); // CraftBukkit
-          p_150551_.m_6836_(0, itemstack);
-          p_150547_.m_150404_(0, itemstack);
-          serverplayer.f_8906_.m_141995_(new ClientboundContainerSetSlotPacket(p_150547_.f_38840_, p_150547_.m_182425_(), 0, itemstack));
+          p_150551_.setItem(0, itemstack);
+          p_150547_.setRemoteSlot(0, itemstack);
+          serverplayer.connection.send(new ClientboundContainerSetSlotPacket(p_150547_.containerId, p_150547_.incrementStateId(), 0, itemstack));
 @@ -100,6 +_,7 @@
     }
  
-    public boolean m_6875_(Player p_39368_) {
+    public boolean stillValid(Player p_39368_) {
 +      if (!this.checkReachable) return true; // CraftBukkit
-       return m_38889_(this.f_39350_, p_39368_, Blocks.f_50091_);
+       return stillValid(this.access, p_39368_, Blocks.CRAFTING_TABLE);
     }
  

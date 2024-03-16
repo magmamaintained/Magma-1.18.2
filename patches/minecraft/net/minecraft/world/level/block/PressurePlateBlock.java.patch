@@ -6,7 +6,7 @@
           for(Entity entity : list) {
 +
 +            // CraftBukkit start - Call interact event when turning on a pressure plate
-+            if (this.m_6016_(p_55264_.m_8055_(p_55265_)) == 0) {
++            if (this.getSignalForState(p_55264_.getBlockState(p_55265_)) == 0) {
 +               org.bukkit.World bworld = p_55264_.getWorld();
 +               org.bukkit.plugin.PluginManager manager = p_55264_.getCraftServer().getPluginManager();
 +               org.bukkit.event.Cancellable cancellable;
@@ -14,7 +14,7 @@
 +               if (entity instanceof Player) {
 +                  cancellable = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, p_55265_, null, null, null);
 +               } else {
-+                  cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), bworld.getBlockAt(p_55265_.m_123341_(), p_55265_.m_123342_(), p_55265_.m_123343_()));
++                  cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), bworld.getBlockAt(p_55265_.getX(), p_55265_.getY(), p_55265_.getZ()));
 +                  manager.callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
 +               }
 +               
@@ -25,6 +25,6 @@
 +            }
 +            // CraftBukkit end
 +            
-             if (!entity.m_6090_()) {
+             if (!entity.isIgnoringBlockTriggers()) {
                 return 15;
              }

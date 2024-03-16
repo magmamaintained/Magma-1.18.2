@@ -3,15 +3,15 @@
 @@ -72,6 +_,8 @@
     }
  
-    public InteractionResult m_6096_(Player p_38522_, InteractionHand p_38523_) {
-+      InteractionResult ret = super.m_6096_(p_38522_, p_38523_);
-+      if (ret.m_19077_()) return ret;
-       return this.f_38505_.m_45412_(p_38522_);
+    public InteractionResult interact(Player p_38522_, InteractionHand p_38523_) {
++      InteractionResult ret = super.interact(p_38522_, p_38523_);
++      if (ret.consumesAction()) return ret;
+       return this.commandBlock.usedBy(p_38522_);
     }
  
 @@ -113,5 +_,12 @@
-       public CommandSourceStack m_6712_() {
-          return new CommandSourceStack(this, MinecartCommandBlock.this.m_20182_(), MinecartCommandBlock.this.m_20155_(), this.m_5991_(), 2, this.m_45439_().getString(), MinecartCommandBlock.this.m_5446_(), this.m_5991_().m_142572_(), MinecartCommandBlock.this);
+       public CommandSourceStack createCommandSourceStack() {
+          return new CommandSourceStack(this, MinecartCommandBlock.this.position(), MinecartCommandBlock.this.getRotationVector(), this.getLevel(), 2, this.getName().getString(), MinecartCommandBlock.this.getDisplayName(), this.getLevel().getServer(), MinecartCommandBlock.this);
        }
 +
 +      // CraftBukkit start

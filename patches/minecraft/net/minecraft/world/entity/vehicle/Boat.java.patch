@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/entity/vehicle/Boat.java
 +++ b/net/minecraft/world/entity/vehicle/Boat.java
 @@ -87,6 +_,14 @@
-    private float f_38260_;
-    private float f_38261_;
+    private float bubbleAngle;
+    private float bubbleAngleO;
  
 +   // CraftBukkit start
 +   // PAIL: Some of these haven't worked since a few updates, and since 1.9 they are less and less applicable.
@@ -14,17 +14,17 @@
 +
     public Boat(EntityType<? extends Boat> p_38290_, Level p_38291_) {
        super(p_38290_, p_38291_);
-       this.f_19850_ = true;
+       this.blocksBuilding = true;
 @@ -146,6 +_,19 @@
-       if (this.m_6673_(p_38319_)) {
+       if (this.isInvulnerableTo(p_38319_)) {
           return false;
-       } else if (!this.f_19853_.f_46443_ && !this.m_146910_()) {
+       } else if (!this.level.isClientSide && !this.isRemoved()) {
 +         // CraftBukkit start
 +         org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
-+         org.bukkit.entity.Entity attacker = (p_38319_.m_7639_() == null) ? null : p_38319_.m_7639_().getBukkitEntity();
++         org.bukkit.entity.Entity attacker = (p_38319_.getEntity() == null) ? null : p_38319_.getEntity().getBukkitEntity();
 +
 +         org.bukkit.event.vehicle.VehicleDamageEvent event = new org.bukkit.event.vehicle.VehicleDamageEvent(vehicle, attacker, (double) p_38320_);
-+         this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
++         this.level.getCraftServer().getPluginManager().callEvent(event);
 +
 +         if (event.isCancelled()) {
 +            return false;
@@ -32,105 +32,105 @@
 +         // f = event.getDamage(); // TODO Why don't we do this?
 +         // CraftBukkit end
 +
-          this.m_38362_(-this.m_38386_());
-          this.m_38354_(10);
-          this.m_38311_(this.m_38384_() + p_38320_ * 10.0F);
+          this.setHurtDir(-this.getHurtDir());
+          this.setHurtTime(10);
+          this.setDamage(this.getDamage() + p_38320_ * 10.0F);
 @@ -153,6 +_,15 @@
-          this.m_146852_(GameEvent.f_157808_, p_38319_.m_7639_());
-          boolean flag = p_38319_.m_7639_() instanceof Player && ((Player)p_38319_.m_7639_()).m_150110_().f_35937_;
-          if (flag || this.m_38384_() > 40.0F) {
+          this.gameEvent(GameEvent.ENTITY_DAMAGED, p_38319_.getEntity());
+          boolean flag = p_38319_.getEntity() instanceof Player && ((Player)p_38319_.getEntity()).getAbilities().instabuild;
+          if (flag || this.getDamage() > 40.0F) {
 +            // CraftBukkit start
 +            org.bukkit.event.vehicle.VehicleDestroyEvent destroyEvent = new org.bukkit.event.vehicle.VehicleDestroyEvent(vehicle, attacker);
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(destroyEvent);
++            this.level.getCraftServer().getPluginManager().callEvent(destroyEvent);
 +
 +            if (destroyEvent.isCancelled()) {
-+               this.m_38311_(40F); // Maximize damage so this doesn't get triggered again right away
++               this.setDamage(40F); // Maximize damage so this doesn't get triggered again right away
 +               return true;
 +            }
 +            // CraftBukkit end
-             if (!flag && this.f_19853_.m_46469_().m_46207_(GameRules.f_46137_)) {
-                this.m_19998_(this.m_38369_());
+             if (!flag && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                this.spawnAtLocation(this.getDropItem());
              }
 @@ -186,9 +_,29 @@
-    public void m_7334_(Entity p_38373_) {
+    public void push(Entity p_38373_) {
        if (p_38373_ instanceof Boat) {
-          if (p_38373_.m_142469_().f_82289_ < this.m_142469_().f_82292_) {
+          if (p_38373_.getBoundingBox().minY < this.getBoundingBox().maxY) {
 +            // CraftBukkit start
-+            if (!this.m_20365_(p_38373_)) {
++            if (!this.isPassengerOfSameVehicle(p_38373_)) {
 +               org.bukkit.event.vehicle.VehicleEntityCollisionEvent event = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent((org.bukkit.entity.Vehicle) this.getBukkitEntity(), p_38373_.getBukkitEntity());
-+               this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
++               this.level.getCraftServer().getPluginManager().callEvent(event);
 +
 +               if (event.isCancelled()) {
 +                  return;
 +               }
 +            }
 +            // CraftBukkit end
-             super.m_7334_(p_38373_);
+             super.push(p_38373_);
           }
-       } else if (p_38373_.m_142469_().f_82289_ <= this.m_142469_().f_82289_) {
+       } else if (p_38373_.getBoundingBox().minY <= this.getBoundingBox().minY) {
 +         // CraftBukkit start
-+         if (!this.m_20365_(p_38373_)) {
++         if (!this.isPassengerOfSameVehicle(p_38373_)) {
 +            org.bukkit.event.vehicle.VehicleEntityCollisionEvent event = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent((org.bukkit.entity.Vehicle) this.getBukkitEntity(), p_38373_.getBukkitEntity());
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(event);
++            this.level.getCraftServer().getPluginManager().callEvent(event);
 +
 +            if (event.isCancelled()) {
 +               return;
 +            }
 +         }
 +         // CraftBukkit end
-          super.m_7334_(p_38373_);
+          super.push(p_38373_);
        }
  
 @@ -196,19 +_,19 @@
  
-    public Item m_38369_() {
-       switch(this.m_38387_()) {
+    public Item getDropItem() {
+       switch(this.getBoatType()) {
 -      case OAK:
 -      default:
--         return Items.f_42453_;
+-         return Items.OAK_BOAT;
 -      case SPRUCE:
--         return Items.f_42742_;
+-         return Items.SPRUCE_BOAT;
 -      case BIRCH:
--         return Items.f_42743_;
+-         return Items.BIRCH_BOAT;
 -      case JUNGLE:
--         return Items.f_42744_;
+-         return Items.JUNGLE_BOAT;
 -      case ACACIA:
--         return Items.f_42745_;
+-         return Items.ACACIA_BOAT;
 -      case DARK_OAK:
--         return Items.f_42746_;
+-         return Items.DARK_OAK_BOAT;
 +         case OAK:
 +         default:
-+            return Items.f_42453_;
++            return Items.OAK_BOAT;
 +         case SPRUCE:
-+            return Items.f_42742_;
++            return Items.SPRUCE_BOAT;
 +         case BIRCH:
-+            return Items.f_42743_;
++            return Items.BIRCH_BOAT;
 +         case JUNGLE:
-+            return Items.f_42744_;
++            return Items.JUNGLE_BOAT;
 +         case ACACIA:
-+            return Items.f_42745_;
++            return Items.ACACIA_BOAT;
 +         case DARK_OAK:
-+            return Items.f_42746_;
++            return Items.DARK_OAK_BOAT;
        }
     }
  
 @@ -235,6 +_,7 @@
-       return this.m_6350_().m_122427_();
+       return this.getDirection().getClockWise();
     }
  
 +   private org.bukkit.Location lastLocation; // CraftBukkit
-    public void m_8119_() {
-       this.f_38280_ = this.f_38279_;
-       this.f_38279_ = this.m_38392_();
+    public void tick() {
+       this.oldStatus = this.status;
+       this.status = this.getStatus();
 @@ -274,6 +_,22 @@
-          this.m_20256_(Vec3.f_82478_);
+          this.setDeltaMovement(Vec3.ZERO);
        }
  
 +      // CraftBukkit start
-+      org.bukkit.Server server = this.f_19853_.getCraftServer();
-+      org.bukkit.World bworld = this.f_19853_.getWorld();
++      org.bukkit.Server server = this.level.getCraftServer();
++      org.bukkit.World bworld = this.level.getWorld();
 +
-+      org.bukkit.Location to = new org.bukkit.Location(bworld, this.m_20185_(), this.m_20186_(), this.m_20189_(), this.m_146908_(), this.m_146909_());
++      org.bukkit.Location to = new org.bukkit.Location(bworld, this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
 +      org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
 +
 +      server.getPluginManager().callEvent(new org.bukkit.event.vehicle.VehicleUpdateEvent(vehicle));
@@ -142,28 +142,28 @@
 +      lastLocation = vehicle.getLocation();
 +      // CraftBukkit end
 +
-       this.m_38388_();
+       this.tickBubbleColumn();
  
        for(int i = 0; i <= 1; ++i) {
 @@ -358,15 +_,15 @@
     @Nullable
-    protected SoundEvent m_38370_() {
-       switch(this.m_38392_()) {
+    protected SoundEvent getPaddleSound() {
+       switch(this.getStatus()) {
 -      case IN_WATER:
 -      case UNDER_WATER:
 -      case UNDER_FLOWING_WATER:
--         return SoundEvents.f_11707_;
+-         return SoundEvents.BOAT_PADDLE_WATER;
 -      case ON_LAND:
--         return SoundEvents.f_11706_;
+-         return SoundEvents.BOAT_PADDLE_LAND;
 -      case IN_AIR:
 -      default:
 -         return null;
 +         case IN_WATER:
 +         case UNDER_WATER:
 +         case UNDER_FLOWING_WATER:
-+            return SoundEvents.f_11707_;
++            return SoundEvents.BOAT_PADDLE_WATER;
 +         case ON_LAND:
-+            return SoundEvents.f_11706_;
++            return SoundEvents.BOAT_PADDLE_LAND;
 +         case IN_AIR:
 +         default:
 +            return null;
@@ -171,38 +171,38 @@
     }
  
 @@ -475,7 +_,7 @@
-                      blockpos$mutableblockpos.m_122178_(l1, k2, i2);
-                      BlockState blockstate = this.f_19853_.m_8055_(blockpos$mutableblockpos);
-                      if (!(blockstate.m_60734_() instanceof WaterlilyBlock) && Shapes.m_83157_(blockstate.m_60812_(this.f_19853_, blockpos$mutableblockpos).m_83216_((double)l1, (double)k2, (double)i2), voxelshape, BooleanOp.f_82689_)) {
--                        f += blockstate.m_60734_().m_49958_();
-+                        f += blockstate.getFriction(this.f_19853_, blockpos$mutableblockpos, this);
+                      blockpos$mutableblockpos.set(l1, k2, i2);
+                      BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
+                      if (!(blockstate.getBlock() instanceof WaterlilyBlock) && Shapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level, blockpos$mutableblockpos).move((double)l1, (double)k2, (double)i2), voxelshape, BooleanOp.AND)) {
+-                        f += blockstate.getBlock().getFriction();
++                        f += blockstate.getFriction(this.level, blockpos$mutableblockpos, this);
                          ++k1;
                       }
                    }
 @@ -730,17 +_,23 @@
  
-                this.m_142535_(this.f_19789_, 1.0F, DamageSource.f_19315_);
-                if (!this.f_19853_.f_46443_ && !this.m_146910_()) {
--                  this.m_6074_();
--                  if (this.f_19853_.m_46469_().m_46207_(GameRules.f_46137_)) {
+                this.causeFallDamage(this.fallDistance, 1.0F, DamageSource.FALL);
+                if (!this.level.isClientSide && !this.isRemoved()) {
+-                  this.kill();
+-                  if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 -                     for(int i = 0; i < 3; ++i) {
--                        this.m_19998_(this.m_38387_().m_38434_());
+-                        this.spawnAtLocation(this.getBoatType().getPlanks());
 -                     }
 +                  // CraftBukkit start
 +                  org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
 +                  org.bukkit.event.vehicle.VehicleDestroyEvent destroyEvent = new org.bukkit.event.vehicle.VehicleDestroyEvent(vehicle, null);
-+                  this.f_19853_.getCraftServer().getPluginManager().callEvent(destroyEvent);
++                  this.level.getCraftServer().getPluginManager().callEvent(destroyEvent);
 +                  if (!destroyEvent.isCancelled()) {
-+                     this.m_6074_();
-+                     if (this.f_19853_.m_46469_().m_46207_(GameRules.f_46137_)) {
++                     this.kill();
++                     if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 +                        for (int i = 0; i < 3; ++i) {
-+                           this.m_19998_(this.m_38387_().m_38434_());
++                           this.spawnAtLocation(this.getBoatType().getPlanks());
 +                        }
  
 -                     for(int j = 0; j < 2; ++j) {
--                        this.m_19998_(Items.f_42398_);
+-                        this.spawnAtLocation(Items.STICK);
 +                        for (int j = 0; j < 2; ++j) {
-+                           this.m_19998_(Items.f_42398_);
++                           this.spawnAtLocation(Items.STICK);
 +                        }
                       }
                    }
@@ -210,23 +210,23 @@
 +               } // CraftBukkit end
              }
  
-             this.m_183634_();
+             this.resetFallDistance();
 @@ -821,6 +_,18 @@
  
-    public boolean m_5842_() {
-       return this.f_38279_ == Boat.Status.UNDER_WATER || this.f_38279_ == Boat.Status.UNDER_FLOWING_WATER;
+    public boolean isUnderWater() {
+       return this.status == Boat.Status.UNDER_WATER || this.status == Boat.Status.UNDER_FLOWING_WATER;
 +   }
 +
 +   // Forge: Fix MC-119811 by instantly completing lerp on board
 +   @Override
 +   protected boolean addPassenger(Entity passenger) {
 +      //super.addPassenger(passenger); Magma - moved to return
-+      if (this.m_6109_() && this.f_38267_ > 0) {
-+         this.f_38267_ = 0;
-+         this.m_19890_(this.f_38268_, this.f_38269_, this.f_38270_, (float)this.f_38271_, (float)this.f_38272_);
++      if (this.isControlledByLocalInstance() && this.lerpSteps > 0) {
++         this.lerpSteps = 0;
++         this.absMoveTo(this.lerpX, this.lerpY, this.lerpZ, (float)this.lerpYRot, (float)this.lerpXRot);
 +      }
 +
 +      return super.addPassenger(passenger); // TODO: 10/05/2022 - Magma // Magma 11/07/2022 - don't set this to false, it breaks boats
     }
  
-    public ItemStack m_142340_() {
+    public ItemStack getPickResult() {
