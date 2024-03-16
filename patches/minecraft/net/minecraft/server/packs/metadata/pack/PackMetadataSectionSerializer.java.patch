@@ -3,7 +3,7 @@
 @@ -13,7 +_,7 @@
           throw new JsonParseException("Invalid/missing description!");
        } else {
-          int i = GsonHelper.m_13927_(p_10380_, "pack_format");
+          int i = GsonHelper.getAsInt(p_10380_, "pack_format");
 -         return new PackMetadataSection(component, i);
 +         return new PackMetadataSection(component, i, net.minecraftforge.common.ForgeHooks.readTypedPackFormats(p_10380_));
        }

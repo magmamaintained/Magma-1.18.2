@@ -4,10 +4,10 @@
        throw new IllegalStateException("Markers should never be sent");
     }
  
--   protected void m_20348_(Entity p_147260_) {
+-   protected void addPassenger(Entity p_147260_) {
 +   protected boolean addPassenger(Entity p_147260_) {
-       p_147260_.m_8127_();
+       p_147260_.stopRiding();
 +      return false;
     }
  
-    public PushReaction m_7752_() {
+    public PushReaction getPistonPushReaction() {

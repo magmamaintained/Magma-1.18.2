@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/particle/Particle.java
 +++ b/net/minecraft/client/particle/Particle.java
 @@ -226,4 +_,12 @@
-    public Optional<ParticleGroup> m_142654_() {
+    public Optional<ParticleGroup> getParticleGroup() {
        return Optional.empty();
     }
 +

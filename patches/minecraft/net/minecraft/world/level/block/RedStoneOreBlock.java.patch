@@ -3,76 +3,76 @@
 @@ -30,29 +_,48 @@
     }
  
-    public void m_6256_(BlockState p_55467_, Level p_55468_, BlockPos p_55469_, Player p_55470_) {
--      m_55492_(p_55467_, p_55468_, p_55469_);
+    public void attack(BlockState p_55467_, Level p_55468_, BlockPos p_55469_, Player p_55470_) {
+-      interact(p_55467_, p_55468_, p_55469_);
 +      interact(p_55467_, p_55468_, p_55469_, p_55470_); // CraftBukkit - add player
-       super.m_6256_(p_55467_, p_55468_, p_55469_, p_55470_);
+       super.attack(p_55467_, p_55468_, p_55469_, p_55470_);
     }
  
-    public void m_141947_(Level p_154299_, BlockPos p_154300_, BlockState p_154301_, Entity p_154302_) {
--      m_55492_(p_154301_, p_154299_, p_154300_);
--      super.m_141947_(p_154299_, p_154300_, p_154301_, p_154302_);
+    public void stepOn(Level p_154299_, BlockPos p_154300_, BlockState p_154301_, Entity p_154302_) {
+-      interact(p_154301_, p_154299_, p_154300_);
+-      super.stepOn(p_154299_, p_154300_, p_154301_, p_154302_);
 +      // CraftBukkit start
 +      if (p_154302_ instanceof Player) {
 +         org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerInteractEvent((Player) p_154302_, org.bukkit.event.block.Action.PHYSICAL, p_154300_, null, null, null);
 +         if (!event.isCancelled()) {
-+            interact(p_154299_.m_8055_(p_154300_), p_154299_, p_154300_,  p_154302_); // add p_154302_
-+            super.m_141947_(p_154299_, p_154300_, p_154301_, p_154302_);
++            interact(p_154299_.getBlockState(p_154300_), p_154299_, p_154300_,  p_154302_); // add p_154302_
++            super.stepOn(p_154299_, p_154300_, p_154301_, p_154302_);
 +         }
 +      } else {
-+         org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(p_154302_.getBukkitEntity(), p_154299_.getWorld().getBlockAt(p_154300_.m_123341_(), p_154300_.m_123342_(), p_154300_.m_123343_()));
++         org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(p_154302_.getBukkitEntity(), p_154299_.getWorld().getBlockAt(p_154300_.getX(), p_154300_.getY(), p_154300_.getZ()));
 +         p_154299_.getCraftServer().getPluginManager().callEvent(event);
 +         if (!event.isCancelled()) {
-+            interact(p_154299_.m_8055_(p_154300_), p_154299_, p_154300_, p_154302_); // add p_154302_
-+            super.m_141947_(p_154299_, p_154300_, p_154301_, p_154302_);
++            interact(p_154299_.getBlockState(p_154300_), p_154299_, p_154300_, p_154302_); // add p_154302_
++            super.stepOn(p_154299_, p_154300_, p_154301_, p_154302_);
 +         }
 +      }
 +      // CraftBukkit end
     }
  
-    public InteractionResult m_6227_(BlockState p_55472_, Level p_55473_, BlockPos p_55474_, Player p_55475_, InteractionHand p_55476_, BlockHitResult p_55477_) {
-       if (p_55473_.f_46443_) {
-          m_55454_(p_55473_, p_55474_);
+    public InteractionResult use(BlockState p_55472_, Level p_55473_, BlockPos p_55474_, Player p_55475_, InteractionHand p_55476_, BlockHitResult p_55477_) {
+       if (p_55473_.isClientSide) {
+          spawnParticles(p_55473_, p_55474_);
        } else {
--         m_55492_(p_55472_, p_55473_, p_55474_);
+-         interact(p_55472_, p_55473_, p_55474_);
 +         interact(p_55472_, p_55473_, p_55474_, p_55475_); // CraftBukkit - add player
        }
  
-       ItemStack itemstack = p_55475_.m_21120_(p_55476_);
-       return itemstack.m_41720_() instanceof BlockItem && (new BlockPlaceContext(p_55475_, p_55476_, itemstack, p_55477_)).m_7059_() ? InteractionResult.PASS : InteractionResult.SUCCESS;
+       ItemStack itemstack = p_55475_.getItemInHand(p_55476_);
+       return itemstack.getItem() instanceof BlockItem && (new BlockPlaceContext(p_55475_, p_55476_, itemstack, p_55477_)).canPlace() ? InteractionResult.PASS : InteractionResult.SUCCESS;
     }
  
--   private static void m_55492_(BlockState p_55493_, Level p_55494_, BlockPos p_55495_) {
+-   private static void interact(BlockState p_55493_, Level p_55494_, BlockPos p_55495_) {
 +   private static void interact(BlockState p_55493_, Level p_55494_, BlockPos p_55495_, Entity entity) { // CraftBukkit - add player
-       m_55454_(p_55494_, p_55495_);
-       if (!p_55493_.m_61143_(f_55450_)) {
+       spawnParticles(p_55494_, p_55495_);
+       if (!p_55493_.getValue(LIT)) {
 +         // CraftBukkit start
-+         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(entity, p_55495_, p_55493_.m_61124_(f_55450_, true)).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityChangeBlockEvent(entity, p_55495_, p_55493_.setValue(LIT, true)).isCancelled()) {
 +            return;
 +         }
 +         // CraftBukkit end
-          p_55494_.m_7731_(p_55495_, p_55493_.m_61124_(f_55450_, Boolean.valueOf(true)), 3);
+          p_55494_.setBlock(p_55495_, p_55493_.setValue(LIT, Boolean.valueOf(true)), 3);
        }
  
 @@ -64,6 +_,11 @@
  
-    public void m_7455_(BlockState p_55488_, ServerLevel p_55489_, BlockPos p_55490_, Random p_55491_) {
-       if (p_55488_.m_61143_(f_55450_)) {
+    public void randomTick(BlockState p_55488_, ServerLevel p_55489_, BlockPos p_55490_, Random p_55491_) {
+       if (p_55488_.getValue(LIT)) {
 +         // CraftBukkit start
-+         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_55489_, p_55490_, p_55488_.m_61124_(f_55450_, false)).isCancelled()) {
++         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockFadeEvent(p_55489_, p_55490_, p_55488_.setValue(LIT, false)).isCancelled()) {
 +            return;
 +         }
 +         // CraftBukkit end
-          p_55489_.m_7731_(p_55490_, p_55488_.m_61124_(f_55450_, Boolean.valueOf(false)), 3);
+          p_55489_.setBlock(p_55490_, p_55488_.setValue(LIT, Boolean.valueOf(false)), 3);
        }
  
 @@ -71,11 +_,11 @@
  
-    public void m_8101_(BlockState p_55462_, ServerLevel p_55463_, BlockPos p_55464_, ItemStack p_55465_) {
-       super.m_8101_(p_55462_, p_55463_, p_55464_, p_55465_);
--      if (EnchantmentHelper.m_44843_(Enchantments.f_44985_, p_55465_) == 0) {
--         int i = 1 + p_55463_.f_46441_.nextInt(5);
--         this.m_49805_(p_55463_, p_55464_, i);
+    public void spawnAfterBreak(BlockState p_55462_, ServerLevel p_55463_, BlockPos p_55464_, ItemStack p_55465_) {
+       super.spawnAfterBreak(p_55462_, p_55463_, p_55464_, p_55465_);
+-      if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, p_55465_) == 0) {
+-         int i = 1 + p_55463_.random.nextInt(5);
+-         this.popExperience(p_55463_, p_55464_, i);
 -      }
 +   }
  
@@ -81,4 +81,4 @@
 +      return silktouch == 0 ? 1 + RANDOM.nextInt(5) : 0;
     }
  
-    public void m_7100_(BlockState p_55479_, Level p_55480_, BlockPos p_55481_, Random p_55482_) {
+    public void animateTick(BlockState p_55479_, Level p_55480_, BlockPos p_55481_, Random p_55482_) {

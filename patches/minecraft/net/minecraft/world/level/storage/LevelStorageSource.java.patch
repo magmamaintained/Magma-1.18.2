@@ -1,23 +1,23 @@
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
 @@ -203,7 +_,12 @@
-             LevelVersion levelversion = LevelVersion.m_78390_(dynamic);
-             LevelSettings levelsettings = LevelSettings.m_46924_(dynamic, p_211739_);
+             LevelVersion levelversion = LevelVersion.parse(dynamic);
+             LevelSettings levelsettings = LevelSettings.parse(dynamic, p_211739_);
              Lifecycle lifecycle = pair.getSecond().add(p_211740_);
--            return PrimaryLevelData.m_78530_(dynamic, p_211746_, i, compoundtag2, levelsettings, levelversion, pair.getFirst(), lifecycle);
+-            return PrimaryLevelData.parse(dynamic, p_211746_, i, compoundtag2, levelsettings, levelversion, pair.getFirst(), lifecycle);
 +
 +            // CraftBukkit start - Add PDC to world
-+            PrimaryLevelData worldDataServer = PrimaryLevelData.m_78530_(dynamic, p_211746_, i, compoundtag2, levelsettings, levelversion, pair.getFirst(), lifecycle);
-+            worldDataServer.pdc = compoundtag1.m_128423_("BukkitValues");
++            PrimaryLevelData worldDataServer = PrimaryLevelData.parse(dynamic, p_211746_, i, compoundtag2, levelsettings, levelversion, pair.getFirst(), lifecycle);
++            worldDataServer.pdc = compoundtag1.get("BukkitValues");
 +            return worldDataServer;
 +            // CraftBukkit end
           } catch (Exception exception) {
-             f_78191_.error("Exception reading {}", p_211745_, exception);
+             LOGGER.error("Exception reading {}", p_211745_, exception);
              return null;
 @@ -272,7 +_,11 @@
     }
  
-    public LevelStorageSource.LevelStorageAccess m_78260_(String p_78261_) throws IOException {
+    public LevelStorageSource.LevelStorageAccess createAccess(String p_78261_) throws IOException {
 -      return new LevelStorageSource.LevelStorageAccess(p_78261_);
 +      return createAccess(p_78261_, null);
 +   }
@@ -28,59 +28,59 @@
  
     public class LevelStorageAccess implements AutoCloseable {
 @@ -281,9 +_,13 @@
-       private final String f_78272_;
-       private final Map<LevelResource, Path> f_78273_ = Maps.newHashMap();
+       private final String levelId;
+       private final Map<LevelResource, Path> resources = Maps.newHashMap();
  
 -      public LevelStorageAccess(String p_78276_) throws IOException {
--         this.f_78272_ = p_78276_;
--         this.f_78271_ = LevelStorageSource.this.f_78194_.resolve(p_78276_);
+-         this.levelId = p_78276_;
+-         this.levelPath = LevelStorageSource.this.baseDir.resolve(p_78276_);
 +      // CraftBukkit start
 +      public final @Nullable ResourceKey<net.minecraft.world.level.dimension.LevelStem> dimensionType;
 +
 +      public LevelStorageAccess(String s, @Nullable ResourceKey<net.minecraft.world.level.dimension.LevelStem> dimensionType) throws IOException {
 +         this.dimensionType = dimensionType;
-+         this.f_78272_ = s;
-+         this.f_78271_ = LevelStorageSource.this.f_78194_.resolve(s);
-          this.f_78270_ = DirectoryLock.m_13640_(this.f_78271_);
++         this.levelId = s;
++         this.levelPath = LevelStorageSource.this.baseDir.resolve(s);
+          this.lock = DirectoryLock.create(this.levelPath);
        }
  
 @@ -324,6 +_,19 @@
-          return LevelStorageSource.this.m_78229_(this.f_78271_.toFile(), LevelStorageSource.m_211737_(p_211748_, p_211749_, p_211750_));
+          return LevelStorageSource.this.readLevelData(this.levelPath.toFile(), LevelStorageSource.getLevelData(p_211748_, p_211749_, p_211750_));
        }
  
 +      public void readAdditionalLevelSaveData() {
-+         m_78313_();
-+         LevelStorageSource.this.m_78229_(this.f_78271_.toFile(), (file, dataFixer) -> {
++         checkLock();
++         LevelStorageSource.this.readLevelData(this.levelPath.toFile(), (file, dataFixer) -> {
 +            try {
-+               CompoundTag compoundTag = NbtIo.m_128937_(file);
-+               net.minecraftforge.common.ForgeHooks.readAdditionalLevelSaveData(compoundTag, this.f_78271_);
++               CompoundTag compoundTag = NbtIo.readCompressed(file);
++               net.minecraftforge.common.ForgeHooks.readAdditionalLevelSaveData(compoundTag, this.levelPath);
 +            } catch (Exception e) {
-+                f_78191_.error("Exception reading {}", file, e);
++                LOGGER.error("Exception reading {}", file, e);
 +            }
 +            return ""; // Return non-null to prevent level.dat-old inject
 +         });
 +      }
 +
        @Nullable
-       public DataPackConfig m_78309_() {
-          this.m_78313_();
+       public DataPackConfig getDataPacks() {
+          this.checkLock();
 @@ -340,6 +_,8 @@
           CompoundTag compoundtag1 = new CompoundTag();
-          compoundtag1.m_128365_("Data", compoundtag);
+          compoundtag1.put("Data", compoundtag);
  
 +         net.minecraftforge.common.ForgeHooks.writeAdditionalLevelSaveData(p_78292_, compoundtag1);
 +
           try {
              File file2 = File.createTempFile("level", ".dat", file1);
-             NbtIo.m_128944_(compoundtag1, file2);
+             NbtIo.writeCompressed(compoundtag1, file2);
 @@ -354,6 +_,10 @@
  
-       public Optional<Path> m_182514_() {
-          return !this.f_78270_.m_13639_() ? Optional.empty() : Optional.of(this.f_78271_.resolve("icon.png"));
+       public Optional<Path> getIconFile() {
+          return !this.lock.isValid() ? Optional.empty() : Optional.of(this.levelPath.resolve("icon.png"));
 +      }
 +
 +      public Path getWorldDir() {
-+         return f_78271_;
++         return levelPath;
        }
  
-       public void m_78311_() throws IOException {
+       public void deleteLevel() throws IOException {

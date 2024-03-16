@@ -2,16 +2,16 @@
 +++ b/net/minecraft/server/commands/DebugCommand.java
 @@ -38,7 +_,7 @@
  
-    public static void m_136905_(CommandDispatcher<CommandSourceStack> p_136906_) {
-       p_136906_.register(Commands.m_82127_("debug").requires((p_180073_) -> {
--         return p_180073_.m_6761_(3);
+    public static void register(CommandDispatcher<CommandSourceStack> p_136906_) {
+       p_136906_.register(Commands.literal("debug").requires((p_180073_) -> {
+-         return p_180073_.hasPermission(3);
 +         return p_180073_.hasPermission(3,"minecraft.command.debug");
-       }).then(Commands.m_82127_("start").executes((p_180069_) -> {
-          return m_136909_(p_180069_.getSource());
-       })).then(Commands.m_82127_("stop").executes((p_136918_) -> {
+       }).then(Commands.literal("start").executes((p_180069_) -> {
+          return start(p_180069_.getSource());
+       })).then(Commands.literal("stop").executes((p_136918_) -> {
 @@ -216,6 +_,11 @@
  
-       public boolean m_142559_() {
+       public boolean alwaysAccepts() {
           return true;
 +      }
 +

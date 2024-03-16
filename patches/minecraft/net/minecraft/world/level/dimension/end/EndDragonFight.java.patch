@@ -2,40 +2,40 @@
 +++ b/net/minecraft/world/level/dimension/end/EndDragonFight.java
 @@ -100,6 +_,7 @@
  
-          this.f_64068_ = p_64080_.m_128471_("DragonKilled");
-          this.f_64069_ = p_64080_.m_128471_("PreviouslyKilled");
-+         this.f_64071_ = !p_64080_.m_128471_("LegacyScanPerformed"); // Forge: fix MC-105080
-          if (p_64080_.m_128471_("IsRespawning")) {
-             this.f_64073_ = DragonRespawnAnimation.START;
+          this.dragonKilled = p_64080_.getBoolean("DragonKilled");
+          this.previouslyKilled = p_64080_.getBoolean("PreviouslyKilled");
++         this.needsStateScanning = !p_64080_.getBoolean("LegacyScanPerformed"); // Forge: fix MC-105080
+          if (p_64080_.getBoolean("IsRespawning")) {
+             this.respawnStage = DragonRespawnAnimation.START;
           }
 @@ -131,13 +_,14 @@
-       compoundtag.m_128379_("NeedsStateScanning", this.f_64071_);
-       if (this.f_64070_ != null) {
-          compoundtag.m_128362_("Dragon", this.f_64070_);
+       compoundtag.putBoolean("NeedsStateScanning", this.needsStateScanning);
+       if (this.dragonUUID != null) {
+          compoundtag.putUUID("Dragon", this.dragonUUID);
 -      }
  
-       compoundtag.m_128379_("DragonKilled", this.f_64068_);
-       compoundtag.m_128379_("PreviouslyKilled", this.f_64069_);
-+      compoundtag.m_128379_("LegacyScanPerformed", !this.f_64071_); // Forge: fix MC-105080
-       if (this.f_64072_ != null) {
-          compoundtag.m_128365_("ExitPortalLocation", NbtUtils.m_129224_(this.f_64072_));
+       compoundtag.putBoolean("DragonKilled", this.dragonKilled);
+       compoundtag.putBoolean("PreviouslyKilled", this.previouslyKilled);
++      compoundtag.putBoolean("LegacyScanPerformed", !this.needsStateScanning); // Forge: fix MC-105080
+       if (this.portalLocation != null) {
+          compoundtag.put("ExitPortalLocation", NbtUtils.writeBlockPos(this.portalLocation));
        }
 +      }
  
        ListTag listtag = new ListTag();
  
 @@ -507,6 +_,13 @@
-             endcrystal.m_31052_((BlockPos)null);
+             endcrystal.setBeamTarget((BlockPos)null);
           }
        }
 -
 +   }
 +
 +   public void addPlayer(ServerPlayer player) {
-+      this.f_64060_.m_6543_(player);
++      this.dragonEvent.addPlayer(player);
 +   }
 +
 +   public void removePlayer(ServerPlayer player) {
-+      this.f_64060_.m_6539_(player);
++      this.dragonEvent.removePlayer(player);
     }
  }

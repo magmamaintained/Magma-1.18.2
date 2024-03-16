@@ -7,10 +7,10 @@
 +   /** @deprecated Forge: Use the {@link #ConfiguredStructureTagsProvider(DataGenerator, String, net.minecraftforge.common.data.ExistingFileHelper) mod id variant} */
 +   @Deprecated
     public ConfiguredStructureTagsProvider(DataGenerator p_211098_) {
-       super(p_211098_, BuiltinRegistries.f_123862_);
+       super(p_211098_, BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE);
 +   }
 +   public ConfiguredStructureTagsProvider(DataGenerator p_211098_, String modId, @org.jetbrains.annotations.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
-+      super(p_211098_, BuiltinRegistries.f_123862_, modId, existingFileHelper);
++      super(p_211098_, BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, modId, existingFileHelper);
     }
  
-    protected void m_6577_() {
+    protected void addTags() {

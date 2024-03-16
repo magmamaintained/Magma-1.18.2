@@ -3,13 +3,13 @@
 @@ -73,6 +_,12 @@
     }
  
-    public boolean m_8045_() {
+    public boolean canContinueToUse() {
 +      // CraftBukkit start - introduce a temporary timeout hack until this is fixed properly
-+      if ((this.f_25684_.f_19797_ - this.f_25684_.f_20950_) > 100) {
-+         this.f_25684_.m_6703_((net.minecraft.world.entity.LivingEntity) null);
++      if ((this.mob.tickCount - this.mob.lastHurtByMobTimestamp) > 100) {
++         this.mob.setLastHurtByMob((net.minecraft.world.entity.LivingEntity) null);
 +         return false;
 +      }
 +      // CraftBukkit end
-       return !this.f_25684_.m_21573_().m_26571_();
+       return !this.mob.getNavigation().isDone();
     }
  

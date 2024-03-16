@@ -1,33 +1,33 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
 @@ -53,7 +_,7 @@
-       p_177615_.m_46170_(GameRules.f_46134_).m_46246_(false, (MinecraftServer)null);
-       p_177615_.m_46170_(GameRules.f_46150_).m_46246_(false, (MinecraftServer)null);
+       p_177615_.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, (MinecraftServer)null);
+       p_177615_.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, (MinecraftServer)null);
     });
--   private static final LevelSettings f_177590_ = new LevelSettings("Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, f_177589_, DataPackConfig.f_45842_);
-+   private static final LevelSettings f_177590_ = new LevelSettings("Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, f_177589_, DataPackConfig.f_45842_, Lifecycle.experimental());
+-   private static final LevelSettings TEST_SETTINGS = new LevelSettings("Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, DataPackConfig.DEFAULT);
++   private static final LevelSettings TEST_SETTINGS = new LevelSettings("Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, DataPackConfig.DEFAULT, Lifecycle.experimental());
     @Nullable
-    private MultipleTestTracker f_177591_;
+    private MultipleTestTracker testTracker;
  
 @@ -93,12 +_,13 @@
-    public boolean m_7038_() {
-       this.m_129823_(new PlayerList(this, this.m_206579_(), this.f_129745_, 1) {
+    public boolean initServer() {
+       this.setPlayerList(new PlayerList(this, this.registryAccess(), this.playerDataStorage, 1) {
        });
--      this.m_130006_();
+-      this.loadLevel();
 +      if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this)) return false;
-+      this.m_130006_(); // Magma
-       ServerLevel serverlevel = this.m_129783_();
-       serverlevel.m_8733_(this.f_177588_, 0.0F);
++      this.loadLevel(); // Magma
+       ServerLevel serverlevel = this.overworld();
+       serverlevel.setDefaultSpawnPos(this.spawnPos, 0.0F);
        int i = 20000000;
-       serverlevel.m_8606_(20000000, 20000000, false, false);
+       serverlevel.setWeatherParameters(20000000, 20000000, false, false);
 -      return true;
 +      return net.minecraftforge.server.ServerLifecycleHooks.handleServerStarting(this);
     }
  
-    public void m_5705_(BooleanSupplier p_177619_) {
+    public void tickServer(BooleanSupplier p_177619_) {
 @@ -200,6 +_,11 @@
  
-    public boolean m_6102_() {
+    public boolean shouldInformAdmins() {
        return false;
 +   }
 +
@@ -36,4 +36,4 @@
 +      return console;
     }
  
-    public boolean m_7779_(GameProfile p_177617_) {
+    public boolean isSingleplayerOwner(GameProfile p_177617_) {

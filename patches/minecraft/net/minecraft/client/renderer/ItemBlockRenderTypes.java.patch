@@ -5,66 +5,66 @@
  @OnlyIn(Dist.CLIENT)
  public class ItemBlockRenderTypes {
 +   @Deprecated
-    private static final Map<Block, RenderType> f_109275_ = Util.m_137469_(Maps.newHashMap(), (p_109296_) -> {
-       RenderType rendertype = RenderType.m_110503_();
-       p_109296_.put(Blocks.f_50267_, rendertype);
+    private static final Map<Block, RenderType> TYPE_BY_BLOCK = Util.make(Maps.newHashMap(), (p_109296_) -> {
+       RenderType rendertype = RenderType.tripwire();
+       p_109296_.put(Blocks.TRIPWIRE, rendertype);
 @@ -286,6 +_,7 @@
-       p_109296_.put(Blocks.f_50628_, rendertype3);
-       p_109296_.put(Blocks.f_152498_, rendertype3);
+       p_109296_.put(Blocks.BUBBLE_COLUMN, rendertype3);
+       p_109296_.put(Blocks.TINTED_GLASS, rendertype3);
     });
 +   @Deprecated
-    private static final Map<Fluid, RenderType> f_109276_ = Util.m_137469_(Maps.newHashMap(), (p_109290_) -> {
-       RenderType rendertype = RenderType.m_110466_();
-       p_109290_.put(Fluids.f_76192_, rendertype);
+    private static final Map<Fluid, RenderType> TYPE_BY_FLUID = Util.make(Maps.newHashMap(), (p_109290_) -> {
+       RenderType rendertype = RenderType.translucent();
+       p_109290_.put(Fluids.FLOWING_WATER, rendertype);
 @@ -293,6 +_,7 @@
     });
-    private static boolean f_109277_;
+    private static boolean renderCutout;
  
 +   @Deprecated // FORGE: Use canRenderInLayer
-    public static RenderType m_109282_(BlockState p_109283_) {
-       Block block = p_109283_.m_60734_();
+    public static RenderType getChunkRenderType(BlockState p_109283_) {
+       Block block = p_109283_.getBlock();
        if (block instanceof LeavesBlock) {
 @@ -303,6 +_,7 @@
        }
     }
  
 +   @Deprecated // FORGE: Use canRenderInLayer
-    public static RenderType m_109293_(BlockState p_109294_) {
-       Block block = p_109294_.m_60734_();
+    public static RenderType getMovingBlockRenderType(BlockState p_109294_) {
+       Block block = p_109294_.getBlock();
        if (block instanceof LeavesBlock) {
 @@ -318,8 +_,7 @@
     }
  
-    public static RenderType m_109284_(BlockState p_109285_, boolean p_109286_) {
--      RenderType rendertype = m_109282_(p_109285_);
--      if (rendertype == RenderType.m_110466_()) {
-+      if (canRenderInLayer(p_109285_, RenderType.m_110466_())) {
-          if (!Minecraft.m_91085_()) {
-             return Sheets.m_110792_();
+    public static RenderType getRenderType(BlockState p_109285_, boolean p_109286_) {
+-      RenderType rendertype = getChunkRenderType(p_109285_);
+-      if (rendertype == RenderType.translucent()) {
++      if (canRenderInLayer(p_109285_, RenderType.translucent())) {
+          if (!Minecraft.useShaderTransparency()) {
+             return Sheets.translucentCullBlockSheet();
           } else {
 @@ -340,9 +_,111 @@
        }
     }
  
 +   @Deprecated // FORGE: Use canRenderInLayer
-    public static RenderType m_109287_(FluidState p_109288_) {
-       RenderType rendertype = f_109276_.get(p_109288_.m_76152_());
-       return rendertype != null ? rendertype : RenderType.m_110451_();
+    public static RenderType getRenderLayer(FluidState p_109288_) {
+       RenderType rendertype = TYPE_BY_FLUID.get(p_109288_.getType());
+       return rendertype != null ? rendertype : RenderType.solid();
 +   }
 +
 +   // FORGE START
 +
-+   private static final java.util.function.Predicate<RenderType> SOLID_PREDICATE = type -> type == RenderType.m_110451_();
++   private static final java.util.function.Predicate<RenderType> SOLID_PREDICATE = type -> type == RenderType.solid();
 +   // Access to the two following editable maps is guarded by synchronization and they are lazily copied to the "readonly" maps on first read after modification
-+   private static final Map<net.minecraftforge.registries.IRegistryDelegate<Block>, java.util.function.Predicate<RenderType>> blockRenderChecks = createRenderCheckMap(f_109275_);
-+   private static final Map<net.minecraftforge.registries.IRegistryDelegate<Fluid>, java.util.function.Predicate<RenderType>> fluidRenderChecks = createRenderCheckMap(f_109276_);
++   private static final Map<net.minecraftforge.registries.IRegistryDelegate<Block>, java.util.function.Predicate<RenderType>> blockRenderChecks = createRenderCheckMap(TYPE_BY_BLOCK);
++   private static final Map<net.minecraftforge.registries.IRegistryDelegate<Fluid>, java.util.function.Predicate<RenderType>> fluidRenderChecks = createRenderCheckMap(TYPE_BY_FLUID);
 +   @org.jetbrains.annotations.Nullable private static volatile Map<net.minecraftforge.registries.IRegistryDelegate<Block>, java.util.function.Predicate<RenderType>> blockRenderChecksReadOnly = null;
 +   @org.jetbrains.annotations.Nullable private static volatile Map<net.minecraftforge.registries.IRegistryDelegate<Fluid>, java.util.function.Predicate<RenderType>> fluidRenderChecksReadOnly = null;
 +
 +   private static <T extends net.minecraftforge.registries.ForgeRegistryEntry<T>> Map<net.minecraftforge.registries.IRegistryDelegate<T>, java.util.function.Predicate<RenderType>> createRenderCheckMap(
 +           Map<T, RenderType> vanillaMap
 +   ) {
-+      return Util.m_137469_(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(vanillaMap.size(), 0.5F), map -> {
++      return Util.make(new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(vanillaMap.size(), 0.5F), map -> {
 +         map.defaultReturnValue(SOLID_PREDICATE);
 +         for (Map.Entry<T, RenderType> entry : vanillaMap.entrySet()) {
 +            map.put(entry.getKey().delegate, createMatchingLayerPredicate(entry.getValue()));
@@ -73,16 +73,16 @@
 +   }
 +
 +   public static boolean canRenderInLayer(BlockState state, RenderType type) {
-+      Block block = state.m_60734_();
++      Block block = state.getBlock();
 +      if (block instanceof LeavesBlock) {
-+         return f_109277_ ? type == RenderType.m_110457_() : type == RenderType.m_110451_();
++         return renderCutout ? type == RenderType.cutoutMipped() : type == RenderType.solid();
 +      } else {
 +         return getBlockLayerPredicates().get(block.delegate).test(type);
 +      }
 +   }
 +
 +   public static boolean canRenderInLayer(FluidState fluid, RenderType type) {
-+      return getFluidLayerPredicates().get(fluid.m_76152_().delegate).test(type);
++      return getFluidLayerPredicates().get(fluid.getType().delegate).test(type);
 +   }
 +
 +   public static void setRenderLayer(Block block, RenderType type) {
@@ -153,4 +153,4 @@
 +      return type::equals;
     }
  
-    public static void m_109291_(boolean p_109292_) {
+    public static void setFancy(boolean p_109292_) {

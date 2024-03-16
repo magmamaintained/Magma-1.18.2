@@ -1,27 +1,27 @@
 --- a/net/minecraft/world/level/storage/DerivedLevelData.java
 +++ b/net/minecraft/world/level/storage/DerivedLevelData.java
 @@ -15,9 +_,19 @@
-    private final WorldData f_78076_;
-    private final ServerLevelData f_78077_;
+    private final WorldData worldData;
+    private final ServerLevelData wrapped;
  
 +   //Magma start - add level name
 +   private String levelName;
 +
     public DerivedLevelData(WorldData p_78079_, ServerLevelData p_78080_) {
-       this.f_78076_ = p_78079_;
-       this.f_78077_ = p_78080_;
+       this.worldData = p_78079_;
+       this.wrapped = p_78080_;
 +
-+      this.levelName = f_78076_.m_5462_();
++      this.levelName = worldData.getLevelName();
 +      //Magma end
 +   }
 +
 +   public ServerLevelData getWrapped() {
-+      return f_78077_;
++      return wrapped;
     }
  
-    public int m_6789_() {
+    public int getXSpawn() {
 @@ -44,9 +_,15 @@
-       return this.f_78077_.m_6792_();
+       return this.wrapped.getDayTime();
     }
  
 +   //Magma start - add level name
@@ -29,11 +29,11 @@
 +      this.levelName = levelName;
 +   }
 +
-    public String m_5462_() {
--      return this.f_78076_.m_5462_();
+    public String getLevelName() {
+-      return this.worldData.getLevelName();
 +      return levelName;
     }
 +   //Magma end
  
-    public int m_6537_() {
-       return this.f_78077_.m_6537_();
+    public int getClearWeatherTime() {
+       return this.wrapped.getClearWeatherTime();

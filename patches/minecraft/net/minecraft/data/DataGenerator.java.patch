@@ -1,30 +1,30 @@
 --- a/net/minecraft/data/DataGenerator.java
 +++ b/net/minecraft/data/DataGenerator.java
 @@ -16,10 +_,11 @@
-    private final Collection<Path> f_123906_;
-    private final Path f_123907_;
-    private final List<DataProvider> f_123908_ = Lists.newArrayList();
-+   private final List<DataProvider> providerView = java.util.Collections.unmodifiableList(f_123908_);
+    private final Collection<Path> inputFolders;
+    private final Path outputFolder;
+    private final List<DataProvider> providers = Lists.newArrayList();
++   private final List<DataProvider> providerView = java.util.Collections.unmodifiableList(providers);
  
     public DataGenerator(Path p_123911_, Collection<Path> p_123912_) {
-       this.f_123907_ = p_123911_;
--      this.f_123906_ = p_123912_;
-+      this.f_123906_ = Lists.newArrayList(p_123912_);
+       this.outputFolder = p_123911_;
+-      this.inputFolders = p_123912_;
++      this.inputFolders = Lists.newArrayList(p_123912_);
     }
  
-    public Collection<Path> m_123913_() {
+    public Collection<Path> getInputFolders() {
 @@ -38,6 +_,7 @@
  
-       for(DataProvider dataprovider : this.f_123908_) {
-          f_123905_.info("Starting provider: {}", (Object)dataprovider.m_6055_());
-+         net.minecraftforge.fml.StartupMessageManager.addModMessage("Generating: " + dataprovider.m_6055_());
+       for(DataProvider dataprovider : this.providers) {
+          LOGGER.info("Starting provider: {}", (Object)dataprovider.getName());
++         net.minecraftforge.fml.StartupMessageManager.addModMessage("Generating: " + dataprovider.getName());
           stopwatch1.start();
-          dataprovider.m_6865_(hashcache);
+          dataprovider.run(hashcache);
           stopwatch1.stop();
 @@ -51,6 +_,14 @@
  
-    public void m_123914_(DataProvider p_123915_) {
-       this.f_123908_.add(p_123915_);
+    public void addProvider(DataProvider p_123915_) {
+       this.providers.add(p_123915_);
 +   }
 +
 +   public List<DataProvider> getProviders() {
@@ -32,7 +32,7 @@
 +   }
 +
 +   public void addInput(Path value) {
-+      this.f_123906_.add(value);
++      this.inputFolders.add(value);
     }
  
     static {

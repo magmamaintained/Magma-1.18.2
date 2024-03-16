@@ -6,57 +6,57 @@
  
 -public class MobEffect {
 +public class MobEffect extends net.minecraftforge.registries.ForgeRegistryEntry<MobEffect> implements net.minecraftforge.common.extensions.IForgeMobEffect {
-    private final Map<Attribute, AttributeModifier> f_19446_ = Maps.newHashMap();
-    private final MobEffectCategory f_19447_;
-    private final int f_19448_;
+    private final Map<Attribute, AttributeModifier> attributeModifiers = Maps.newHashMap();
+    private final MobEffectCategory category;
+    private final int color;
 @@ -37,30 +_,45 @@
     protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
-       this.f_19447_ = p_19451_;
-       this.f_19448_ = p_19452_;
+       this.category = p_19451_;
+       this.color = p_19452_;
 +      initClient();
     }
  
-    public void m_6742_(LivingEntity p_19467_, int p_19468_) {
-       if (this == MobEffects.f_19605_) {
-          if (p_19467_.m_21223_() < p_19467_.m_21233_()) {
+    public void applyEffectTick(LivingEntity p_19467_, int p_19468_) {
+       if (this == MobEffects.REGENERATION) {
+          if (p_19467_.getHealth() < p_19467_.getMaxHealth()) {
 +            p_19467_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC_REGEN);
-             p_19467_.m_5634_(1.0F);
+             p_19467_.heal(1.0F);
           }
-       } else if (this == MobEffects.f_19614_) {
-          if (p_19467_.m_21223_() > 1.0F) {
--            p_19467_.m_6469_(DamageSource.f_19319_, 1.0F);
-+            p_19467_.m_6469_(org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.POISON, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.POISON
+       } else if (this == MobEffects.POISON) {
+          if (p_19467_.getHealth() > 1.0F) {
+-            p_19467_.hurt(DamageSource.MAGIC, 1.0F);
++            p_19467_.hurt(org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.POISON, 1.0F);  // CraftBukkit - DamageSource.MAGIC -> org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.POISON
           }
-       } else if (this == MobEffects.f_19615_) {
-          p_19467_.m_6469_(DamageSource.f_19320_, 1.0F);
--      } else if (this == MobEffects.f_19612_ && p_19467_ instanceof Player) {
--         ((Player)p_19467_).m_36399_(0.005F * (float)(p_19468_ + 1));
-+      } else if (this == MobEffects.f_19612_ && p_19467_ instanceof Player player) {
+       } else if (this == MobEffects.WITHER) {
+          p_19467_.hurt(DamageSource.WITHER, 1.0F);
+-      } else if (this == MobEffects.HUNGER && p_19467_ instanceof Player) {
+-         ((Player)p_19467_).causeFoodExhaustion(0.005F * (float)(p_19468_ + 1));
++      } else if (this == MobEffects.HUNGER && p_19467_ instanceof Player player) {
 +         player.setExhaustionReason(org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.HUNGER_EFFECT);
-+         player.m_36399_(0.005F * (float)(p_19468_ + 1));
-       } else if (this == MobEffects.f_19618_ && p_19467_ instanceof Player) {
-          if (!p_19467_.f_19853_.f_46443_) {
--            ((Player)p_19467_).m_36324_().m_38707_(p_19468_ + 1, 1.0F);
++         player.causeFoodExhaustion(0.005F * (float)(p_19468_ + 1));
+       } else if (this == MobEffects.SATURATION && p_19467_ instanceof Player) {
+          if (!p_19467_.level.isClientSide) {
+-            ((Player)p_19467_).getFoodData().eat(p_19468_ + 1, 1.0F);
 +            // CraftBukkit start
 +            Player entityhuman = (Player) p_19467_;
-+            int oldFoodLevel = entityhuman.m_36324_().f_38696_;
++            int oldFoodLevel = entityhuman.getFoodData().foodLevel;
 +
 +            org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callFoodLevelChangeEvent(entityhuman, p_19468_ + 1 + oldFoodLevel);
 +
 +            if (!event.isCancelled()) {
-+               entityhuman.m_36324_().m_38707_(event.getFoodLevel() - oldFoodLevel, 1.0F);
++               entityhuman.getFoodData().eat(event.getFoodLevel() - oldFoodLevel, 1.0F);
 +            }
 +
-+            ((net.minecraft.server.level.ServerPlayer) entityhuman).f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundSetHealthPacket(((net.minecraft.server.level.ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), entityhuman.m_36324_().f_38696_, entityhuman.m_36324_().f_38697_));
++            ((net.minecraft.server.level.ServerPlayer) entityhuman).connection.send(new net.minecraft.network.protocol.game.ClientboundSetHealthPacket(((net.minecraft.server.level.ServerPlayer) entityhuman).getBukkitEntity().getScaledHealth(), entityhuman.getFoodData().foodLevel, entityhuman.getFoodData().saturationLevel));
 +            // CraftBukkit end
           }
-       } else if ((this != MobEffects.f_19601_ || p_19467_.m_21222_()) && (this != MobEffects.f_19602_ || !p_19467_.m_21222_())) {
-          if (this == MobEffects.f_19602_ && !p_19467_.m_21222_() || this == MobEffects.f_19601_ && p_19467_.m_21222_()) {
-             p_19467_.m_6469_(DamageSource.f_19319_, (float)(6 << p_19468_));
+       } else if ((this != MobEffects.HEAL || p_19467_.isInvertedHealAndHarm()) && (this != MobEffects.HARM || !p_19467_.isInvertedHealAndHarm())) {
+          if (this == MobEffects.HARM && !p_19467_.isInvertedHealAndHarm() || this == MobEffects.HEAL && p_19467_.isInvertedHealAndHarm()) {
+             p_19467_.hurt(DamageSource.MAGIC, (float)(6 << p_19468_));
           }
        } else {
 +         p_19467_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC);
-          p_19467_.m_5634_((float)Math.max(4 << p_19468_, 0));
+          p_19467_.heal((float)Math.max(4 << p_19468_, 0));
        }
  
 @@ -80,6 +_,7 @@
@@ -64,12 +64,12 @@
        } else {
           int i = (int)(p_19466_ * (double)(4 << p_19465_) + 0.5D);
 +         p_19464_.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC);
-          p_19464_.m_5634_((float)i);
+          p_19464_.heal((float)i);
        }
  
 @@ -179,4 +_,29 @@
-    public boolean m_19486_() {
-       return this.f_19447_ == MobEffectCategory.BENEFICIAL;
+    public boolean isBeneficial() {
+       return this.category == MobEffectCategory.BENEFICIAL;
     }
 +
 +   // FORGE START

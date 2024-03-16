@@ -1,64 +1,64 @@
 --- a/net/minecraft/server/level/ChunkHolder.java
 +++ b/net/minecraft/server/level/ChunkHolder.java
 @@ -67,6 +_,7 @@
-    public final ChunkHolder.PlayerProvider f_140016_;
-    private boolean f_140017_;
-    private boolean f_140018_;
+    public final ChunkHolder.PlayerProvider playerProvider;
+    private boolean wasAccessibleSinceLastSave;
+    private boolean resendLight;
 +   LevelChunk currentlyLoading; // Forge: Used to bypass future chain when loading chunks.
-    private CompletableFuture<Void> f_142981_ = CompletableFuture.completedFuture((Void)null);
+    private CompletableFuture<Void> pendingFullStateConfirmation = CompletableFuture.completedFuture((Void)null);
  
     public ChunkHolder(ChunkPos p_142986_, int p_142987_, LevelHeightAccessor p_142988_, LevelLightEngine p_142989_, ChunkHolder.LevelChangeListener p_142990_, ChunkHolder.PlayerProvider p_142991_) {
 @@ -82,6 +_,20 @@
-       this.f_140011_ = new ShortSet[p_142988_.m_151559_()];
+       this.changedBlocksPerSection = new ShortSet[p_142988_.getSectionsCount()];
     }
  
 +   // CraftBukkit start
 +   public LevelChunk getFullChunkNow() {
 +      // Note: We use the oldTicketLevel for isLoaded checks.
-+      if (!m_140083_(this.f_140006_).m_140114_(ChunkHolder.FullChunkStatus.BORDER)) return null;
++      if (!getFullChunkStatus(this.oldTicketLevel).isOrAfter(ChunkHolder.FullChunkStatus.BORDER)) return null;
 +      return this.getFullChunkNowUnchecked();
 +   }
 +
 +   public LevelChunk getFullChunkNowUnchecked() {
-+      CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> statusFuture = this.m_140047_(ChunkStatus.f_62326_);
++      CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> statusFuture = this.getFutureIfPresentUnchecked(ChunkStatus.FULL);
 +      Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> either = (Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>) statusFuture.getNow(null);
 +      return (either == null) ? null : (LevelChunk) either.left().orElse(null);
 +   }
 +   // CraftBukkit end
 +   
-    public CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> m_140047_(ChunkStatus p_140048_) {
-       CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.f_140001_.get(p_140048_.m_62445_());
-       return completablefuture == null ? f_139996_ : completablefuture;
+    public CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> getFutureIfPresentUnchecked(ChunkStatus p_140048_) {
+       CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.futures.get(p_140048_.getIndex());
+       return completablefuture == null ? UNLOADED_CHUNK_FUTURE : completablefuture;
 @@ -154,6 +_,8 @@
-       LevelChunk levelchunk = this.m_140085_();
+       LevelChunk levelchunk = this.getTickingChunk();
        if (levelchunk != null) {
-          int i = this.f_142983_.m_151564_(p_140057_.m_123342_());
+          int i = this.levelHeightAccessor.getSectionIndex(p_140057_.getY());
 +
-+         if (i < 0 || i >= this.f_140011_.length) return; // CraftBukkit - SPIGOT-6086, SPIGOT-6296
-          if (this.f_140011_[i] == null) {
-             this.f_140010_ = true;
-             this.f_140011_[i] = new ShortOpenHashSet();
++         if (i < 0 || i >= this.changedBlocksPerSection.length) return; // CraftBukkit - SPIGOT-6086, SPIGOT-6296
+          if (this.changedBlocksPerSection[i] == null) {
+             this.hasChangedSections = true;
+             this.changedBlocksPerSection[i] = new ShortOpenHashSet();
 @@ -350,6 +_,30 @@
-       boolean flag1 = this.f_140007_ <= ChunkMap.f_140127_;
-       ChunkHolder.FullChunkStatus chunkholder$fullchunkstatus = m_140083_(this.f_140006_);
-       ChunkHolder.FullChunkStatus chunkholder$fullchunkstatus1 = m_140083_(this.f_140007_);
+       boolean flag1 = this.ticketLevel <= ChunkMap.MAX_CHUNK_DISTANCE;
+       ChunkHolder.FullChunkStatus chunkholder$fullchunkstatus = getFullChunkStatus(this.oldTicketLevel);
+       ChunkHolder.FullChunkStatus chunkholder$fullchunkstatus1 = getFullChunkStatus(this.ticketLevel);
 +      // CraftBukkit start
 +      // ChunkUnloadEvent: Called before the chunk is unloaded: isChunkLoaded is still true and chunk can still be modified by plugins.
-+      if (chunkholder$fullchunkstatus.m_140114_(ChunkHolder.FullChunkStatus.BORDER) && !chunkholder$fullchunkstatus1.m_140114_(ChunkHolder.FullChunkStatus.BORDER)) {
-+         this.m_140047_(ChunkStatus.f_62326_).thenAccept((either) -> {
++      if (chunkholder$fullchunkstatus.isOrAfter(ChunkHolder.FullChunkStatus.BORDER) && !chunkholder$fullchunkstatus1.isOrAfter(ChunkHolder.FullChunkStatus.BORDER)) {
++         this.getFutureIfPresentUnchecked(ChunkStatus.FULL).thenAccept((either) -> {
 +            LevelChunk chunk = (LevelChunk)either.left().orElse(null);
 +            if (chunk != null) {
 +               p_143004_.callbackExecutor.execute(() -> {
 +                  // Minecraft will apply the chunks tick lists to the world once the chunk got loaded, and then store the tick
 +                  // lists again inside the chunk once the chunk becomes inaccessible and set the chunk's needsSaving flag.
 +                  // These actions may however happen deferred, so we manually set the needsSaving flag already here.
-+                  chunk.m_8092_(true);
++                  chunk.setUnsaved(true);
 +                  chunk.unloadCallback();
 +               });
 +            }
 +         }).exceptionally((throwable) -> {
 +            // ensure exceptions are printed, by default this is not the case
-+            net.minecraft.server.MinecraftServer.f_129750_.error("Failed to schedule unload callback for chunk " + ChunkHolder.this.f_140009_, throwable);
++            net.minecraft.server.MinecraftServer.LOGGER.error("Failed to schedule unload callback for chunk " + ChunkHolder.this.pos, throwable);
 +            return null;
 +         });
 +         // Run callback right away if the future was already done
@@ -71,12 +71,12 @@
              public String toString() {
 @@ -415,6 +_,24 @@
  
-       this.f_140015_.m_6250_(this.f_140009_, this::m_140094_, this.f_140007_, this::m_140086_);
-       this.f_140006_ = this.f_140007_;
+       this.onLevelChange.onLevelChange(this.pos, this::getQueueLevel, this.ticketLevel, this::setQueueLevel);
+       this.oldTicketLevel = this.ticketLevel;
 +      // CraftBukkit start
 +      // ChunkLoadEvent: Called after the chunk is loaded: isChunkLoaded returns true and chunk is ready to be modified by plugins.
-+      if (!chunkholder$fullchunkstatus.m_140114_(ChunkHolder.FullChunkStatus.BORDER) && chunkholder$fullchunkstatus1.m_140114_(ChunkHolder.FullChunkStatus.BORDER)) {
-+         this.m_140047_(ChunkStatus.f_62326_).thenAccept((either) -> {
++      if (!chunkholder$fullchunkstatus.isOrAfter(ChunkHolder.FullChunkStatus.BORDER) && chunkholder$fullchunkstatus1.isOrAfter(ChunkHolder.FullChunkStatus.BORDER)) {
++         this.getFutureIfPresentUnchecked(ChunkStatus.FULL).thenAccept((either) -> {
 +            LevelChunk chunk = (LevelChunk)either.left().orElse(null);
 +            if (chunk != null) {
 +               p_143004_.callbackExecutor.execute(() -> {
@@ -93,7 +93,7 @@
 +      // CraftBukkit end
     }
  
-    public static ChunkStatus m_140074_(int p_140075_) {
+    public static ChunkStatus getStatus(int p_140075_) {
 @@ -464,6 +_,14 @@
           }
        };
@@ -101,11 +101,11 @@
 +
 +   // CraftBukkit start
 +   public LevelChunk getFullChunkUnchecked() {
-+      CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> statusFuture = this.m_140047_(ChunkStatus.f_62326_);
++      CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> statusFuture = this.getFutureIfPresentUnchecked(ChunkStatus.FULL);
 +      Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure> either = (Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>) statusFuture.getNow(null);
 +      return (either == null) ? null : (LevelChunk) either.left().orElse(null);
 +   }
 +   // CraftBukkit end
  
     static final class ChunkSaveDebug {
-       private final Thread f_143023_;
+       private final Thread thread;

@@ -1,43 +1,43 @@
 --- a/com/mojang/math/Matrix4f.java
 +++ b/com/mojang/math/Matrix4f.java
 @@ -559,4 +_,40 @@
-       matrix4f.f_27614_ = p_27656_;
+       matrix4f.m23 = p_27656_;
        return matrix4f;
     }
 +
 +    // Forge start
 +    public Matrix4f(float[] values) {
-+        f_27603_ = values[0];
-+        f_27604_ = values[1];
-+        f_27605_ = values[2];
-+        f_27606_ = values[3];
-+        f_27607_ = values[4];
-+        f_27608_ = values[5];
-+        f_27609_ = values[6];
-+        f_27610_ = values[7];
-+        f_27611_ = values[8];
-+        f_27612_ = values[9];
-+        f_27613_ = values[10];
-+        f_27614_ = values[11];
-+        f_27615_ = values[12];
-+        f_27616_ = values[13];
-+        f_27617_ = values[14];
-+        f_27618_ = values[15];
++        m00 = values[0];
++        m01 = values[1];
++        m02 = values[2];
++        m03 = values[3];
++        m10 = values[4];
++        m11 = values[5];
++        m12 = values[6];
++        m13 = values[7];
++        m20 = values[8];
++        m21 = values[9];
++        m22 = values[10];
++        m23 = values[11];
++        m30 = values[12];
++        m31 = values[13];
++        m32 = values[14];
++        m33 = values[15];
 +    }
 +
 +    public void multiplyBackward(Matrix4f other) {
-+        Matrix4f copy = other.m_27658_();
-+        copy.m_27644_(this);
-+        this.m_162210_(copy);
++        Matrix4f copy = other.copy();
++        copy.multiply(this);
++        this.load(copy);
 +    }
 +
 +    public void setTranslation(float x, float y, float z) {
-+        this.f_27603_ = 1.0F;
-+        this.f_27608_ = 1.0F;
-+        this.f_27613_ = 1.0F;
-+        this.f_27618_ = 1.0F;
-+        this.f_27606_ = x;
-+        this.f_27610_ = y;
-+        this.f_27614_ = z;
++        this.m00 = 1.0F;
++        this.m11 = 1.0F;
++        this.m22 = 1.0F;
++        this.m33 = 1.0F;
++        this.m03 = x;
++        this.m13 = y;
++        this.m23 = z;
 +    }
  }

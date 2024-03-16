@@ -3,8 +3,8 @@
 @@ -129,6 +_,6 @@
     }
  
-    private EntityType<?> m_66358_(Random p_66359_) {
--      return Util.m_137545_(f_66341_, p_66359_);
+    private EntityType<?> randomEntityId(Random p_66359_) {
+-      return Util.getRandom(MOBS, p_66359_);
 +      return net.minecraftforge.common.DungeonHooks.getRandomDungeonMob(p_66359_);
     }
  }

@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/BanPlayerCommands.java
 @@ -23,7 +_,7 @@
  
-    public static void m_136558_(CommandDispatcher<CommandSourceStack> p_136559_) {
-       p_136559_.register(Commands.m_82127_("ban").requires((p_136563_) -> {
--         return p_136563_.m_6761_(3);
+    public static void register(CommandDispatcher<CommandSourceStack> p_136559_) {
+       p_136559_.register(Commands.literal("ban").requires((p_136563_) -> {
+-         return p_136563_.hasPermission(3);
 +         return p_136563_.hasPermission(3,"minecraft.command.ban");
-       }).then(Commands.m_82129_("targets", GameProfileArgument.m_94584_()).executes((p_136569_) -> {
-          return m_136564_(p_136569_.getSource(), GameProfileArgument.m_94590_(p_136569_, "targets"), (Component)null);
-       }).then(Commands.m_82129_("reason", MessageArgument.m_96832_()).executes((p_136561_) -> {
+       }).then(Commands.argument("targets", GameProfileArgument.gameProfile()).executes((p_136569_) -> {
+          return banPlayers(p_136569_.getSource(), GameProfileArgument.getGameProfiles(p_136569_, "targets"), (Component)null);
+       }).then(Commands.argument("reason", MessageArgument.message()).executes((p_136561_) -> {

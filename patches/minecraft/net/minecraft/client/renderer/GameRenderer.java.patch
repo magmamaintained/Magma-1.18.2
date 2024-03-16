@@ -1,17 +1,17 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
 @@ -288,6 +_,8 @@
-          this.m_109128_(new ResourceLocation("shaders/post/spider.json"));
+          this.loadEffect(new ResourceLocation("shaders/post/spider.json"));
        } else if (p_109107_ instanceof EnderMan) {
-          this.m_109128_(new ResourceLocation("shaders/post/invert.json"));
+          this.loadEffect(new ResourceLocation("shaders/post/invert.json"));
 +      } else {
 +         net.minecraftforge.client.ForgeHooksClient.loadEntityShader(p_109107_, this);
        }
  
     }
 @@ -544,6 +_,7 @@
-          list1.add(Pair.of(new ShaderInstance(p_172768_, "rendertype_crumbling", DefaultVertexFormat.f_85811_), (p_172733_) -> {
-             f_172607_ = p_172733_;
+          list1.add(Pair.of(new ShaderInstance(p_172768_, "rendertype_crumbling", DefaultVertexFormat.BLOCK), (p_172733_) -> {
+             rendertypeCrumblingShader = p_172733_;
           }));
 +         net.minecraftforge.fml.ModLoader.get().postEvent(new net.minecraftforge.client.event.RegisterShadersEvent(p_172768_, list1));
        } catch (IOException ioexception) {
@@ -21,8 +21,8 @@
              boolean flag = false;
              int i = 3;
              double d1 = d0;
-+            double atkRange = this.f_109059_.f_91074_.getAttackRange();
-             if (this.f_109059_.f_91072_.m_105291_()) {
++            double atkRange = this.minecraft.player.getAttackRange();
+             if (this.minecraft.gameMode.hasFarPickRange()) {
 -               d1 = 6.0D;
 +               d1 = Math.max(d0, atkRange);
                 d0 = d1;
@@ -37,22 +37,22 @@
              }
  
              d1 *= d1;
--            if (this.f_109059_.f_91077_ != null) {
-+            if (this.f_109059_.f_91077_ != null && this.f_109059_.f_91077_.m_6662_() != HitResult.Type.MISS) { // Add != MISS to ensure Attack Range is not clamped at the value of Reach Distance.
-                d1 = this.f_109059_.f_91077_.m_82450_().m_82557_(vec3);
+-            if (this.minecraft.hitResult != null) {
++            if (this.minecraft.hitResult != null && this.minecraft.hitResult.getType() != HitResult.Type.MISS) { // Add != MISS to ensure Attack Range is not clamped at the value of Reach Distance.
+                d1 = this.minecraft.hitResult.getLocation().distanceToSqr(vec3);
              }
  
 @@ -652,7 +_,7 @@
-                Entity entity1 = entityhitresult.m_82443_();
-                Vec3 vec33 = entityhitresult.m_82450_();
-                double d2 = vec3.m_82557_(vec33);
+                Entity entity1 = entityhitresult.getEntity();
+                Vec3 vec33 = entityhitresult.getLocation();
+                double d2 = vec3.distanceToSqr(vec33);
 -               if (flag && d2 > 9.0D) {
 +               if (false && flag && d2 > 9.0D) { //Forge: Always keep the entity result to allow for extended reach interactions.
-                   this.f_109059_.f_91077_ = BlockHitResult.m_82426_(vec33, Direction.m_122366_(vec31.f_82479_, vec31.f_82480_, vec31.f_82481_), new BlockPos(vec33));
-                } else if (d2 < d1 || this.f_109059_.f_91077_ == null) {
-                   this.f_109059_.f_91077_ = entityhitresult;
+                   this.minecraft.hitResult = BlockHitResult.miss(vec33, Direction.getNearest(vec31.x, vec31.y, vec31.z), new BlockPos(vec33));
+                } else if (d2 < d1 || this.minecraft.hitResult == null) {
+                   this.minecraft.hitResult = entityhitresult;
 @@ -706,7 +_,7 @@
-             d0 *= (double)Mth.m_14179_(this.f_109059_.f_91066_.f_92070_, 1.0F, 0.85714287F);
+             d0 *= (double)Mth.lerp(this.minecraft.options.fovEffectScale, 1.0F, 0.85714287F);
           }
  
 -         return d0;
@@ -62,45 +62,45 @@
  
 @@ -843,11 +_,11 @@
  
-          Window window = this.f_109059_.m_91268_();
-          RenderSystem.m_69421_(256, Minecraft.f_91002_);
--         Matrix4f matrix4f = Matrix4f.m_162203_(0.0F, (float)((double)window.m_85441_() / window.m_85449_()), 0.0F, (float)((double)window.m_85442_() / window.m_85449_()), 1000.0F, 3000.0F);
-+         Matrix4f matrix4f = Matrix4f.m_162203_(0.0F, (float)((double)window.m_85441_() / window.m_85449_()), 0.0F, (float)((double)window.m_85442_() / window.m_85449_()), 1000.0F, net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
-          RenderSystem.m_157425_(matrix4f);
-          PoseStack posestack = RenderSystem.m_157191_();
-          posestack.m_166856_();
--         posestack.m_85837_(0.0D, 0.0D, -2000.0D);
-+         posestack.m_85837_(0.0D, 0.0D, 1000F-net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
-          RenderSystem.m_157182_();
-          Lighting.m_84931_();
+          Window window = this.minecraft.getWindow();
+          RenderSystem.clear(256, Minecraft.ON_OSX);
+-         Matrix4f matrix4f = Matrix4f.orthographic(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), 0.0F, (float)((double)window.getHeight() / window.getGuiScale()), 1000.0F, 3000.0F);
++         Matrix4f matrix4f = Matrix4f.orthographic(0.0F, (float)((double)window.getWidth() / window.getGuiScale()), 0.0F, (float)((double)window.getHeight() / window.getGuiScale()), 1000.0F, net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
+          RenderSystem.setProjectionMatrix(matrix4f);
+          PoseStack posestack = RenderSystem.getModelViewStack();
+          posestack.setIdentity();
+-         posestack.translate(0.0D, 0.0D, -2000.0D);
++         posestack.translate(0.0D, 0.0D, 1000F-net.minecraftforge.client.ForgeHooksClient.getGuiFarPlane());
+          RenderSystem.applyModelViewMatrix();
+          Lighting.setupFor3DItems();
           PoseStack posestack1 = new PoseStack();
 @@ -882,7 +_,7 @@
              }
-          } else if (this.f_109059_.f_91080_ != null) {
+          } else if (this.minecraft.screen != null) {
              try {
--               this.f_109059_.f_91080_.m_6305_(posestack1, i, j, this.f_109059_.m_91297_());
-+               net.minecraftforge.client.ForgeHooksClient.drawScreen(this.f_109059_.f_91080_, posestack1, i, j, this.f_109059_.m_91297_());
+-               this.minecraft.screen.render(posestack1, i, j, this.minecraft.getDeltaFrameTime());
++               net.minecraftforge.client.ForgeHooksClient.drawScreen(this.minecraft.screen, posestack1, i, j, this.minecraft.getDeltaFrameTime());
              } catch (Throwable throwable1) {
-                CrashReport crashreport1 = CrashReport.m_127521_(throwable1, "Rendering screen");
-                CrashReportCategory crashreportcategory1 = crashreport1.m_127514_("Screen render details");
+                CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
+                CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
 @@ -1040,6 +_,11 @@
-       Matrix4f matrix4f = posestack.m_85850_().m_85861_();
-       this.m_109111_(matrix4f);
-       camera.m_90575_(this.f_109059_.f_91073_, (Entity)(this.f_109059_.m_91288_() == null ? this.f_109059_.f_91074_ : this.f_109059_.m_91288_()), !this.f_109059_.f_91066_.m_92176_().m_90612_(), this.f_109059_.f_91066_.m_92176_().m_90613_(), p_109090_);
+       Matrix4f matrix4f = posestack.last().pose();
+       this.resetProjectionMatrix(matrix4f);
+       camera.setup(this.minecraft.level, (Entity)(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity()), !this.minecraft.options.getCameraType().isFirstPerson(), this.minecraft.options.getCameraType().isMirrored(), p_109090_);
 +
 +      net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup cameraSetup = net.minecraftforge.client.ForgeHooksClient.onCameraSetup(this, camera, p_109090_);
 +      camera.setAnglesInternal(cameraSetup.getYaw(), cameraSetup.getPitch());
-+      p_109092_.m_85845_(Vector3f.f_122227_.m_122240_(cameraSetup.getRoll()));
++      p_109092_.mulPose(Vector3f.ZP.rotationDegrees(cameraSetup.getRoll()));
 +
-       p_109092_.m_85845_(Vector3f.f_122223_.m_122240_(camera.m_90589_()));
-       p_109092_.m_85845_(Vector3f.f_122225_.m_122240_(camera.m_90590_() + 180.0F));
-       Matrix3f matrix3f = p_109092_.m_85850_().m_85864_().m_8183_();
+       p_109092_.mulPose(Vector3f.XP.rotationDegrees(camera.getXRot()));
+       p_109092_.mulPose(Vector3f.YP.rotationDegrees(camera.getYRot() + 180.0F));
+       Matrix3f matrix3f = p_109092_.last().normal().copy();
 @@ -1049,6 +_,8 @@
  
-       this.f_109059_.f_91060_.m_172961_(p_109092_, camera.m_90583_(), this.m_172716_(Math.max(d0, this.f_109059_.f_91066_.f_92068_)));
-       this.f_109059_.f_91060_.m_109599_(p_109092_, p_109090_, p_109091_, flag, camera, this, this.f_109074_, matrix4f);
-+      this.f_109059_.m_91307_().m_6182_("forge_render_last");
-+      net.minecraftforge.client.ForgeHooksClient.dispatchRenderLast(this.f_109059_.f_91060_, p_109092_, p_109090_, matrix4f, p_109091_);
-       this.f_109059_.m_91307_().m_6182_("hand");
-       if (this.f_109070_) {
-          RenderSystem.m_69421_(256, Minecraft.f_91002_);
+       this.minecraft.levelRenderer.prepareCullFrustum(p_109092_, camera.getPosition(), this.getProjectionMatrix(Math.max(d0, this.minecraft.options.fov)));
+       this.minecraft.levelRenderer.renderLevel(p_109092_, p_109090_, p_109091_, flag, camera, this, this.lightTexture, matrix4f);
++      this.minecraft.getProfiler().popPush("forge_render_last");
++      net.minecraftforge.client.ForgeHooksClient.dispatchRenderLast(this.minecraft.levelRenderer, p_109092_, p_109090_, matrix4f, p_109091_);
+       this.minecraft.getProfiler().popPush("hand");
+       if (this.renderHand) {
+          RenderSystem.clear(256, Minecraft.ON_OSX);

@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SeedCommand.java
 @@ -14,7 +_,7 @@
  public class SeedCommand {
-    public static void m_138589_(CommandDispatcher<CommandSourceStack> p_138590_, boolean p_138591_) {
-       p_138590_.register(Commands.m_82127_("seed").requires((p_138596_) -> {
--         return !p_138591_ || p_138596_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138590_, boolean p_138591_) {
+       p_138590_.register(Commands.literal("seed").requires((p_138596_) -> {
+-         return !p_138591_ || p_138596_.hasPermission(2);
 +         return !p_138591_ || p_138596_.hasPermission(2,"minecraft.command.seed");
        }).executes((p_138593_) -> {
-          long i = p_138593_.getSource().m_81372_().m_7328_();
-          Component component = ComponentUtils.m_130748_((new TextComponent(String.valueOf(i))).m_130938_((p_180514_) -> {
+          long i = p_138593_.getSource().getLevel().getSeed();
+          Component component = ComponentUtils.wrapInSquareBrackets((new TextComponent(String.valueOf(i))).withStyle((p_180514_) -> {

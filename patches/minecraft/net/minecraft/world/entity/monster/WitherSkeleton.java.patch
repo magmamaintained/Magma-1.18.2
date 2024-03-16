@@ -4,9 +4,9 @@
           return false;
        } else {
           if (p_34169_ instanceof LivingEntity) {
--            ((LivingEntity)p_34169_).m_147207_(new MobEffectInstance(MobEffects.f_19615_, 200), this);
+-            ((LivingEntity)p_34169_).addEffect(new MobEffectInstance(MobEffects.WITHER, 200), this);
 +            ((LivingEntity)p_34169_).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
-+            ((LivingEntity)p_34169_).m_147207_(new MobEffectInstance(MobEffects.f_19615_, 200), this); // CraftBukkit
++            ((LivingEntity)p_34169_).addEffect(new MobEffectInstance(MobEffects.WITHER, 200), this); // CraftBukkit
           }
  
           return true;

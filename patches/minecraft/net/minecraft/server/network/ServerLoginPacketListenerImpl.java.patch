@@ -1,29 +1,29 @@
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -51,6 +_,8 @@
-    private final String f_10022_ = "";
+    private final String serverId = "";
     @Nullable
-    private ServerPlayer f_10024_;
+    private ServerPlayer delayedAcceptPlayer;
 +   public String hostname = ""; // CraftBukkit - add field
 +   private int velocityLoginMessageId = -1; // Paper - Velocity suppor
  
     public ServerLoginPacketListenerImpl(MinecraftServer p_10027_, Connection p_10028_) {
-       this.f_10018_ = p_10027_;
+       this.server = p_10027_;
 @@ -59,7 +_,13 @@
     }
  
-    public void m_10050_() {
--      if (this.f_10019_ == ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT) {
-+      if (this.f_10019_ == State.NEGOTIATING) {
+    public void tick() {
+-      if (this.state == ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT) {
++      if (this.state == State.NEGOTIATING) {
 +         // We force the state into "NEGOTIATING" which is otherwise unused. Once we're completed we move the negotiation onto "READY_TO_ACCEPT"
 +         // Might want to promote player object creation to here as well..
-+         boolean negotiationComplete = net.minecraftforge.network.NetworkHooks.tickNegotiation(this, this.f_10013_, this.f_10024_);
++         boolean negotiationComplete = net.minecraftforge.network.NetworkHooks.tickNegotiation(this, this.connection, this.delayedAcceptPlayer);
 +         if (negotiationComplete)
-+            this.f_10019_ = State.READY_TO_ACCEPT;
-+      } else if (this.f_10019_ == ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT) {
-          this.m_10055_();
-       } else if (this.f_10019_ == ServerLoginPacketListenerImpl.State.DELAY_ACCEPT) {
-          ServerPlayer serverplayer = this.f_10018_.m_6846_().m_11259_(this.f_10021_.getId());
++            this.state = State.READY_TO_ACCEPT;
++      } else if (this.state == ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT) {
+          this.handleAcceptedLogin();
+       } else if (this.state == ServerLoginPacketListenerImpl.State.DELAY_ACCEPT) {
+          ServerPlayer serverplayer = this.server.getPlayerList().getPlayer(this.gameProfile.getId());
 @@ -76,6 +_,20 @@
  
     }
@@ -33,17 +33,17 @@
 +   public void disconnect(String s) {
 +      try {
 +         Component ichatbasecomponent = new net.minecraft.network.chat.TextComponent(s);
-+         ServerLoginPacketListenerImpl.f_10015_.info("Disconnecting {}: {}", this.m_10056_(), s);
-+         this.f_10013_.m_129512_(new ClientboundLoginDisconnectPacket(ichatbasecomponent));
-+         this.f_10013_.m_129507_(ichatbasecomponent);
++         ServerLoginPacketListenerImpl.LOGGER.info("Disconnecting {}: {}", this.getUserName(), s);
++         this.connection.send(new ClientboundLoginDisconnectPacket(ichatbasecomponent));
++         this.connection.disconnect(ichatbasecomponent);
 +      } catch (Exception exception) {
-+         ServerLoginPacketListenerImpl.f_10015_.error("Error whilst disconnecting player", exception);
++         ServerLoginPacketListenerImpl.LOGGER.error("Error whilst disconnecting player", exception);
 +      }
 +   }
 +   // CraftBukkit end
 +
-    public Connection m_6198_() {
-       return this.f_10013_;
+    public Connection getConnection() {
+       return this.connection;
     }
 @@ -91,15 +_,57 @@
  
@@ -54,7 +54,7 @@
 +   private static final java.util.concurrent.ExecutorService authenticatorPool = java.util.concurrent.Executors.newCachedThreadPool(
 +           r -> {
 +               Thread ret = new Thread(net.minecraftforge.fml.util.thread.SidedThreadGroups.SERVER, r, "User Authenticator #" + threadId.incrementAndGet());
-+               ret.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_10015_));
++               ret.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
 +               return ret;
 +           }
 +   );
@@ -63,76 +63,74 @@
 +   // Spigot start
 +   public void initUUID() {
 +      UUID uuid;
-+      if (f_10013_.spoofedUUID != null) {
-+         uuid = f_10013_.spoofedUUID;
++      if (connection.spoofedUUID != null) {
++         uuid = connection.spoofedUUID;
 +      } else {
-+         uuid = Player.m_36283_(this.f_10021_.getName());
++         uuid = Player.createPlayerUUID(this.gameProfile.getName());
 +      }
 +
-+      this.f_10021_ = new GameProfile(uuid, this.f_10021_.getName());
++      this.gameProfile = new GameProfile(uuid, this.gameProfile.getName());
 +
-+      if (f_10013_.spoofedProfile != null) {
-+         for (com.mojang.authlib.properties.Property property : f_10013_.spoofedProfile) {
++      if (connection.spoofedProfile != null) {
++         for (com.mojang.authlib.properties.Property property : connection.spoofedProfile) {
 +            if (!ServerHandshakePacketListenerImpl.PROP_PATTERN.matcher(property.getName()).matches()) continue;
-+            this.f_10021_.getProperties().put(property.getName(), property);
++            this.gameProfile.getProperties().put(property.getName(), property);
 +         }
 +      }
 +   }
 +   // Spigot end
 +
-    public void m_10055_() {
--      if (!this.f_10021_.isComplete()) {
--         this.f_10021_ = this.m_10038_(this.f_10021_);
+    public void handleAcceptedLogin() {
 +      // Spigot start - Moved to initUUID
 +      /*
-+      if (!this.gameProfile.isComplete()) {
-+         this.gameProfile = this.createFakeProfile(this.gameProfile);
+       if (!this.gameProfile.isComplete()) {
+          this.gameProfile = this.createFakeProfile(this.gameProfile);
        }
 +       */
 +      // Spigot end
  
--      Component component = this.f_10018_.m_6846_().m_6418_(this.f_10013_.m_129523_(), this.f_10021_);
+-      Component component = this.server.getPlayerList().canPlayerLogin(this.connection.getRemoteAddress(), this.gameProfile);
 -      if (component != null) {
--         this.m_10053_(component);
+-         this.disconnect(component);
 +      // CraftBukkit start - fire PlayerLoginEvent
 +      // Magma - don't. Just move out the player creation, and call the playerJoinEvent after Forge
-+      ServerPlayer s = this.f_10018_.m_6846_().m_11300_(this.f_10021_);
++      ServerPlayer s = this.server.getPlayerList().getPlayerForLogin(this.gameProfile);
 +      if (s == null) {
 +         // CraftBukkit end
        } else {
 +         s.resetBukkitEntity(); //Magma - fixes an issue where the CraftPlayer got initialized before actually getting valid data
 +         // Magma start - fixes mixin problems
-+         this.f_10018_.m_6846_().preparePlayerLogin(this, hostname, s);
-+         this.f_10018_.m_6846_().m_6418_(this.f_10013_.m_129523_(), this.f_10021_);
++         this.server.getPlayerList().preparePlayerLogin(this, hostname, s);
++         this.server.getPlayerList().canPlayerLogin(this.connection.getRemoteAddress(), this.gameProfile);
 +         // Magma end
-          this.f_10019_ = ServerLoginPacketListenerImpl.State.ACCEPTED;
-          if (this.f_10018_.m_6328_() >= 0 && !this.f_10013_.m_129531_()) {
-             this.f_10013_.m_129514_(new ClientboundLoginCompressionPacket(this.f_10018_.m_6328_()), (p_10041_) -> {
+          this.state = ServerLoginPacketListenerImpl.State.ACCEPTED;
+          if (this.server.getCompressionThreshold() >= 0 && !this.connection.isMemoryConnection()) {
+             this.connection.send(new ClientboundLoginCompressionPacket(this.server.getCompressionThreshold()), (p_10041_) -> {
 @@ -107,11 +_,11 @@
              });
           }
  
-+         ServerPlayer serverplayer = this.f_10018_.m_6846_().m_11259_(this.f_10021_.getId());
-          this.f_10013_.m_129512_(new ClientboundGameProfilePacket(this.f_10021_));
--         ServerPlayer serverplayer = this.f_10018_.m_6846_().m_11259_(this.f_10021_.getId());
++         ServerPlayer serverplayer = this.server.getPlayerList().getPlayer(this.gameProfile.getId());
+          this.connection.send(new ClientboundGameProfilePacket(this.gameProfile));
+-         ServerPlayer serverplayer = this.server.getPlayerList().getPlayer(this.gameProfile.getId());
  
           try {
--            ServerPlayer serverplayer1 = this.f_10018_.m_6846_().m_11300_(this.f_10021_);
-+            ServerPlayer serverplayer1 = this.f_10018_.m_6846_().getPlayerForLogin(this.f_10021_, s); // CraftBukkit - add player reference
+-            ServerPlayer serverplayer1 = this.server.getPlayerList().getPlayerForLogin(this.gameProfile);
++            ServerPlayer serverplayer1 = this.server.getPlayerList().getPlayerForLogin(this.gameProfile, s); // CraftBukkit - add player reference
              if (serverplayer != null) {
-                this.f_10019_ = ServerLoginPacketListenerImpl.State.DELAY_ACCEPT;
-                this.f_10024_ = serverplayer1;
+                this.state = ServerLoginPacketListenerImpl.State.DELAY_ACCEPT;
+                this.delayedAcceptPlayer = serverplayer1;
 @@ -148,7 +_,31 @@
-          this.f_10019_ = ServerLoginPacketListenerImpl.State.KEY;
-          this.f_10013_.m_129512_(new ClientboundHelloPacket("", this.f_10018_.m_129790_().getPublic().getEncoded(), this.f_10017_));
+          this.state = ServerLoginPacketListenerImpl.State.KEY;
+          this.connection.send(new ClientboundHelloPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
        } else {
--         this.f_10019_ = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+-         this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
 +         // this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
 +         // Paper start - Velocity support
 +         if (com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport) {
 +             this.velocityLoginMessageId = java.util.concurrent.ThreadLocalRandom.current().nextInt();
 +             net.minecraft.network.protocol.login.ClientboundCustomQueryPacket packet1 = new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket(this.velocityLoginMessageId, com.destroystokyo.paper.youcandfindpaper.proxy.VelocityProxy.PLAYER_INFO_CHANNEL, new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.EMPTY_BUFFER));
-+             this.f_10013_.m_129512_(packet1);
++             this.connection.send(packet1);
 +             return;
 +         }
 +         // Paper end
@@ -146,7 +144,7 @@
 +                  new LoginHandler().fireEvents();
 +               } catch (Exception ex) {
 +                  disconnect("Failed to verify username!");
-+                  f_10018_.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + f_10021_.getName(), ex);
++                  server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameProfile.getName(), ex);
 +               }
 +            }
 +            });
@@ -159,59 +157,55 @@
           throw new IllegalStateException("Protocol error", cryptexception);
        }
  
--      Thread thread = new Thread("User Authenticator #" + f_10014_.incrementAndGet()) {
+-      Thread thread = new Thread("User Authenticator #" + UNIQUE_THREAD_ID.incrementAndGet()) {
 +        // Paper start - Cache authenticator threads
 +        authenticatorPool.execute(new Runnable() {
           public void run() {
-             GameProfile gameprofile = ServerLoginPacketListenerImpl.this.f_10021_;
+             GameProfile gameprofile = ServerLoginPacketListenerImpl.this.gameProfile;
  
              try {
--               ServerLoginPacketListenerImpl.this.f_10021_ = ServerLoginPacketListenerImpl.this.f_10018_.m_129925_().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s, this.m_10064_());
-+               ServerLoginPacketListenerImpl.this.f_10021_ = ServerLoginPacketListenerImpl.this.f_10018_.m_129925_().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s, this.getAddress());
-                if (ServerLoginPacketListenerImpl.this.f_10021_ != null) {
--                  ServerLoginPacketListenerImpl.f_10015_.info("UUID of player {} is {}", ServerLoginPacketListenerImpl.this.f_10021_.getName(), ServerLoginPacketListenerImpl.this.f_10021_.getId());
--                  ServerLoginPacketListenerImpl.this.f_10019_ = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+                ServerLoginPacketListenerImpl.this.gameProfile = ServerLoginPacketListenerImpl.this.server.getSessionService().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s, this.getAddress());
+                if (ServerLoginPacketListenerImpl.this.gameProfile != null) {
+-                  ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", ServerLoginPacketListenerImpl.this.gameProfile.getName(), ServerLoginPacketListenerImpl.this.gameProfile.getId());
+-                  ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
 +                  // CraftBukkit start - fire PlayerPreLoginEvent
-+                  if (!f_10013_.m_129536_()) {
++                  if (!connection.isConnected()) {
 +                     return;
 +                  }
 +
 +                  new LoginHandler().fireEvents();
-                } else if (ServerLoginPacketListenerImpl.this.f_10018_.m_129792_()) {
-                   ServerLoginPacketListenerImpl.f_10015_.warn("Failed to verify username but will let them in anyway!");
-                   ServerLoginPacketListenerImpl.this.f_10021_ = ServerLoginPacketListenerImpl.this.m_10038_(gameprofile);
--                  ServerLoginPacketListenerImpl.this.f_10019_ = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
-+                  ServerLoginPacketListenerImpl.this.f_10019_ = ServerLoginPacketListenerImpl.State.NEGOTIATING;
+                } else if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
+                   ServerLoginPacketListenerImpl.LOGGER.warn("Failed to verify username but will let them in anyway!");
+                   ServerLoginPacketListenerImpl.this.gameProfile = ServerLoginPacketListenerImpl.this.createFakeProfile(gameprofile);
+-                  ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
++                  ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
                 } else {
-                   ServerLoginPacketListenerImpl.this.m_10053_(new TranslatableComponent("multiplayer.disconnect.unverified_username"));
-                   ServerLoginPacketListenerImpl.f_10015_.error("Username '{}' tried to join with an invalid session", (Object)gameprofile.getName());
-@@ -200,26 +_,112 @@
-                if (ServerLoginPacketListenerImpl.this.f_10018_.m_129792_()) {
-                   ServerLoginPacketListenerImpl.f_10015_.warn("Authentication servers are down but will let them in anyway!");
-                   ServerLoginPacketListenerImpl.this.f_10021_ = ServerLoginPacketListenerImpl.this.m_10038_(gameprofile);
--                  ServerLoginPacketListenerImpl.this.f_10019_ = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
-+                  ServerLoginPacketListenerImpl.this.f_10019_ = ServerLoginPacketListenerImpl.State.NEGOTIATING;
+                   ServerLoginPacketListenerImpl.this.disconnect(new TranslatableComponent("multiplayer.disconnect.unverified_username"));
+                   ServerLoginPacketListenerImpl.LOGGER.error("Username '{}' tried to join with an invalid session", (Object)gameprofile.getName());
+@@ -200,11 +_,16 @@
+                if (ServerLoginPacketListenerImpl.this.server.isSingleplayer()) {
+                   ServerLoginPacketListenerImpl.LOGGER.warn("Authentication servers are down but will let them in anyway!");
+                   ServerLoginPacketListenerImpl.this.gameProfile = ServerLoginPacketListenerImpl.this.createFakeProfile(gameprofile);
+-                  ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
++                  ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
                 } else {
-                   ServerLoginPacketListenerImpl.this.m_10053_(new TranslatableComponent("multiplayer.disconnect.authservers_down"));
-                   ServerLoginPacketListenerImpl.f_10015_.error("Couldn't verify username because servers are unavailable");
+                   ServerLoginPacketListenerImpl.this.disconnect(new TranslatableComponent("multiplayer.disconnect.authservers_down"));
+                   ServerLoginPacketListenerImpl.LOGGER.error("Couldn't verify username because servers are unavailable");
                 }
 +               // CraftBukkit start - catch all exceptions
 +            } catch (Exception exception) {
 +               disconnect("Failed to verify username!");
-+               f_10018_.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
++               server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
 +               // CraftBukkit end
              }
  
           }
- 
-          @Nullable
--         private InetAddress m_10064_() {
-+         private InetAddress getAddress() {
-             SocketAddress socketaddress = ServerLoginPacketListenerImpl.this.f_10013_.m_129523_();
-             return ServerLoginPacketListenerImpl.this.f_10018_.m_129798_() && socketaddress instanceof InetSocketAddress ? ((InetSocketAddress)socketaddress).getAddress() : null;
+@@ -214,12 +_,93 @@
+             SocketAddress socketaddress = ServerLoginPacketListenerImpl.this.connection.getRemoteAddress();
+             return ServerLoginPacketListenerImpl.this.server.getPreventProxyConnections() && socketaddress instanceof InetSocketAddress ? ((InetSocketAddress)socketaddress).getAddress() : null;
           }
 -      };
--      thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_10015_));
+-      thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
 -      thread.start();
 -   }
 +        });
@@ -227,10 +221,10 @@
 +             return;
 +         }
 +         // Paper end
-+         String playerName = f_10021_.getName();
-+         java.net.InetAddress address = ((java.net.InetSocketAddress) f_10013_.m_129523_()).getAddress();
-+         java.util.UUID uniqueId = f_10021_.getId();
-+         final org.bukkit.craftbukkit.v1_18_R2.CraftServer server = ServerLoginPacketListenerImpl.this.f_10018_.server;
++         String playerName = gameProfile.getName();
++         java.net.InetAddress address = ((java.net.InetSocketAddress) connection.getRemoteAddress()).getAddress();
++         java.util.UUID uniqueId = gameProfile.getId();
++         final org.bukkit.craftbukkit.v1_18_R2.CraftServer server = ServerLoginPacketListenerImpl.this.server.server;
 +
 +         org.bukkit.event.player.AsyncPlayerPreLoginEvent asyncEvent = new org.bukkit.event.player.AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
 +         server.getPluginManager().callEvent(asyncEvent);
@@ -247,7 +241,7 @@
 +                  return event.getResult();
 +               }};
 +
-+            ServerLoginPacketListenerImpl.this.f_10018_.processQueue.add(waitable);
++            ServerLoginPacketListenerImpl.this.server.processQueue.add(waitable);
 +            if (waitable.get() != org.bukkit.event.player.PlayerPreLoginEvent.Result.ALLOWED) {
 +               disconnect(event.getKickMessage());
 +               return;
@@ -259,16 +253,16 @@
 +            }
 +         }
 +         // CraftBukkit end
-+         ServerLoginPacketListenerImpl.f_10015_.info("UUID of player {} is {}", ServerLoginPacketListenerImpl.this.f_10021_.getName(), ServerLoginPacketListenerImpl.this.f_10021_.getId());
-+         ServerLoginPacketListenerImpl.this.f_10019_ = ServerLoginPacketListenerImpl.State.NEGOTIATING;
++         ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", ServerLoginPacketListenerImpl.this.gameProfile.getName(), ServerLoginPacketListenerImpl.this.gameProfile.getId());
++         ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
 +      }
 +   }
 +   // Spigot end
  
-    public void m_7223_(ServerboundCustomQueryPacket p_10045_) {
+    public void handleCustomQueryPacket(ServerboundCustomQueryPacket p_10045_) {
 +      // Paper start - Velocity support
-+      if (com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport && p_10045_.m_179824_() == this.velocityLoginMessageId) {
-+          net.minecraft.network.FriendlyByteBuf buf = p_10045_.m_179825_();
++      if (com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport && p_10045_.getTransactionId() == this.velocityLoginMessageId) {
++          net.minecraft.network.FriendlyByteBuf buf = p_10045_.getData();
 +          if (buf == null) {
 +              this.disconnect("This server requires you to connect with Velocity.");
 +              return;
@@ -279,14 +273,14 @@
 +              return;
 +          }
 +
-+          java.net.SocketAddress listening = this.f_10013_.m_129523_();
++          java.net.SocketAddress listening = this.connection.getRemoteAddress();
 +          int port = 0;
 +          if (listening instanceof java.net.InetSocketAddress) {
 +              port = ((java.net.InetSocketAddress) listening).getPort();
 +          }
-+          this.f_10013_.f_129469_ = new java.net.InetSocketAddress(com.destroystokyo.paper.youcandfindpaper.proxy.VelocityProxy.readAddress(buf), port);
++          this.connection.address = new java.net.InetSocketAddress(com.destroystokyo.paper.youcandfindpaper.proxy.VelocityProxy.readAddress(buf), port);
 +
-+          this.f_10021_ = com.destroystokyo.paper.youcandfindpaper.proxy.VelocityProxy.createProfile(buf);
++          this.gameProfile = com.destroystokyo.paper.youcandfindpaper.proxy.VelocityProxy.createProfile(buf);
 +
 +          // Proceed with login
 +          authenticatorPool.execute(() -> {
@@ -294,13 +288,13 @@
 +                  new LoginHandler().fireEvents();
 +              } catch (Exception ex) {
 +                  disconnect("Failed to verify username!");
-+                  f_10018_.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + f_10021_.getName(), ex);
++                  server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameProfile.getName(), ex);
 +              }
 +          });
 +          return;
 +      }
 +      // Paper end
-+      if (!net.minecraftforge.network.NetworkHooks.onCustomPayload(p_10045_, this.f_10013_))
-       this.m_10053_(new TranslatableComponent("multiplayer.disconnect.unexpected_query_response"));
++      if (!net.minecraftforge.network.NetworkHooks.onCustomPayload(p_10045_, this.connection))
+       this.disconnect(new TranslatableComponent("multiplayer.disconnect.unexpected_query_response"));
     }
  

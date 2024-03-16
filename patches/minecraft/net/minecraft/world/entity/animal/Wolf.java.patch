@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/entity/animal/Wolf.java
 +++ b/net/minecraft/world/entity/animal/Wolf.java
 @@ -123,6 +_,16 @@
-       return Mob.m_21552_().m_22268_(Attributes.f_22279_, (double)0.3F).m_22268_(Attributes.f_22276_, 8.0D).m_22268_(Attributes.f_22281_, 2.0D);
+       return Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, (double)0.3F).add(Attributes.MAX_HEALTH, 8.0D).add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
  
 +   // CraftBukkit - add overriden version
@@ -10,72 +10,72 @@
 +      if (!super.setTarget(entityliving, reason, fire)) {
 +         return false;
 +      }
-+      entityliving = m_5448_();
++      entityliving = getTarget();
 +      return true;
 +   }
 +   // CraftBukkit end
-    protected void m_8097_() {
-       super.m_8097_();
-       this.f_19804_.m_135372_(f_30358_, false);
+    protected void defineSynchedData() {
+       super.defineSynchedData();
+       this.entityData.define(DATA_INTERESTED_ID, false);
 @@ -284,7 +_,7 @@
        } else {
-          Entity entity = p_30386_.m_7639_();
-          if (!this.f_19853_.f_46443_) {
--            this.m_21839_(false);
+          Entity entity = p_30386_.getEntity();
+          if (!this.level.isClientSide) {
+-            this.setOrderedToSit(false);
 +            // this.setOrderedToSit(false); // CraftBukkit - moved into LivingEntity.damageEntity(DamageSource, float)
           }
  
           if (entity != null && !(entity instanceof Player) && !(entity instanceof AbstractArrow)) {
 @@ -308,7 +_,7 @@
-       super.m_7105_(p_30443_);
+       super.setTame(p_30443_);
        if (p_30443_) {
-          this.m_21051_(Attributes.f_22276_).m_22100_(20.0D);
--         this.m_21153_(20.0F);
-+         this.m_21153_(this.m_21233_()); // CraftBukkit - 20.0 -> getMaxHealth()
+          this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(20.0D);
+-         this.setHealth(20.0F);
++         this.setHealth(this.getMaxHealth()); // CraftBukkit - 20.0 -> getMaxHealth()
        } else {
-          this.m_21051_(Attributes.f_22276_).m_22100_(8.0D);
+          this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(8.0D);
        }
 @@ -325,11 +_,12 @@
        } else {
-          if (this.m_21824_()) {
-             if (this.m_6898_(itemstack) && this.m_21223_() < this.m_21233_()) {
+          if (this.isTame()) {
+             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
 +               this.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); //Magma
-+               this.m_5634_((float)itemstack.getFoodProperties(this).m_38744_());
-                if (!p_30412_.m_150110_().f_35937_) {
-                   itemstack.m_41774_(1);
++               this.heal((float)itemstack.getFoodProperties(this).getNutrition());
+                if (!p_30412_.getAbilities().instabuild) {
+                   itemstack.shrink(1);
                 }
  
--               this.m_5634_((float)item.m_41473_().m_38744_());
-                this.m_146859_(GameEvent.f_157771_, this.m_146901_());
+-               this.heal((float)item.getFoodProperties().getNutrition());
+                this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
                 return InteractionResult.SUCCESS;
              }
 @@ -340,7 +_,7 @@
-                   this.m_21839_(!this.m_21827_());
-                   this.f_20899_ = false;
-                   this.f_21344_.m_26573_();
--                  this.m_6710_((LivingEntity)null);
+                   this.setOrderedToSit(!this.isOrderedToSit());
+                   this.jumping = false;
+                   this.navigation.stop();
+-                  this.setTarget((LivingEntity)null);
 +                  this.setTarget((LivingEntity)null, org.bukkit.event.entity.EntityTargetEvent.TargetReason.FORGOT_TARGET, true); // CraftBukkit - reason
                    return InteractionResult.SUCCESS;
                 }
  
 @@ -360,8 +_,9 @@
-             if (!p_30412_.m_150110_().f_35937_) {
-                itemstack.m_41774_(1);
+             if (!p_30412_.getAbilities().instabuild) {
+                itemstack.shrink(1);
              }
 -
--            if (this.f_19796_.nextInt(3) == 0) {
+-            if (this.random.nextInt(3) == 0) {
 +            
 +            // CraftBukkit - added event call and isCancelled check.
-+            if (this.f_19796_.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, p_30412_) || !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTameEvent(this, p_30412_).isCancelled()) {
-                this.m_21828_(p_30412_);
-                this.f_21344_.m_26573_();
-                this.m_6710_((LivingEntity)null);
++            if (this.random.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, p_30412_) || !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTameEvent(this, p_30412_).isCancelled()) {
+                this.tame(p_30412_);
+                this.navigation.stop();
+                this.setTarget((LivingEntity)null);
 @@ -401,7 +_,7 @@
  
-    public boolean m_6898_(ItemStack p_30440_) {
-       Item item = p_30440_.m_41720_();
--      return item.m_41472_() && item.m_41473_().m_38746_();
-+      return item.m_41472_() && p_30440_.getFoodProperties(this).m_38746_();
+    public boolean isFood(ItemStack p_30440_) {
+       Item item = p_30440_.getItem();
+-      return item.isEdible() && item.getFoodProperties().isMeat();
++      return item.isEdible() && p_30440_.getFoodProperties(this).isMeat();
     }
  
-    public int m_5792_() {
+    public int getMaxSpawnClusterSize() {

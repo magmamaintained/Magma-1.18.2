@@ -11,13 +11,13 @@
 +      }
 +      final File target = event.getScreenshotFile();
 +
-       Util.m_183992_().execute(() -> {
+       Util.ioPool().execute(() -> {
           try {
--            nativeimage.m_85056_(file2);
-+            nativeimage.m_85056_(target);
-             Component component = (new TextComponent(file2.getName())).m_130940_(ChatFormatting.UNDERLINE).m_130938_((p_168608_) -> {
--               return p_168608_.m_131142_(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
-+               return p_168608_.m_131142_(new ClickEvent(ClickEvent.Action.OPEN_FILE, target.getAbsolutePath()));
+-            nativeimage.writeToFile(file2);
++            nativeimage.writeToFile(target);
+             Component component = (new TextComponent(file2.getName())).withStyle(ChatFormatting.UNDERLINE).withStyle((p_168608_) -> {
+-               return p_168608_.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
++               return p_168608_.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, target.getAbsolutePath()));
              });
 -            p_92311_.accept(new TranslatableComponent("screenshot.success", component));
 +            if (event.getResultMessage() != null)
@@ -25,5 +25,5 @@
 +            else
 +               p_92311_.accept(new TranslatableComponent("screenshot.success", component));
           } catch (Exception exception) {
-             f_92276_.warn("Couldn't save screenshot", (Throwable)exception);
+             LOGGER.warn("Couldn't save screenshot", (Throwable)exception);
              p_92311_.accept(new TranslatableComponent("screenshot.failure", exception.getMessage()));

@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SaveAllCommand.java
 @@ -13,7 +_,7 @@
  
-    public static void m_138271_(CommandDispatcher<CommandSourceStack> p_138272_) {
-       p_138272_.register(Commands.m_82127_("save-all").requires((p_138276_) -> {
--         return p_138276_.m_6761_(4);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138272_) {
+       p_138272_.register(Commands.literal("save-all").requires((p_138276_) -> {
+-         return p_138276_.hasPermission(4);
 +         return p_138276_.hasPermission(4,"minecraft.command.save-all");
        }).executes((p_138281_) -> {
-          return m_138277_(p_138281_.getSource(), false);
-       }).then(Commands.m_82127_("flush").executes((p_138274_) -> {
+          return saveAll(p_138281_.getSource(), false);
+       }).then(Commands.literal("flush").executes((p_138274_) -> {

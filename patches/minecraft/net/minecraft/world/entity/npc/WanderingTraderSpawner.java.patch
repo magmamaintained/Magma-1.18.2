@@ -4,24 +4,24 @@
                 return false;
              }
  
-+            EntityType.f_20494_.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL); //Magma
-             WanderingTrader wanderingtrader = EntityType.f_20494_.m_20600_(p_35916_, (CompoundTag)null, (Component)null, (Player)null, blockpos2, MobSpawnType.EVENT, false, false);
++            EntityType.WANDERING_TRADER.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL); //Magma
+             WanderingTrader wanderingtrader = EntityType.WANDERING_TRADER.spawn(p_35916_, (CompoundTag)null, (Component)null, (Player)null, blockpos2, MobSpawnType.EVENT, false, false);
              if (wanderingtrader != null) {
                 for(int j = 0; j < 2; ++j) {
 @@ -111,7 +_,7 @@
                 }
  
-                this.f_35909_.m_8115_(wanderingtrader.m_142081_());
--               wanderingtrader.m_35891_(48000);
+                this.serverLevelData.setWanderingTraderId(wanderingtrader.getUUID());
+-               wanderingtrader.setDespawnDelay(48000);
 +               // wanderingtrader.setDespawnDelay(48000); // CraftBukkit - moved to WanderingTrader constructor. This lets the value be modified by plugins on CreatureSpawnEvent
-                wanderingtrader.m_35883_(blockpos1);
-                wanderingtrader.m_21446_(blockpos1, 16);
+                wanderingtrader.setWanderTarget(blockpos1);
+                wanderingtrader.restrictTo(blockpos1, 16);
                 return true;
 @@ -125,6 +_,7 @@
-    private void m_35917_(ServerLevel p_35918_, WanderingTrader p_35919_, int p_35920_) {
-       BlockPos blockpos = this.m_35928_(p_35918_, p_35919_.m_142538_(), p_35920_);
+    private void tryToSpawnLlamaFor(ServerLevel p_35918_, WanderingTrader p_35919_, int p_35920_) {
+       BlockPos blockpos = this.findSpawnPositionNear(p_35918_, p_35919_.blockPosition(), p_35920_);
        if (blockpos != null) {
-+         EntityType.f_20488_.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL); //Magma
-          TraderLlama traderllama = EntityType.f_20488_.m_20600_(p_35918_, (CompoundTag)null, (Component)null, (Player)null, blockpos, MobSpawnType.EVENT, false, false);
++         EntityType.TRADER_LLAMA.prepareSpawn(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL); //Magma
+          TraderLlama traderllama = EntityType.TRADER_LLAMA.spawn(p_35918_, (CompoundTag)null, (Component)null, (Player)null, blockpos, MobSpawnType.EVENT, false, false);
           if (traderllama != null) {
-             traderllama.m_21463_(p_35919_, true);
+             traderllama.setLeashedTo(p_35919_, true);

@@ -3,22 +3,22 @@
 @@ -81,6 +_,7 @@
     }
  
-    public static void m_22613_(LivingEntity p_22614_, ItemStack p_22615_, Vec3 p_22616_) {
-+      if (p_22615_.m_41619_()) return; // CraftBukkit - SPIGOT-4940: no empty loot
-       double d0 = p_22614_.m_20188_() - (double)0.3F;
-       ItemEntity itementity = new ItemEntity(p_22614_.f_19853_, p_22614_.m_20185_(), d0, p_22614_.m_20189_(), p_22615_);
+    public static void throwItem(LivingEntity p_22614_, ItemStack p_22615_, Vec3 p_22616_) {
++      if (p_22615_.isEmpty()) return; // CraftBukkit - SPIGOT-4940: no empty loot
+       double d0 = p_22614_.getEyeY() - (double)0.3F;
+       ItemEntity itementity = new ItemEntity(p_22614_.level, p_22614_.getX(), d0, p_22614_.getZ(), p_22615_);
        float f = 0.3F;
 @@ -88,6 +_,13 @@
-       vec3 = vec3.m_82541_().m_82490_((double)0.3F);
-       itementity.m_20256_(vec3);
-       itementity.m_32060_();
+       vec3 = vec3.normalize().scale((double)0.3F);
+       itementity.setDeltaMovement(vec3);
+       itementity.setDefaultPickUpDelay();
 +      // CraftBukkit start
 +      org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(p_22614_.getBukkitEntity(), (org.bukkit.entity.Item) itementity.getBukkitEntity());
-+      itementity.f_19853_.getCraftServer().getPluginManager().callEvent(event);
++      itementity.level.getCraftServer().getPluginManager().callEvent(event);
 +      if (event.isCancelled()) {
 +         return;
 +      }
 +      // CraftBukkit end
-       p_22614_.f_19853_.m_7967_(itementity);
+       p_22614_.level.addFreshEntity(itementity);
     }
  

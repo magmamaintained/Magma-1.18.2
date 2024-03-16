@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/damagesource/DamageSource.java
 +++ b/net/minecraft/world/damagesource/DamageSource.java
 @@ -51,6 +_,18 @@
-    private boolean f_146700_;
-    private boolean f_181119_;
-    public final String f_19326_;
+    private boolean isFall;
+    private boolean noAggro;
+    public final String msgId;
 +   // CraftBukkit start
 +   private boolean sweep;
 +
@@ -17,5 +17,5 @@
 +   }
 +   // CraftBukkit end
  
-    public static DamageSource m_19364_(LivingEntity p_19365_) {
+    public static DamageSource sting(LivingEntity p_19365_) {
        return new EntityDamageSource("sting", p_19365_);

@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/ScheduleCommand.java
 @@ -52,7 +_,7 @@
        } else {
-          long i = p_138429_.m_81372_().m_46467_() + (long)p_138431_;
+          long i = p_138429_.getLevel().getGameTime() + (long)p_138431_;
           ResourceLocation resourcelocation = p_138430_.getFirst();
--         TimerQueue<MinecraftServer> timerqueue = p_138429_.m_81377_().m_129910_().m_5996_().m_7540_();
-+         TimerQueue<MinecraftServer> timerqueue = p_138429_.m_81372_().worldDataServer.m_5996_().m_7540_();
+-         TimerQueue<MinecraftServer> timerqueue = p_138429_.getServer().getWorldData().overworldData().getScheduledEvents();
++         TimerQueue<MinecraftServer> timerqueue = p_138429_.getLevel().worldDataServer.overworldData().getScheduledEvents();
           p_138430_.getSecond().ifLeft((p_138453_) -> {
              String s = resourcelocation.toString();
              if (p_138432_) {

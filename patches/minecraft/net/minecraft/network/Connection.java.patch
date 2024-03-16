@@ -2,51 +2,51 @@
 +++ b/net/minecraft/network/Connection.java
 @@ -65,18 +_,23 @@
     });
-    public static final AttributeKey<ConnectionProtocol> f_129461_ = AttributeKey.valueOf("protocol");
-    public static final LazyLoadedValue<NioEventLoopGroup> f_129462_ = new LazyLoadedValue<>(() -> {
+    public static final AttributeKey<ConnectionProtocol> ATTRIBUTE_PROTOCOL = AttributeKey.valueOf("protocol");
+    public static final LazyLoadedValue<NioEventLoopGroup> NETWORK_WORKER_GROUP = new LazyLoadedValue<>(() -> {
 -      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build());
-+      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(f_129465_)).build()); // Paper
++      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(LOGGER)).build()); // Paper
     });
-    public static final LazyLoadedValue<EpollEventLoopGroup> f_129463_ = new LazyLoadedValue<>(() -> {
+    public static final LazyLoadedValue<EpollEventLoopGroup> NETWORK_EPOLL_WORKER_GROUP = new LazyLoadedValue<>(() -> {
 -      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build());
-+      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(f_129465_)).build()); // Paper
++      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(LOGGER)).build()); // Paper
     });
-    public static final LazyLoadedValue<DefaultEventLoopGroup> f_129464_ = new LazyLoadedValue<>(() -> {
+    public static final LazyLoadedValue<DefaultEventLoopGroup> LOCAL_WORKER_GROUP = new LazyLoadedValue<>(() -> {
 -      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).build());
-+      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(f_129465_)).build()); // Paper
++      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(LOGGER)).build()); // Paper
     });
-    private final PacketFlow f_129466_;
-    private final Queue<Connection.PacketHolder> f_129467_ = Queues.newConcurrentLinkedQueue();
--   private Channel f_129468_;
-+   public Channel f_129468_; //Magma - private -> public
-    public SocketAddress f_129469_;
+    private final PacketFlow receiving;
+    private final Queue<Connection.PacketHolder> queue = Queues.newConcurrentLinkedQueue();
+-   private Channel channel;
++   public Channel channel; //Magma - private -> public
+    public SocketAddress address;
 +   // Spigot Start
 +   public java.util.UUID spoofedUUID;
 +   public com.mojang.authlib.properties.Property[] spoofedProfile;
 +   public boolean preparing = true;
 +   // Spigot End
-    private PacketListener f_129470_;
-    private Component f_129471_;
-    private boolean f_129472_;
+    private PacketListener packetListener;
+    private Component disconnectedReason;
+    private boolean encrypted;
 @@ -87,6 +_,7 @@
-    private float f_129477_;
-    private int f_129478_;
-    private boolean f_129479_;
+    private float averageSentPackets;
+    private int tickCount;
+    private boolean handlingFault;
 +   private java.util.function.Consumer<Connection> activationHandler;
  
     public Connection(PacketFlow p_129482_) {
-       this.f_129466_ = p_129482_;
+       this.receiving = p_129482_;
 @@ -96,6 +_,10 @@
        super.channelActive(p_129525_);
-       this.f_129468_ = p_129525_.channel();
-       this.f_129469_ = this.f_129468_.remoteAddress();
+       this.channel = p_129525_.channel();
+       this.address = this.channel.remoteAddress();
 +      // Spigot Start
 +      this.preparing = false;
 +      // Spigot End
 +      if (activationHandler != null) activationHandler.accept(this);
  
        try {
-          this.m_129498_(ConnectionProtocol.HANDSHAKING);
+          this.setProtocol(ConnectionProtocol.HANDSHAKING);
 @@ -143,6 +_,7 @@
  
           }
@@ -56,27 +56,27 @@
  
     protected void channelRead0(ChannelHandlerContext p_129487_, Packet<?> p_129488_) {
 @@ -191,7 +_,7 @@
-       ++this.f_129475_;
+       ++this.sentPackets;
        if (connectionprotocol1 != connectionprotocol) {
-          f_129465_.debug("Disabled auto read");
--         this.f_129468_.config().setAutoRead(false);
-+         this.f_129468_.eventLoop().execute(()->this.f_129468_.config().setAutoRead(false));
+          LOGGER.debug("Disabled auto read");
+-         this.channel.config().setAutoRead(false);
++         this.channel.eventLoop().execute(()->this.channel.config().setAutoRead(false));
        }
  
-       if (this.f_129468_.eventLoop().inEventLoop()) {
+       if (this.channel.eventLoop().inEventLoop()) {
 @@ -270,7 +_,7 @@
  
-    public void m_129507_(Component p_129508_) {
-       if (this.f_129468_.isOpen()) {
--         this.f_129468_.close().awaitUninterruptibly();
-+         this.f_129468_.close(); // We can't wait as this may be called from an event loop.
-          this.f_129471_ = p_129508_;
+    public void disconnect(Component p_129508_) {
+       if (this.channel.isOpen()) {
+-         this.channel.close().awaitUninterruptibly();
++         this.channel.close(); // We can't wait as this may be called from an event loop.
+          this.disconnectedReason = p_129508_;
        }
  
 @@ -289,7 +_,10 @@
     }
  
-    public static Connection m_178300_(InetSocketAddress p_178301_, boolean p_178302_) {
+    public static Connection connectToServer(InetSocketAddress p_178301_, boolean p_178302_) {
 +      net.minecraftforge.network.DualStackUtils.checkIPv6(p_178301_.getAddress());
        final Connection connection = new Connection(PacketFlow.CLIENTBOUND);
 +      net.minecraftforge.network.DualStackUtils.checkIPv6(p_178301_.getAddress());
@@ -86,44 +86,44 @@
        if (Epoll.isAvailable() && p_178302_) {
 @@ -315,6 +_,7 @@
  
-    public static Connection m_129493_(SocketAddress p_129494_) {
+    public static Connection connectToLocalServer(SocketAddress p_129494_) {
        final Connection connection = new Connection(PacketFlow.CLIENTBOUND);
 +      connection.activationHandler = net.minecraftforge.network.NetworkHooks::registerClientLoginChannel;
-       (new Bootstrap()).group(f_129464_.m_13971_()).handler(new ChannelInitializer<Channel>() {
+       (new Bootstrap()).group(LOCAL_WORKER_GROUP.get()).handler(new ChannelInitializer<Channel>() {
           protected void initChannel(Channel p_129557_) {
              p_129557_.pipeline().addLast("packet_handler", connection);
 @@ -390,6 +_,7 @@
-             } else if (this.m_129538_() != null) {
-                this.m_129538_().m_7026_(new TranslatableComponent("multiplayer.disconnect.generic"));
+             } else if (this.getPacketListener() != null) {
+                this.getPacketListener().onDisconnect(new TranslatableComponent("multiplayer.disconnect.generic"));
              }
-+            this.f_129467_.clear(); // Free up packet queue.
++            this.queue.clear(); // Free up packet queue.
           }
  
        }
 @@ -403,6 +_,14 @@
-       return this.f_129477_;
+       return this.averageSentPackets;
     }
  
 +   public Channel channel() {
-+      return f_129468_;
++      return channel;
 +   }
 +
 +   public PacketFlow getDirection() {
-+      return this.f_129466_;
++      return this.receiving;
 +   }
 +
     static class PacketHolder {
-       final Packet<?> f_129558_;
+       final Packet<?> packet;
        @Nullable
 @@ -413,4 +_,11 @@
-          this.f_129559_ = p_129562_;
+          this.listener = p_129562_;
        }
     }
 +
 +   // Spigot Start
 +   public SocketAddress getRawAddress()
 +   {
-+      return this.f_129468_.remoteAddress();
++      return this.channel.remoteAddress();
 +   }
 +   // Spigot End
  }

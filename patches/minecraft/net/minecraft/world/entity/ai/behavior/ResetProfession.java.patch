@@ -3,15 +3,15 @@
 @@ -19,7 +_,13 @@
     }
  
-    protected void m_6735_(ServerLevel p_23776_, Villager p_23777_, long p_23778_) {
--      p_23777_.m_141967_(p_23777_.m_7141_().m_35565_(VillagerProfession.f_35585_));
+    protected void start(ServerLevel p_23776_, Villager p_23777_, long p_23778_) {
+-      p_23777_.setVillagerData(p_23777_.getVillagerData().setProfession(VillagerProfession.NONE));
 +      // CraftBukkit start
-+      org.bukkit.event.entity.VillagerCareerChangeEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callVillagerCareerChangeEvent(p_23777_, org.bukkit.craftbukkit.v1_18_R2.entity.CraftVillager.nmsToBukkitProfession(VillagerProfession.f_35585_), org.bukkit.event.entity.VillagerCareerChangeEvent.ChangeReason.LOSING_JOB);
++      org.bukkit.event.entity.VillagerCareerChangeEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callVillagerCareerChangeEvent(p_23777_, org.bukkit.craftbukkit.v1_18_R2.entity.CraftVillager.nmsToBukkitProfession(VillagerProfession.NONE), org.bukkit.event.entity.VillagerCareerChangeEvent.ChangeReason.LOSING_JOB);
 +      if (event.isCancelled()) {
 +         return;
 +      }
-+      p_23777_.m_141967_(p_23777_.m_7141_().m_35565_(org.bukkit.craftbukkit.v1_18_R2.entity.CraftVillager.bukkitToNmsProfession(event.getProfession())));
++      p_23777_.setVillagerData(p_23777_.getVillagerData().setProfession(org.bukkit.craftbukkit.v1_18_R2.entity.CraftVillager.bukkitToNmsProfession(event.getProfession())));
 +      // CraftBukkit end
-       p_23777_.m_35483_(p_23776_);
+       p_23777_.refreshBrain(p_23776_);
     }
  }

@@ -6,5 +6,5 @@
  
 +@net.minecraftforge.registries.ObjectHolder("minecraft")
  public class SoundEvents {
-    public static final SoundEvent f_11689_ = m_12656_("ambient.cave");
-    public static final SoundEvent f_11742_ = m_12656_("ambient.basalt_deltas.additions");
+    public static final SoundEvent AMBIENT_CAVE = register("ambient.cave");
+    public static final SoundEvent AMBIENT_BASALT_DELTAS_ADDITIONS = register("ambient.basalt_deltas.additions");

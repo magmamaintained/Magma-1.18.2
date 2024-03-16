@@ -6,66 +6,66 @@
  
 -public class MobEffectInstance implements Comparable<MobEffectInstance> {
 +public class MobEffectInstance implements Comparable<MobEffectInstance>, net.minecraftforge.common.extensions.IForgeMobEffectInstance {
-    private static final Logger f_19501_ = LogUtils.getLogger();
-    private final MobEffect f_19502_;
-    private int f_19503_;
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private final MobEffect effect;
+    private int duration;
 @@ -60,6 +_,7 @@
-       this.f_19506_ = p_19549_.f_19506_;
-       this.f_19508_ = p_19549_.f_19508_;
-       this.f_19509_ = p_19549_.f_19509_;
+       this.ambient = p_19549_.ambient;
+       this.visible = p_19549_.visible;
+       this.showIcon = p_19549_.showIcon;
 +      this.curativeItems = p_19549_.curativeItems == null ? null : new java.util.ArrayList<net.minecraft.world.item.ItemStack>(p_19549_.curativeItems);
     }
  
-    public boolean m_19558_(MobEffectInstance p_19559_) {
+    public boolean update(MobEffectInstance p_19559_) {
 @@ -108,7 +_,7 @@
     }
  
-    public MobEffect m_19544_() {
--      return this.f_19502_;
-+      return this.f_19502_ == null ? null : this.f_19502_.delegate.get();
+    public MobEffect getEffect() {
+-      return this.effect;
++      return this.effect == null ? null : this.effect.delegate.get();
     }
  
-    public int m_19557_() {
+    public int getDuration() {
 @@ -206,6 +_,7 @@
  
-    public CompoundTag m_19555_(CompoundTag p_19556_) {
-       p_19556_.m_128344_("Id", (byte)MobEffect.m_19459_(this.m_19544_()));
-+      net.minecraftforge.common.ForgeHooks.saveMobEffect(p_19556_, "forge:id", this.m_19544_());
-       this.m_19567_(p_19556_);
+    public CompoundTag save(CompoundTag p_19556_) {
+       p_19556_.putByte("Id", (byte)MobEffect.getId(this.getEffect()));
++      net.minecraftforge.common.ForgeHooks.saveMobEffect(p_19556_, "forge:id", this.getEffect());
+       this.writeDetailsTo(p_19556_);
        return p_19556_;
     }
 @@ -221,13 +_,15 @@
-          this.f_19510_.m_19555_(compoundtag);
-          p_19568_.m_128365_("HiddenEffect", compoundtag);
+          this.hiddenEffect.save(compoundtag);
+          p_19568_.put("HiddenEffect", compoundtag);
        }
 +      writeCurativeItems(p_19568_);
  
     }
  
     @Nullable
-    public static MobEffectInstance m_19560_(CompoundTag p_19561_) {
--      int i = p_19561_.m_128445_("Id");
-+      int i = p_19561_.m_128445_("Id") & 0xFF;
-       MobEffect mobeffect = MobEffect.m_19453_(i);
+    public static MobEffectInstance load(CompoundTag p_19561_) {
+-      int i = p_19561_.getByte("Id");
++      int i = p_19561_.getByte("Id") & 0xFF;
+       MobEffect mobeffect = MobEffect.byId(i);
 +      mobeffect = net.minecraftforge.common.ForgeHooks.loadMobEffect(p_19561_, "forge:id", mobeffect);
-       return mobeffect == null ? null : m_19545_(mobeffect, p_19561_);
+       return mobeffect == null ? null : loadSpecifiedEffect(mobeffect, p_19561_);
     }
  
 @@ -250,7 +_,7 @@
-          mobeffectinstance = m_19545_(p_19546_, p_19547_.m_128469_("HiddenEffect"));
+          mobeffectinstance = loadSpecifiedEffect(p_19546_, p_19547_.getCompound("HiddenEffect"));
        }
  
 -      return new MobEffectInstance(p_19546_, j, i < 0 ? 0 : i, flag, flag1, flag2, mobeffectinstance);
 +      return readCurativeItems(new MobEffectInstance(p_19546_, j, i < 0 ? 0 : i, flag, flag1, flag2, mobeffectinstance), p_19547_);
     }
  
-    public void m_19562_(boolean p_19563_) {
+    public void setNoCounter(boolean p_19563_) {
 @@ -263,6 +_,32 @@
  
     public int compareTo(MobEffectInstance p_19566_) {
        int i = 32147;
--      return (this.m_19557_() <= 32147 || p_19566_.m_19557_() <= 32147) && (!this.m_19571_() || !p_19566_.m_19571_()) ? ComparisonChain.start().compare(this.m_19571_(), p_19566_.m_19571_()).compare(this.m_19557_(), p_19566_.m_19557_()).compare(this.m_19544_().m_19484_(), p_19566_.m_19544_().m_19484_()).result() : ComparisonChain.start().compare(this.m_19571_(), p_19566_.m_19571_()).compare(this.m_19544_().m_19484_(), p_19566_.m_19544_().m_19484_()).result();
-+      return (this.m_19557_() <= 32147 || p_19566_.m_19557_() <= 32147) && (!this.m_19571_() || !p_19566_.m_19571_()) ? ComparisonChain.start().compare(this.m_19571_(), p_19566_.m_19571_()).compare(this.m_19557_(), p_19566_.m_19557_()).compare(this.m_19544_().getSortOrder(this), p_19566_.m_19544_().getSortOrder(this)).result() : ComparisonChain.start().compare(this.m_19571_(), p_19566_.m_19571_()).compare(this.m_19544_().getSortOrder(this), p_19566_.m_19544_().getSortOrder(this)).result();
+-      return (this.getDuration() <= 32147 || p_19566_.getDuration() <= 32147) && (!this.isAmbient() || !p_19566_.isAmbient()) ? ComparisonChain.start().compare(this.isAmbient(), p_19566_.isAmbient()).compare(this.getDuration(), p_19566_.getDuration()).compare(this.getEffect().getColor(), p_19566_.getEffect().getColor()).result() : ComparisonChain.start().compare(this.isAmbient(), p_19566_.isAmbient()).compare(this.getEffect().getColor(), p_19566_.getEffect().getColor()).result();
++      return (this.getDuration() <= 32147 || p_19566_.getDuration() <= 32147) && (!this.isAmbient() || !p_19566_.isAmbient()) ? ComparisonChain.start().compare(this.isAmbient(), p_19566_.isAmbient()).compare(this.getDuration(), p_19566_.getDuration()).compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this)).result() : ComparisonChain.start().compare(this.isAmbient(), p_19566_.isAmbient()).compare(this.getEffect().getSortOrder(this), p_19566_.getEffect().getSortOrder(this)).result();
 +   }
 +
 +   //======================= FORGE START ===========================
@@ -74,7 +74,7 @@
 +   @Override
 +   public java.util.List<net.minecraft.world.item.ItemStack> getCurativeItems() {
 +      if (this.curativeItems == null) //Lazy load this so that we don't create a circular dep on Items.
-+         this.curativeItems = m_19544_().getCurativeItems();
++         this.curativeItems = getEffect().getCurativeItems();
 +      return this.curativeItems;
 +   }
 +   @Override
@@ -82,11 +82,11 @@
 +      this.curativeItems = curativeItems;
 +   }
 +   private static MobEffectInstance readCurativeItems(MobEffectInstance effect, CompoundTag nbt) {
-+      if (nbt.m_128425_("CurativeItems", net.minecraft.nbt.Tag.f_178202_)) {
++      if (nbt.contains("CurativeItems", net.minecraft.nbt.Tag.TAG_LIST)) {
 +         java.util.List<net.minecraft.world.item.ItemStack> items = new java.util.ArrayList<net.minecraft.world.item.ItemStack>();
-+         net.minecraft.nbt.ListTag list = nbt.m_128437_("CurativeItems", net.minecraft.nbt.Tag.f_178203_);
++         net.minecraft.nbt.ListTag list = nbt.getList("CurativeItems", net.minecraft.nbt.Tag.TAG_COMPOUND);
 +         for (int i = 0; i < list.size(); i++) {
-+            items.add(net.minecraft.world.item.ItemStack.m_41712_(list.m_128728_(i)));
++            items.add(net.minecraft.world.item.ItemStack.of(list.getCompound(i)));
 +         }
 +         effect.setCurativeItems(items);
 +      }

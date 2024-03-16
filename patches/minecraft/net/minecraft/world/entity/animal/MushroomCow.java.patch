@@ -6,66 +6,66 @@
  
 -public class MushroomCow extends Cow implements Shearable {
 +public class MushroomCow extends Cow implements Shearable, net.minecraftforge.common.IForgeShearable {
-    private static final EntityDataAccessor<String> f_28908_ = SynchedEntityData.m_135353_(MushroomCow.class, EntityDataSerializers.f_135030_);
-    private static final int f_148934_ = 1024;
+    private static final EntityDataAccessor<String> DATA_TYPE = SynchedEntityData.defineId(MushroomCow.class, EntityDataSerializers.STRING);
+    private static final int MUTATE_CHANCE = 1024;
     @Nullable
 @@ -104,7 +_,7 @@
  
-          this.m_5496_(soundevent, 1.0F, 1.0F);
-          return InteractionResult.m_19078_(this.f_19853_.f_46443_);
--      } else if (itemstack.m_150930_(Items.f_42574_) && this.m_6220_()) {
-+      } else if (false && itemstack.m_41720_() == Items.f_42574_ && this.m_6220_()) { //Forge: Moved to onSheared
-          this.m_5851_(SoundSource.PLAYERS);
-          this.m_146852_(GameEvent.f_157781_, p_28941_);
-          if (!this.f_19853_.f_46443_) {
+          this.playSound(soundevent, 1.0F, 1.0F);
+          return InteractionResult.sidedSuccess(this.level.isClientSide);
+-      } else if (itemstack.is(Items.SHEARS) && this.readyForShearing()) {
++      } else if (false && itemstack.getItem() == Items.SHEARS && this.readyForShearing()) { //Forge: Moved to onSheared
+          this.shear(SoundSource.PLAYERS);
+          this.gameEvent(GameEvent.SHEAR, p_28941_);
+          if (!this.level.isClientSide) {
 @@ -145,11 +_,21 @@
        }
     }
  
 +   @Override
 +   public java.util.List<ItemStack> onSheared(@javax.annotation.Nullable Player player, @javax.annotation.Nonnull ItemStack item, Level world, BlockPos pos, int fortune) {
-+      this.m_146852_(GameEvent.f_157781_, player);
++      this.gameEvent(GameEvent.SHEAR, player);
 +      return shearInternal(player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS);
 +   }
 +
-    public void m_5851_(SoundSource p_28924_) {
-+      shearInternal(p_28924_).forEach(s -> this.f_19853_.m_7967_(new ItemEntity(this.f_19853_, this.m_20185_(), this.m_20227_(1.0D), this.m_20189_(), s)));
+    public void shear(SoundSource p_28924_) {
++      shearInternal(p_28924_).forEach(s -> this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(1.0D), this.getZ(), s)));
 +   }
 +
 +   private java.util.List<ItemStack> shearInternal(SoundSource p_28924_) {
-       this.f_19853_.m_6269_((Player)null, this, SoundEvents.f_12075_, p_28924_, 1.0F, 1.0F);
-       if (!this.f_19853_.m_5776_()) {
-          ((ServerLevel)this.f_19853_).m_8767_(ParticleTypes.f_123813_, this.m_20185_(), this.m_20227_(0.5D), this.m_20189_(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
--         this.m_146870_();
+       this.level.playSound((Player)null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
+       if (!this.level.isClientSide()) {
+          ((ServerLevel)this.level).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5D), this.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+-         this.discard();
 +         // this.discard(); // CraftBukkit - moved down
-          Cow cow = EntityType.f_20557_.m_20615_(this.f_19853_);
-          cow.m_7678_(this.m_20185_(), this.m_20186_(), this.m_20189_(), this.m_146908_(), this.m_146909_());
-          cow.m_21153_(this.m_21223_());
+          Cow cow = EntityType.COW.create(this.level);
+          cow.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+          cow.setHealth(this.getHealth());
 @@ -164,12 +_,32 @@
           }
  
-          cow.m_20331_(this.m_20147_());
+          cow.setInvulnerable(this.isInvulnerable());
 +         // CraftBukkit start
 +         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityTransformEvent(this, cow, org.bukkit.event.entity.EntityTransformEvent.TransformReason.SHEARED).isCancelled()) {
 +            return java.util.Collections.emptyList();
 +         }
-+         this.f_19853_.prepareEntity(cow, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SHEARED); //Magma - add spawn reason
-          this.f_19853_.m_7967_(cow);
-+         this.m_146870_(); // CraftBukkit - from above
++         this.level.prepareEntity(cow, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SHEARED); //Magma - add spawn reason
+          this.level.addFreshEntity(cow);
++         this.discard(); // CraftBukkit - from above
 +         // CraftBukkit end
  
 +         java.util.List<ItemStack> items = new java.util.ArrayList<>();
           for(int i = 0; i < 5; ++i) {
--            this.f_19853_.m_7967_(new ItemEntity(this.f_19853_, this.m_20185_(), this.m_20227_(1.0D), this.m_20189_(), new ItemStack(this.m_28955_().f_28961_.m_60734_())));
+-            this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(1.0D), this.getZ(), new ItemStack(this.getMushroomType().blockState.getBlock())));
 +
 +            // CraftBukkit start
-+            ItemEntity entityitem = new ItemEntity(this.f_19853_, this.m_20185_(), this.m_20227_(1.0D), this.m_20189_(), new ItemStack(this.m_28955_().f_28961_.m_60734_()));
++            ItemEntity entityitem = new ItemEntity(this.level, this.getX(), this.getY(1.0D), this.getZ(), new ItemStack(this.getMushroomType().blockState.getBlock()));
 +            org.bukkit.event.entity.EntityDropItemEvent event = new org.bukkit.event.entity.EntityDropItemEvent(this.getBukkitEntity(), (org.bukkit.entity.Item) entityitem.getBukkitEntity());
 +            org.bukkit.Bukkit.getPluginManager().callEvent(event);
 +            if (event.isCancelled()) {
 +               continue;
 +            }
-+            items.add(entityitem.m_32055_()); // Magma
++            items.add(entityitem.getItem()); // Magma
 +            // CraftBukkit end
 +
           }
@@ -76,21 +76,21 @@
     }
  
 @@ -182,6 +_,7 @@
-       p_28944_.m_128359_("Type", this.m_28955_().f_28960_);
-       if (this.f_28909_ != null) {
-          p_28944_.m_128344_("EffectId", (byte)MobEffect.m_19459_(this.f_28909_));
-+         net.minecraftforge.common.ForgeHooks.saveMobEffect(p_28944_, "forge:effect_id", this.f_28909_);
-          p_28944_.m_128405_("EffectDuration", this.f_28910_);
+       p_28944_.putString("Type", this.getMushroomType().type);
+       if (this.effect != null) {
+          p_28944_.putByte("EffectId", (byte)MobEffect.getId(this.effect));
++         net.minecraftforge.common.ForgeHooks.saveMobEffect(p_28944_, "forge:effect_id", this.effect);
+          p_28944_.putInt("EffectDuration", this.effectDuration);
        }
  
 @@ -192,6 +_,7 @@
-       this.m_28928_(MushroomCow.MushroomType.m_28976_(p_28936_.m_128461_("Type")));
-       if (p_28936_.m_128425_("EffectId", 1)) {
-          this.f_28909_ = MobEffect.m_19453_(p_28936_.m_128445_("EffectId"));
-+         this.f_28909_ = net.minecraftforge.common.ForgeHooks.loadMobEffect(p_28936_, "forge:effect_id", this.f_28909_);
+       this.setMushroomType(MushroomCow.MushroomType.byType(p_28936_.getString("Type")));
+       if (p_28936_.contains("EffectId", 1)) {
+          this.effect = MobEffect.byId(p_28936_.getByte("EffectId"));
++         this.effect = net.minecraftforge.common.ForgeHooks.loadMobEffect(p_28936_, "forge:effect_id", this.effect);
        }
  
-       if (p_28936_.m_128425_("EffectDuration", 3)) {
+       if (p_28936_.contains("EffectDuration", 3)) {
 @@ -238,6 +_,11 @@
        }
  
@@ -99,7 +99,7 @@
 +
 +   @Override
 +   public boolean isShearable(@javax.annotation.Nonnull ItemStack item, Level world, BlockPos pos) {
-+      return m_6220_();
++      return readyForShearing();
     }
  
     public static enum MushroomType {

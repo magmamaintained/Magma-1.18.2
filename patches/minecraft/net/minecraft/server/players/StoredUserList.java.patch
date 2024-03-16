@@ -1,29 +1,29 @@
 --- a/net/minecraft/server/players/StoredUserList.java
 +++ b/net/minecraft/server/players/StoredUserList.java
 @@ -72,6 +_,12 @@
-       return this.f_11377_.keySet().toArray(new String[0]);
+       return this.map.keySet().toArray(new String[0]);
     }
  
 +   // CraftBukkit start
 +   public Collection<V> getValues() {
-+      return this.f_11377_.values();
++      return this.map.values();
 +   }
 +   // CraftBukkit end
 +
-    public boolean m_11390_() {
-       return this.f_11377_.size() < 1;
+    public boolean isEmpty() {
+       return this.map.size() < 1;
     }
 @@ -147,6 +_,14 @@
-                   this.f_11377_.put(this.m_5981_(storeduserentry.m_11373_()), (V)storeduserentry);
+                   this.map.put(this.getKeyForUser(storeduserentry.getUser()), (V)storeduserentry);
                 }
              }
 +         // Spigot Start
 +         } catch ( com.google.gson.JsonParseException | NullPointerException ex )
 +         {
-+            org.bukkit.Bukkit.getLogger().log( java.util.logging.Level.WARNING, "Unable to read file " + this.f_11376_ + ", backing it up to {0}.backup and creating new copy.", ex );
-+            File backup = new File( this.f_11376_ + ".backup" );
-+            this.f_11376_.renameTo( backup );
-+            this.f_11376_.delete();
++            org.bukkit.Bukkit.getLogger().log( java.util.logging.Level.WARNING, "Unable to read file " + this.file + ", backing it up to {0}.backup and creating new copy.", ex );
++            File backup = new File( this.file + ".backup" );
++            this.file.renameTo( backup );
++            this.file.delete();
 +            // Spigot End
           } catch (Throwable throwable1) {
              if (bufferedreader != null) {

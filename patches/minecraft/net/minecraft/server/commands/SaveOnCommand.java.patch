@@ -2,9 +2,9 @@
 +++ b/net/minecraft/server/commands/SaveOnCommand.java
 @@ -12,7 +_,7 @@
  
-    public static void m_138292_(CommandDispatcher<CommandSourceStack> p_138293_) {
-       p_138293_.register(Commands.m_82127_("save-on").requires((p_138297_) -> {
--         return p_138297_.m_6761_(4);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138293_) {
+       p_138293_.register(Commands.literal("save-on").requires((p_138297_) -> {
+-         return p_138297_.hasPermission(4);
 +         return p_138297_.hasPermission(4,"minecraft.command.save-on");
        }).executes((p_138295_) -> {
           CommandSourceStack commandsourcestack = p_138295_.getSource();

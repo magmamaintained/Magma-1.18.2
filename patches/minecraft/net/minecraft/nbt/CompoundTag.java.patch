@@ -1,59 +1,59 @@
 --- a/net/minecraft/nbt/CompoundTag.java
 +++ b/net/minecraft/nbt/CompoundTag.java
 @@ -40,6 +_,7 @@
-             while((b0 = CompoundTag.m_128420_(p_128485_, p_128487_)) != 0) {
-                String s = CompoundTag.m_128432_(p_128485_, p_128487_);
-                p_128487_.m_6800_((long)(224 + 16 * s.length()));
-+               p_128487_.m_6800_(32); //Forge: 4 extra bytes for the object allocation.
-                Tag tag = CompoundTag.m_128413_(TagTypes.m_129397_(b0), s, p_128485_, p_128486_ + 1, p_128487_);
+             while((b0 = CompoundTag.readNamedTagType(p_128485_, p_128487_)) != 0) {
+                String s = CompoundTag.readNamedTagName(p_128485_, p_128487_);
+                p_128487_.accountBits((long)(224 + 16 * s.length()));
++               p_128487_.accountBits(32); //Forge: 4 extra bytes for the object allocation.
+                Tag tag = CompoundTag.readNamedTagData(TagTypes.getType(b0), s, p_128485_, p_128486_ + 1, p_128487_);
                 if (map.put(s, tag) != null) {
-                   p_128487_.m_6800_(288L);
+                   p_128487_.accountBits(288L);
 @@ -56,36 +_,36 @@
              if ((b0 = p_197446_.readByte()) != 0) {
-                TagType<?> tagtype = TagTypes.m_129397_(b0);
-                switch(p_197447_.m_196214_(tagtype)) {
+                TagType<?> tagtype = TagTypes.getType(b0);
+                switch(p_197447_.visitEntry(tagtype)) {
 -               case HALT:
 -                  return StreamTagVisitor.ValueResult.HALT;
 -               case BREAK:
--                  StringTag.m_197563_(p_197446_);
--                  tagtype.m_196159_(p_197446_);
+-                  StringTag.skipString(p_197446_);
+-                  tagtype.skip(p_197446_);
 -                  break;
 -               case SKIP:
--                  StringTag.m_197563_(p_197446_);
--                  tagtype.m_196159_(p_197446_);
+-                  StringTag.skipString(p_197446_);
+-                  tagtype.skip(p_197446_);
 -                  continue;
 -               default:
 -                  String s = p_197446_.readUTF();
--                  switch(p_197447_.m_196425_(tagtype, s)) {
+-                  switch(p_197447_.visitEntry(tagtype, s)) {
                    case HALT:
                       return StreamTagVisitor.ValueResult.HALT;
                    case BREAK:
-+                     StringTag.m_197563_(p_197446_);
-                      tagtype.m_196159_(p_197446_);
++                     StringTag.skipString(p_197446_);
+                      tagtype.skip(p_197446_);
                       break;
                    case SKIP:
-+                     StringTag.m_197563_(p_197446_);
-                      tagtype.m_196159_(p_197446_);
++                     StringTag.skipString(p_197446_);
+                      tagtype.skip(p_197446_);
                       continue;
                    default:
--                     switch(tagtype.m_196511_(p_197446_, p_197447_)) {
+-                     switch(tagtype.parse(p_197446_, p_197447_)) {
 -                     case HALT:
 -                        return StreamTagVisitor.ValueResult.HALT;
 -                     case BREAK:
 -                     default:
 -                        continue;
 +                     String s = p_197446_.readUTF();
-+                     switch(p_197447_.m_196425_(tagtype, s)) {
++                     switch(p_197447_.visitEntry(tagtype, s)) {
 +                        case HALT:
 +                           return StreamTagVisitor.ValueResult.HALT;
 +                        case BREAK:
-+                           tagtype.m_196159_(p_197446_);
++                           tagtype.skip(p_197446_);
 +                           break;
 +                        case SKIP:
-+                           tagtype.m_196159_(p_197446_);
++                           tagtype.skip(p_197446_);
 +                           continue;
 +                        default:
-+                           switch(tagtype.m_196511_(p_197446_, p_197447_)) {
++                           switch(tagtype.parse(p_197446_, p_197447_)) {
 +                              case HALT:
 +                                 return StreamTagVisitor.ValueResult.HALT;
 +                              case BREAK:
@@ -68,38 +68,38 @@
 @@ -154,6 +_,8 @@
  
     @Nullable
-    public Tag m_128365_(String p_128366_, Tag p_128367_) {
+    public Tag put(String p_128366_, Tag p_128367_) {
 +      if (p_128367_ == null && org.magmafoundation.magma.configuration.MagmaConfig.instance.debugWarnOnNullNBT.getValues())
 +         org.magmafoundation.magma.Magma.LOGGER.warn("Tried to set key " + p_128366_ + " to null. This warning can be ignored if you know what you're doing."); // org.magmafoundation.magma.Magma - allow null nbt
-       return this.f_128329_.put(p_128366_, p_128367_);
+       return this.tags.put(p_128366_, p_128367_);
     }
  
 @@ -446,11 +_,12 @@
     }
  
-    static byte m_128420_(DataInput p_128421_, NbtAccounter p_128422_) throws IOException {
-+      p_128422_.m_6800_(8);
+    static byte readNamedTagType(DataInput p_128421_, NbtAccounter p_128422_) throws IOException {
++      p_128422_.accountBits(8);
        return p_128421_.readByte();
     }
  
-    static String m_128432_(DataInput p_128433_, NbtAccounter p_128434_) throws IOException {
+    static String readNamedTagName(DataInput p_128433_, NbtAccounter p_128434_) throws IOException {
 -      return p_128433_.readUTF();
 +      return p_128434_.readUTF(p_128433_.readUTF());
     }
  
-    static Tag m_128413_(TagType<?> p_128414_, String p_128415_, DataInput p_128416_, int p_128417_, NbtAccounter p_128418_) {
+    static Tag readNamedTagData(TagType<?> p_128414_, String p_128415_, DataInput p_128416_, int p_128417_, NbtAccounter p_128418_) {
 @@ -497,15 +_,6 @@
-          TagType<?> tagtype = tag.m_6458_();
-          StreamTagVisitor.EntryResult streamtagvisitor$entryresult = p_197442_.m_196214_(tagtype);
+          TagType<?> tagtype = tag.getType();
+          StreamTagVisitor.EntryResult streamtagvisitor$entryresult = p_197442_.visitEntry(tagtype);
           switch(streamtagvisitor$entryresult) {
 -         case HALT:
 -            return StreamTagVisitor.ValueResult.HALT;
 -         case BREAK:
--            return p_197442_.m_196527_();
+-            return p_197442_.visitContainerEnd();
 -         case SKIP:
 -            break;
 -         default:
--            streamtagvisitor$entryresult = p_197442_.m_196425_(tagtype, entry.getKey());
+-            streamtagvisitor$entryresult = p_197442_.visitEntry(tagtype, entry.getKey());
 -            switch(streamtagvisitor$entryresult) {
              case HALT:
                 return StreamTagVisitor.ValueResult.HALT;
@@ -108,27 +108,27 @@
              case SKIP:
                 break;
              default:
--               StreamTagVisitor.ValueResult streamtagvisitor$valueresult = tag.m_196533_(p_197442_);
+-               StreamTagVisitor.ValueResult streamtagvisitor$valueresult = tag.accept(p_197442_);
 -               switch(streamtagvisitor$valueresult) {
 -               case HALT:
 -                  return StreamTagVisitor.ValueResult.HALT;
 -               case BREAK:
--                  return p_197442_.m_196527_();
-+               streamtagvisitor$entryresult = p_197442_.m_196425_(tagtype, entry.getKey());
+-                  return p_197442_.visitContainerEnd();
++               streamtagvisitor$entryresult = p_197442_.visitEntry(tagtype, entry.getKey());
 +               switch(streamtagvisitor$entryresult) {
 +                  case HALT:
 +                     return StreamTagVisitor.ValueResult.HALT;
 +                  case BREAK:
-+                     return p_197442_.m_196527_();
++                     return p_197442_.visitContainerEnd();
 +                  case SKIP:
 +                     break;
 +                  default:
-+                     StreamTagVisitor.ValueResult streamtagvisitor$valueresult = tag.m_196533_(p_197442_);
++                     StreamTagVisitor.ValueResult streamtagvisitor$valueresult = tag.accept(p_197442_);
 +                     switch(streamtagvisitor$valueresult) {
 +                        case HALT:
 +                           return StreamTagVisitor.ValueResult.HALT;
 +                        case BREAK:
-+                           return p_197442_.m_196527_();
++                           return p_197442_.visitContainerEnd();
 +                     }
                 }
 -            }

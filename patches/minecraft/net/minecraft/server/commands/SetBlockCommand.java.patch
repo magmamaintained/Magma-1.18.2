@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SetBlockCommand.java
 @@ -23,7 +_,7 @@
  
-    public static void m_138601_(CommandDispatcher<CommandSourceStack> p_138602_) {
-       p_138602_.register(Commands.m_82127_("setblock").requires((p_138606_) -> {
--         return p_138606_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138602_) {
+       p_138602_.register(Commands.literal("setblock").requires((p_138606_) -> {
+-         return p_138606_.hasPermission(2);
 +         return p_138606_.hasPermission(2,"minecraft.command.setblock");
-       }).then(Commands.m_82129_("pos", BlockPosArgument.m_118239_()).then(Commands.m_82129_("block", BlockStateArgument.m_116120_()).executes((p_138618_) -> {
-          return m_138607_(p_138618_.getSource(), BlockPosArgument.m_118242_(p_138618_, "pos"), BlockStateArgument.m_116123_(p_138618_, "block"), SetBlockCommand.Mode.REPLACE, (Predicate<BlockInWorld>)null);
-       }).then(Commands.m_82127_("destroy").executes((p_138616_) -> {
+       }).then(Commands.argument("pos", BlockPosArgument.blockPos()).then(Commands.argument("block", BlockStateArgument.block()).executes((p_138618_) -> {
+          return setBlock(p_138618_.getSource(), BlockPosArgument.getLoadedBlockPos(p_138618_, "pos"), BlockStateArgument.getBlock(p_138618_, "block"), SetBlockCommand.Mode.REPLACE, (Predicate<BlockInWorld>)null);
+       }).then(Commands.literal("destroy").executes((p_138616_) -> {

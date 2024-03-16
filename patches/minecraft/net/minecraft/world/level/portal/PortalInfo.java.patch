@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/portal/PortalInfo.java
 +++ b/net/minecraft/world/level/portal/PortalInfo.java
 @@ -8,6 +_,16 @@
-    public final float f_77678_;
-    public final float f_77679_;
+    public final float yRot;
+    public final float xRot;
  
 +   // CraftBukkit start
 +   public net.minecraft.server.level.ServerLevel world;
@@ -15,5 +15,5 @@
 +   // CraftBukkit end
 +
     public PortalInfo(Vec3 p_77681_, Vec3 p_77682_, float p_77683_, float p_77684_) {
-       this.f_77676_ = p_77681_;
-       this.f_77677_ = p_77682_;
+       this.pos = p_77681_;
+       this.speed = p_77682_;

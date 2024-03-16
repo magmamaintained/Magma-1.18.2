@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/entity/monster/Husk.java
 +++ b/net/minecraft/world/entity/monster/Husk.java
 @@ -49,7 +_,8 @@
-       boolean flag = super.m_7327_(p_32892_);
-       if (flag && this.m_21205_().m_41619_() && p_32892_ instanceof LivingEntity) {
-          float f = this.f_19853_.m_6436_(this.m_142538_()).m_19056_();
--         ((LivingEntity)p_32892_).m_147207_(new MobEffectInstance(MobEffects.f_19612_, 140 * (int)f), this);
+       boolean flag = super.doHurtTarget(p_32892_);
+       if (flag && this.getMainHandItem().isEmpty() && p_32892_ instanceof LivingEntity) {
+          float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+-         ((LivingEntity)p_32892_).addEffect(new MobEffectInstance(MobEffects.HUNGER, 140 * (int)f), this);
 +         ((LivingEntity)p_32892_).prepare(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.ATTACK); //Magma
-+         ((LivingEntity)p_32892_).m_147207_(new MobEffectInstance(MobEffects.f_19612_, 140 * (int)f), this); // CraftBukkit
++         ((LivingEntity)p_32892_).addEffect(new MobEffectInstance(MobEffects.HUNGER, 140 * (int)f), this); // CraftBukkit
        }
  
        return flag;

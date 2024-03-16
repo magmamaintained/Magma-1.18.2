@@ -4,17 +4,17 @@
  
  public abstract class StructureProcessor {
     @Nullable
--   public abstract StructureTemplate.StructureBlockInfo m_7382_(LevelReader p_74416_, BlockPos p_74417_, BlockPos p_74418_, StructureTemplate.StructureBlockInfo p_74419_, StructureTemplate.StructureBlockInfo p_74420_, StructurePlaceSettings p_74421_);
+-   public abstract StructureTemplate.StructureBlockInfo processBlock(LevelReader p_74416_, BlockPos p_74417_, BlockPos p_74418_, StructureTemplate.StructureBlockInfo p_74419_, StructureTemplate.StructureBlockInfo p_74420_, StructurePlaceSettings p_74421_);
 +   @Deprecated //Forge: Use process below, with the Template context
-+   public StructureTemplate.StructureBlockInfo m_7382_(LevelReader p_74416_, BlockPos p_74417_, BlockPos p_74418_, StructureTemplate.StructureBlockInfo p_74419_, StructureTemplate.StructureBlockInfo p_74420_, StructurePlaceSettings p_74421_) {
++   public StructureTemplate.StructureBlockInfo processBlock(LevelReader p_74416_, BlockPos p_74417_, BlockPos p_74418_, StructureTemplate.StructureBlockInfo p_74419_, StructureTemplate.StructureBlockInfo p_74420_, StructurePlaceSettings p_74421_) {
 +      return p_74420_;
 +   }
  
-    protected abstract StructureProcessorType<?> m_6953_();
+    protected abstract StructureProcessorType<?> getType();
 +
 +   @Nullable
 +   public StructureTemplate.StructureBlockInfo process(LevelReader p_74140_, BlockPos p_74141_, BlockPos p_74142_, StructureTemplate.StructureBlockInfo p_74143_, StructureTemplate.StructureBlockInfo p_74144_, StructurePlaceSettings p_74145_, @Nullable StructureTemplate template) {
-+      return m_7382_(p_74140_, p_74141_, p_74142_, p_74143_, p_74144_, p_74145_);
++      return processBlock(p_74140_, p_74141_, p_74142_, p_74143_, p_74144_, p_74145_);
 +   }
 +
 +   /**

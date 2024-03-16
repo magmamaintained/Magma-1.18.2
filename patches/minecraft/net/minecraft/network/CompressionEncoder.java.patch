@@ -1,16 +1,16 @@
 --- a/net/minecraft/network/CompressionEncoder.java
 +++ b/net/minecraft/network/CompressionEncoder.java
 @@ -9,6 +_,8 @@
-    private final byte[] f_129444_ = new byte[8192];
-    private final Deflater f_129445_;
-    private int f_129446_;
+    private final byte[] encodeBuf = new byte[8192];
+    private final Deflater deflater;
+    private int threshold;
 +   private static final boolean DISABLE_PACKET_DEBUG = Boolean.parseBoolean(System.getProperty("forge.disablePacketCompressionDebug", "false"));
 +   private static final org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger();
  
     public CompressionEncoder(int p_129448_) {
-       this.f_129446_ = p_129448_;
+       this.threshold = p_129448_;
 @@ -22,6 +_,13 @@
-          friendlybytebuf.m_130130_(0);
+          friendlybytebuf.writeVarInt(0);
           friendlybytebuf.writeBytes(p_129453_);
        } else {
 +         int maxSize = org.magmafoundation.magma.configuration.MagmaConfig.instance.forgePacketCompressionThreshold.getValues();
@@ -22,4 +22,4 @@
 +         }
           byte[] abyte = new byte[i];
           p_129453_.readBytes(abyte);
-          friendlybytebuf.m_130130_(abyte.length);
+          friendlybytebuf.writeVarInt(abyte.length);

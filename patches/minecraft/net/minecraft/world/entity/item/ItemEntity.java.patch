@@ -2,88 +2,86 @@
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
 @@ -43,6 +_,11 @@
     @Nullable
-    private UUID f_31982_;
-    public final float f_31983_;
+    private UUID owner;
+    public final float bobOffs;
 +   /**
 +    * The maximum age of this EntityItem.  The item is expired once this is reached.
 +    */
-+   public int lifespan = ItemEntity.f_149659_;
++   public int lifespan = ItemEntity.LIFETIME;
 +   private int lastTick = net.minecraft.server.MinecraftServer.currentTick - 1; // CraftBukkit
  
     public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
        super(p_31991_, p_31992_);
 @@ -59,6 +_,7 @@
-       this.m_6034_(p_149664_, p_149665_, p_149666_);
-       this.m_20334_(p_149668_, p_149669_, p_149670_);
-       this.m_32045_(p_149667_);
-+      this.lifespan = (p_149667_.m_41720_() == null ? (p_149663_ == null ? ItemEntity.f_149659_ : f_19853_.spigotConfig.itemDespawnRate) : p_149667_.getEntityLifespan(p_149663_));
+       this.setPos(p_149664_, p_149665_, p_149666_);
+       this.setDeltaMovement(p_149668_, p_149669_, p_149670_);
+       this.setItem(p_149667_);
++      this.lifespan = (p_149667_.getItem() == null ? (p_149663_ == null ? ItemEntity.LIFETIME : level.spigotConfig.itemDespawnRate) : p_149667_.getEntityLifespan(p_149663_));
     }
  
     private ItemEntity(ItemEntity p_31994_) {
 @@ -82,13 +_,17 @@
     }
  
-    public void m_8119_() {
-+      if (m_32055_().onEntityItemUpdate(this)) return;
-       if (this.m_32055_().m_41619_()) {
-          this.m_146870_();
+    public void tick() {
++      if (getItem().onEntityItemUpdate(this)) return;
+       if (this.getItem().isEmpty()) {
+          this.discard();
        } else {
-          super.m_8119_();
--         if (this.f_31986_ > 0 && this.f_31986_ != 32767) {
--            --this.f_31986_;
+          super.tick();
+-         if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
+-            --this.pickupDelay;
 -         }
 +         // CraftBukkit start - Use wall time for pickup and despawn timers
 +         int elapsedTicks = net.minecraft.server.MinecraftServer.currentTick - this.lastTick;
-+         if (this.f_31986_ != 32767) this.f_31986_ -= elapsedTicks;
-+         if (this.f_31985_ != -32768) this.f_31985_ += elapsedTicks;
++         if (this.pickupDelay != 32767) this.pickupDelay -= elapsedTicks;
++         if (this.age != -32768) this.age += elapsedTicks;
 +         this.lastTick = net.minecraft.server.MinecraftServer.currentTick;
 +         // CraftBukkit end
  
-          this.f_19854_ = this.m_20185_();
-          this.f_19855_ = this.m_20186_();
+          this.xo = this.getX();
+          this.yo = this.getY();
 @@ -116,7 +_,7 @@
-             this.m_6478_(MoverType.SELF, this.m_20184_());
+             this.move(MoverType.SELF, this.getDeltaMovement());
              float f1 = 0.98F;
-             if (this.f_19861_) {
--               f1 = this.f_19853_.m_8055_(new BlockPos(this.m_20185_(), this.m_20186_() - 1.0D, this.m_20189_())).m_60734_().m_49958_() * 0.98F;
-+               f1 = this.f_19853_.m_8055_(new BlockPos(this.m_20185_(), this.m_20186_() - 1.0D, this.m_20189_())).getFriction(f_19853_, new BlockPos(this.m_20185_(), this.m_20186_() - 1.0D, this.m_20189_()), this) * 0.98F;
+             if (this.onGround) {
+-               f1 = this.level.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0D, this.getZ())).getBlock().getFriction() * 0.98F;
++               f1 = this.level.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0D, this.getZ())).getFriction(level, new BlockPos(this.getX(), this.getY() - 1.0D, this.getZ()), this) * 0.98F;
              }
  
-             this.m_20256_(this.m_20184_().m_82542_((double)f1, 0.98D, (double)f1));
+             this.setDeltaMovement(this.getDeltaMovement().multiply((double)f1, 0.98D, (double)f1));
 @@ -134,9 +_,11 @@
-             this.m_32069_();
+             this.mergeWithNeighbours();
           }
  
--         if (this.f_31985_ != -32768) {
--            ++this.f_31985_;
 +          /* CraftBukkit start - moved up
-+         if (this.age != -32768) {
-+            ++this.age;
+          if (this.age != -32768) {
+             ++this.age;
           }
 +         // CraftBukkit end */
  
-          this.f_19812_ |= this.m_20073_();
-          if (!this.f_19853_.f_46443_) {
+          this.hasImpulse |= this.updateInWaterStateAndDoFluidPushing();
+          if (!this.level.isClientSide) {
 @@ -146,12 +_,46 @@
              }
           }
  
--         if (!this.f_19853_.f_46443_ && this.f_31985_ >= 6000) {
-+         ItemStack item = this.m_32055_();
-+         if (!this.f_19853_.f_46443_ && this.f_31985_ >= lifespan) {
+-         if (!this.level.isClientSide && this.age >= 6000) {
++         ItemStack item = this.getItem();
++         if (!this.level.isClientSide && this.age >= lifespan) {
 +             int hook = net.minecraftforge.event.ForgeEventFactory.onItemExpire(this, item);
-+             if (hook < 0) this.m_146870_();
++             if (hook < 0) this.discard();
 +             else          this.lifespan += hook;
 +         }
 +
-+         if (item.m_41619_()) {
++         if (item.isEmpty()) {
 +            // CraftBukkit start - fire ItemDespawnEvent
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callItemDespawnEvent(this).isCancelled()) {
-+               this.f_31985_ = 0;
++               this.age = 0;
 +               return;
 +            }
 +            // CraftBukkit end
-             this.m_146870_();
+             this.discard();
           }
  
        }
@@ -94,74 +92,74 @@
 +   public void inactiveTick() {
 +      // CraftBukkit start - Use wall time for pickup and despawn timers
 +      int elapsedTicks = net.minecraft.server.MinecraftServer.currentTick - this.lastTick;
-+      if (this.f_31986_ != 32767) this.f_31986_ -= elapsedTicks;
-+      if (this.f_31985_ != -32768) this.f_31985_ += elapsedTicks;
++      if (this.pickupDelay != 32767) this.pickupDelay -= elapsedTicks;
++      if (this.age != -32768) this.age += elapsedTicks;
 +      this.lastTick = net.minecraft.server.MinecraftServer.currentTick;
 +      // CraftBukkit end
-+      if (!this.f_19853_.f_46443_ && this.f_31985_ >= lifespan) { //Magma
++      if (!this.level.isClientSide && this.age >= lifespan) { //Magma
 +         // CraftBukkit start - fire ItemDespawnEvent
 +         if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callItemDespawnEvent(this).isCancelled()) {
-+            this.f_31985_ = 0;
++            this.age = 0;
 +            return;
 +         }
 +         // CraftBukkit end
-+         this.m_146870_();
++         this.discard();
 +      }
 +   }
 +   // Spigot end
  
-    private void m_32067_() {
-       Vec3 vec3 = this.m_20184_();
+    private void setUnderwaterMovement() {
+       Vec3 vec3 = this.getDeltaMovement();
 @@ -165,7 +_,7 @@
  
-    private void m_32069_() {
-       if (this.m_32070_()) {
--         for(ItemEntity itementity : this.f_19853_.m_6443_(ItemEntity.class, this.m_142469_().m_82377_(0.5D, 0.0D, 0.5D), (p_186268_) -> {
-+         for(ItemEntity itementity : this.f_19853_.m_6443_(ItemEntity.class, this.m_142469_().m_82377_(f_19853_.spigotConfig.itemMerge, f_19853_.spigotConfig.itemMerge - 0.5D, f_19853_.spigotConfig.itemMerge), (p_186268_) -> {
-             return p_186268_ != this && p_186268_.m_32070_();
+    private void mergeWithNeighbours() {
+       if (this.isMergable()) {
+-         for(ItemEntity itementity : this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.5D, 0.0D, 0.5D), (p_186268_) -> {
++         for(ItemEntity itementity : this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(level.spigotConfig.itemMerge, level.spigotConfig.itemMerge - 0.5D, level.spigotConfig.itemMerge), (p_186268_) -> {
+             return p_186268_ != this && p_186268_.isMergable();
           })) {
-             if (itementity.m_32070_()) {
+             if (itementity.isMergable()) {
 @@ -188,7 +_,7 @@
-       ItemStack itemstack = this.m_32055_();
-       ItemStack itemstack1 = p_32016_.m_32055_();
-       if (Objects.equals(this.m_32056_(), p_32016_.m_32056_()) && m_32026_(itemstack, itemstack1)) {
--         if (itemstack1.m_41613_() < itemstack.m_41613_()) {
-+         if (true || itemstack1.m_41613_() < itemstack.m_41613_()) { // Spigot
-             m_32017_(this, itemstack, p_32016_, itemstack1);
+       ItemStack itemstack = this.getItem();
+       ItemStack itemstack1 = p_32016_.getItem();
+       if (Objects.equals(this.getOwner(), p_32016_.getOwner()) && areMergable(itemstack, itemstack1)) {
+-         if (itemstack1.getCount() < itemstack.getCount()) {
++         if (true || itemstack1.getCount() < itemstack.getCount()) { // Spigot
+             merge(this, itemstack, p_32016_, itemstack1);
           } else {
-             m_32017_(p_32016_, itemstack1, this, itemstack);
+             merge(p_32016_, itemstack1, this, itemstack);
 @@ -204,6 +_,8 @@
           return false;
-       } else if (p_32028_.m_41782_() ^ p_32027_.m_41782_()) {
+       } else if (p_32028_.hasTag() ^ p_32027_.hasTag()) {
           return false;
 +      } else if (!p_32027_.areCapsCompatible(p_32028_)) {
 +         return false;
        } else {
-          return !p_32028_.m_41782_() || p_32028_.m_41783_().equals(p_32027_.m_41783_());
+          return !p_32028_.hasTag() || p_32028_.getTag().equals(p_32027_.getTag());
        }
 @@ -219,10 +_,11 @@
  
-    private static void m_32022_(ItemEntity p_32023_, ItemStack p_32024_, ItemStack p_32025_) {
-       ItemStack itemstack = m_32029_(p_32024_, p_32025_, 64);
--      p_32023_.m_32045_(itemstack);
-+      if (!itemstack.m_41619_()) p_32023_.m_32045_(itemstack); // CraftBukkit - don't set empty stacks
+    private static void merge(ItemEntity p_32023_, ItemStack p_32024_, ItemStack p_32025_) {
+       ItemStack itemstack = merge(p_32024_, p_32025_, 64);
+-      p_32023_.setItem(itemstack);
++      if (!itemstack.isEmpty()) p_32023_.setItem(itemstack); // CraftBukkit - don't set empty stacks
     }
  
-    private static void m_32017_(ItemEntity p_32018_, ItemStack p_32019_, ItemEntity p_32020_, ItemStack p_32021_) {
+    private static void merge(ItemEntity p_32018_, ItemStack p_32019_, ItemEntity p_32020_, ItemStack p_32021_) {
 +      if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callItemMergeEvent(p_32020_, p_32018_).isCancelled()) return; // CraftBukkit
-       m_32022_(p_32018_, p_32019_, p_32021_);
-       p_32018_.f_31986_ = Math.max(p_32018_.f_31986_, p_32020_.f_31986_);
-       p_32018_.f_31985_ = Math.min(p_32018_.f_31985_, p_32020_.f_31985_);
+       merge(p_32018_, p_32019_, p_32021_);
+       p_32018_.pickupDelay = Math.max(p_32018_.pickupDelay, p_32020_.pickupDelay);
+       p_32018_.age = Math.min(p_32018_.age, p_32020_.age);
 @@ -237,6 +_,7 @@
     }
  
-    public boolean m_6469_(DamageSource p_32013_, float p_32014_) {
-+      if (this.f_19853_.f_46443_ || this.m_146910_()) return false; //Forge: Fixes MC-53850
-       if (this.m_6673_(p_32013_)) {
+    public boolean hurt(DamageSource p_32013_, float p_32014_) {
++      if (this.level.isClientSide || this.isRemoved()) return false; //Forge: Fixes MC-53850
+       if (this.isInvulnerableTo(p_32013_)) {
           return false;
-       } else if (!this.m_32055_().m_41619_() && this.m_32055_().m_150930_(Items.f_42686_) && p_32013_.m_19372_()) {
+       } else if (!this.getItem().isEmpty() && this.getItem().is(Items.NETHER_STAR) && p_32013_.isExplosion()) {
 @@ -246,11 +_,16 @@
-       } else if (this.f_19853_.f_46443_) {
+       } else if (this.level.isClientSide) {
           return true;
        } else {
 +         // CraftBukkit start
@@ -169,119 +167,119 @@
 +            return false;
 +         }
 +         // CraftBukkit end
-          this.m_5834_();
-          this.f_31987_ = (int)((float)this.f_31987_ - p_32014_);
-          this.m_146852_(GameEvent.f_157808_, p_32013_.m_7639_());
-          if (this.f_31987_ <= 0) {
--            this.m_32055_().m_150924_(this);
-+            this.m_32055_().onDestroyed(this, p_32013_);
-             this.m_146870_();
+          this.markHurt();
+          this.health = (int)((float)this.health - p_32014_);
+          this.gameEvent(GameEvent.ENTITY_DAMAGED, p_32013_.getEntity());
+          if (this.health <= 0) {
+-            this.getItem().onDestroyed(this);
++            this.getItem().onDestroyed(this, p_32013_);
+             this.discard();
           }
  
 @@ -262,6 +_,7 @@
-       p_32050_.m_128376_("Health", (short)this.f_31987_);
-       p_32050_.m_128376_("Age", (short)this.f_31985_);
-       p_32050_.m_128376_("PickupDelay", (short)this.f_31986_);
-+      p_32050_.m_128405_("Lifespan", lifespan);
-       if (this.m_32057_() != null) {
-          p_32050_.m_128362_("Thrower", this.m_32057_());
+       p_32050_.putShort("Health", (short)this.health);
+       p_32050_.putShort("Age", (short)this.age);
+       p_32050_.putShort("PickupDelay", (short)this.pickupDelay);
++      p_32050_.putInt("Lifespan", lifespan);
+       if (this.getThrower() != null) {
+          p_32050_.putUUID("Thrower", this.getThrower());
        }
 @@ -282,6 +_,7 @@
-       if (p_32034_.m_128441_("PickupDelay")) {
-          this.f_31986_ = p_32034_.m_128448_("PickupDelay");
+       if (p_32034_.contains("PickupDelay")) {
+          this.pickupDelay = p_32034_.getShort("PickupDelay");
        }
-+      if (p_32034_.m_128441_("Lifespan")) lifespan = p_32034_.m_128451_("Lifespan");
++      if (p_32034_.contains("Lifespan")) lifespan = p_32034_.getInt("Lifespan");
  
-       if (p_32034_.m_128403_("Owner")) {
-          this.f_31982_ = p_32034_.m_128342_("Owner");
+       if (p_32034_.hasUUID("Owner")) {
+          this.owner = p_32034_.getUUID("Owner");
 @@ -301,10 +_,59 @@
  
-    public void m_6123_(Player p_32040_) {
-       if (!this.f_19853_.f_46443_) {
-+         if (this.f_31986_ > 0) return;
-          ItemStack itemstack = this.m_32055_();
-          Item item = itemstack.m_41720_();
-          int i = itemstack.m_41613_();
--         if (this.f_31986_ == 0 && (this.f_31982_ == null || this.f_31982_.equals(p_32040_.m_142081_())) && p_32040_.m_150109_().m_36054_(itemstack)) {
+    public void playerTouch(Player p_32040_) {
+       if (!this.level.isClientSide) {
++         if (this.pickupDelay > 0) return;
+          ItemStack itemstack = this.getItem();
+          Item item = itemstack.getItem();
+          int i = itemstack.getCount();
+-         if (this.pickupDelay == 0 && (this.owner == null || this.owner.equals(p_32040_.getUUID())) && p_32040_.getInventory().add(itemstack)) {
 +
 +         // CraftBukkit start - fire PlayerPickupItemEvent
-+         int canHold = p_32040_.m_150109_().canHold(itemstack);
++         int canHold = p_32040_.getInventory().canHold(itemstack);
 +         int remaining = i - canHold;
 +
-+         if (this.f_31986_ <= 0 && canHold > 0) {
-+            itemstack.m_41764_(canHold);
++         if (this.pickupDelay <= 0 && canHold > 0) {
++            itemstack.setCount(canHold);
 +            // Call legacy event
 +            org.bukkit.event.player.PlayerPickupItemEvent playerEvent = new org.bukkit.event.player.PlayerPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
 +            playerEvent.setCancelled(!playerEvent.getPlayer().getCanPickupItems());
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(playerEvent);
++            this.level.getCraftServer().getPluginManager().callEvent(playerEvent);
 +            if (playerEvent.isCancelled()) {
-+               itemstack.m_41764_(i); // SPIGOT-5294 - restore count
++               itemstack.setCount(i); // SPIGOT-5294 - restore count
 +               return;
 +            }
 +
 +            // Call newer event afterwards
 +            org.bukkit.event.entity.EntityPickupItemEvent entityEvent = new org.bukkit.event.entity.EntityPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
 +            entityEvent.setCancelled(!entityEvent.getEntity().getCanPickupItems());
-+            this.f_19853_.getCraftServer().getPluginManager().callEvent(entityEvent);
++            this.level.getCraftServer().getPluginManager().callEvent(entityEvent);
 +            if (entityEvent.isCancelled()) {
-+               itemstack.m_41764_(i); // SPIGOT-5294 - restore count
++               itemstack.setCount(i); // SPIGOT-5294 - restore count
 +               return;
 +            }
 +
 +            // Update the ItemStack if it was changed in the event
-+            ItemStack current = this.m_32055_();
++            ItemStack current = this.getItem();
 +            if (!itemstack.equals(current)) {
 +               itemstack = current;
 +            } else {
-+               itemstack.m_41764_(canHold + remaining); // = i
++               itemstack.setCount(canHold + remaining); // = i
 +            }
 +
 +            // Possibly < 0; fix here so we do not have to modify code below
-+            this.f_31986_ = 0;
-+         } else if (this.f_31986_ == 0) {
++            this.pickupDelay = 0;
++         } else if (this.pickupDelay == 0) {
 +            // ensure that the code below isn't triggered if canHold says we can't pick the items up
-+            this.f_31986_ = -1;
++            this.pickupDelay = -1;
 +         }
 +         // CraftBukkit end
 +
 +         int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, p_32040_);
 +         if (hook < 0) return;
 +
-+         ItemStack copy = itemstack.m_41777_();
++         ItemStack copy = itemstack.copy();
 +
-+         if (this.f_31986_ == 0 && (this.f_31982_ == null || lifespan - this.f_31985_ <= 200 || this.f_31982_.equals(p_32040_.m_142081_())) && (hook == 1 || i <= 0 || p_32040_.m_150109_().m_36054_(itemstack))) {
-+            copy.m_41764_(copy.m_41613_() - m_32055_().m_41613_());
++         if (this.pickupDelay == 0 && (this.owner == null || lifespan - this.age <= 200 || this.owner.equals(p_32040_.getUUID())) && (hook == 1 || i <= 0 || p_32040_.getInventory().add(itemstack))) {
++            copy.setCount(copy.getCount() - getItem().getCount());
 +            net.minecraftforge.event.ForgeEventFactory.firePlayerItemPickupEvent(p_32040_, this, copy);
-             p_32040_.m_7938_(this, i);
-             if (itemstack.m_41619_()) {
-                this.m_146870_();
+             p_32040_.take(this, i);
+             if (itemstack.isEmpty()) {
+                this.discard();
 @@ -328,8 +_,8 @@
     }
  
     @Nullable
--   public Entity m_5489_(ServerLevel p_32042_) {
--      Entity entity = super.m_5489_(p_32042_);
+-   public Entity changeDimension(ServerLevel p_32042_) {
+-      Entity entity = super.changeDimension(p_32042_);
 +   public Entity changeDimension(ServerLevel p_32042_, net.minecraftforge.common.util.ITeleporter teleporter) {
 +      Entity entity = super.changeDimension(p_32042_, teleporter);
-       if (!this.f_19853_.f_46443_ && entity instanceof ItemEntity) {
-          ((ItemEntity)entity).m_32069_();
+       if (!this.level.isClientSide && entity instanceof ItemEntity) {
+          ((ItemEntity)entity).mergeWithNeighbours();
        }
 @@ -342,7 +_,9 @@
     }
  
-    public void m_32045_(ItemStack p_32046_) {
+    public void setItem(ItemStack p_32046_) {
 +      //com.google.common.base.Preconditions.checkArgument(!p_32046_.isEmpty(), "Cannot drop air"); // CraftBukkit //Magma - removed
-       this.m_20088_().m_135381_(f_31984_, p_32046_);
-+      this.m_20088_().markDirty(f_31984_); // CraftBukkit - SPIGOT-4591, must mark dirty
+       this.getEntityData().set(DATA_ITEM, p_32046_);
++      this.getEntityData().markDirty(DATA_ITEM); // CraftBukkit - SPIGOT-4591, must mark dirty
     }
  
-    public void m_7350_(EntityDataAccessor<?> p_32036_) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> p_32036_) {
 @@ -405,7 +_,7 @@
  
-    public void m_32065_() {
-       this.m_32062_();
--      this.f_31985_ = 5999;
-+      this.f_31985_ = f_19853_.spigotConfig.itemDespawnRate - 1; // Spigot
+    public void makeFakeItem() {
+       this.setNeverPickUp();
+-      this.age = 5999;
++      this.age = level.spigotConfig.itemDespawnRate - 1; // Spigot
     }
  
-    public float m_32008_(float p_32009_) {
+    public float getSpin(float p_32009_) {

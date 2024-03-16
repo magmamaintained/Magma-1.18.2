@@ -9,24 +9,24 @@
 +
 +   @Override
 +   default Stream<TagKey<T>> getTagKeys() {
-+      return this.m_203616_();
++      return this.tags();
 +   }
 +
 +
-    T m_203334_();
+    T value();
  
-    boolean m_203633_();
+    boolean isBound();
 @@ -43,6 +_,12 @@
     }
  
-    public static record Direct<T>(T f_205714_) implements Holder<T> {
+    public static record Direct<T>(T value) implements Holder<T> {
 +
 +      @Override
 +      public boolean containsTag(TagKey<T> key) {
-+         return m_203656_(key);
++         return is(key);
 +      }
 +
-       public boolean m_203633_() {
+       public boolean isBound() {
           return true;
        }
 @@ -98,6 +_,10 @@
@@ -35,19 +35,19 @@
     public static class Reference<T> implements Holder<T> {
 +      @Override
 +      public boolean containsTag(TagKey<T> key) {
-+         return m_203656_(key);
++         return is(key);
 +      }
-       private final Registry<T> f_205748_;
-       private Set<TagKey<T>> f_205749_ = Set.of();
-       private final Holder.Reference.Type f_205750_;
+       private final Registry<T> registry;
+       private Set<TagKey<T>> tags = Set.of();
+       private final Holder.Reference.Type type;
 @@ -192,6 +_,10 @@
  
-       public Stream<TagKey<T>> m_203616_() {
-          return this.f_205749_.stream();
+       public Stream<TagKey<T>> tags() {
+          return this.tags.stream();
 +      }
 +
 +      public Type getType() {
-+         return this.f_205750_;
++         return this.type;
        }
  
        public String toString() {

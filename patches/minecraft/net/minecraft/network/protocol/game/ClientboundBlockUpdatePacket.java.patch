@@ -3,9 +3,9 @@
 @@ -9,7 +_,7 @@
  
  public class ClientboundBlockUpdatePacket implements Packet<ClientGamePacketListener> {
-    private final BlockPos f_131731_;
--   private final BlockState f_131732_;
-+   public final BlockState f_131732_;
+    private final BlockPos pos;
+-   private final BlockState blockState;
++   public final BlockState blockState;
  
     public ClientboundBlockUpdatePacket(BlockPos p_131738_, BlockState p_131739_) {
-       this.f_131731_ = p_131738_;
+       this.pos = p_131738_;

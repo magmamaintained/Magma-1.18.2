@@ -1,7 +1,7 @@
 --- a/net/minecraft/nbt/NbtAccounter.java
 +++ b/net/minecraft/nbt/NbtAccounter.java
 @@ -18,4 +_,34 @@
-          throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.f_128919_ + "bytes where max allowed: " + this.f_128918_);
+          throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.usage + "bytes where max allowed: " + this.quota);
        }
     }
 +
@@ -17,7 +17,7 @@
 +    * This will accurately count the correct byte length to encode this string, plus the 2 bytes for it's length prefix.
 +    */
 +   public String readUTF(String data) {
-+      m_6800_(16); //Header length
++      accountBits(16); //Header length
 +      if (data == null)
 +         return data;
 +
@@ -30,7 +30,7 @@
 +          else if (c > 0x07FF)                utflen += 3;
 +          else                                utflen += 2;
 +      }
-+      m_6800_(8 * utflen);
++      accountBits(8 * utflen);
 +
 +      return data;
 +   }

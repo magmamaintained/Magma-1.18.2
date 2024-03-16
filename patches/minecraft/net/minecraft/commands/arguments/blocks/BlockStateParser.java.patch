@@ -2,12 +2,12 @@
 +++ b/net/minecraft/commands/arguments/blocks/BlockStateParser.java
 @@ -58,8 +_,8 @@
     };
-    private final StringReader f_116749_;
-    private final boolean f_116750_;
--   private final Map<Property<?>, Comparable<?>> f_116751_ = Maps.newHashMap();
--   private final Map<String, String> f_116752_ = Maps.newHashMap();
-+   private final Map<Property<?>, Comparable<?>> f_116751_ = Maps.newLinkedHashMap(); // CraftBukkit - stable
-+    private final Map<String, String> f_116752_ = Maps.newHashMap();
-    private ResourceLocation f_116753_ = new ResourceLocation("");
-    private StateDefinition<Block, BlockState> f_116754_;
-    private BlockState f_116755_;
+    private final StringReader reader;
+    private final boolean forTesting;
+-   private final Map<Property<?>, Comparable<?>> properties = Maps.newHashMap();
+-   private final Map<String, String> vagueProperties = Maps.newHashMap();
++   private final Map<Property<?>, Comparable<?>> properties = Maps.newLinkedHashMap(); // CraftBukkit - stable
++    private final Map<String, String> vagueProperties = Maps.newHashMap();
+    private ResourceLocation id = new ResourceLocation("");
+    private StateDefinition<Block, BlockState> definition;
+    private BlockState state;

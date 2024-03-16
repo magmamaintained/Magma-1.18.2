@@ -2,48 +2,48 @@
 +++ b/net/minecraft/server/commands/TimeCommand.java
 @@ -11,7 +_,7 @@
  public class TimeCommand {
-    public static void m_139071_(CommandDispatcher<CommandSourceStack> p_139072_) {
-       p_139072_.register(Commands.m_82127_("time").requires((p_139076_) -> {
--         return p_139076_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_139072_) {
+       p_139072_.register(Commands.literal("time").requires((p_139076_) -> {
+-         return p_139076_.hasPermission(2);
 +         return p_139076_.hasPermission(2,"minecraft.command.time");
-       }).then(Commands.m_82127_("set").then(Commands.m_82127_("day").executes((p_139101_) -> {
-          return m_139077_(p_139101_.getSource(), 1000);
-       })).then(Commands.m_82127_("noon").executes((p_139099_) -> {
+       }).then(Commands.literal("set").then(Commands.literal("day").executes((p_139101_) -> {
+          return setTime(p_139101_.getSource(), 1000);
+       })).then(Commands.literal("noon").executes((p_139099_) -> {
 @@ -43,8 +_,16 @@
     }
  
-    public static int m_139077_(CommandSourceStack p_139078_, int p_139079_) {
--      for(ServerLevel serverlevel : p_139078_.m_81377_().m_129785_()) {
--         serverlevel.m_8615_((long)p_139079_);
-+      java.util.Iterator<ServerLevel> iterator = com.google.common.collect.Iterators.singletonIterator(p_139078_.m_81372_()); // CraftBukkit - SPIGOT-6496: Only set the time for the world the command originates in
+    public static int setTime(CommandSourceStack p_139078_, int p_139079_) {
+-      for(ServerLevel serverlevel : p_139078_.getServer().getAllLevels()) {
+-         serverlevel.setDayTime((long)p_139079_);
++      java.util.Iterator<ServerLevel> iterator = com.google.common.collect.Iterators.singletonIterator(p_139078_.getLevel()); // CraftBukkit - SPIGOT-6496: Only set the time for the world the command originates in
 +      while(iterator.hasNext()) {
 +         ServerLevel serverLevel = iterator.next();
 +         // CraftBukkit start
-+         org.bukkit.event.world.TimeSkipEvent event = new org.bukkit.event.world.TimeSkipEvent(serverLevel.getWorld(), org.bukkit.event.world.TimeSkipEvent.SkipReason.COMMAND, p_139079_ - serverLevel.m_46468_());
++         org.bukkit.event.world.TimeSkipEvent event = new org.bukkit.event.world.TimeSkipEvent(serverLevel.getWorld(), org.bukkit.event.world.TimeSkipEvent.SkipReason.COMMAND, p_139079_ - serverLevel.getDayTime());
 +         org.bukkit.Bukkit.getPluginManager().callEvent(event);
 +         if (!event.isCancelled()) {
-+            serverLevel.m_8615_((long) serverLevel.m_46468_() + event.getSkipAmount());
++            serverLevel.setDayTime((long) serverLevel.getDayTime() + event.getSkipAmount());
 +         }
 +         // CraftBukkit end
        }
  
-       p_139078_.m_81354_(new TranslatableComponent("commands.time.set", p_139079_), true);
+       p_139078_.sendSuccess(new TranslatableComponent("commands.time.set", p_139079_), true);
 @@ -52,8 +_,16 @@
     }
  
-    public static int m_139082_(CommandSourceStack p_139083_, int p_139084_) {
--      for(ServerLevel serverlevel : p_139083_.m_81377_().m_129785_()) {
--         serverlevel.m_8615_(serverlevel.m_46468_() + (long)p_139084_);
-+      java.util.Iterator iterator = com.google.common.collect.Iterators.singletonIterator(p_139083_.m_81372_()); // CraftBukkit - SPIGOT-6496: Only set the time for the world the command originates in
+    public static int addTime(CommandSourceStack p_139083_, int p_139084_) {
+-      for(ServerLevel serverlevel : p_139083_.getServer().getAllLevels()) {
+-         serverlevel.setDayTime(serverlevel.getDayTime() + (long)p_139084_);
++      java.util.Iterator iterator = com.google.common.collect.Iterators.singletonIterator(p_139083_.getLevel()); // CraftBukkit - SPIGOT-6496: Only set the time for the world the command originates in
 +      while (iterator.hasNext()) {
 +         ServerLevel serverLevel = (ServerLevel) iterator.next();
 +         // CraftBukkit start
 +         org.bukkit.event.world.TimeSkipEvent event = new org.bukkit.event.world.TimeSkipEvent(serverLevel.getWorld(), org.bukkit.event.world.TimeSkipEvent.SkipReason.COMMAND, p_139084_);
 +         org.bukkit.Bukkit.getPluginManager().callEvent(event);
 +         if (!event.isCancelled()) {
-+            serverLevel.m_8615_(serverLevel.m_46468_() + event.getSkipAmount());
++            serverLevel.setDayTime(serverLevel.getDayTime() + event.getSkipAmount());
 +         }
 +         // CraftBukkit end
        }
  
-       int i = m_139069_(p_139083_.m_81372_());
+       int i = getDayTime(p_139083_.getLevel());

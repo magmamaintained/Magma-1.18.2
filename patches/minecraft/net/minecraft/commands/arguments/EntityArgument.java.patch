@@ -10,17 +10,17 @@
 +      EntitySelectorParser entityselectorparser = new EntitySelectorParser(p_91451_);
 +      EntitySelector entityselector = entityselectorparser.parse(overridePermissions);
 +      // CraftBukkit end
-+      if (entityselector.m_121138_() > 1 && this.f_91443_) {
-+         if (this.f_91444_) {
++      if (entityselector.getMaxResults() > 1 && this.single) {
++         if (this.playersOnly) {
 +            p_91451_.setCursor(0);
-+            throw f_91437_.createWithContext(p_91451_);
++            throw ERROR_NOT_SINGLE_PLAYER.createWithContext(p_91451_);
 +         } else {
 +            p_91451_.setCursor(0);
-+            throw f_91436_.createWithContext(p_91451_);
++            throw ERROR_NOT_SINGLE_ENTITY.createWithContext(p_91451_);
 +         }
-+      } else if (entityselector.m_121159_() && this.f_91444_ && !entityselector.m_121162_()) {
++      } else if (entityselector.includesEntities() && this.playersOnly && !entityselector.isSelfSelector()) {
 +         p_91451_.setCursor(0);
-+         throw f_91438_.createWithContext(p_91451_);
++         throw ERROR_ONLY_PLAYERS_ALLOWED.createWithContext(p_91451_);
 +      } else {
 +         return entityselector;
 +      }
