@@ -4,12 +4,12 @@
  
     }
  
-+   public int getWidth() { return this.f_93388_; }
-+   public int getHeight() { return this.f_93389_; }
-+   public int getTop() { return this.f_93390_; }
-+   public int getBottom() { return this.f_93391_; }
-+   public int getLeft() { return this.f_93393_; }
-+   public int getRight() { return this.f_93392_; }
++   public int getWidth() { return this.width; }
++   public int getHeight() { return this.height; }
++   public int getTop() { return this.y0; }
++   public int getBottom() { return this.y1; }
++   public int getLeft() { return this.x0; }
++   public int getRight() { return this.x1; }
 +
     @OnlyIn(Dist.CLIENT)
     public abstract static class Entry<E extends AbstractSelectionList.Entry<E>> implements GuiEventListener {

@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SetPlayerIdleTimeoutCommand.java
 @@ -9,7 +_,7 @@
  public class SetPlayerIdleTimeoutCommand {
-    public static void m_138634_(CommandDispatcher<CommandSourceStack> p_138635_) {
-       p_138635_.register(Commands.m_82127_("setidletimeout").requires((p_138639_) -> {
--         return p_138639_.m_6761_(3);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138635_) {
+       p_138635_.register(Commands.literal("setidletimeout").requires((p_138639_) -> {
+-         return p_138639_.hasPermission(3);
 +         return p_138639_.hasPermission(3,"minecraft.command.setidletimeout");
-       }).then(Commands.m_82129_("minutes", IntegerArgumentType.integer(0)).executes((p_138637_) -> {
-          return m_138640_(p_138637_.getSource(), IntegerArgumentType.getInteger(p_138637_, "minutes"));
+       }).then(Commands.argument("minutes", IntegerArgumentType.integer(0)).executes((p_138637_) -> {
+          return setIdleTimeout(p_138637_.getSource(), IntegerArgumentType.getInteger(p_138637_, "minutes"));
        })));

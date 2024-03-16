@@ -3,26 +3,26 @@
 @@ -14,7 +_,11 @@
  
  public class ListPlayersCommand {
-    public static void m_137820_(CommandDispatcher<CommandSourceStack> p_137821_) {
--      p_137821_.register(Commands.m_82127_("list").executes((p_137830_) -> {
-+      p_137821_.register(Commands.m_82127_("list")
+    public static void register(CommandDispatcher<CommandSourceStack> p_137821_) {
+-      p_137821_.register(Commands.literal("list").executes((p_137830_) -> {
++      p_137821_.register(Commands.literal("list")
 +              .requires(commandSourceStack -> {
 +                 return commandSourceStack.hasPermission(0,"minecraft.command.list");
 +              })
 +     .executes((p_137830_) -> {
-          return m_137824_(p_137830_.getSource());
-       }).then(Commands.m_82127_("uuids").executes((p_137823_) -> {
-          return m_137831_(p_137823_.getSource());
+          return listPlayers(p_137830_.getSource());
+       }).then(Commands.literal("uuids").executes((p_137823_) -> {
+          return listPlayersWithUuids(p_137823_.getSource());
 @@ -34,6 +_,12 @@
-    private static int m_137826_(CommandSourceStack p_137827_, Function<ServerPlayer, Component> p_137828_) {
-       PlayerList playerlist = p_137827_.m_81377_().m_6846_();
-       List<ServerPlayer> list = playerlist.m_11314_();
+    private static int format(CommandSourceStack p_137827_, Function<ServerPlayer, Component> p_137828_) {
+       PlayerList playerlist = p_137827_.getServer().getPlayerList();
+       List<ServerPlayer> list = playerlist.getPlayers();
 +      // CraftBukkit start
 +      if (p_137827_.getBukkitSender() instanceof org.bukkit.entity.Player) {
 +         org.bukkit.entity.Player sender = (org.bukkit.entity.Player) p_137827_.getBukkitSender();
 +         list = list.stream().filter((ep) -> sender.canSee(ep.getBukkitEntity())).collect(java.util.stream.Collectors.toList());
 +      }
 +      // CraftBukkit end
-       Component component = ComponentUtils.m_178440_(list, p_137828_);
-       p_137827_.m_81354_(new TranslatableComponent("commands.list.players", list.size(), playerlist.m_11310_(), component), false);
+       Component component = ComponentUtils.formatList(list, p_137828_);
+       p_137827_.sendSuccess(new TranslatableComponent("commands.list.players", list.size(), playerlist.getMaxPlayers(), component), false);
        return list.size();

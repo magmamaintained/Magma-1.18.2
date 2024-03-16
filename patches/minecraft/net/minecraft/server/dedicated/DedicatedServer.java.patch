@@ -1,15 +1,15 @@
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -89,12 +_,39 @@
-    public boolean m_7038_() throws IOException {
+    public boolean initServer() throws IOException {
        Thread thread = new Thread("Server console handler") {
           public void run() {
 -            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
 -
 -            String s1;
 -            try {
--               while(!DedicatedServer.this.m_129918_() && DedicatedServer.this.m_130010_() && (s1 = bufferedreader.readLine()) != null) {
--                  DedicatedServer.this.m_139645_(s1, DedicatedServer.this.m_129893_());
+-               while(!DedicatedServer.this.isStopped() && DedicatedServer.this.isRunning() && (s1 = bufferedreader.readLine()) != null) {
+-                  DedicatedServer.this.handleConsoleInput(s1, DedicatedServer.this.createCommandSourceStack());
 +            if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
 +            jline.console.ConsoleReader bufferedreader = reader;
 +            // MC-33041, SPIGOT-5538: if System.in is not valid due to javaw, then return
@@ -23,7 +23,7 @@
 +            String s;
 +            try {
 +               // CraftBukkit start - JLine disabling compatibility
-+               while (!DedicatedServer.this.m_129918_() && DedicatedServer.this.m_130010_()) {
++               while (!DedicatedServer.this.isStopped() && DedicatedServer.this.isRunning()) {
 +                  if (org.bukkit.craftbukkit.Main.useJline) {
 +                     s = bufferedreader.readLine(">", null);
 +                  } else {
@@ -40,12 +40,12 @@
 +                     continue;
 +                  }
 +                  if (s.trim().length() > 0) { // Trim to filter lines which are just spaces
-+                     DedicatedServer.this.m_139645_(s, DedicatedServer.this.m_129893_());
++                     DedicatedServer.this.handleConsoleInput(s, DedicatedServer.this.createCommandSourceStack());
 +                  }
 +                  // CraftBukkit end
                 }
              } catch (IOException ioexception1) {
-                DedicatedServer.f_139598_.error("Exception handling console input", (Throwable)ioexception1);
+                DedicatedServer.LOGGER.error("Exception handling console input", (Throwable)ioexception1);
 @@ -102,6 +_,27 @@
  
           }
@@ -72,14 +72,14 @@
 +      System.setErr(org.apache.logging.log4j.io.IoBuilder.forLogger(logger).setLevel( org.apache.logging.log4j.Level.WARN).buildPrintStream());
 +      // CraftBukkit end
        thread.setDaemon(true);
-       thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(f_139598_));
+       thread.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER));
        thread.start();
 @@ -120,13 +_,32 @@
-          this.m_129913_(dedicatedserverproperties.f_139730_);
+          this.setLocalIp(dedicatedserverproperties.serverIp);
        }
  
 +      // Spigot start
-+      this.m_129823_(new DedicatedPlayerList(this, this.f_129746_, this.f_129745_));
++      this.setPlayerList(new DedicatedPlayerList(this, this.registryHolder, this.playerDataStorage));
 +      org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
 +      org.spigotmc.SpigotConfig.registerCommands();
 +      // Spigot end
@@ -87,7 +87,7 @@
 +      try {
 +         com.destroystokyo.paper.youcandfindpaper.PaperConfig.init((java.io.File) options.valueOf("paper-settings"));
 +      } catch (Exception e) {
-+         DedicatedServer.f_139598_.error("Unable to load server configuration", e);
++         DedicatedServer.LOGGER.error("Unable to load server configuration", e);
 +         return false;
 +      }
 +      com.destroystokyo.paper.youcandfindpaper.PaperConfig.registerCommands();
@@ -97,17 +97,17 @@
 +      org.magmafoundation.magma.configuration.MagmaConfig.instance.registerCommands();
 +      // Magma end
 +
-       this.m_129997_(dedicatedserverproperties.f_139733_);
-       this.m_129999_(dedicatedserverproperties.f_139734_);
-       this.m_129853_(dedicatedserverproperties.f_139735_, this.m_139664_());
-       this.m_129989_(dedicatedserverproperties.f_139736_);
-       super.m_7196_(dedicatedserverproperties.f_139725_.get());
-       this.m_130004_(dedicatedserverproperties.f_139738_);
--      this.f_129749_.m_5458_(dedicatedserverproperties.f_139740_);
+       this.setPvpAllowed(dedicatedserverproperties.pvp);
+       this.setFlightAllowed(dedicatedserverproperties.allowFlight);
+       this.setResourcePack(dedicatedserverproperties.resourcePack, this.getPackHash());
+       this.setMotd(dedicatedserverproperties.motd);
+       super.setPlayerIdleTimeout(dedicatedserverproperties.playerIdleTimeout.get());
+       this.setEnforceWhitelist(dedicatedserverproperties.enforceWhitelist);
+-      this.worldData.setGameType(dedicatedserverproperties.gamemode);
 +      // this.worldData.setGameType(dedicatedserverproperties.gamemode); // CraftBukkit - moved to world loading
-       f_139598_.info("Default game type: {}", (Object)dedicatedserverproperties.f_139740_);
+       LOGGER.info("Default game type: {}", (Object)dedicatedserverproperties.gamemode);
        InetAddress inetaddress = null;
-       if (!this.m_130009_().isEmpty()) {
+       if (!this.getLocalIp().isEmpty()) {
 @@ -149,10 +_,29 @@
           return false;
        }
@@ -122,62 +122,62 @@
 +      String proxyFlavor = (com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport) ? "Velocity" : "BungeeCord";
 +      String proxyLink = (com.destroystokyo.paper.youcandfindpaper.PaperConfig.velocitySupport) ? "https://docs.papermc.io/velocity/security" : "http://www.spigotmc.org/wiki/firewall-guide/";
 +      // Paper end
-       if (!this.m_129797_()) {
-          f_139598_.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-          f_139598_.warn("The server will make no attempt to authenticate usernames. Beware.");
--         f_139598_.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+       if (!this.usesAuthentication()) {
+          LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+          LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+-         LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
 +         // Spigot start
 +         // Paper start
 +         if (usingProxy) {
-+            DedicatedServer.f_139598_.warn("Whilst this makes it possible to use "+proxyFlavor+", unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
-+            DedicatedServer.f_139598_.warn("Please see "+proxyLink+" for further information.");
++            DedicatedServer.LOGGER.warn("Whilst this makes it possible to use "+proxyFlavor+", unless access to your server is properly restricted, it also opens up the ability for hackers to connect with any username they choose.");
++            DedicatedServer.LOGGER.warn("Please see "+proxyLink+" for further information.");
 +            // Paper end
 +         } else {
-+            DedicatedServer.f_139598_.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
++            DedicatedServer.LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
 +         }
 +         // Spigot end
-          f_139598_.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
+          LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
        }
  
 @@ -163,15 +_,16 @@
-       if (!OldUsersConverter.m_11106_(this)) {
+       if (!OldUsersConverter.serverReadyAfterUserconversion(this)) {
           return false;
        } else {
--         this.m_129823_(new DedicatedPlayerList(this, this.m_206579_(), this.f_129745_));
-          long i = Util.m_137569_();
-          SkullBlockEntity.m_196700_(this.m_129927_(), this.m_129925_(), this);
-          GameProfileCache.m_11004_(this.m_129797_());
+-         this.setPlayerList(new DedicatedPlayerList(this, this.registryAccess(), this.playerDataStorage));
+          long i = Util.getNanos();
+          SkullBlockEntity.setup(this.getProfileCache(), this.getSessionService(), this);
+          GameProfileCache.setUsesAuthentication(this.usesAuthentication());
 +         if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerAboutToStart(this)) return false;
-          f_139598_.info("Preparing level \"{}\"", (Object)this.m_7123_());
--         this.m_130006_();
-+         this.m_130006_(); // CraftBukkit - pass in levelId //Magma - no need to pass in levelId
-          long j = Util.m_137569_() - i;
+          LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelIdName());
+-         this.loadLevel();
++         this.loadLevel(); // CraftBukkit - pass in levelId //Magma - no need to pass in levelId
+          long j = Util.getNanos() - i;
           String s = String.format(Locale.ROOT, "%.3fs", (double)j / 1.0E9D);
-          f_139598_.info("Done ({})! For help, type \"help\"", (Object)s);
-+         this.f_129726_ = Util.m_137550_(); //Forge: Update server time to prevent watchdog/spaming during long load.
-          if (dedicatedserverproperties.f_139744_ != null) {
-             this.m_129900_().m_46170_(GameRules.f_46153_).m_46246_(dedicatedserverproperties.f_139744_, this);
+          LOGGER.info("Done ({})! For help, type \"help\"", (Object)s);
++         this.nextTickTime = Util.getMillis(); //Forge: Update server time to prevent watchdog/spaming during long load.
+          if (dedicatedserverproperties.announcePlayerAchievements != null) {
+             this.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(dedicatedserverproperties.announcePlayerAchievements, this);
           }
 @@ -184,9 +_,10 @@
-          if (dedicatedserverproperties.f_139747_) {
-             f_139598_.info("Starting remote control listener");
-             this.f_139603_ = RconThread.m_11615_(this);
-+            this.remoteConsole = new org.bukkit.craftbukkit.v1_18_R2.command.CraftRemoteConsoleCommandSender(this.f_139602_); // CraftBukkit
+          if (dedicatedserverproperties.enableRcon) {
+             LOGGER.info("Starting remote control listener");
+             this.rconThread = RconThread.create(this);
++            this.remoteConsole = new org.bukkit.craftbukkit.v1_18_R2.command.CraftRemoteConsoleCommandSender(this.rconConsoleSource); // CraftBukkit
           }
  
--         if (this.m_139669_() > 0L) {
-+         if (false && this.m_139669_() > 0L) {  // Spigot - disable
+-         if (this.getMaxTickLength() > 0L) {
++         if (false && this.getMaxTickLength() > 0L) {  // Spigot - disable
              Thread thread1 = new Thread(new ServerWatchdog(this));
-             thread1.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandlerWithName(f_139598_));
+             thread1.setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandlerWithName(LOGGER));
              thread1.setName("Server Watchdog");
 @@ -195,12 +_,13 @@
           }
  
-          Items.f_41852_.m_6787_(CreativeModeTab.f_40754_, NonNullList.m_122779_());
+          Items.AIR.fillItemCategory(CreativeModeTab.TAB_SEARCH, NonNullList.create());
 +         // <3 you Grum for this, saves us ~30 patch files! --^
-          if (dedicatedserverproperties.f_139721_) {
-             MinecraftServerStatistics.m_18328_(this);
-             f_139598_.info("JMX monitoring enabled");
+          if (dedicatedserverproperties.enableJmxMonitoring) {
+             MinecraftServerStatistics.registerJmxMonitoring(this);
+             LOGGER.info("JMX monitoring enabled");
           }
  
 -         return true;
@@ -186,7 +186,7 @@
     }
  
 @@ -316,6 +_,36 @@
-          this.f_139601_.m_7530_();
+          this.queryThreadGs4.stop();
        }
  
 +      // Magma start - Add ArcLight stop
@@ -211,8 +211,8 @@
 +            }
 +         }
 +         if (!threads.isEmpty()) {
-+            f_139598_.debug("Threads {} not shutting down", String.join(", ", threads));
-+            f_139598_.info("{} threads not shutting down correctly, force exiting", threads.size());
++            LOGGER.debug("Threads {} not shutting down", String.join(", ", threads));
++            LOGGER.info("{} threads not shutting down correctly, force exiting", threads.size());
 +         }
 +         System.exit(0);
 +      }, "Exit Thread");
@@ -221,21 +221,21 @@
 +      // Magma end
     }
  
-    public void m_5703_(BooleanSupplier p_139661_) {
+    public void tickChildren(BooleanSupplier p_139661_) {
 @@ -332,11 +_,21 @@
     }
  
-    public void m_139665_() {
+    public void handleConsoleInputs() {
 +      co.aikar.timings.MinecraftTimings.serverCommandTimer.startTiming(); // Spigot
-       while(!this.f_139600_.isEmpty()) {
-          ConsoleInput consoleinput = this.f_139600_.remove(0);
--         this.m_129892_().m_82117_(consoleinput.f_135929_, consoleinput.f_135928_);
+       while(!this.consoleInput.isEmpty()) {
+          ConsoleInput consoleinput = this.consoleInput.remove(0);
+-         this.getCommands().performCommand(consoleinput.source, consoleinput.msg);
 +
 +         // CraftBukkit start - ServerCommand for preprocessing
-+         org.bukkit.event.server.ServerCommandEvent event = new org.bukkit.event.server.ServerCommandEvent(console, consoleinput.f_135928_);
++         org.bukkit.event.server.ServerCommandEvent event = new org.bukkit.event.server.ServerCommandEvent(console, consoleinput.msg);
 +         server.getPluginManager().callEvent(event);
 +         if (event.isCancelled()) continue;
-+         consoleinput = new ConsoleInput(event.getCommand(), consoleinput.f_135929_);
++         consoleinput = new ConsoleInput(event.getCommand(), consoleinput.source);
 +
 +         //this.getCommands().performCommand(consoleinput.source, consoleinput.msg); // Called in dispatchServerCommand
 +         server.dispatchServerCommand(console, consoleinput);
@@ -245,11 +245,11 @@
 +      co.aikar.timings.MinecraftTimings.serverCommandTimer.stopTiming(); // Spigot
     }
  
-    public boolean m_6982_() {
+    public boolean isDedicatedServer() {
 @@ -518,14 +_,74 @@
     }
  
-    public String m_7138_() {
+    public String getPluginNames() {
 -      return "";
 +      // CraftBukkit start - Whole method
 +      StringBuilder result = new StringBuilder();
@@ -277,11 +277,11 @@
 +      // CraftBukkit end
     }
  
-    public String m_7261_(String p_139644_) {
+    public String runCommand(String p_139644_) {
 +      org.bukkit.craftbukkit.v1_18_R2.util.Waitable[] waitableArray = new org.bukkit.craftbukkit.v1_18_R2.util.Waitable[1];
-       this.f_139602_.m_11512_();
-       this.m_18709_(() -> {
--         this.m_129892_().m_82117_(this.f_139602_.m_11514_(), p_139644_);
+       this.rconConsoleSource.prepareForCommand();
+       this.executeBlocking(() -> {
+-         this.getCommands().performCommand(this.rconConsoleSource.createCommandSourceStack(), p_139644_);
 +         // CraftBukkit start - fire RemoteServerCommandEvent
 +         org.bukkit.event.server.RemoteServerCommandEvent event = new org.bukkit.event.server.RemoteServerCommandEvent(remoteConsole, p_139644_);
 +         server.getPluginManager().callEvent(event);
@@ -301,7 +301,7 @@
 +            co.aikar.timings.Timings.generateReport(new co.aikar.timings.TimingsReportListener(sender, waitable));
 +         } else {
 +            // Paper end
-+         ConsoleInput serverCommand = new ConsoleInput(event.getCommand(), f_139602_.m_11514_());
++         ConsoleInput serverCommand = new ConsoleInput(event.getCommand(), rconConsoleSource.createCommandSourceStack());
 +         server.dispatchServerCommand(remoteConsole, serverCommand);
 +         } // Paper
 +         // CraftBukkit end
@@ -320,7 +320,7 @@
 +         }
 +      }
 +      // Paper end
-       return this.f_139602_.m_11513_();
+       return this.rconConsoleSource.getCommandResponse();
     }
  
 @@ -545,6 +_,11 @@
@@ -328,21 +328,21 @@
     }
  
 +   @Override //Forge: Enable formated text for colors in console.
-+   public void m_6352_(net.minecraft.network.chat.Component message, java.util.UUID p_108776_) {
-+      f_139598_.info(message.getString());
++   public void sendMessage(net.minecraft.network.chat.Component message, java.util.UUID p_108776_) {
++      LOGGER.info(message.getString());
 +   }
 +
-    public int m_7186_(int p_139659_) {
-       return this.m_7913_().f_139723_ * p_139659_ / 100;
+    public int getScaledTrackingDistance(int p_139659_) {
+       return this.getProperties().entityBroadcastRangePercentage * p_139659_ / 100;
     }
 @@ -588,4 +_,15 @@
-    public Component m_141958_() {
-       return this.f_142863_;
+    public Component getResourcePackPrompt() {
+       return this.resourcePackPrompt;
     }
 +
 +   // CraftBukkit start
 +   public boolean isDebugging() {
-+      return this.m_7913_().debug;
++      return this.getProperties().debug;
 +   }
 +
 +   @Override

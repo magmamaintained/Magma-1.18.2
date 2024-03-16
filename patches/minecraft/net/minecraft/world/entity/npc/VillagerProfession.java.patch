@@ -6,6 +6,6 @@
  
 -public class VillagerProfession {
 +public class VillagerProfession extends net.minecraftforge.registries.ForgeRegistryEntry<VillagerProfession> {
-    public static final VillagerProfession f_35585_ = m_35612_("none", PoiType.f_27331_, (SoundEvent)null);
-    public static final VillagerProfession f_35586_ = m_35612_("armorer", PoiType.f_27332_, SoundEvents.f_12510_);
-    public static final VillagerProfession f_35587_ = m_35612_("butcher", PoiType.f_27333_, SoundEvents.f_12564_);
+    public static final VillagerProfession NONE = register("none", PoiType.UNEMPLOYED, (SoundEvent)null);
+    public static final VillagerProfession ARMORER = register("armorer", PoiType.ARMORER, SoundEvents.VILLAGER_WORK_ARMORER);
+    public static final VillagerProfession BUTCHER = register("butcher", PoiType.BUTCHER, SoundEvents.VILLAGER_WORK_BUTCHER);

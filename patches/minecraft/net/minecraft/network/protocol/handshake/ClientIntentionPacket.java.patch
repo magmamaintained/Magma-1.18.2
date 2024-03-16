@@ -1,29 +1,29 @@
 --- a/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
 +++ b/net/minecraft/network/protocol/handshake/ClientIntentionPacket.java
 @@ -11,6 +_,10 @@
-    public String f_134721_;
-    public final int f_134722_;
-    private final ConnectionProtocol f_134723_;
+    public String hostName;
+    public final int port;
+    private final ConnectionProtocol intention;
 +   private String fmlVersion = net.minecraftforge.network.NetworkConstants.NETVERSION;
 +
 +   private static final String EXTRA_DATA = "extraData";
 +   private static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().registerTypeAdapter(com.mojang.authlib.properties.PropertyMap.class, new com.mojang.authlib.properties.PropertyMap.Serializer()).create();
  
     public ClientIntentionPacket(String p_134726_, int p_134727_, ConnectionProtocol p_134728_) {
-       this.f_134720_ = SharedConstants.m_183709_().getProtocolVersion();
+       this.protocolVersion = SharedConstants.getCurrentVersion().getProtocolVersion();
 @@ -21,14 +_,36 @@
  
     public ClientIntentionPacket(FriendlyByteBuf p_179801_) {
-       this.f_134720_ = p_179801_.m_130242_();
--      this.f_134721_ = p_179801_.m_130136_(255);
-+      this.f_134721_ = p_179801_.m_130136_(Short.MAX_VALUE); // Spigot / Magma removed own init as var
-       this.f_134722_ = p_179801_.readUnsignedShort();
-       this.f_134723_ = ConnectionProtocol.m_129583_(p_179801_.m_130242_());
-+      this.fmlVersion = net.minecraftforge.network.NetworkHooks.getFMLVersion(f_134721_);
+       this.protocolVersion = p_179801_.readVarInt();
+-      this.hostName = p_179801_.readUtf(255);
++      this.hostName = p_179801_.readUtf(Short.MAX_VALUE); // Spigot / Magma removed own init as var
+       this.port = p_179801_.readUnsignedShort();
+       this.intention = ConnectionProtocol.getById(p_179801_.readVarInt());
++      this.fmlVersion = net.minecraftforge.network.NetworkHooks.getFMLVersion(hostName);
 +      //this.hostName = hostName.split("\0")[0]; // Magma moved to [ServerHandshakePacketListenerImpl.java#L93]
 +      //Magma start - add Velocity support
 +      if (org.spigotmc.SpigotConfig.bungee && !java.util.Objects.equals(this.fmlVersion, net.minecraftforge.network.NetworkConstants.NETVERSION)) {
-+         String[] split = this.f_134721_.split("\0");
++         String[] split = this.hostName.split("\0");
 +         if (split.length == 4) {
 +            com.mojang.authlib.properties.PropertyMap properties = GSON.fromJson(split[3], com.mojang.authlib.properties.PropertyMap.class);
 +            for (java.util.Map.Entry<String, com.mojang.authlib.properties.Property> property : properties.entries()) {
@@ -43,17 +43,17 @@
 +      //Magma end
     }
  
-    public void m_5779_(FriendlyByteBuf p_134737_) {
-       p_134737_.m_130130_(this.f_134720_);
--      p_134737_.m_130070_(this.f_134721_);
-+      p_134737_.m_130070_(this.f_134721_ + "\0"+ net.minecraftforge.network.NetworkConstants.NETVERSION+"\0");
-       p_134737_.writeShort(this.f_134722_);
-       p_134737_.m_130130_(this.f_134723_.m_129582_());
+    public void write(FriendlyByteBuf p_134737_) {
+       p_134737_.writeVarInt(this.protocolVersion);
+-      p_134737_.writeUtf(this.hostName);
++      p_134737_.writeUtf(this.hostName + "\0"+ net.minecraftforge.network.NetworkConstants.NETVERSION+"\0");
+       p_134737_.writeShort(this.port);
+       p_134737_.writeVarInt(this.intention.getId());
     }
 @@ -51,5 +_,9 @@
  
-    public int m_179803_() {
-       return this.f_134722_;
+    public int getPort() {
+       return this.port;
 +   }
 +
 +   public String getFMLVersion() {

@@ -2,12 +2,12 @@
 +++ b/net/minecraft/world/damagesource/IndirectEntityDamageSource.java
 @@ -33,4 +_,11 @@
        String s1 = s + ".item";
-       return !itemstack.m_41619_() && itemstack.m_41788_() ? new TranslatableComponent(s1, p_19410_.m_5446_(), component, itemstack.m_41611_()) : new TranslatableComponent(s, p_19410_.m_5446_(), component);
+       return !itemstack.isEmpty() && itemstack.hasCustomHoverName() ? new TranslatableComponent(s1, p_19410_.getDisplayName(), component, itemstack.getDisplayName()) : new TranslatableComponent(s, p_19410_.getDisplayName(), component);
     }
 +
 +   // CraftBukkit start
 +   public Entity getProximateDamageSource() {
-+      return super.m_7639_();
++      return super.getEntity();
 +   }
 +   // CraftBukkit end
 +

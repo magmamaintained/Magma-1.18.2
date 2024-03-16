@@ -3,22 +3,22 @@
 @@ -22,7 +_,7 @@
  
  public class DimensionDataStorage {
-    private static final Logger f_78143_ = LogUtils.getLogger();
--   private final Map<String, SavedData> f_78144_ = Maps.newHashMap();
-+   public final Map<String, SavedData> f_78144_ = Maps.newHashMap();
-    private final DataFixer f_78145_;
-    private final File f_78146_;
+    private static final Logger LOGGER = LogUtils.getLogger();
+-   private final Map<String, SavedData> cache = Maps.newHashMap();
++   public final Map<String, SavedData> cache = Maps.newHashMap();
+    private final DataFixer fixerUpper;
+    private final File dataFolder;
  
 @@ -49,9 +_,13 @@
     @Nullable
-    public <T extends SavedData> T m_164858_(Function<CompoundTag, T> p_164859_, String p_164860_) {
-       SavedData saveddata = this.f_78144_.get(p_164860_);
+    public <T extends SavedData> T get(Function<CompoundTag, T> p_164859_, String p_164860_) {
+       SavedData saveddata = this.cache.get(p_164860_);
 +      if (saveddata == net.minecraftforge.common.util.DummySavedData.DUMMY) return null;
-       if (saveddata == null && !this.f_78144_.containsKey(p_164860_)) {
-          saveddata = this.m_164868_(p_164859_, p_164860_);
-          this.f_78144_.put(p_164860_, saveddata);
+       if (saveddata == null && !this.cache.containsKey(p_164860_)) {
+          saveddata = this.readSavedData(p_164859_, p_164860_);
+          this.cache.put(p_164860_, saveddata);
 +      } else if (saveddata == null) {
-+         this.f_78144_.put(p_164860_, net.minecraftforge.common.util.DummySavedData.DUMMY);
++         this.cache.put(p_164860_, net.minecraftforge.common.util.DummySavedData.DUMMY);
 +         return null;
        }
  

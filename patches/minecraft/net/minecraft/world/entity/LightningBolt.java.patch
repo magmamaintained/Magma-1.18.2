@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/entity/LightningBolt.java
 +++ b/net/minecraft/world/entity/LightningBolt.java
 @@ -40,6 +_,9 @@
-    private final Set<Entity> f_147134_ = Sets.newHashSet();
-    private int f_147135_;
+    private final Set<Entity> hitEntities = Sets.newHashSet();
+    private int blocksSetOnFire;
  
 +   public boolean isSilent = false; // Spigot
 +   private float damage = 5.0F;
 +
     public LightningBolt(EntityType<? extends LightningBolt> p_20865_, Level p_20866_) {
        super(p_20865_, p_20866_);
-       this.f_19811_ = true;
+       this.noCulling = true;
 @@ -74,9 +_,17 @@
  
     }
@@ -22,53 +22,53 @@
 +      return this.damage;
 +   }
 +
-    public void m_8119_() {
-       super.m_8119_();
--      if (this.f_20860_ == 2) {
-+      if (!isSilent && this.f_20860_ == 2) { // Spigot
-          if (this.f_19853_.m_5776_()) {
-             this.f_19853_.m_7785_(this.m_20185_(), this.m_20186_(), this.m_20189_(), SoundEvents.f_12090_, SoundSource.WEATHER, 10000.0F, 0.8F + this.f_19796_.nextFloat() * 0.2F, false);
-             this.f_19853_.m_7785_(this.m_20185_(), this.m_20186_(), this.m_20189_(), SoundEvents.f_12089_, SoundSource.WEATHER, 2.0F, 0.5F + this.f_19796_.nextFloat() * 0.2F, false);
+    public void tick() {
+       super.tick();
+-      if (this.life == 2) {
++      if (!isSilent && this.life == 2) { // Spigot
+          if (this.level.isClientSide()) {
+             this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F, false);
+             this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F, false);
 @@ -116,13 +_,14 @@
           }
        }
  
--      if (this.f_20860_ >= 0) {
-+      if (this.f_20860_ >= 0 && !this.f_20862_) { // CraftBukkit - add !this.visualOnly
-          if (!(this.f_19853_ instanceof ServerLevel)) {
-             this.f_19853_.m_6580_(2);
-          } else if (!this.f_20862_) {
-             List<Entity> list1 = this.f_19853_.m_6249_(this, new AABB(this.m_20185_() - 3.0D, this.m_20186_() - 3.0D, this.m_20189_() - 3.0D, this.m_20185_() + 3.0D, this.m_20186_() + 6.0D + 3.0D, this.m_20189_() + 3.0D), Entity::m_6084_);
+-      if (this.life >= 0) {
++      if (this.life >= 0 && !this.visualOnly) { // CraftBukkit - add !this.visualOnly
+          if (!(this.level instanceof ServerLevel)) {
+             this.level.setSkyFlashTime(2);
+          } else if (!this.visualOnly) {
+             List<Entity> list1 = this.level.getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 6.0D + 3.0D, this.getZ() + 3.0D), Entity::isAlive);
  
              for(Entity entity : list1) {
 +               if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, this))
-                entity.m_8038_((ServerLevel)this.f_19853_, this);
+                entity.thunderHit((ServerLevel)this.level, this);
              }
  
 @@ -145,16 +_,24 @@
-          BlockPos blockpos = this.m_142538_();
-          BlockState blockstate = BaseFireBlock.m_49245_(this.f_19853_, blockpos);
-          if (this.f_19853_.m_8055_(blockpos).m_60795_() && blockstate.m_60710_(this.f_19853_, blockpos)) {
--            this.f_19853_.m_46597_(blockpos, blockstate);
--            ++this.f_147135_;
+          BlockPos blockpos = this.blockPosition();
+          BlockState blockstate = BaseFireBlock.getState(this.level, blockpos);
+          if (this.level.getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level, blockpos)) {
+-            this.level.setBlockAndUpdate(blockpos, blockstate);
+-            ++this.blocksSetOnFire;
 +            // CraftBukkit start - add "!visualOnly"
-+            if (!f_20862_ && !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(f_19853_, blockpos, this).isCancelled()) {
-+               this.f_19853_.m_46597_(blockpos, blockstate);
-+               ++this.f_147135_;
++            if (!visualOnly && !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos, this).isCancelled()) {
++               this.level.setBlockAndUpdate(blockpos, blockstate);
++               ++this.blocksSetOnFire;
 +            }
 +            // CraftBukkit end
           }
  
           for(int i = 0; i < p_20871_; ++i) {
-             BlockPos blockpos1 = blockpos.m_142082_(this.f_19796_.nextInt(3) - 1, this.f_19796_.nextInt(3) - 1, this.f_19796_.nextInt(3) - 1);
-             blockstate = BaseFireBlock.m_49245_(this.f_19853_, blockpos1);
-             if (this.f_19853_.m_8055_(blockpos1).m_60795_() && blockstate.m_60710_(this.f_19853_, blockpos1)) {
--               this.f_19853_.m_46597_(blockpos1, blockstate);
--               ++this.f_147135_;
+             BlockPos blockpos1 = blockpos.offset(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
+             blockstate = BaseFireBlock.getState(this.level, blockpos1);
+             if (this.level.getBlockState(blockpos1).isAir() && blockstate.canSurvive(this.level, blockpos1)) {
+-               this.level.setBlockAndUpdate(blockpos1, blockstate);
+-               ++this.blocksSetOnFire;
 +               // CraftBukkit start - add "!visualOnly"
-+               if (!f_20862_ && !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(f_19853_, blockpos1, this).isCancelled()) {
-+                  this.f_19853_.m_46597_(blockpos1, blockstate);
-+                  ++this.f_147135_;
++               if (!visualOnly && !org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callBlockIgniteEvent(level, blockpos1, this).isCancelled()) {
++                  this.level.setBlockAndUpdate(blockpos1, blockstate);
++                  ++this.blocksSetOnFire;
 +               }
 +               // CraftBukkit end
              }

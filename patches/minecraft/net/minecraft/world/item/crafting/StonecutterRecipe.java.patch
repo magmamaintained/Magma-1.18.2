@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/item/crafting/StonecutterRecipe.java
 +++ b/net/minecraft/world/item/crafting/StonecutterRecipe.java
 @@ -18,4 +_,15 @@
-    public ItemStack m_8042_() {
-       return new ItemStack(Blocks.f_50679_);
+    public ItemStack getToastSymbol() {
+       return new ItemStack(Blocks.STONECUTTER);
     }
 +
 +   // CraftBukkit start
 +   @Override
 +   public org.bukkit.inventory.Recipe toBukkitRecipe() {
-+      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.f_44410_);
-+      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftStonecuttingRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftStonecuttingRecipe(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(this.f_44411_), result, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.f_44409_));
-+      recipe.setGroup(this.f_44412_);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asCraftMirror(this.result);
++      org.bukkit.craftbukkit.v1_18_R2.inventory.CraftStonecuttingRecipe recipe = new org.bukkit.craftbukkit.v1_18_R2.inventory.CraftStonecuttingRecipe(org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey.fromMinecraft(this.id), result, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftRecipe.toBukkit(this.ingredient));
++      recipe.setGroup(this.group);
 +      return recipe;
 +   }
 +   // CraftBukkit end

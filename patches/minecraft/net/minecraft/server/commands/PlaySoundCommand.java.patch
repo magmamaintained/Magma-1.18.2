@@ -3,8 +3,8 @@
 @@ -32,7 +_,7 @@
        }
  
-       p_138157_.register(Commands.m_82127_("playsound").requires((p_138159_) -> {
--         return p_138159_.m_6761_(2);
+       p_138157_.register(Commands.literal("playsound").requires((p_138159_) -> {
+-         return p_138159_.hasPermission(2);
 +         return p_138159_.hasPermission(2,"minecraft.command.playsound");
        }).then(requiredargumentbuilder));
     }

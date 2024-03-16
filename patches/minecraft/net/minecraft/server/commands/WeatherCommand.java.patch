@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/WeatherCommand.java
 @@ -11,7 +_,7 @@
  
-    public static void m_139166_(CommandDispatcher<CommandSourceStack> p_139167_) {
-       p_139167_.register(Commands.m_82127_("weather").requires((p_139171_) -> {
--         return p_139171_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_139167_) {
+       p_139167_.register(Commands.literal("weather").requires((p_139171_) -> {
+-         return p_139171_.hasPermission(2);
 +         return p_139171_.hasPermission(2,"minecraft.command.weather");
-       }).then(Commands.m_82127_("clear").executes((p_139190_) -> {
-          return m_139172_(p_139190_.getSource(), 6000);
-       }).then(Commands.m_82129_("duration", IntegerArgumentType.integer(0, 1000000)).executes((p_139188_) -> {
+       }).then(Commands.literal("clear").executes((p_139190_) -> {
+          return setClear(p_139190_.getSource(), 6000);
+       }).then(Commands.argument("duration", IntegerArgumentType.integer(0, 1000000)).executes((p_139188_) -> {

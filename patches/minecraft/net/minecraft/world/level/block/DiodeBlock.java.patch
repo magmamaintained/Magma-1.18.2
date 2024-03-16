@@ -1,30 +1,30 @@
 --- a/net/minecraft/world/level/block/DiodeBlock.java
 +++ b/net/minecraft/world/level/block/DiodeBlock.java
 @@ -40,8 +_,18 @@
-          boolean flag = p_52515_.m_61143_(f_52496_);
-          boolean flag1 = this.m_7320_(p_52516_, p_52517_, p_52515_);
+          boolean flag = p_52515_.getValue(POWERED);
+          boolean flag1 = this.shouldTurnOn(p_52516_, p_52517_, p_52515_);
           if (flag && !flag1) {
 +            // CraftBukkit start
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callRedstoneChange(p_52516_, p_52517_, 15, 0).getNewCurrent() != 0) {
 +               return;
 +            }
 +            // CraftBukkit end
-             p_52516_.m_7731_(p_52517_, p_52515_.m_61124_(f_52496_, Boolean.valueOf(false)), 2);
+             p_52516_.setBlock(p_52517_, p_52515_.setValue(POWERED, Boolean.valueOf(false)), 2);
           } else if (!flag) {
 +            // CraftBukkit start
 +            if (org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callRedstoneChange(p_52516_, p_52517_, 0, 15).getNewCurrent() != 15) {
 +               return;
 +            }
 +            // CraftBukkit end
-             p_52516_.m_7731_(p_52517_, p_52515_.m_61124_(f_52496_, Boolean.valueOf(true)), 2);
+             p_52516_.setBlock(p_52517_, p_52515_.setValue(POWERED, Boolean.valueOf(true)), 2);
              if (!flag1) {
-                p_52516_.m_186464_(p_52517_, this, this.m_6112_(p_52515_), TickPriority.VERY_HIGH);
+                p_52516_.scheduleTick(p_52517_, this, this.getDelay(p_52515_), TickPriority.VERY_HIGH);
 @@ -165,6 +_,8 @@
-    protected void m_52580_(Level p_52581_, BlockPos p_52582_, BlockState p_52583_) {
-       Direction direction = p_52583_.m_61143_(f_54117_);
-       BlockPos blockpos = p_52582_.m_142300_(direction.m_122424_());
-+      if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(p_52581_, p_52582_, p_52581_.m_8055_(p_52582_), java.util.EnumSet.of(direction.m_122424_()), false).isCanceled())
+    protected void updateNeighborsInFront(Level p_52581_, BlockPos p_52582_, BlockState p_52583_) {
+       Direction direction = p_52583_.getValue(FACING);
+       BlockPos blockpos = p_52582_.relative(direction.getOpposite());
++      if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(p_52581_, p_52582_, p_52581_.getBlockState(p_52582_), java.util.EnumSet.of(direction.getOpposite()), false).isCanceled())
 +         return;
-       p_52581_.m_46586_(blockpos, this, p_52582_);
-       p_52581_.m_46590_(blockpos, this, direction);
+       p_52581_.neighborChanged(blockpos, this, p_52582_);
+       p_52581_.updateNeighborsAtExceptFromFacing(blockpos, this, direction);
     }

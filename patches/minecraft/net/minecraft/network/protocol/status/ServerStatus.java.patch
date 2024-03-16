@@ -1,9 +1,9 @@
 --- a/net/minecraft/network/protocol/status/ServerStatus.java
 +++ b/net/minecraft/network/protocol/status/ServerStatus.java
 @@ -26,6 +_,16 @@
-    private ServerStatus.Version f_134902_;
+    private ServerStatus.Version version;
     @Nullable
-    private String f_134903_;
+    private String favicon;
 +   private transient net.minecraftforge.network.ServerStatusPing forgeData;
 +
 +   public net.minecraftforge.network.ServerStatusPing getForgeData() {
@@ -16,38 +16,38 @@
 +   }
  
     @Nullable
-    public Component m_134905_() {
+    public Component getDescription() {
 @@ -34,6 +_,7 @@
  
-    public void m_134908_(Component p_134909_) {
-       this.f_134900_ = p_134909_;
+    public void setDescription(Component p_134909_) {
+       this.description = p_134909_;
 +      invalidateJson();
     }
  
     @Nullable
 @@ -43,6 +_,7 @@
  
-    public void m_134910_(ServerStatus.Players p_134911_) {
-       this.f_134901_ = p_134911_;
+    public void setPlayers(ServerStatus.Players p_134911_) {
+       this.players = p_134911_;
 +      invalidateJson();
     }
  
     @Nullable
 @@ -52,10 +_,12 @@
  
-    public void m_134912_(ServerStatus.Version p_134913_) {
-       this.f_134902_ = p_134913_;
+    public void setVersion(ServerStatus.Version p_134913_) {
+       this.version = p_134913_;
 +      invalidateJson();
     }
  
-    public void m_134906_(String p_134907_) {
-       this.f_134903_ = p_134907_;
+    public void setFavicon(String p_134907_) {
+       this.favicon = p_134907_;
 +      invalidateJson();
     }
  
     @Nullable
 @@ -63,6 +_,39 @@
-       return this.f_134903_;
+       return this.favicon;
     }
  
 +   private java.util.concurrent.Semaphore mutex = new java.util.concurrent.Semaphore(1);
@@ -67,7 +67,7 @@
 +         mutex.acquireUninterruptibly();
 +         ret = this.json;
 +         if (ret == null) {
-+            ret = net.minecraft.network.protocol.status.ClientboundStatusResponsePacket.f_134885_.toJson(this);
++            ret = net.minecraft.network.protocol.status.ClientboundStatusResponsePacket.GSON.toJson(this);
 +            this.json = ret;
 +         }
 +         mutex.release();
@@ -84,14 +84,14 @@
 +   }
 +
     public static class Players {
-       private final int f_134917_;
-       private final int f_134918_;
+       private final int maxPlayers;
+       private final int numPlayers;
 @@ -157,6 +_,10 @@
-             serverstatus.m_134906_(GsonHelper.m_13906_(jsonobject, "favicon"));
+             serverstatus.setFavicon(GsonHelper.getAsString(jsonobject, "favicon"));
           }
  
 +         if (jsonobject.has("forgeData")) {
-+            serverstatus.setForgeData(net.minecraftforge.network.ServerStatusPing.Serializer.deserialize(GsonHelper.m_13930_(jsonobject, "forgeData")));
++            serverstatus.setForgeData(net.minecraftforge.network.ServerStatusPing.Serializer.deserialize(GsonHelper.getAsJsonObject(jsonobject, "forgeData")));
 +         }
 +
           return serverstatus;
@@ -99,8 +99,8 @@
  
 @@ -176,6 +_,10 @@
  
-          if (p_134951_.m_134916_() != null) {
-             jsonobject.addProperty("favicon", p_134951_.m_134916_());
+          if (p_134951_.getFavicon() != null) {
+             jsonobject.addProperty("favicon", p_134951_.getFavicon());
 +         }
 +
 +         if(p_134951_.getForgeData() != null){

@@ -6,7 +6,7 @@
  
 +         if (j == 0) {
 +            // if we failed to match above, lets try the messageformat handler instead.
-+            j = net.minecraftforge.internal.TextComponentMessageFormatHandler.handle(this, p_200007_, this.f_131299_, p_200006_);
++            j = net.minecraftforge.internal.TextComponentMessageFormatHandler.handle(this, p_200007_, this.args, p_200006_);
 +         }
           if (j < p_200006_.length()) {
              String s3 = p_200006_.substring(j);

@@ -6,47 +6,47 @@
  
 -public class SignBlockEntity extends BlockEntity {
 +public class SignBlockEntity extends BlockEntity implements CommandSource { // CraftBukkit - implements
-    public static final int f_155692_ = 4;
-    private static final String[] f_155693_ = new String[]{"Text1", "Text2", "Text3", "Text4"};
-    private static final String[] f_155694_ = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
+    public static final int LINES = 4;
+    private static final String[] RAW_TEXT_FIELD_NAMES = new String[]{"Text1", "Text2", "Text3", "Text4"};
+    private static final String[] FILTERED_TEXT_FIELD_NAMES = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
 @@ -55,6 +_,12 @@
           }
        }
  
 +      // CraftBukkit start
 +      if (Boolean.getBoolean("convertLegacySigns")) {
-+         p_187515_.m_128379_("Bukkit.isConverted", true);
++         p_187515_.putBoolean("Bukkit.isConverted", true);
 +      }
 +      // CraftBukkit end
 +
-       p_187515_.m_128359_("Color", this.f_59724_.m_41065_());
-       p_187515_.m_128379_("GlowingText", this.f_155697_);
+       p_187515_.putString("Color", this.color.getName());
+       p_187515_.putBoolean("GlowingText", this.hasGlowingText);
     }
 @@ -64,8 +_,24 @@
-       super.m_142466_(p_155716_);
-       this.f_59724_ = DyeColor.m_41057_(p_155716_.m_128461_("Color"), DyeColor.BLACK);
+       super.load(p_155716_);
+       this.color = DyeColor.byName(p_155716_.getString("Color"), DyeColor.BLACK);
  
 +      // CraftBukkit start - Add an option to convert signs correctly
 +      // This is done with a flag instead of all the time because
 +      // we have no way to tell whether a sign is from 1.7.10 or 1.8
-+      boolean oldSign = Boolean.getBoolean("convertLegacySigns") && !p_155716_.m_128471_("Bukkit.isConverted");
++      boolean oldSign = Boolean.getBoolean("convertLegacySigns") && !p_155716_.getBoolean("Bukkit.isConverted");
 +      // CraftBukkit end
 +
        for(int i = 0; i < 4; ++i) {
-          String s = p_155716_.m_128461_(f_155693_[i]);
+          String s = p_155716_.getString(RAW_TEXT_FIELD_NAMES[i]);
 +         // CraftBukkit start
 +         if (s != null && s.length() > 2048) {
 +            s = "\"\"";
 +         }
 +
 +         if (oldSign) {
-+            f_59720_[i] = org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromString(s)[0];
++            messages[i] = org.bukkit.craftbukkit.v1_18_R2.util.CraftChatMessage.fromString(s)[0];
 +            continue;
 +         }
 +         // CraftBukkit end
-          Component component = this.m_155711_(s);
-          this.f_59720_[i] = component;
-          String s1 = f_155694_[i];
+          Component component = this.loadLine(s);
+          this.messages[i] = component;
+          String s1 = FILTERED_TEXT_FIELD_NAMES[i];
 @@ -98,6 +_,10 @@
           if (component != null) {
              return component;
@@ -64,43 +64,43 @@
  
 +   // CraftBukkit start
 +   @Override
-+   public void m_6352_(Component component, java.util.UUID uuid) {}
++   public void sendMessage(Component component, java.util.UUID uuid) {}
 +
 +   @Override
 +   public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
-+      return wrapper.m_81373_() != null ? wrapper.m_81373_().getBukkitSender(wrapper) : new org.bukkit.craftbukkit.v1_18_R2.command.CraftBlockCommandSender(wrapper, this);
++      return wrapper.getEntity() != null ? wrapper.getEntity().getBukkitSender(wrapper) : new org.bukkit.craftbukkit.v1_18_R2.command.CraftBlockCommandSender(wrapper, this);
 +   }
 +
 +   @Override
-+   public boolean m_6999_() {
++   public boolean acceptsSuccess() {
 +      return false;
 +   }
 +
 +   @Override
-+   public boolean m_7028_() {
++   public boolean acceptsFailure() {
 +      return false;
 +   }
 +
 +   @Override
-+   public boolean m_6102_() {
++   public boolean shouldInformAdmins() {
 +      return false;
 +   }
 +   // CraftBukkit end
 +
-    public CommandSourceStack m_59735_(@Nullable ServerPlayer p_59736_) {
-       String s = p_59736_ == null ? "Sign" : p_59736_.m_7755_().getString();
-       Component component = (Component)(p_59736_ == null ? new TextComponent("Sign") : p_59736_.m_5446_());
--      return new CommandSourceStack(CommandSource.f_80164_, Vec3.m_82512_(this.f_58858_), Vec2.f_82462_, (ServerLevel)this.f_58857_, 2, s, component, this.f_58857_.m_142572_(), p_59736_);
+    public CommandSourceStack createCommandSourceStack(@Nullable ServerPlayer p_59736_) {
+       String s = p_59736_ == null ? "Sign" : p_59736_.getName().getString();
+       Component component = (Component)(p_59736_ == null ? new TextComponent("Sign") : p_59736_.getDisplayName());
+-      return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(this.worldPosition), Vec2.ZERO, (ServerLevel)this.level, 2, s, component, this.level.getServer(), p_59736_);
 +      // CraftBukkit - this
-+      return new CommandSourceStack(this, Vec3.m_82512_(this.f_58858_), Vec2.f_82462_, (ServerLevel) this.f_58857_, 2, s, (Component) component, this.f_58857_.m_142572_(), p_59736_);
++      return new CommandSourceStack(this, Vec3.atCenterOf(this.worldPosition), Vec2.ZERO, (ServerLevel) this.level, 2, s, (Component) component, this.level.getServer(), p_59736_);
     }
  
-    public DyeColor m_59753_() {
+    public DyeColor getColor() {
 @@ -216,6 +_,6 @@
  
-    private void m_155728_() {
-       this.m_6596_();
--      this.f_58857_.m_7260_(this.m_58899_(), this.m_58900_(), this.m_58900_(), 3);
-+      if (this.f_58857_ != null) this.f_58857_.m_7260_(this.m_58899_(), this.m_58900_(), this.m_58900_(), 3); // CraftBukkit - skip notify if world is null (SPIGOT-5122)
+    private void markUpdated() {
+       this.setChanged();
+-      this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
++      if (this.level != null) this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3); // CraftBukkit - skip notify if world is null (SPIGOT-5122)
     }
  }

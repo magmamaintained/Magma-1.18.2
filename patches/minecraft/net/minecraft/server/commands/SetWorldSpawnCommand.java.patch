@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SetWorldSpawnCommand.java
 @@ -11,7 +_,7 @@
  public class SetWorldSpawnCommand {
-    public static void m_138660_(CommandDispatcher<CommandSourceStack> p_138661_) {
-       p_138661_.register(Commands.m_82127_("setworldspawn").requires((p_138665_) -> {
--         return p_138665_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138661_) {
+       p_138661_.register(Commands.literal("setworldspawn").requires((p_138665_) -> {
+-         return p_138665_.hasPermission(2);
 +         return p_138665_.hasPermission(2,"minecraft.command.setworldspawn");
        }).executes((p_138673_) -> {
-          return m_138666_(p_138673_.getSource(), new BlockPos(p_138673_.getSource().m_81371_()), 0.0F);
-       }).then(Commands.m_82129_("pos", BlockPosArgument.m_118239_()).executes((p_138671_) -> {
+          return setSpawn(p_138673_.getSource(), new BlockPos(p_138673_.getSource().getPosition()), 0.0F);
+       }).then(Commands.argument("pos", BlockPosArgument.blockPos()).executes((p_138671_) -> {

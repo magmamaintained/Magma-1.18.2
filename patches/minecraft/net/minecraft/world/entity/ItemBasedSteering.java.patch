@@ -6,12 +6,12 @@
  
 +   // CraftBukkit add setBoostTicks(int)
 +   public void setBoostTicks(int ticks) {
-+      this.f_20834_ = true;
-+      this.f_20835_ = 0;
-+      this.f_20836_ = ticks;
-+      this.f_20837_.m_135381_(this.f_20838_, this.f_20836_);
++      this.boosting = true;
++      this.boostTime = 0;
++      this.boostTimeTotal = ticks;
++      this.entityData.set(this.boostTimeAccessor, this.boostTimeTotal);
 +   }
 +   // CraftBukkit end
-    public void m_20847_(CompoundTag p_20848_) {
-       p_20848_.m_128379_("Saddle", this.m_20851_());
+    public void addAdditionalSaveData(CompoundTag p_20848_) {
+       p_20848_.putBoolean("Saddle", this.hasSaddle());
     }

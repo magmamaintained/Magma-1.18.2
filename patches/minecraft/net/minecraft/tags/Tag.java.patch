@@ -1,7 +1,7 @@
 --- a/net/minecraft/tags/Tag.java
 +++ b/net/minecraft/tags/Tag.java
 @@ -31,8 +_,16 @@
-       return (Tag<T>)f_203856_;
+       return (Tag<T>)EMPTY;
     }
  
 -   public static class Builder {
@@ -13,13 +13,13 @@
 +         this.removeEntries.add(proxy);
 +         return this;
 +      }
-       private final List<Tag.BuilderEntry> f_13302_ = new ArrayList<>();
+       private final List<Tag.BuilderEntry> entries = new ArrayList<>();
 +      private boolean replace = false;
  
-       public static Tag.Builder m_13304_() {
+       public static Tag.Builder tag() {
           return new Tag.Builder();
 @@ -63,6 +_,15 @@
-          return this.m_13307_(new Tag.OptionalTagEntry(p_144383_), p_144384_);
+          return this.add(new Tag.OptionalTagEntry(p_144383_), p_144384_);
        }
  
 +      public Tag.Builder replace(boolean value) {
@@ -31,19 +31,19 @@
 +         return replace(true);
 +      }
 +
-       public <T> Either<Collection<Tag.BuilderEntry>, Tag<T>> m_144371_(Function<ResourceLocation, Tag<T>> p_144372_, Function<ResourceLocation, T> p_144373_) {
+       public <T> Either<Collection<Tag.BuilderEntry>, Tag<T>> build(Function<ResourceLocation, Tag<T>> p_144372_, Function<ResourceLocation, T> p_144373_) {
           ImmutableSet.Builder<T> builder = ImmutableSet.builder();
           List<Tag.BuilderEntry> list = new ArrayList<>();
 @@ -104,6 +_,7 @@
-             this.f_13302_.clear();
+             this.entries.clear();
           }
  
-+         net.minecraftforge.common.ForgeHooks.deserializeTagAdditions(list, p_13313_, f_13302_);
++         net.minecraftforge.common.ForgeHooks.deserializeTagAdditions(list, p_13313_, entries);
           list.forEach((p_13319_) -> {
-             this.f_13302_.add(new Tag.BuilderEntry(p_13319_, p_13314_));
+             this.entries.add(new Tag.BuilderEntry(p_13319_, p_13314_));
           });
 @@ -139,8 +_,9 @@
-             tag$builderentry.f_13338_().m_6383_(jsonarray);
+             tag$builderentry.entry().serializeTo(jsonarray);
           }
  
 -         jsonobject.addProperty("replace", false);
@@ -55,18 +55,18 @@
     }
 @@ -179,6 +_,7 @@
        public String toString() {
-          return this.f_13349_.toString();
+          return this.id.toString();
        }
-+      @Override public boolean equals(Object o) { return o == this || (o instanceof Tag.ElementEntry && java.util.Objects.equals(this.f_13349_, ((Tag.ElementEntry) o).f_13349_)); }
++      @Override public boolean equals(Object o) { return o == this || (o instanceof Tag.ElementEntry && java.util.Objects.equals(this.id, ((Tag.ElementEntry) o).id)); }
     }
  
     public interface Entry {
 @@ -287,6 +_,8 @@
        public String toString() {
-          return "#" + this.f_13383_;
+          return "#" + this.id;
        }
-+      @Override public boolean equals(Object o) { return o == this || (o instanceof Tag.TagEntry && java.util.Objects.equals(this.f_13383_, ((Tag.TagEntry) o).f_13383_)); }
-+      public ResourceLocation getId() { return f_13383_; }
++      @Override public boolean equals(Object o) { return o == this || (o instanceof Tag.TagEntry && java.util.Objects.equals(this.id, ((Tag.TagEntry) o).id)); }
++      public ResourceLocation getId() { return id; }
  
-       public boolean m_142746_(Predicate<ResourceLocation> p_144404_, Predicate<ResourceLocation> p_144405_) {
-          return p_144405_.test(this.f_13383_);
+       public boolean verifyIfPresent(Predicate<ResourceLocation> p_144404_, Predicate<ResourceLocation> p_144405_) {
+          return p_144405_.test(this.id);

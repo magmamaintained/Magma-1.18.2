@@ -1,23 +1,23 @@
 --- a/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
 @@ -54,6 +_,96 @@
-       p_131886_.m_130130_(object2intmap.get(this.f_131858_));
+       p_131886_.writeVarInt(object2intmap.get(this.root));
     }
  
 +   //Magma - ambassador command support
 +   public void write(FriendlyByteBuf byteBuf, boolean wrap) {
-+      Object2IntMap<CommandNode<SharedSuggestionProvider>> object2intmap = m_131862_(this.f_131858_);
-+      List<CommandNode<SharedSuggestionProvider>> list = m_178806_(object2intmap);
-+      byteBuf.m_178352_(list, (p_178810_, p_178811_) -> {
++      Object2IntMap<CommandNode<SharedSuggestionProvider>> object2intmap = enumerateNodes(this.root);
++      List<CommandNode<SharedSuggestionProvider>> list = getNodesInIdOrder(object2intmap);
++      byteBuf.writeCollection(list, (p_178810_, p_178811_) -> {
 +         writeNodeNoArgumentTypes(p_178810_, p_178811_, object2intmap);
 +         if (p_178811_ instanceof ArgumentCommandNode argumentCommandNode) {
 +            serialize(byteBuf, argumentCommandNode.getType(), wrap);
 +            if (argumentCommandNode.getCustomSuggestions() != null) {
-+               byteBuf.m_130085_(SuggestionProviders.m_121654_(argumentCommandNode.getCustomSuggestions()));
++               byteBuf.writeResourceLocation(SuggestionProviders.getName(argumentCommandNode.getCustomSuggestions()));
 +            }
 +         }
 +      });
-+      byteBuf.m_130130_(object2intmap.get(this.f_131858_));
++      byteBuf.writeVarInt(object2intmap.get(this.root));
 +   }
 +   private static final List<String> integratedArgumentTypes = java.util.Arrays.asList(
 +           "brigadier:bool",
@@ -75,17 +75,17 @@
 +   );
 +
 +   private static <T extends ArgumentType<?>> void serialize(FriendlyByteBuf buf, T type, boolean wrap) {
-+      ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)ArgumentTypes.m_121616_(type);
++      ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)ArgumentTypes.get(type);
 +
 +      if (entry == null) {
-+         buf.m_130085_(MOD_ARGUMENT_INDICATOR);
-+         buf.m_130085_(new net.minecraft.resources.ResourceLocation("")); //"minecraft:"
-+         buf.m_130130_(0);
++         buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
++         buf.writeResourceLocation(new net.minecraft.resources.ResourceLocation("")); //"minecraft:"
++         buf.writeVarInt(0);
 +         return;
 +      }
 +
-+      if (!wrap || integratedArgumentTypes.contains(entry.f_121620_.toString())) {
-+         ArgumentTypes.m_121611_(buf, type);
++      if (!wrap || integratedArgumentTypes.contains(entry.name.toString())) {
++         ArgumentTypes.serialize(buf, type);
 +         return;
 +      }
 +
@@ -94,14 +94,14 @@
 +   }
 +   //Magma - end
 +
-    private static void m_178812_(List<ClientboundCommandsPacket.Entry> p_178813_) {
+    private static void resolveEntries(List<ClientboundCommandsPacket.Entry> p_178813_) {
        List<ClientboundCommandsPacket.Entry> list = Lists.newArrayList(p_178813_);
  
 @@ -128,54 +_,152 @@
        }
     }
  
--   private static void m_131871_(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_) {
+-   private static void writeNode(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_) {
 -      byte b0 = 0;
 -      if (p_131873_.getRedirect() != null) {
 -         b0 = (byte)(b0 | 8);
@@ -127,29 +127,29 @@
 -      }
 -
 -      p_131872_.writeByte(b0);
--      p_131872_.m_130130_(p_131873_.getChildren().size());
+-      p_131872_.writeVarInt(p_131873_.getChildren().size());
 -
 -      for(CommandNode<SharedSuggestionProvider> commandnode : p_131873_.getChildren()) {
--         p_131872_.m_130130_(p_131874_.get(commandnode));
+-         p_131872_.writeVarInt(p_131874_.get(commandnode));
 -      }
 -
 -      if (p_131873_.getRedirect() != null) {
--         p_131872_.m_130130_(p_131874_.get(p_131873_.getRedirect()));
+-         p_131872_.writeVarInt(p_131874_.get(p_131873_.getRedirect()));
 -      }
 -
 -      if (p_131873_ instanceof ArgumentCommandNode) {
 -         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
--         p_131872_.m_130070_(argumentcommandnode.getName());
--         ArgumentTypes.m_121611_(p_131872_, argumentcommandnode.getType());
+-         p_131872_.writeUtf(argumentcommandnode.getName());
+-         ArgumentTypes.serialize(p_131872_, argumentcommandnode.getType());
 -         if (argumentcommandnode.getCustomSuggestions() != null) {
--            p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
+-            p_131872_.writeResourceLocation(SuggestionProviders.getName(argumentcommandnode.getCustomSuggestions()));
 -         }
 -      } else if (p_131873_ instanceof LiteralCommandNode) {
--         p_131872_.m_130070_(((LiteralCommandNode)p_131873_).getLiteral());
+-         p_131872_.writeUtf(((LiteralCommandNode)p_131873_).getLiteral());
 -      }
 -
 -   }
-+   private static void m_131871_(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_){
++   private static void writeNode(FriendlyByteBuf p_131872_, CommandNode<SharedSuggestionProvider> p_131873_, Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_){
 +      byte b0 = 0;
 +      if (p_131873_.getRedirect() != null) {
 +         b0 = (byte)(b0 | 8);
@@ -175,42 +175,42 @@
 +      }
 +
 +      p_131872_.writeByte(b0);
-+      p_131872_.m_130130_(p_131873_.getChildren().size());
++      p_131872_.writeVarInt(p_131873_.getChildren().size());
 +
 +      for(CommandNode<SharedSuggestionProvider> commandnode : p_131873_.getChildren()) {
-+         p_131872_.m_130130_(p_131874_.get(commandnode));
++         p_131872_.writeVarInt(p_131874_.get(commandnode));
 +      }
 +
 +      if (p_131873_.getRedirect() != null) {
-+         p_131872_.m_130130_(p_131874_.get(p_131873_.getRedirect()));
++         p_131872_.writeVarInt(p_131874_.get(p_131873_.getRedirect()));
 +      }
 +
 +      if (p_131873_ instanceof ArgumentCommandNode) {
 +         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
-+         p_131872_.m_130070_(argumentcommandnode.getName());
++         p_131872_.writeUtf(argumentcommandnode.getName());
 +         //Magma start
 +         if(org.spigotmc.SpigotConfig.bungee){
-+            ArgumentTypes.Entry entry = ArgumentTypes.f_121583_.get(argumentcommandnode.getType().getClass());
++            ArgumentTypes.Entry entry = ArgumentTypes.BY_CLASS.get(argumentcommandnode.getType().getClass());
 +            if (entry == null) {
-+               p_131872_.m_130085_(new net.minecraft.resources.ResourceLocation(""));
++               p_131872_.writeResourceLocation(new net.minecraft.resources.ResourceLocation(""));
 +               return;
 +            }
-+            if (entry.f_121620_.m_135827_().equals("minecraft") || entry.f_121620_.m_135827_().equals("brigadier")) {
-+               p_131872_.m_130085_(entry.f_121620_);
-+               entry.f_121619_.m_6017_(argumentcommandnode.getType(), p_131872_);
++            if (entry.name.getNamespace().equals("minecraft") || entry.name.getNamespace().equals("brigadier")) {
++               p_131872_.writeResourceLocation(entry.name);
++               entry.serializer.serializeToNetwork(argumentcommandnode.getType(), p_131872_);
 +            } else {
 +               serializeWrappedArgumentType(p_131872_, argumentcommandnode.getType(), entry);
 +            }
 +         } else {
-+            ArgumentTypes.m_121611_(p_131872_, argumentcommandnode.getType());
++            ArgumentTypes.serialize(p_131872_, argumentcommandnode.getType());
 +         }
 +         //Magma end
 +
 +         if (argumentcommandnode.getCustomSuggestions() != null) {
-+            p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
++            p_131872_.writeResourceLocation(SuggestionProviders.getName(argumentcommandnode.getCustomSuggestions()));
 +         }
 +      } else if (p_131873_ instanceof LiteralCommandNode) {
-+         p_131872_.m_130070_(((LiteralCommandNode)p_131873_).getLiteral());
++         p_131872_.writeUtf(((LiteralCommandNode)p_131873_).getLiteral());
 +      }
 +   }
 +//Magma start - ambassador command support
@@ -240,29 +240,29 @@
 +      }
 +
 +      p_131872_.writeByte(b0);
-+      p_131872_.m_130130_(p_131873_.getChildren().size());
++      p_131872_.writeVarInt(p_131873_.getChildren().size());
 +
 +      for(CommandNode<SharedSuggestionProvider> commandnode : p_131873_.getChildren()) {
-+         p_131872_.m_130130_(p_131874_.get(commandnode));
++         p_131872_.writeVarInt(p_131874_.get(commandnode));
 +      }
 +
 +      if (p_131873_.getRedirect() != null) {
-+         p_131872_.m_130130_(p_131874_.get(p_131873_.getRedirect()));
++         p_131872_.writeVarInt(p_131874_.get(p_131873_.getRedirect()));
 +      }
 +
 +      if (p_131873_ instanceof ArgumentCommandNode) {
 +         ArgumentCommandNode<SharedSuggestionProvider, ?> argumentcommandnode = (ArgumentCommandNode)p_131873_;
-+         p_131872_.m_130070_(argumentcommandnode.getName());
++         p_131872_.writeUtf(argumentcommandnode.getName());
 +         //Magma start
 +         if(org.spigotmc.SpigotConfig.bungee){
-+            ArgumentTypes.Entry entry = ArgumentTypes.f_121583_.get(argumentcommandnode.getType().getClass());
++            ArgumentTypes.Entry entry = ArgumentTypes.BY_CLASS.get(argumentcommandnode.getType().getClass());
 +            if (entry == null) {
-+               p_131872_.m_130085_(new net.minecraft.resources.ResourceLocation(""));
++               p_131872_.writeResourceLocation(new net.minecraft.resources.ResourceLocation(""));
 +               return;
 +            }
-+            if (entry.f_121620_.m_135827_().equals("minecraft") || entry.f_121620_.m_135827_().equals("brigadier")) {
-+               p_131872_.m_130085_(entry.f_121620_);
-+               entry.f_121619_.m_6017_(argumentcommandnode.getType(), p_131872_);
++            if (entry.name.getNamespace().equals("minecraft") || entry.name.getNamespace().equals("brigadier")) {
++               p_131872_.writeResourceLocation(entry.name);
++               entry.serializer.serializeToNetwork(argumentcommandnode.getType(), p_131872_);
 +            } else {
 +               serializeWrappedArgumentType(p_131872_, argumentcommandnode.getType(), entry);
 +            }
@@ -273,10 +273,10 @@
 +         //Magma end
 +
 +         if (argumentcommandnode.getCustomSuggestions() != null) {
-+            p_131872_.m_130085_(SuggestionProviders.m_121654_(argumentcommandnode.getCustomSuggestions()));
++            p_131872_.writeResourceLocation(SuggestionProviders.getName(argumentcommandnode.getCustomSuggestions()));
 +         }
 +      } else if (p_131873_ instanceof LiteralCommandNode) {
-+         p_131872_.m_130070_(((LiteralCommandNode)p_131873_).getLiteral());
++         p_131872_.writeUtf(((LiteralCommandNode)p_131873_).getLiteral());
 +      }
 +
 +   }
@@ -285,16 +285,16 @@
 +   private static final net.minecraft.resources.ResourceLocation MOD_ARGUMENT_INDICATOR  = new net.minecraft.resources.ResourceLocation("crossstitch", "mod_argument");
 +
 +   private static void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentType argumentType, ArgumentTypes.Entry entry) {
-+      packetByteBuf.m_130085_(MOD_ARGUMENT_INDICATOR);
-+      packetByteBuf.m_130085_(entry.f_121620_);
++      packetByteBuf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
++      packetByteBuf.writeResourceLocation(entry.name);
 +
 +      FriendlyByteBuf extraData = new FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
-+      entry.f_121619_.m_6017_(argumentType, extraData);
++      entry.serializer.serializeToNetwork(argumentType, extraData);
 +
-+      packetByteBuf.m_130130_(extraData.readableBytes());
++      packetByteBuf.writeVarInt(extraData.readableBytes());
 +      packetByteBuf.writeBytes(extraData);
 +   }
 +   //Magma end
  
-    public void m_5797_(ClientGamePacketListener p_131878_) {
-       p_131878_.m_7443_(this);
+    public void handle(ClientGamePacketListener p_131878_) {
+       p_131878_.handleCommands(this);

@@ -2,13 +2,13 @@
 +++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
 @@ -131,6 +_,11 @@
  
-    public void m_6861_(BlockState p_60275_, Level p_60276_, BlockPos p_60277_, Block p_60278_, BlockPos p_60279_, boolean p_60280_) {
-       if (p_60275_.m_60710_(p_60276_, p_60277_)) {
+    public void neighborChanged(BlockState p_60275_, Level p_60276_, BlockPos p_60277_, Block p_60278_, BlockPos p_60279_, boolean p_60280_) {
+       if (p_60275_.canSurvive(p_60276_, p_60277_)) {
 +         if (org.magmafoundation.magma.configuration.MagmaConfig.instance.patchUpdateSuppression.getValues()) {
-+            p_60276_.m_46586_(p_60277_.m_142300_(p_60275_.m_61143_(f_52588_).m_122424_()), p_60278_, p_60279_);
++            p_60276_.neighborChanged(p_60277_.relative(p_60275_.getValue(FACING).getOpposite()), p_60278_, p_60279_);
 +            return;
 +         }
 +
-          BlockPos blockpos = p_60277_.m_142300_(p_60275_.m_61143_(f_52588_).m_122424_());
-          p_60276_.m_8055_(blockpos).m_60690_(p_60276_, blockpos, p_60278_, p_60279_, false);
+          BlockPos blockpos = p_60277_.relative(p_60275_.getValue(FACING).getOpposite());
+          p_60276_.getBlockState(blockpos).neighborChanged(p_60276_, blockpos, p_60278_, p_60279_, false);
        }

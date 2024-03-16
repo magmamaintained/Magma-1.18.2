@@ -6,24 +6,24 @@
  
 +@net.minecraftforge.registries.ObjectHolder("minecraft")
  public class Items {
-    public static final Item f_41852_ = m_42810_(Blocks.f_50016_, new AirItem(Blocks.f_50016_, new Item.Properties()));
-    public static final Item f_41905_ = m_42807_(Blocks.f_50069_, CreativeModeTab.f_40749_);
+    public static final Item AIR = registerBlock(Blocks.AIR, new AirItem(Blocks.AIR, new Item.Properties()));
+    public static final Item STONE = registerBlock(Blocks.STONE, CreativeModeTab.TAB_BUILDING_BLOCKS);
 @@ -1138,11 +_,23 @@
     }
  
-    private static Item m_151089_(Block p_151090_, CreativeModeTab p_151091_, Block... p_151092_) {
--      BlockItem blockitem = new BlockItem(p_151090_, (new Item.Properties()).m_41491_(p_151091_));
-+      BlockItem blockitem = new BlockItem(p_151090_, (new Item.Properties()).m_41491_(p_151091_)) {
+    private static Item registerBlock(Block p_151090_, CreativeModeTab p_151091_, Block... p_151092_) {
+-      BlockItem blockitem = new BlockItem(p_151090_, (new Item.Properties()).tab(p_151091_));
++      BlockItem blockitem = new BlockItem(p_151090_, (new Item.Properties()).tab(p_151091_)) {
 +         @Override
-+         public void m_6192_(java.util.Map<Block, Item> map, Item self) {
-+            super.m_6192_(map, self);
++         public void registerBlocks(java.util.Map<Block, Item> map, Item self) {
++            super.registerBlocks(map, self);
 +            for (Block b : p_151092_) {
 +               map.put(b, self);
 +            }
 +         }
  
 -      for(Block block : p_151092_) {
--         Item.f_41373_.put(block, blockitem);
+-         Item.BY_BLOCK.put(block, blockitem);
 -      }
 +         @Override
 +         public void removeFromBlockToItemMap(java.util.Map<Block, Item> map, Item self) {
@@ -34,5 +34,5 @@
 +         }
 +      };
  
-       return m_42803_(blockitem);
+       return registerBlock(blockitem);
     }

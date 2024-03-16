@@ -7,10 +7,10 @@
 +   /** @deprecated Forge: Use the {@link #GameEventTagsProvider(DataGenerator, String, net.minecraftforge.common.data.ExistingFileHelper) mod id variant} */
 +   @Deprecated
     public GameEventTagsProvider(DataGenerator p_176826_) {
-       super(p_176826_, Registry.f_175412_);
+       super(p_176826_, Registry.GAME_EVENT);
 +   }
 +   public GameEventTagsProvider(DataGenerator p_176826_, String modId, @javax.annotation.Nullable net.minecraftforge.common.data.ExistingFileHelper existingFileHelper) {
-+      super(p_176826_, Registry.f_175412_, modId, existingFileHelper);
++      super(p_176826_, Registry.GAME_EVENT, modId, existingFileHelper);
     }
  
-    protected void m_6577_() {
+    protected void addTags() {

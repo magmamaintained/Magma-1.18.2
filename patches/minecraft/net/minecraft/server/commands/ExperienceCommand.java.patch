@@ -2,18 +2,18 @@
 +++ b/net/minecraft/server/commands/ExperienceCommand.java
 @@ -22,7 +_,7 @@
  
-    public static void m_137306_(CommandDispatcher<CommandSourceStack> p_137307_) {
-       LiteralCommandNode<CommandSourceStack> literalcommandnode = p_137307_.register(Commands.m_82127_("experience").requires((p_137324_) -> {
--         return p_137324_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_137307_) {
+       LiteralCommandNode<CommandSourceStack> literalcommandnode = p_137307_.register(Commands.literal("experience").requires((p_137324_) -> {
+-         return p_137324_.hasPermission(2);
 +         return p_137324_.hasPermission(2,"minecraft.command.xp");
-       }).then(Commands.m_82127_("add").then(Commands.m_82129_("targets", EntityArgument.m_91470_()).then(Commands.m_82129_("amount", IntegerArgumentType.integer()).executes((p_137341_) -> {
-          return m_137316_(p_137341_.getSource(), EntityArgument.m_91477_(p_137341_, "targets"), IntegerArgumentType.getInteger(p_137341_, "amount"), ExperienceCommand.Type.POINTS);
-       }).then(Commands.m_82127_("points").executes((p_137339_) -> {
+       }).then(Commands.literal("add").then(Commands.argument("targets", EntityArgument.players()).then(Commands.argument("amount", IntegerArgumentType.integer()).executes((p_137341_) -> {
+          return addExperience(p_137341_.getSource(), EntityArgument.getPlayers(p_137341_, "targets"), IntegerArgumentType.getInteger(p_137341_, "amount"), ExperienceCommand.Type.POINTS);
+       }).then(Commands.literal("points").executes((p_137339_) -> {
 @@ -41,7 +_,7 @@
-          return m_137312_(p_137309_.getSource(), EntityArgument.m_91474_(p_137309_, "targets"), ExperienceCommand.Type.LEVELS);
+          return queryExperience(p_137309_.getSource(), EntityArgument.getPlayer(p_137309_, "targets"), ExperienceCommand.Type.LEVELS);
        })))));
-       p_137307_.register(Commands.m_82127_("xp").requires((p_137311_) -> {
--         return p_137311_.m_6761_(2);
+       p_137307_.register(Commands.literal("xp").requires((p_137311_) -> {
+-         return p_137311_.hasPermission(2);
 +         return p_137311_.hasPermission(2,"minecraft.command.xp");
        }).redirect(literalcommandnode));
     }

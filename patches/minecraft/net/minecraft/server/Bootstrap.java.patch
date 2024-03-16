@@ -1,19 +1,19 @@
 --- a/net/minecraft/server/Bootstrap.java
 +++ b/net/minecraft/server/Bootstrap.java
 @@ -55,6 +_,8 @@
-                CauldronInteraction.m_175649_();
-                ArgumentTypes.m_121586_();
-                Registry.m_206101_();
+                CauldronInteraction.bootStrap();
+                ArgumentTypes.bootStrap();
+                Registry.freezeBuiltins();
 +               net.minecraftforge.registries.GameData.vanillaSnapshot();
 +               if (false) // skip redirectOutputToLog, Forge already redirects stdout and stderr output to log so that they print with more context
-                m_135890_();
+                wrapStreams();
              }
           }
 @@ -128,7 +_,6 @@
-          m_197757_();
+          validateThatAllBiomeFeaturesHaveBiomeFilter();
        }
  
--      DefaultAttributes.m_22296_();
+-      DefaultAttributes.validate();
     }
  
-    private static void m_197757_() {
+    private static void validateThatAllBiomeFeaturesHaveBiomeFilter() {

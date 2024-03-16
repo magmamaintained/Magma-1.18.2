@@ -2,10 +2,10 @@
 +++ b/net/minecraft/server/commands/SetSpawnCommand.java
 @@ -17,7 +_,7 @@
  public class SetSpawnCommand {
-    public static void m_138643_(CommandDispatcher<CommandSourceStack> p_138644_) {
-       p_138644_.register(Commands.m_82127_("spawnpoint").requires((p_138648_) -> {
--         return p_138648_.m_6761_(2);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138644_) {
+       p_138644_.register(Commands.literal("spawnpoint").requires((p_138648_) -> {
+-         return p_138648_.hasPermission(2);
 +         return p_138648_.hasPermission(2,"minecraft.command.spawnpoint");
        }).executes((p_138659_) -> {
-          return m_138649_(p_138659_.getSource(), Collections.singleton(p_138659_.getSource().m_81375_()), new BlockPos(p_138659_.getSource().m_81371_()), 0.0F);
-       }).then(Commands.m_82129_("targets", EntityArgument.m_91470_()).executes((p_138657_) -> {
+          return setSpawn(p_138659_.getSource(), Collections.singleton(p_138659_.getSource().getPlayerOrException()), new BlockPos(p_138659_.getSource().getPosition()), 0.0F);
+       }).then(Commands.argument("targets", EntityArgument.players()).executes((p_138657_) -> {

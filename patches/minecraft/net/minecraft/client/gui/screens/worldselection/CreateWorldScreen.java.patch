@@ -2,30 +2,30 @@
 +++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 @@ -106,7 +_,7 @@
  
-    public static CreateWorldScreen m_205424_(@Nullable Screen p_205425_) {
-       RegistryAccess.Frozen registryaccess$frozen = RegistryAccess.f_123049_.get();
--      return new CreateWorldScreen(p_205425_, DataPackConfig.f_45842_, new WorldGenSettingsComponent(registryaccess$frozen, WorldGenSettings.m_190050_(registryaccess$frozen), Optional.of(WorldPreset.f_101506_), OptionalLong.empty()));
-+      return new CreateWorldScreen(p_205425_, DataPackConfig.f_45842_, new WorldGenSettingsComponent(registryaccess$frozen, net.minecraftforge.client.ForgeHooksClient.getDefaultWorldPreset().map(type -> type.m_205485_(registryaccess$frozen, new java.util.Random().nextLong(), true, false)).orElseGet(() -> WorldGenSettings.m_190050_(registryaccess$frozen)), net.minecraftforge.client.ForgeHooksClient.getDefaultWorldPreset(), OptionalLong.empty()));
+    public static CreateWorldScreen createFresh(@Nullable Screen p_205425_) {
+       RegistryAccess.Frozen registryaccess$frozen = RegistryAccess.BUILTIN.get();
+-      return new CreateWorldScreen(p_205425_, DataPackConfig.DEFAULT, new WorldGenSettingsComponent(registryaccess$frozen, WorldGenSettings.makeDefault(registryaccess$frozen), Optional.of(WorldPreset.NORMAL), OptionalLong.empty()));
++      return new CreateWorldScreen(p_205425_, DataPackConfig.DEFAULT, new WorldGenSettingsComponent(registryaccess$frozen, net.minecraftforge.client.ForgeHooksClient.getDefaultWorldPreset().map(type -> type.create(registryaccess$frozen, new java.util.Random().nextLong(), true, false)).orElseGet(() -> WorldGenSettings.makeDefault(registryaccess$frozen)), net.minecraftforge.client.ForgeHooksClient.getDefaultWorldPreset(), OptionalLong.empty()));
     }
  
-    public static CreateWorldScreen m_205426_(@Nullable Screen p_205427_, WorldStem p_205428_, @Nullable Path p_205429_) {
+    public static CreateWorldScreen createFromExisting(@Nullable Screen p_205427_, WorldStem p_205428_, @Nullable Path p_205429_) {
 @@ -252,9 +_,9 @@
        if (p_205448_) {
           GameRules gamerules = new GameRules();
-          gamerules.m_46170_(GameRules.f_46140_).m_46246_(false, (MinecraftServer)null);
--         return new LevelSettings(s, GameType.SPECTATOR, false, Difficulty.PEACEFUL, true, gamerules, DataPackConfig.f_45842_);
-+         return new LevelSettings(s, GameType.SPECTATOR, false, Difficulty.PEACEFUL, true, gamerules, DataPackConfig.f_45842_, com.mojang.serialization.Lifecycle.stable());
+          gamerules.getRule(GameRules.RULE_DAYLIGHT).set(false, (MinecraftServer)null);
+-         return new LevelSettings(s, GameType.SPECTATOR, false, Difficulty.PEACEFUL, true, gamerules, DataPackConfig.DEFAULT);
++         return new LevelSettings(s, GameType.SPECTATOR, false, Difficulty.PEACEFUL, true, gamerules, DataPackConfig.DEFAULT, com.mojang.serialization.Lifecycle.stable());
        } else {
--         return new LevelSettings(s, this.f_100858_.f_101029_, this.f_100845_, this.m_170205_(), this.f_100829_ && !this.f_100845_, this.f_100844_, this.f_100846_);
-+         return new LevelSettings(s, this.f_100858_.f_101029_, this.f_100845_, this.m_170205_(), this.f_100829_ && !this.f_100845_, this.f_100844_, this.f_100846_, com.mojang.serialization.Lifecycle.stable());
+-         return new LevelSettings(s, this.gameMode.gameType, this.hardCore, this.getEffectiveDifficulty(), this.commands && !this.hardCore, this.gameRules, this.dataPacks);
++         return new LevelSettings(s, this.gameMode.gameType, this.hardCore, this.getEffectiveDifficulty(), this.commands && !this.hardCore, this.gameRules, this.dataPacks, com.mojang.serialization.Lifecycle.stable());
        }
     }
  
 @@ -625,6 +_,7 @@
           File file1 = path.toFile();
-          if (this.f_100832_ == null) {
-             this.f_100832_ = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource(), new FolderRepositorySource(file1, PackSource.f_10527_));
-+            net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(this.f_100832_, net.minecraftforge.server.ServerLifecycleHooks::buildPackFinder);
-             this.f_100832_.m_10506_();
+          if (this.tempDataPackRepository == null) {
+             this.tempDataPackRepository = new PackRepository(PackType.SERVER_DATA, new ServerPacksSource(), new FolderRepositorySource(file1, PackSource.DEFAULT));
++            net.minecraftforge.resource.ResourcePackLoader.loadResourcePacks(this.tempDataPackRepository, net.minecraftforge.server.ServerLifecycleHooks::buildPackFinder);
+             this.tempDataPackRepository.reload();
           }
  

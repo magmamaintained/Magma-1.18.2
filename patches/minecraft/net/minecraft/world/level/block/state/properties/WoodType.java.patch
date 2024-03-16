@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/block/state/properties/WoodType.java
 +++ b/net/minecraft/world/level/block/state/properties/WoodType.java
 @@ -32,4 +_,11 @@
-    public String m_61846_() {
-       return this.f_61839_;
+    public String name() {
+       return this.name;
     }
 +
 +   /**

@@ -6,6 +6,6 @@
  
 -public class StructureFeature<C extends FeatureConfiguration> {
 +public abstract class StructureFeature<C extends FeatureConfiguration> extends net.minecraftforge.registries.ForgeRegistryEntry<StructureFeature<?>> {
-    private static final Map<StructureFeature<?>, GenerationStep.Decoration> f_67032_ = Maps.newHashMap();
-    private static final Logger f_67033_ = LogUtils.getLogger();
-    public static final StructureFeature<JigsawConfiguration> f_67013_ = m_67089_("pillager_outpost", new PillagerOutpostFeature(JigsawConfiguration.f_67756_), GenerationStep.Decoration.SURFACE_STRUCTURES);
+    private static final Map<StructureFeature<?>, GenerationStep.Decoration> STEP = Maps.newHashMap();
+    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final StructureFeature<JigsawConfiguration> PILLAGER_OUTPOST = register("pillager_outpost", new PillagerOutpostFeature(JigsawConfiguration.CODEC), GenerationStep.Decoration.SURFACE_STRUCTURES);

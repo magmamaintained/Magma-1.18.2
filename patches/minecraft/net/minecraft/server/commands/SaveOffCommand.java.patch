@@ -2,9 +2,9 @@
 +++ b/net/minecraft/server/commands/SaveOffCommand.java
 @@ -12,7 +_,7 @@
  
-    public static void m_138284_(CommandDispatcher<CommandSourceStack> p_138285_) {
-       p_138285_.register(Commands.m_82127_("save-off").requires((p_138289_) -> {
--         return p_138289_.m_6761_(4);
+    public static void register(CommandDispatcher<CommandSourceStack> p_138285_) {
+       p_138285_.register(Commands.literal("save-off").requires((p_138289_) -> {
+-         return p_138289_.hasPermission(4);
 +         return p_138289_.hasPermission(4,"minecraft.command.save-off");
        }).executes((p_138287_) -> {
           CommandSourceStack commandsourcestack = p_138287_.getSource();

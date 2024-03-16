@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
 @@ -45,6 +_,19 @@
-                ItemStack itemstack1 = p_155307_.m_7465_().m_44015_(RecipeType.f_44111_, container, p_155307_).map((p_155305_) -> {
-                   return p_155305_.m_5874_(container);
+                ItemStack itemstack1 = p_155307_.getRecipeManager().getRecipeFor(RecipeType.CAMPFIRE_COOKING, container, p_155307_).map((p_155305_) -> {
+                   return p_155305_.assemble(container);
                 }).orElse(itemstack);
 +
 +               // CraftBukkit start - fire BlockCookEvent
@@ -17,6 +17,6 @@
 +               itemstack1 = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(result);
 +               // CraftBukkit end
 +
-                Containers.m_18992_(p_155307_, (double)p_155308_.m_123341_(), (double)p_155308_.m_123342_(), (double)p_155308_.m_123343_(), itemstack1);
-                p_155310_.f_59042_.set(i, ItemStack.f_41583_);
-                p_155307_.m_7260_(p_155308_, p_155309_, p_155309_, 3);
+                Containers.dropItemStack(p_155307_, (double)p_155308_.getX(), (double)p_155308_.getY(), (double)p_155308_.getZ(), itemstack1);
+                p_155310_.items.set(i, ItemStack.EMPTY);
+                p_155307_.sendBlockUpdated(p_155308_, p_155309_, p_155309_, 3);

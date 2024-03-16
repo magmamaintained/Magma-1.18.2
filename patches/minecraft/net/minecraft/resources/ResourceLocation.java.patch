@@ -6,19 +6,19 @@
  
 +   // Normal compare sorts by path first, this compares namespace first.
 +   public int compareNamespaced(ResourceLocation o) {
-+      int ret = this.f_135804_.compareTo(o.f_135804_);
-+      return ret != 0 ? ret : this.f_135805_.compareTo(o.f_135805_);
++      int ret = this.namespace.compareTo(o.namespace);
++      return ret != 0 ? ret : this.path.compareTo(o.path);
 +   }
 +
-    public String m_179910_() {
+    public String toDebugFileName() {
        return this.toString().replace('/', '_').replace(':', '_');
     }
 @@ -141,7 +_,7 @@
        return p_135817_ >= '0' && p_135817_ <= '9' || p_135817_ >= 'a' && p_135817_ <= 'z' || p_135817_ == '_' || p_135817_ == ':' || p_135817_ == '/' || p_135817_ == '.' || p_135817_ == '-';
     }
  
--   private static boolean m_135841_(String p_135842_) {
-+   public static boolean m_135841_(String p_135842_) { // Magma - private -> public
+-   private static boolean isValidPath(String p_135842_) {
++   public static boolean isValidPath(String p_135842_) { // Magma - private -> public
        for(int i = 0; i < p_135842_.length(); ++i) {
-          if (!m_135828_(p_135842_.charAt(i))) {
+          if (!validPathChar(p_135842_.charAt(i))) {
              return false;

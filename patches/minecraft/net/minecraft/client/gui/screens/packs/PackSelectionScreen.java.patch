@@ -2,10 +2,10 @@
 +++ b/net/minecraft/client/gui/screens/packs/PackSelectionScreen.java
 @@ -139,7 +_,7 @@
  
-    private void m_100013_(TransferableSelectionList p_100014_, Stream<PackSelectionModel.Entry> p_100015_) {
-       p_100014_.m_6702_().clear();
+    private void updateList(TransferableSelectionList p_100014_, Stream<PackSelectionModel.Entry> p_100015_) {
+       p_100014_.children().clear();
 -      p_100015_.forEach((p_170000_) -> {
 +      p_100015_.filter(PackSelectionModel.Entry::notHidden).forEach((p_170000_) -> {
-          p_100014_.m_6702_().add(new TransferableSelectionList.PackEntry(this.f_96541_, p_100014_, this, p_170000_));
+          p_100014_.children().add(new TransferableSelectionList.PackEntry(this.minecraft, p_100014_, this, p_170000_));
        });
     }

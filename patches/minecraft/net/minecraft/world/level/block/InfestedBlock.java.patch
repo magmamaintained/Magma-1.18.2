@@ -1,10 +1,10 @@
 --- a/net/minecraft/world/level/block/InfestedBlock.java
 +++ b/net/minecraft/world/level/block/InfestedBlock.java
 @@ -40,6 +_,7 @@
-    private void m_54180_(ServerLevel p_54181_, BlockPos p_54182_) {
-       Silverfish silverfish = EntityType.f_20523_.m_20615_(p_54181_);
-       silverfish.m_7678_((double)p_54182_.m_123341_() + 0.5D, (double)p_54182_.m_123342_(), (double)p_54182_.m_123343_() + 0.5D, 0.0F, 0.0F);
+    private void spawnInfestation(ServerLevel p_54181_, BlockPos p_54182_) {
+       Silverfish silverfish = EntityType.SILVERFISH.create(p_54181_);
+       silverfish.moveTo((double)p_54182_.getX() + 0.5D, (double)p_54182_.getY(), (double)p_54182_.getZ() + 0.5D, 0.0F, 0.0F);
 +      p_54181_.prepareEntity(silverfish, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SILVERFISH_BLOCK); //Magma - add spawn reason
-       p_54181_.m_7967_(silverfish);
-       silverfish.m_21373_();
+       p_54181_.addFreshEntity(silverfish);
+       silverfish.spawnAnim();
     }

@@ -1,79 +1,74 @@
 --- a/net/minecraft/world/entity/animal/Animal.java
 +++ b/net/minecraft/world/entity/animal/Animal.java
 @@ -35,6 +_,7 @@
-    public int f_27554_;
+    public int inLove;
     @Nullable
-    public UUID f_27555_;
+    public UUID loveCause;
 +   public ItemStack breedItem; // CraftBukkit - Add breedItem variable
  
     protected Animal(EntityType<? extends Animal> p_27557_, Level p_27558_) {
        super(p_27557_, p_27558_);
-@@ -68,14 +_,18 @@
+@@ -68,6 +_,9 @@
  
     }
  
--   public boolean m_6469_(DamageSource p_27567_, float p_27568_) {
--      if (this.m_6673_(p_27567_)) {
 +   /* CraftBukkit start
 +   // Function disabled as it has no special function anymore after
 +   // setSitting is disabled.
-+   public boolean hurt(DamageSource p_27567_, float p_27568_) {
-+      if (this.isInvulnerableTo(p_27567_)) {
+    public boolean hurt(DamageSource p_27567_, float p_27568_) {
+       if (this.isInvulnerableTo(p_27567_)) {
           return false;
-       } else {
--         this.f_27554_ = 0;
--         return super.m_6469_(p_27567_, p_27568_);
-+         this.inLove = 0;
-+         return super.hurt(p_27567_, p_27568_);
+@@ -76,6 +_,7 @@
+          return super.hurt(p_27567_, p_27568_);
        }
     }
 +   // CraftBukkit end */
  
-    public float m_5610_(BlockPos p_27573_, LevelReader p_27574_) {
-       return p_27574_.m_8055_(p_27573_.m_7495_()).m_60713_(Blocks.f_50440_) ? 10.0F : p_27574_.m_46863_(p_27573_) - 0.5F;
+    public float getWalkTargetValue(BlockPos p_27573_, LevelReader p_27574_) {
+       return p_27574_.getBlockState(p_27573_.below()).is(Blocks.GRASS_BLOCK) ? 10.0F : p_27574_.getBrightness(p_27573_) - 0.5F;
 @@ -162,9 +_,17 @@
     }
  
-    public void m_27595_(@Nullable Player p_27596_) {
+    public void setInLove(@Nullable Player p_27596_) {
 +      // CraftBukkit start
 +      org.bukkit.event.entity.EntityEnterLoveModeEvent entityEnterLoveModeEvent = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityEnterLoveModeEvent(p_27596_, this, 600);
 +      if (entityEnterLoveModeEvent.isCancelled()) {
 +         return;
 +      }
-+      this.f_27554_ = entityEnterLoveModeEvent.getTicksInLove();
++      this.inLove = entityEnterLoveModeEvent.getTicksInLove();
 +      // CraftBukkit end
-       this.f_27554_ = 600;
+       this.inLove = 600;
        if (p_27596_ != null) {
-          this.f_27555_ = p_27596_.m_142081_();
-+         this.breedItem = p_27596_.m_150109_().m_36056_(); // CraftBukkit //Magma - move inside if statement
+          this.loveCause = p_27596_.getUUID();
++         this.breedItem = p_27596_.getInventory().getSelected(); // CraftBukkit //Magma - move inside if statement
        }
  
-       this.f_19853_.m_7605_(this, (byte)18);
+       this.level.broadcastEntityEvent(this, (byte)18);
 @@ -208,12 +_,34 @@
  
-    public void m_27563_(ServerLevel p_27564_, Animal p_27565_) {
-       AgeableMob ageablemob = this.m_142606_(p_27564_, p_27565_);
+    public void spawnChildFromBreeding(ServerLevel p_27564_, Animal p_27565_) {
+       AgeableMob ageablemob = this.getBreedOffspring(p_27564_, p_27565_);
 +      final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(this, p_27565_, ageablemob);
 +      final boolean cancelled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 +      ageablemob = event.getChild();
 +      if (cancelled) {
 +         //Reset the "inLove" state for the animals
-+         this.m_146762_(6000);
-+         p_27565_.m_146762_(6000);
-+         this.m_27594_();
-+         p_27565_.m_27594_();
++         this.setAge(6000);
++         p_27565_.setAge(6000);
++         this.resetLove();
++         p_27565_.resetLove();
 +         return;
 +      }
        if (ageablemob != null) {
-          ServerPlayer serverplayer = this.m_27592_();
-          if (serverplayer == null && p_27565_.m_27592_() != null) {
-             serverplayer = p_27565_.m_27592_();
+          ServerPlayer serverplayer = this.getLoveCause();
+          if (serverplayer == null && p_27565_.getLoveCause() != null) {
+             serverplayer = p_27565_.getLoveCause();
           }
  
 +         // CraftBukkit start - call EntityBreedEvent
-+         ageablemob.m_6863_(true);
-+         ageablemob.m_7678_(this.m_20185_(), this.m_20186_(), this.m_20189_(), 0.0F, 0.0F);
-+         int experience = this.m_21187_().nextInt(7) + 1;
++         ageablemob.setBaby(true);
++         ageablemob.moveTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
++         int experience = this.getRandom().nextInt(7) + 1;
 +         org.bukkit.event.entity.EntityBreedEvent entityBreedEvent = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callEntityBreedEvent(ageablemob, this, p_27565_, serverplayer, this.breedItem, experience);
 +         if (entityBreedEvent.isCancelled()) {
 +            return;
@@ -82,22 +77,22 @@
 +         // CraftBukkit end
 +
           if (serverplayer != null) {
-             serverplayer.m_36220_(Stats.f_12937_);
-             CriteriaTriggers.f_10581_.m_147278_(serverplayer, this, p_27565_, ageablemob);
+             serverplayer.awardStat(Stats.ANIMALS_BRED);
+             CriteriaTriggers.BRED_ANIMALS.trigger(serverplayer, this, p_27565_, ageablemob);
 @@ -223,12 +_,15 @@
-          p_27565_.m_146762_(6000);
-          this.m_27594_();
-          p_27565_.m_27594_();
--         ageablemob.m_6863_(true);
--         ageablemob.m_7678_(this.m_20185_(), this.m_20186_(), this.m_20189_(), 0.0F, 0.0F);
+          p_27565_.setAge(6000);
+          this.resetLove();
+          p_27565_.resetLove();
+-         ageablemob.setBaby(true);
+-         ageablemob.moveTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
 +         p_27564_.prepareEntity(ageablemob, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING); //Magma - add spawn reason
-          p_27564_.m_47205_(ageablemob);
-          p_27564_.m_7605_(this, (byte)18);
-          if (p_27564_.m_46469_().m_46207_(GameRules.f_46135_)) {
--            p_27564_.m_7967_(new ExperienceOrb(p_27564_, this.m_20185_(), this.m_20186_(), this.m_20189_(), this.m_21187_().nextInt(7) + 1));
+          p_27564_.addFreshEntityWithPassengers(ageablemob);
+          p_27564_.broadcastEntityEvent(this, (byte)18);
+          if (p_27564_.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+-            p_27564_.addFreshEntity(new ExperienceOrb(p_27564_, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
 +            // CraftBukkit start - use event experience
 +            if (experience > 0) {
-+               p_27564_.m_7967_(new ExperienceOrb(p_27564_, this.m_20185_(), this.m_20186_(), this.m_20189_(), experience));
++               p_27564_.addFreshEntity(new ExperienceOrb(p_27564_, this.getX(), this.getY(), this.getZ(), experience));
 +            }
 +            // CraftBukkit end
           }

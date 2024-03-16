@@ -2,22 +2,22 @@
 +++ b/net/minecraft/world/level/block/SweetBerryBushBlock.java
 @@ -56,8 +_,9 @@
  
-    public void m_7455_(BlockState p_57286_, ServerLevel p_57287_, BlockPos p_57288_, Random p_57289_) {
-       int i = p_57286_.m_61143_(f_57244_);
--      if (i < 3 && p_57289_.nextInt(5) == 0 && p_57287_.m_45524_(p_57288_.m_7494_(), 0) >= 9) {
--         p_57287_.m_7731_(p_57288_, p_57286_.m_61124_(f_57244_, Integer.valueOf(i + 1)), 2);
-+      if (i < 3 && p_57287_.m_45524_(p_57288_.m_7494_(), 0) >= 9 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_57287_, p_57288_, p_57286_,p_57289_.nextInt(Math.max(1, (int) (100.0F / p_57287_.spigotConfig.sweetBerryModifier) * 5)) == 0)) { // Spigot
-+         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockGrowEvent(p_57287_, p_57288_, p_57286_.m_61124_(f_57244_, Integer.valueOf(i + 1)), 2);
+    public void randomTick(BlockState p_57286_, ServerLevel p_57287_, BlockPos p_57288_, Random p_57289_) {
+       int i = p_57286_.getValue(AGE);
+-      if (i < 3 && p_57289_.nextInt(5) == 0 && p_57287_.getRawBrightness(p_57288_.above(), 0) >= 9) {
+-         p_57287_.setBlock(p_57288_, p_57286_.setValue(AGE, Integer.valueOf(i + 1)), 2);
++      if (i < 3 && p_57287_.getRawBrightness(p_57288_.above(), 0) >= 9 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(p_57287_, p_57288_, p_57286_,p_57289_.nextInt(Math.max(1, (int) (100.0F / p_57287_.spigotConfig.sweetBerryModifier) * 5)) == 0)) { // Spigot
++         org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockGrowEvent(p_57287_, p_57288_, p_57286_.setValue(AGE, Integer.valueOf(i + 1)), 2);
 +         net.minecraftforge.common.ForgeHooks.onCropsGrowPost(p_57287_, p_57288_, p_57286_);
        }
  
     }
 @@ -69,7 +_,9 @@
-             double d0 = Math.abs(p_57273_.m_20185_() - p_57273_.f_19790_);
-             double d1 = Math.abs(p_57273_.m_20189_() - p_57273_.f_19792_);
+             double d0 = Math.abs(p_57273_.getX() - p_57273_.xOld);
+             double d1 = Math.abs(p_57273_.getZ() - p_57273_.zOld);
              if (d0 >= (double)0.003F || d1 >= (double)0.003F) {
 +               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.blockDamage = org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(p_57271_, p_57272_); // CraftBukkit
-                p_57273_.m_6469_(DamageSource.f_19325_, 1.0F);
+                p_57273_.hurt(DamageSource.SWEET_BERRY_BUSH, 1.0F);
 +               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.blockDamage = null; // CraftBukkit
              }
           }
@@ -25,17 +25,17 @@
 @@ -83,7 +_,15 @@
           return InteractionResult.PASS;
        } else if (i > 1) {
-          int j = 1 + p_57276_.f_46441_.nextInt(2);
--         m_49840_(p_57276_, p_57277_, new ItemStack(Items.f_42780_, j + (flag ? 1 : 0)));
+          int j = 1 + p_57276_.random.nextInt(2);
+-         popResource(p_57276_, p_57277_, new ItemStack(Items.SWEET_BERRIES, j + (flag ? 1 : 0)));
 +         // CraftBukkit start
-+         org.bukkit.event.player.PlayerHarvestBlockEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerHarvestBlockEvent(p_57276_, p_57277_, p_57278_, java.util.Collections.singletonList(new ItemStack(Items.f_42780_, j + (flag ? 1 : 0))));
++         org.bukkit.event.player.PlayerHarvestBlockEvent event = org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.callPlayerHarvestBlockEvent(p_57276_, p_57277_, p_57278_, java.util.Collections.singletonList(new ItemStack(Items.SWEET_BERRIES, j + (flag ? 1 : 0))));
 +         if (event.isCancelled()) {
 +            return InteractionResult.SUCCESS; // We need to return a success either way, because making it PASS or FAIL will result in a bug where cancelling while harvesting w/ block in hand places block
 +         }
 +         for (org.bukkit.inventory.ItemStack itemStack : event.getItemsHarvested()) {
-+            m_49840_(p_57276_, p_57277_, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(itemStack));
++            popResource(p_57276_, p_57277_, org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(itemStack));
 +         }
 +         // CraftBukkit end
-          p_57276_.m_5594_((Player)null, p_57277_, SoundEvents.f_12457_, SoundSource.BLOCKS, 1.0F, 0.8F + p_57276_.f_46441_.nextFloat() * 0.4F);
-          p_57276_.m_7731_(p_57277_, p_57275_.m_61124_(f_57244_, Integer.valueOf(1)), 2);
-          return InteractionResult.m_19078_(p_57276_.f_46443_);
+          p_57276_.playSound((Player)null, p_57277_, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + p_57276_.random.nextFloat() * 0.4F);
+          p_57276_.setBlock(p_57277_, p_57275_.setValue(AGE, Integer.valueOf(1)), 2);
+          return InteractionResult.sidedSuccess(p_57276_.isClientSide);

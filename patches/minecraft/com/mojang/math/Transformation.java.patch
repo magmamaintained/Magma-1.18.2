@@ -6,12 +6,12 @@
  
 -public final class Transformation {
 +public final class Transformation implements net.minecraftforge.client.extensions.IForgeTransformation {
-    private final Matrix4f f_121078_;
-    private boolean f_121079_;
+    private final Matrix4f matrix;
+    private boolean decomposed;
     @Nullable
 @@ -145,6 +_,19 @@
     public int hashCode() {
-       return Objects.hash(this.f_121078_);
+       return Objects.hash(this.matrix);
     }
 +
 +    private Matrix3f normalTransform = null;
@@ -21,11 +21,11 @@
 +    }
 +    private void checkNormalTransform() {
 +        if (normalTransform == null) {
-+            normalTransform = new Matrix3f(f_121078_);
-+            normalTransform.m_8187_();
-+            normalTransform.m_8155_();
++            normalTransform = new Matrix3f(matrix);
++            normalTransform.invert();
++            normalTransform.transpose();
 +        }
 +    }
  
-    public Transformation m_175937_(Transformation p_175938_, float p_175939_) {
-       Vector3f vector3f = this.m_175940_();
+    public Transformation slerp(Transformation p_175938_, float p_175939_) {
+       Vector3f vector3f = this.getTranslation();

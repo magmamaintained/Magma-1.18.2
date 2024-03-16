@@ -3,18 +3,18 @@
 @@ -4,7 +_,7 @@
  
  public class RangedAttribute extends Attribute {
-    private final double f_22307_;
--   private final double f_22308_;
-+   public double f_22308_; // Spigot
+    private final double minValue;
+-   private final double maxValue;
++   public double maxValue; // Spigot
  
     public RangedAttribute(String p_22310_, double p_22311_, double p_22312_, double p_22313_) {
        super(p_22310_, p_22311_);
 @@ -28,6 +_,8 @@
     }
  
-    public double m_6740_(double p_22315_) {
-+      if (p_22315_ != p_22315_) return m_22082_(); // CraftBukkit
+    public double sanitizeValue(double p_22315_) {
++      if (p_22315_ != p_22315_) return getDefaultValue(); // CraftBukkit
 +
-       return Mth.m_14008_(p_22315_, this.f_22307_, this.f_22308_);
+       return Mth.clamp(p_22315_, this.minValue, this.maxValue);
     }
  }

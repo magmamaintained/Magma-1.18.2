@@ -1,35 +1,35 @@
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
 @@ -38,6 +_,7 @@
-    private final String[][] f_138303_;
-    private final Set<Advancement> f_138304_ = Sets.newLinkedHashSet();
-    private final Component f_138305_;
+    private final String[][] requirements;
+    private final Set<Advancement> children = Sets.newLinkedHashSet();
+    private final Component chatComponent;
 +   public final org.bukkit.advancement.Advancement bukkit = new org.bukkit.craftbukkit.v1_18_R2.advancement.CraftAdvancement(this); // CraftBukkit
  
     public Advancement(ResourceLocation p_138307_, @Nullable Advancement p_138308_, @Nullable DisplayInfo p_138309_, AdvancementRewards p_138310_, Map<String, Criterion> p_138311_, String[][] p_138312_) {
-       this.f_138301_ = p_138307_;
+       this.id = p_138307_;
 @@ -129,8 +_,8 @@
-       return this.f_138305_;
+       return this.chatComponent;
     }
  
 -   public static class Builder {
        @Nullable
 +   public static class Builder implements net.minecraftforge.common.extensions.IForgeAdvancementBuilder {
-       private ResourceLocation f_138332_;
+       private ResourceLocation parentId;
        @Nullable
-       private Advancement f_138333_;
+       private Advancement parent;
 @@ -320,7 +_,14 @@
-          return "Task Advancement{parentId=" + this.f_138332_ + ", display=" + this.f_138334_ + ", rewards=" + this.f_138335_ + ", criteria=" + this.f_138336_ + ", requirements=" + Arrays.deepToString(this.f_138337_) + "}";
+          return "Task Advancement{parentId=" + this.parentId + ", display=" + this.display + ", rewards=" + this.rewards + ", criteria=" + this.criteria + ", requirements=" + Arrays.deepToString(this.requirements) + "}";
        }
  
 +      /** @deprecated Forge: use {@linkplain #fromJson(JsonObject, DeserializationContext, net.minecraftforge.common.crafting.conditions.ICondition.IContext) overload with context}. */
 +      @Deprecated
-       public static Advancement.Builder m_138380_(JsonObject p_138381_, DeserializationContext p_138382_) {
+       public static Advancement.Builder fromJson(JsonObject p_138381_, DeserializationContext p_138382_) {
 +         return fromJson(p_138381_, p_138382_, net.minecraftforge.common.crafting.conditions.ICondition.IContext.EMPTY);
 +      }
 +
 +      public static Advancement.Builder fromJson(JsonObject p_138381_, DeserializationContext p_138382_, net.minecraftforge.common.crafting.conditions.ICondition.IContext context) {
 +         if ((p_138381_ = net.minecraftforge.common.crafting.ConditionalAdvancement.processConditional(p_138381_, context)) == null) return null;
-          ResourceLocation resourcelocation = p_138381_.has("parent") ? new ResourceLocation(GsonHelper.m_13906_(p_138381_, "parent")) : null;
-          DisplayInfo displayinfo = p_138381_.has("display") ? DisplayInfo.m_14981_(GsonHelper.m_13930_(p_138381_, "display")) : null;
-          AdvancementRewards advancementrewards = p_138381_.has("rewards") ? AdvancementRewards.m_9991_(GsonHelper.m_13930_(p_138381_, "rewards")) : AdvancementRewards.f_9978_;
+          ResourceLocation resourcelocation = p_138381_.has("parent") ? new ResourceLocation(GsonHelper.getAsString(p_138381_, "parent")) : null;
+          DisplayInfo displayinfo = p_138381_.has("display") ? DisplayInfo.fromJson(GsonHelper.getAsJsonObject(p_138381_, "display")) : null;
+          AdvancementRewards advancementrewards = p_138381_.has("rewards") ? AdvancementRewards.deserialize(GsonHelper.getAsJsonObject(p_138381_, "rewards")) : AdvancementRewards.EMPTY;

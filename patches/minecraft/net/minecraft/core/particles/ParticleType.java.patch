@@ -6,6 +6,6 @@
  
 -public abstract class ParticleType<T extends ParticleOptions> {
 +public abstract class ParticleType<T extends ParticleOptions>  extends net.minecraftforge.registries.ForgeRegistryEntry<ParticleType<?>> {
-    private final boolean f_123737_;
-    private final ParticleOptions.Deserializer<T> f_123738_;
+    private final boolean overrideLimiter;
+    private final ParticleOptions.Deserializer<T> deserializer;
  

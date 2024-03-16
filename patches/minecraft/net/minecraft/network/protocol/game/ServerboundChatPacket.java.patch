@@ -4,23 +4,23 @@
     }
  
     public ServerboundChatPacket(FriendlyByteBuf p_179545_) {
--      this.f_133827_ = p_179545_.m_130136_(256);
-+      this.f_133827_ = org.apache.commons.lang3.StringUtils.normalizeSpace(p_179545_.m_130136_(256)); // CraftBukkit - see PlayerConnection
+-      this.message = p_179545_.readUtf(256);
++      this.message = org.apache.commons.lang3.StringUtils.normalizeSpace(p_179545_.readUtf(256)); // CraftBukkit - see PlayerConnection
     }
  
-    public void m_5779_(FriendlyByteBuf p_133839_) {
-       p_133839_.m_130070_(this.f_133827_);
+    public void write(FriendlyByteBuf p_133839_) {
+       p_133839_.writeUtf(this.message);
     }
  
 +   // Spigot Start
-+   private static final java.util.concurrent.ExecutorService executors = java.util.concurrent.Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setDaemon(true).setNameFormat("Async Chat Thread - #%d").setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(net.minecraft.server.MinecraftServer.f_129750_)).build());
++   private static final java.util.concurrent.ExecutorService executors = java.util.concurrent.Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setDaemon(true).setNameFormat("Async Chat Thread - #%d").setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(net.minecraft.server.MinecraftServer.LOGGER)).build());
 +
-    public void m_5797_(ServerGamePacketListener p_133836_) {
-+      if (!f_133827_.startsWith("/")) {
-+         executors.submit(() -> p_133836_.m_7388_(ServerboundChatPacket.this));
+    public void handle(ServerGamePacketListener p_133836_) {
++      if (!message.startsWith("/")) {
++         executors.submit(() -> p_133836_.handleChat(ServerboundChatPacket.this));
 +         return;
 +      }
 +      // Spigot End
-       p_133836_.m_7388_(this);
+       p_133836_.handleChat(this);
     }
  
