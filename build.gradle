@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url = 'https://nexus.c0d3m4513r.com/repository/Magma/' }
+        maven { url = 'https://reposilite.c0d3m4513r.com/Magma/' }
         maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
     }
@@ -134,7 +134,7 @@ subprojects {
 
     repositories {
         mavenLocal()
-        maven { url = 'https://nexus.c0d3m4513r.com/repository/Magma/' }
+        maven { url = 'https://reposilite.c0d3m4513r.com/Magma/' }
         mavenCentral()
         maven {
             name = 'forge'
