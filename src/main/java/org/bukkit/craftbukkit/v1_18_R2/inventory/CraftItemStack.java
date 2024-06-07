@@ -369,7 +369,8 @@ public final class CraftItemStack extends ItemStack {
     }
 
     static Material getType(net.minecraft.world.item.ItemStack item) {
-        return item == null ? Material.AIR : CraftMagicNumbers.getMaterial(item.getItem());
+        Material material = CraftMagicNumbers.getMaterial(item.getItem());
+        return material == null ? Material.AIR : material;
     }
 
     @Override

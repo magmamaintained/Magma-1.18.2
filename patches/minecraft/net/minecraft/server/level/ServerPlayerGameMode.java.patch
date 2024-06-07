@@ -156,7 +156,6 @@
 +   //Magma start - fix mixin inject
 +   private @Nullable org.bukkit.block.Block destroyBlock_bblock;
 +   private @Nullable java.util.Optional<org.bukkit.event.block.BlockBreakEvent> destroyBlock_event;
-+   private @Nullable org.bukkit.block.BlockState destroyBlock_state;
     public boolean destroyBlock(BlockPos p_9281_) {
 -      BlockState blockstate = this.level.getBlockState(p_9281_);
 -      if (!this.player.getMainHandItem().getItem().canAttackBlock(blockstate, this.level, p_9281_, this.player)) {
@@ -165,8 +164,9 @@
 +      destroyBlock_bblock = org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock.at(level, p_9281_);
 +      destroyBlock_event = isSwordNoBreak(p_9281_, blockState, destroyBlock_bblock);
 +
-+      if (destroyBlock_event.isEmpty())
++      if (destroyBlock_event.isEmpty()) {
 +         return false;
++      }
 +      // CraftBukkit end
 +
 +      if (false && !this.player.getMainHandItem().getItem().canAttackBlock(blockState, this.level, p_9281_, this.player)) { // CraftBukkit - false
@@ -191,16 +191,18 @@
 -            block.playerWillDestroy(this.level, p_9281_, blockstate, this.player);
 -            boolean flag = this.level.removeBlock(p_9281_, false);
 +            // CraftBukkit start
-+            destroyBlock_state = destroyBlock_bblock.getState();
++            org.bukkit.block.BlockState state = destroyBlock_bblock.getState();
 +            level.captureDrops = new java.util.ArrayList<>();
 +            // CraftBukkit end
 +            boolean flag = removeBlock(p_9281_, false);
++            BlockState blockstate = blockState;
 +
              if (flag) {
 -               block.destroy(this.level, p_9281_, blockstate);
 +               block.destroy(this.level, p_9281_, blockState);
              }
- 
+-
++            
              if (this.isCreative()) {
 -               return true;
 +               // return true; // CraftBukkit
@@ -208,14 +210,16 @@
                 ItemStack itemstack = this.player.getMainHandItem();
                 ItemStack itemstack1 = itemstack.copy();
 -               boolean flag1 = this.player.hasCorrectToolForDrops(blockstate);
--               itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
++               boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player);
++
+                itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
 -               if (flag && flag1) {
 -                  block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
-+               boolean flag1 = this.player.hasCorrectToolForDrops(blockState);
++               if (itemstack.isEmpty() && !itemstack1.isEmpty())
++                  net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
 +
-+               itemstack.mineBlock(this.level, blockState, p_9281_, this.player);
-+               if (flag && flag1 && destroyBlock_event.get().isDropItems()) { // CraftBukkit - Check if block should drop items
-+                  block.playerDestroy(this.level, this.player, p_9281_, blockState, tileentity, itemstack1);
++               if (flag1 && flag && destroyBlock_event.get().isDropItems()) { // CraftBukkit - Check if block should drop items
++                  block.playerDestroy(this.level, this.player, p_9281_, blockstate, tileentity, itemstack1);
                 }
  
 -               return true;
@@ -226,12 +230,12 @@
 +            }
 +            // CraftBukkit start
 +            if (destroyBlock_event.get().isDropItems()) {
-+               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockDropItemEvent(destroyBlock_bblock, destroyBlock_state, this.player, level.captureDrops);
++               org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory.handleBlockDropItemEvent(destroyBlock_bblock, state, this.player, level.captureDrops);
 +            }
 +            level.captureDrops = null;
 +
 +            // Drop event experience
-+            if (flag && destroyBlock_event != null) {
++            if (flag && !destroyBlock_event.isEmpty()) {
 +               blockState.getBlock().popExperience(this.level, p_9281_, destroyBlock_event.get().getExpToDrop());
 +            }
 +
@@ -256,30 +260,26 @@
 +            this.player.connection.send(packet);
 +         }
 +
++         // Magma start
 +         event = new org.bukkit.event.block.BlockBreakEvent(bblock, this.player.getBukkitEntity());
-+
-+         //Magma start
++         
 +         int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(level, gameModeForPlayer, player, p_9281_);
 +
 +         if (exp == -1) {
 +            return java.util.Optional.empty();
 +         }
 +
-+         if(this.player.isCreative() && ((org.bukkit.entity.Player) this.player.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("SWORD") || ((org.bukkit.entity.Player) this.player.getBukkitEntity()).getInventory().getItemInMainHand().getType().toString().contains("TRIDENT")){
-+            event.setCancelled(true);
-+            isSwordNoBreak = true;
-+         }
-+         //Magma end
++         event.setExpToDrop(exp);
++         // Magma end
++
++         // Sword + Creative mode pre-cancel
++         event.setCancelled(isSwordNoBreak);
 +
 +         // Calculate default block experience
 +         BlockState nmsData = this.level.getBlockState(p_9281_);
 +         Block nmsBlock = nmsData.getBlock();
 +
 +         ItemStack itemstack = this.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
-+
-+         if (nmsBlock != null && !event.isCancelled() && !this.isCreative() && this.player.hasCorrectToolForDrops(nmsBlock.defaultBlockState())) {
-+            event.setExpToDrop(nmsBlock.getExpDrop(nmsData, this.level, p_9281_, itemstack));
-+         }
 +
 +         this.level.getCraftServer().getPluginManager().callEvent(event);
 +
