@@ -311,9 +311,9 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
 
         private void download() throws Exception {
             try {
-                NetworkUtils.downloadFile("https://nexus.c0d3m4513r.com/repository/Magma/" + path, file, this.signature());
+                NetworkUtils.downloadFile("https://reposilite.c0d3m4513r.com/Magma/" + path, file, this.signature());
             } catch (Throwable e) {
-                System.err.println("Failed to download https://nexus.c0d3m4513r.com/repository/Magma/" + path + " to " + file.getAbsolutePath());
+                System.err.println("Failed to download https://reposilite.c0d3m4513r.com/Magma/" + path + " to " + file.getAbsolutePath());
                 try {
                     NetworkUtils.downloadFile("https://repo1.maven.org/maven2/" + path, file, this.signature());
                 } catch (Throwable e2) {
@@ -371,7 +371,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
             manager.loadFromResource(new URL("jar:file:" + JarTool.getJarPath() + "!/data/magma_libraries.txt"));
 
             List<Repository> standardRepositories = new ArrayList<>();
-            standardRepositories.add(new StandardRepository("https://nexus.c0d3m4513r.com/repository/Magma"));
+            standardRepositories.add(new StandardRepository("https://reposilite.c0d3m4513r.com/Magma"));
             standardRepositories.add(new StandardRepository("https://maven.minecraftforge.net"));
             standardRepositories.add(new StandardRepository("https://maven.fabricmc.net"));
             standardRepositories.add(new StandardRepository("https://repo1.maven.org/maven2"));
