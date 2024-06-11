@@ -143,7 +143,7 @@
           }
  
        }
-@@ -217,45 +_,154 @@
+@@ -217,45 +_,153 @@
        if (this.destroyBlock(p_9287_)) {
           this.player.connection.send(new ClientboundBlockBreakAckPacket(p_9287_, this.level.getBlockState(p_9287_), p_9288_, true, p_9289_));
        } else {
@@ -282,7 +282,6 @@
 +         ItemStack itemstack = this.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 +
 +         this.level.getCraftServer().getPluginManager().callEvent(event);
-+
 +         if (event.isCancelled()) {
 +            if (isSwordNoBreak) {
 +               return java.util.Optional.empty();

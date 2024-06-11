@@ -34,7 +34,7 @@
 +
 +   private net.minecraft.network.chat.Component title;
 +
-+   public final net.minecraft.network.chat.Component getTitle() {
++   public net.minecraft.network.chat.Component getTitle() { // Remove final
 +      return this.title == null ? net.minecraft.network.chat.TextComponent.EMPTY : this.title; //Magma - allow null titles
 +   }
 +
