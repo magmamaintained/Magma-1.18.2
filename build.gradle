@@ -228,14 +228,13 @@ def sharedDeps = {
     installer 'com.electronwill.night-config:core:3.6.4'
     installer 'com.electronwill.night-config:toml:3.6.4'
     installer 'org.apache.maven:maven-artifact:3.6.3'
-    installer 'org.apache.commons:commons-lang3:3.12.0'
     installer 'net.jodah:typetools:0.8.3'
     installer 'net.minecrell:terminalconsoleappender:1.4.0'
     installer 'org.jline:jline-reader:3.21.0'   //Dep of TerminalConsoleAppender
     installer 'org.jline:jline-terminal:3.21.0' //Dep of TerminalConsoleAppender
     installer 'org.jline:jline-terminal-jansi:3.21.0' // Dep of TerminalConsoleAppender
     installer "org.spongepowered:mixin:${MIXIN_VERSION}"
-    installer 'org.openjdk.nashorn:nashorn-core:15.3'
+    installer 'org.openjdk.nashorn:nashorn-core:15.4'
     installer "net.minecraftforge:JarJarSelector:${JARJAR_VERSION}"
     installer "net.minecraftforge:JarJarMetadata:${JARJAR_VERSION}"
 
@@ -249,6 +248,7 @@ def sharedDeps = {
     // Magma
     installer 'org.magma:magma-common:2.6'
     installer 'com.mohistmc:json:0.2'
+    installer 'commons-io:commons-io:2.11.0'
 
     // Bukkit
     installer 'org.apache.maven:maven-resolver-provider:3.8.4'
@@ -285,7 +285,6 @@ def sharedDeps = {
     installer 'net.java.dev.jna:jna-platform:5.10.0'
     installer 'net.java.dev.jna:jna:5.10.0'
     installer 'it.unimi.dsi:fastutil:8.5.6'
-    installer 'commons-io:commons-io:2.4'
     installer 'com.mojang:javabridge:1.2.24'
     installer 'com.mojang:datafixerupper:4.1.27'
     installer 'com.mojang:brigadier:1.0.18'

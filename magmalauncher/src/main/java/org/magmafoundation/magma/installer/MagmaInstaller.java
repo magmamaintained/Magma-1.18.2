@@ -200,7 +200,7 @@ public class MagmaInstaller extends AbstractMagmaInstaller {
                         new ArrayList<>(Arrays.asList("--clean", srg.getAbsolutePath(), "--output", serverJar.getAbsolutePath(), "--apply", lzma.getAbsolutePath())),
                         stringToUrl(new ArrayList<>(Arrays.asList(
                                 LIB_PATH + "net/minecraftforge/binarypatcher/1.0.12/binarypatcher-1.0.12.jar",
-                                LIB_PATH + "commons-io/commons-io/2.4/commons-io-2.4.jar",
+                                LIB_PATH + "commons-io/commons-io/2.11.0/commons-io-2.11.0.jar",
                                 LIB_PATH + "com/google/guava/guava/25.1-jre/guava-25.1-jre.jar",
                                 LIB_PATH + "net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar",
                                 LIB_PATH + "com/github/jponge/lzma-java/1.3/lzma-java-1.3.jar",
