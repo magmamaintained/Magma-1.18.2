@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit.v1_18_R2.inventory;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.CompoundTag;
@@ -96,6 +97,7 @@ public final class CraftItemStack extends ItemStack {
      */
     private CraftItemStack(net.minecraft.world.item.ItemStack item) {
         this.handle = item;
+        setItemMeta(getItemMeta()); // Magma - Add ForgeCaps to all items used by CraftBukkit
     }
 
     private CraftItemStack(ItemStack item) {
@@ -362,7 +364,9 @@ public final class CraftItemStack extends ItemStack {
             case BUNDLE -> new CraftMetaBundle(item.getTag());
             default -> new CraftMetaItem(item.getTag());
         };
-        meta.offerUnhandledTags(item);
+        if (item == null) return meta;
+        CompoundTag tag = item.getTag();
+        if (tag != null) meta.offerUnhandledTags(tag);
         meta.setForgeCaps(item.getForgeCaps());
         return meta;
         //Magma end

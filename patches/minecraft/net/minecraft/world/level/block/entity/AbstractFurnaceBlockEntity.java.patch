@@ -119,21 +119,17 @@
              }
           }
        } else {
-@@ -310,17 +_,48 @@
+@@ -310,17 +_,44 @@
        }
     }
  
 -   private static boolean burn(@Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
 +   //Magma start - mixin inject
-+   private @Nullable Level burn_level;
-+   private @Nullable BlockPos burn_pos;
++   private final java.util.concurrent.atomic.AtomicReference<Level> burn_level = new java.util.concurrent.atomic.AtomicReference<>();
++   private final java.util.concurrent.atomic.AtomicReference<BlockPos> burn_pos = new java.util.concurrent.atomic.AtomicReference<>();
 +   private boolean burn(@Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
-+      Level level = burn_level;
-+      BlockPos blockposition = burn_pos;
-+
-+      //reset
-+      burn_level = null;
-+      burn_pos = null;
++      Level level = burn_level.getAndSet(null);
++      BlockPos blockposition = burn_pos.getAndSet(null);
 +
        if (p_155027_ != null && canBurn(p_155027_, p_155028_, p_155029_)) {
           ItemStack itemstack = p_155028_.get(0);
@@ -181,8 +177,8 @@
     }
  
 +   private boolean burn(Level level, BlockPos blockposition, @Nullable Recipe<?> p_155027_, NonNullList<ItemStack> p_155028_, int p_155029_) {
-+      burn_level = level;
-+      burn_pos = blockposition;
++      burn_level.set(level);
++      burn_pos.set(blockposition);
 +      return burn(p_155027_, p_155028_, p_155029_);
 +   }
 +   //Magma end

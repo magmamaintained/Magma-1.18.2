@@ -269,6 +269,9 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
 
     //Magma start - this is a list of nbt tags that don't get removed when CraftItemStack.setItemMeta gets called, add things to this list to prevent them from getting removed
     private static final Set<String> EXTEND_TAGS = ImmutableSet.of(
+            "Name",
+            "Items",
+            "Schedule",
             "map_is_scaling",
             "map",
             "CustomPotionEffects",
@@ -335,9 +338,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         this.version = meta.version;
 
         //Magma start
-        CompoundTag forgeCaps = meta.getForgeCaps();
-        if (forgeCaps != null) {
-            this.forgeCaps = forgeCaps.copy();
+        if (meta != null) {
+            CompoundTag forgeCaps = meta.getForgeCaps();
+            if (forgeCaps != null) {
+                this.forgeCaps = forgeCaps.copy();
+            }
         }
         //Magma end
     }
@@ -420,15 +425,10 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         return forgeCaps;
     }
 
-    public void offerUnhandledTags(ItemStack stack) { //Code based on Arclight's implementation
-        CompoundTag nbt = stack.getTag();
-        if (nbt == null)
-            return;
-
+    public void offerUnhandledTags(CompoundTag nbt) {
         if (getClass().equals(CraftMetaItem.class)) {
-            boolean transformable = ItemMetaTransformer.isTransformable(stack);
             for (String s : nbt.getAllKeys()) {
-                if (EXTEND_TAGS.contains(s) || !transformable) {
+                if (EXTEND_TAGS.contains(s)) {
                     this.unhandledTags.put(s, nbt.get(s));
                 }
             }
@@ -596,8 +596,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         }
 
         //Magma start
-        if (map.containsKey("forgeCaps")) {
-            Object forgeCaps = map.get("forgeCaps");
+        if (map.containsKey("ForgeCaps")) {
+            Object forgeCaps = map.get("ForgeCaps");
             try {
                 ByteArrayInputStream buf = new ByteArrayInputStream(Base64.getDecoder().decode(forgeCaps.toString()));
                 this.forgeCaps = NbtIo.readCompressed(buf);
@@ -1229,10 +1229,10 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         //Magma start
         CompoundTag forgeCaps = that.getForgeCaps();
         boolean ret;
-        if (this.getForgeCaps() == null)
+        if (this.forgeCaps == null)
             ret = forgeCaps != null && forgeCaps.size() != 0;
         else
-            ret = forgeCaps == null ? this.getForgeCaps().size() != 0 : !this.getForgeCaps().equals(forgeCaps);
+            ret = forgeCaps == null ? this.forgeCaps.size() != 0 : !this.forgeCaps.equals(forgeCaps);
         if (ret) return false;
         //Magma end
         return ((this.hasDisplayName() ? that.hasDisplayName() && this.displayName.equals(that.displayName) : !that.hasDisplayName()))
@@ -1310,11 +1310,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
             clone.version = this.version;
 
             //Magma start
-            if (this.getUnhandledTags() != null)
-                clone.setUnhandledTags(getUnhandledTags());
+            if (this.unhandledTags != null)
+                clone.getUnhandledTags().putAll(this.unhandledTags);
 
-            if (this.getForgeCaps() != null)
-                clone.setForgeCaps(this.getForgeCaps().copy());
+            if (this.forgeCaps != null)
+                clone.setForgeCaps(this.forgeCaps.copy());
             //Magma end
 
             return clone;
