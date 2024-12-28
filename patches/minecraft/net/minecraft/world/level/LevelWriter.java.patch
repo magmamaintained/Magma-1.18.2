@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/LevelWriter.java
 +++ b/net/minecraft/world/level/LevelWriter.java
-@@ -24,7 +_,17 @@
+@@ -24,7 +_,22 @@
  
     boolean destroyBlock(BlockPos p_46957_, boolean p_46958_, @Nullable Entity p_46959_, int p_46960_);
  
@@ -11,6 +11,11 @@
     default boolean addFreshEntity(Entity p_46964_) {
        return false;
     }
++
++   // Magma start - Fix mixins problems
++   default void prepareAddEntity(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
++   }
++   // Magma end
 +
 +   // CraftBukkit start
 +   default boolean addFreshEntity(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {

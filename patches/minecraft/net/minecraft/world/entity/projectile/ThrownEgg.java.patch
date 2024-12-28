@@ -1,71 +1,81 @@
 --- a/net/minecraft/world/entity/projectile/ThrownEgg.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEgg.java
-@@ -41,21 +_,31 @@
+@@ -40,22 +_,72 @@
+       super.onHitEntity(p_37486_);
        p_37486_.getEntity().hurt(DamageSource.thrown(this, this.getOwner()), 0.0F);
     }
++   
++   // Magma - Start
++   private boolean hatching;
++   private org.bukkit.entity.EntityType hatchingType;
++   private net.minecraft.world.entity.Entity shooter;
++   private org.bukkit.event.player.PlayerEggThrowEvent event;
++   private java.util.concurrent.atomic.AtomicReference<net.minecraft.world.entity.Entity> craftBukkitEntity = new java.util.concurrent.atomic.AtomicReference<>();
++   // Magma end
  
-+   //Magma start - fix mixin inject error
     protected void onHit(HitResult p_37488_) {
        super.onHit(p_37488_);
        if (!this.level.isClientSide) {
 -         if (this.random.nextInt(8) == 0) {
-+         newHatch();
++         // CraftBukkit start
++         hatching = this.random.nextInt(8) == 0;
 +         if (true) {
++            // CraftBukkit end
              int i = 1;
              if (this.random.nextInt(32) == 0) {
                 i = 4;
              }
  
 -            for(int j = 0; j < i; ++j) {
--               Chicken chicken = EntityType.CHICKEN.create(this.level);
++            // CraftBukkit start
++            hatchingType = org.bukkit.entity.EntityType.CHICKEN;
++
++            shooter = this.getOwner();
++            if (!hatching) {
++               i = 0;
++            }
++
++            if (shooter instanceof net.minecraft.server.level.ServerPlayer) {
++               event = new org.bukkit.event.player.PlayerEggThrowEvent((org.bukkit.entity.Player) shooter.getBukkitEntity(), (org.bukkit.entity.Egg) this.getBukkitEntity(), hatching, (byte) i, hatchingType);
++               this.level.getCraftServer().getPluginManager().callEvent(event);
++
++               i = event.getNumHatches();
++               hatching = event.isHatching();
++               hatchingType = event.getHatchingType();
++               // If hatching is set to false, ensure child count is 0
++               if (!hatching) {
++                  i = 0;
++               }
++            }
++            // CraftBukkit end
++
++            for (int j = 0; j < i; ++j) {
+                Chicken chicken = EntityType.CHICKEN.create(this.level);
 -               chicken.setAge(-24000);
 -               chicken.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
 -               this.level.addFreshEntity(chicken);
-+            i = doBukkitEvent(i);
+-            }
 +
-+            if (hatching) {
-+               for (int j = 0; j < i; ++j) {
-+                  Chicken entity = (Chicken) level.getWorld().createEntity(new org.bukkit.Location(level.getWorld(), this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F), hatchingType.getEntityClass());
-+                  if (entity.getBukkitEntity() instanceof org.bukkit.entity.Ageable) {
-+                     ((org.bukkit.entity.Ageable) entity.getBukkitEntity()).setBaby();
-+                  }
-+
-+                  this.level.prepareEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG);
-+                  this.level.addFreshEntity(entity);
++               // Magma start - Fix mixin problems
++               if (hatchingType == org.bukkit.entity.EntityType.CHICKEN) {
++                  craftBukkitEntity.set(chicken);
++               } else {
++                  craftBukkitEntity.set(this.level.getWorld().createEntity(new org.bukkit.Location(this.level.getWorld(), this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F), hatchingType.getEntityClass())); // CraftBukkit
 +               }
-             }
++
++               if (craftBukkitEntity.get() != null) {
++                  // CraftBukkit start
++                  if (craftBukkitEntity.get().getBukkitEntity() instanceof org.bukkit.entity.Ageable) {
++                     ((org.bukkit.entity.Ageable) craftBukkitEntity.get().getBukkitEntity()).setBaby();
++                  }
++                  
++                  craftBukkitEntity.get().moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
++                  this.level.prepareAddEntity(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG); // Magma - Add SpawnReason
++                  this.level.addFreshEntity(craftBukkitEntity.get());
++               }
++            } 
++
 +            // CraftBukkit end
           }
  
           this.level.broadcastEntityEvent(this, (byte)3);
-@@ -63,6 +_,30 @@
-       }
- 
-    }
-+
-+   private boolean hatching;
-+   private void newHatch() {
-+      this.hatching = this.random.nextInt(8) == 0;
-+   }
-+
-+   private org.bukkit.entity.EntityType hatchingType;
-+   private int doBukkitEvent(int i) {
-+      // CraftBukkit start
-+      if (!hatching) {
-+         i = 0;
-+      }
-+      hatchingType = org.bukkit.entity.EntityType.CHICKEN;
-+      net.minecraft.world.entity.Entity shooter = this.getOwner();
-+      if (shooter instanceof net.minecraft.server.level.ServerPlayer) {
-+         org.bukkit.event.player.PlayerEggThrowEvent event = new org.bukkit.event.player.PlayerEggThrowEvent((org.bukkit.entity.Player) shooter.getBukkitEntity(), (org.bukkit.entity.Egg) this.getBukkitEntity(), hatching, (byte) i, hatchingType);
-+         this.level.getCraftServer().getPluginManager().callEvent(event);
-+         i = event.getNumHatches();
-+         hatching = event.isHatching();
-+         hatchingType = event.getHatchingType();
-+      }
-+      return i;
-+   }
-+   //Magma end
- 
-    protected Item getDefaultItem() {
-       return Items.EGG;
