@@ -127,12 +127,16 @@
              if (!blockstate.isAir() && f >= 1.0F) {
                 this.destroyAndAck(p_9282_, p_9283_, "insta mine");
              } else {
-@@ -201,13 +_,14 @@
+@@ -201,13 +_,18 @@
           } else if (p_9283_ == ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK) {
              this.isDestroyingBlock = false;
              if (!Objects.equals(this.destroyPos, p_9282_)) {
 -               LOGGER.warn("Mismatch in destroy block pos: {} {}", this.destroyPos, p_9282_);
-+               LOGGER.debug("Mismatch in destroy block pos: {} {}", this.destroyPos, p_9282_); // CraftBukkit - SPIGOT-5457 sent by client when interact event cancelled
++               // Magma start - Fix mixin problems
++               if (org.magmafoundation.magma.configuration.MagmaConfig.instance.debugMismatchDestroyBlock.getValues()) {
++                  LOGGER.warn("Mismatch in destroy block pos: {} {}", this.destroyPos, p_9282_); // CraftBukkit - SPIGOT-5457 sent by client when interact event cancelled
++               }
++               // Magma end
                 this.level.destroyBlockProgress(this.player.getId(), this.destroyPos, -1);
                 this.player.connection.send(new ClientboundBlockBreakAckPacket(this.destroyPos, this.level.getBlockState(this.destroyPos), p_9283_, true, "aborted mismatched destroying"));
              }
